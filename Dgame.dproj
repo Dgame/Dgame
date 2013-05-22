@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{428FFC5C-66A0-4F59-90A3-80EC24E1DFE5}</ProjectGuid>
+    <UseDefaultCompiler>true</UseDefaultCompiler>
+    <IncrementalLinking>true</IncrementalLinking>
+    <PreferOneStepBuild>true</PreferOneStepBuild>
+    <Compiler>DMD2</Compiler>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <UnittestMode>false</UnittestMode>
+    <ObjectsDirectory>obj\Debug</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Dgame</OutputName>
+    <ExtraCompilerArguments>-wi -property -debug -DdDokumentation</ExtraCompilerArguments>
+    <DDocDirectory>Dokumentation</DDocDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <UnittestMode>false</UnittestMode>
+    <ObjectsDirectory>obj\Release</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Dgame</OutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Unittest</OutputPath>
+    <UnittestMode>true</UnittestMode>
+    <ObjectsDirectory>obj\Unittest</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Dgame</OutputName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.d" />
+    <Compile Include="Audio\all.d" />
+    <Compile Include="Audio\Listener.d" />
+    <Compile Include="Audio\Sound.d" />
+    <Compile Include="Audio\SoundFile.d" />
+    <Compile Include="Audio\VorbisFile.d" />
+    <Compile Include="Audio\WaveFile.d" />
+    <Compile Include="Audio\Core\core.d" />
+    <Compile Include="Core\Allocator.d" />
+    <Compile Include="Core\AutoRef.d" />
+    <Compile Include="Core\core.d" />
+    <Compile Include="Graphics\all.d" />
+    <Compile Include="Graphics\Color.d" />
+    <Compile Include="Graphics\Drawable.d" />
+    <Compile Include="Graphics\Font.d" />
+    <Compile Include="Graphics\HwSurface.d" />
+    <Compile Include="Graphics\Image.d" />
+    <Compile Include="Graphics\RenderTarget.d" />
+    <Compile Include="Graphics\Shape.d" />
+    <Compile Include="Graphics\Sprite.d" />
+    <Compile Include="Graphics\Spritesheet.d" />
+    <Compile Include="Graphics\Surface.d" />
+    <Compile Include="Graphics\Text.d" />
+    <Compile Include="Graphics\Texture.d" />
+    <Compile Include="Graphics\TileMap.d" />
+    <Compile Include="Graphics\Interface\Blendable.d" />
+    <Compile Include="Graphics\Interface\Moveable.d" />
+    <Compile Include="Graphics\Interface\Transformable.d" />
+    <Compile Include="Math\all.d" />
+    <Compile Include="Math\Rect.d" />
+    <Compile Include="Math\Vector2.d" />
+    <Compile Include="System\all.d" />
+    <Compile Include="System\Buffer.d" />
+    <Compile Include="System\Clock.d" />
+    <Compile Include="System\Keyboard.d" />
+    <Compile Include="System\Mouse.d" />
+    <Compile Include="Window\all.d" />
+    <Compile Include="Window\Event.d" />
+    <Compile Include="Window\EventHandler.d" />
+    <Compile Include="Window\VideoMode.d" />
+    <Compile Include="Window\Window.d" />
+    <Compile Include="Math\Pixel.d" />
+    <Compile Include="Math\Vertex.d" />
+    <Compile Include="System\Power.d" />
+    <Compile Include="Core\Finalizer.d" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Audio\" />
+    <Folder Include="Core\" />
+    <Folder Include="Graphics\" />
+    <Folder Include="Math\" />
+    <Folder Include="System\" />
+    <Folder Include="Window\" />
+  </ItemGroup>
+</Project>
