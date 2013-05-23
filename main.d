@@ -25,7 +25,7 @@ void main() {
 	
 	Window wnd = new Window(VideoMode(width, height, VideoMode.Default), 100, 50);
 	wnd.setSync(Window.Sync.Disable);
-	wnd.setFpsLimit(15);
+	//	wnd.setFpsLimit(15);
 	/*
 	 {
 	 writeln("<>");
@@ -184,15 +184,15 @@ void main() {
 	while (wnd.isOpen()) {
 		wnd.clear();
 		
-		//		tm.draw();
 		wnd.draw(tm);
 		
 		wnd.draw(qs);
-		//		wnd.draw(many);
+		wnd.draw(many);
+		wnd.draw(circle);
+		
 		wnd.draw(wiki_sprite);
 		wnd.draw(sp);
 		wnd.draw(sp2);
-		wnd.draw(circle);
 		
 		sp2.slideViewport();
 		

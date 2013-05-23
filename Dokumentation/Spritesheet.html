@@ -7,19 +7,15 @@
 <br><br>
 <dl><dt><big><a name="Spritesheet"></a>class <u>Spritesheet</u>: Dgame.Graphics.Sprite.Sprite;
 </big></dt>
-<dd>Sprite Sheet extends Sprite.
- Sprite Sheet has, besides the texture,
+<dd>SpriteSheet extends Sprite and has, besides the texture,
  even a viewport and acts as a Texture Atlas.
+ With slideViewport the viewport slides over the current row of the texture atlas.
+ With setRow the current row can be changed (increased, decreased).
 <br><br>
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Spritesheet.this"></a> this();
-</big></dt>
-<dd>CTor<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.this"></a> this(Texture <i>tex</i>);
+<dl><dt><big><a name="Spritesheet.this"></a> this(Texture <i>tex</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -40,22 +36,30 @@ rschuett<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.fetchViewport"></a>inout inout(FloatRect)* <u>fetchViewport</u>();
+<dt><big><a name="Spritesheet.getViewport"></a>const ref const(FloatRect) <u>getViewport</u>();
+</big></dt>
+<dd>Get access to the current Viewport.<br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.fetchViewport"></a>inout inout(Rect!(float))* <u>fetchViewport</u>();
 </big></dt>
 <dd>Get mutable access to the current Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.getViewport"></a>const pure nothrow ref const(FloatRect) <u>getViewport</u>();
+<dt><big><a name="Spritesheet.getRow"></a>const pure nothrow ubyte <u>getRow</u>();
 </big></dt>
-<dd>Get const access of the current Viewport.<br><br>
+<dd>Returns the current row (starting value is 0)<br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.slideViewport"></a>float[4] <u>slideViewport</u>(FloatRect* <i>viewport</i> = null);
+<dt><big><a name="Spritesheet.setRow"></a>void <u>setRow</u>(ubyte <i>row</i>);
 </big></dt>
-<dd>Slides/moves the current Viewport of the Texture.
- So the next area of the Texture atlas will be drawn.
- With the optional parameter another Viewport as the current will be used.
- Returns the coordinates and size of the new area as static array.<br><br>
+<dd>Set a new <i>row</i><br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.slideViewport"></a>void <u>slideViewport</u>();
+</big></dt>
+<dd>Slide/move the current Viewport of the Texture.
+ So the next area of the Texture atlas will be drawn.<br><br>
 
 </dd>
 </dl>

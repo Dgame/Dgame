@@ -55,7 +55,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Window.count"></a>const size_t <u>count</u>();
+<dt><big><a name="Window.count"></a>const uint <u>count</u>();
 </big></dt>
 <dd>Returns how many windows exist<br><br>
 
@@ -83,7 +83,7 @@ Sync enum<br><br>
 Sync enum<br><br>
 
 </dd>
-<dt><big><a name="Window.capture"></a>const Image <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
+<dt><big><a name="Window.capture"></a>const Image <u>capture</u>(Texture.Format <i>fmt</i> = (Format).BGRA);
 </big></dt>
 <dd>Capture the pixel data of the current window and
  returns an Image with this pixel data.
@@ -92,9 +92,9 @@ Sync enum<br><br>
  This method is predestinated for screenshots.
 <br><br>
 <b>Example:</b><br>
-<pre class="d_code">Window wnd = ...
-...
-wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</font>);
+<pre class="d_code"> Window wnd = ...
+ ...
+ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</font>);
 </pre>
 <br><br>
 
@@ -153,7 +153,7 @@ Dgame.System.Clock<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0.000000);
+<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0);
 </big></dt>
 <dd>Set the color with which this windows clear his buffer.
  This is also the background color of the window.<br><br>
@@ -261,6 +261,16 @@ the old <i>title</i><br><br>
 </big></dt>
 <dd>Show or hide the window.
  <b>true</b> shows, <b>false</b> hides.<br><br>
+
+</dd>
+<dt><big><a name="Window.enableFullscreen"></a>void <u>enableFullscreen</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Enable or disable Fullscreen mode.<br><br>
+
+</dd>
+<dt><big><a name="Window.isFullscreen"></a>const pure nothrow bool <u>isFullscreen</u>();
+</big></dt>
+<dd>Check whether this Window is currently windowed, or not.<br><br>
 
 </dd>
 <dt><big><a name="Window.setIcon"></a>void <u>setIcon</u>(ref Surface <i>icon</i>);

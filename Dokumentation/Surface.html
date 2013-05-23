@@ -168,24 +168,24 @@ rschuett<br><br>
 <dd>Returns the <u>height</u>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.fill"></a>void <u>fill</u>(ref const Color <i>col</i>, const ShortRect* <i>rect</i> = null);
+<dt><big><a name="Surface.fill"></a>void <u>fill</u>(ref const Color <i>col</i>, const Rect!(short)* <i>rect</i> = null);
 </big></dt>
 <dd>Fills a specific area of the surface with the given color.
  The second parameter is a pointer to the area.
  If it's <b>null</b>, the whole Surface is filled.<br><br>
 
 </dd>
-<dt><big><a name="Surface.fill"></a>void <u>fill</u>(const Color <i>col</i>, const ShortRect* <i>rect</i> = null);
+<dt><big><a name="Surface.fill"></a>void <u>fill</u>(const Color <i>col</i>, const Rect!(short)* <i>rect</i> = null);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Surface.fillAreas"></a>void <u>fillAreas</u>(ref const Color <i>col</i>, const ShortRect[] <i>rects</i>);
+<dt><big><a name="Surface.fillAreas"></a>void <u>fillAreas</u>(ref const Color <i>col</i>, const Rect!(short)[] <i>rects</i>);
 </big></dt>
 <dd>Fills multiple areas of the Surface with the given color.<br><br>
 
 </dd>
-<dt><big><a name="Surface.fillAreas"></a>void <u>fillAreas</u>(const Color <i>col</i>, const ShortRect[] <i>rects</i>);
+<dt><big><a name="Surface.fillAreas"></a>void <u>fillAreas</u>(const Color <i>col</i>, const Rect!(short)[] <i>rects</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
@@ -370,7 +370,7 @@ Surface.Mask enum.<br><br>
 <dd>Returns a pointer of the SDL_Surface<br><br>
 
 </dd>
-<dt><big><a name="Surface.blit"></a>void <u>blit</u>(ref Surface <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
+<dt><big><a name="Surface.blit"></a>void <u>blit</u>(ref Surface <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
 </big></dt>
 <dd>Use this function to perform a fast <u>blit</u> from the source surface to the this surface.
  <i>src</i> is the a pointer to a Rect structure which represents the rectangle to be copied,
@@ -379,7 +379,7 @@ Surface.Mask enum.<br><br>
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
 
 </dd>
-<dt><big><a name="Surface.blit"></a>void <u>blit</u>(SDL_Surface* <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
+<dt><big><a name="Surface.blit"></a>void <u>blit</u>(SDL_Surface* <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
 </big></dt>
 <dd>Same as above, but a SDL_Surface* instead of a Surface.<br><br>
 

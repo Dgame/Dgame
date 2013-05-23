@@ -28,8 +28,8 @@ enum Status {
  * The channel type. Mono or Stereo.
  */
 enum ChannelType {
-	Mono   = 1,	/** Channel type is Mono (1) */
-	Stereo = 2	/** Channel type is Stereo (2) */
+	Mono,	/** Channel type is Mono */
+	Stereo	/** Channel type is Stereo */
 }
 
 /**
@@ -65,6 +65,56 @@ public:
 	}
 }
 
+struct ALChunk {
+public:
+	ALuint source;
+	ALuint buffer;
+	
+	ALenum format;
+	
+	bool _finalized = false;
+	
+	/**
+	 * Create and initialize the buffers
+	 */
+	void init() {
+		alGenBuffers(1, &this.buffer);
+		alGenSources(1, &this.source);
+	}
+	
+	/**
+	 * Free / Release the source and buffer of the Sound
+	 */
+	void free() {
+		if (!this._finalized) {
+			this._finalized = true;
+			
+			alDeleteSources(1, &this.source);
+			alDeleteBuffers(1, &this.buffer);
+		}
+	}
+	
+	@disable
+	this(this);
+}
+
+private ALChunk*[] _finalizer;
+
+void _finalizeSound() {
+	debug writefln("Finalize Sound (%d)", _finalizer.length);
+	
+	for (size_t i = 0; i < _finalizer.length; i++) {
+		debug writefln(" -> Sound finalized: %d", i);
+		
+		if (_finalizer[i])
+			_finalizer[i].free();
+	}
+	
+	_finalizer = null;
+	
+	debug writeln(" >> Sound Finalized");
+}
+
 /**
  * Sound represents the functionality to manipulate loaded sounds.
  * That means with this class you can get informations about the sound or
@@ -74,10 +124,7 @@ public:
  */
 class Sound {
 private:
-	ALuint _source;
-	ALuint _buffer;
-	
-	ALenum _format;
+	ALChunk _alChunk;
 	
 	uint _frequency;
 	float _volume;
@@ -99,11 +146,11 @@ public:
 	 * CTor
 	 */
 	this() {
-		// Create the buffers
-		alGenBuffers(1, &this._buffer);
-		alGenSources(1, &this._source);
+		this._alChunk.init();
 		
 		this._status = Status.None;
+		
+		_finalizer ~= &this._alChunk;
 	}
 	
 	/**
@@ -124,20 +171,18 @@ public:
 		this.loadFromFile(filename);
 	}
 	
+	/**
+	 * DTor
+	 */
 	~this() {
-		//alDeleteSources(1, &this._source);
-		//alDeleteBuffers(1, &this._buffer);
+		this.free();
 	}
 	
-	final void release() const {
-		alDeleteSources(1, &this._source);
-		alDeleteBuffers(1, &this._buffer);
-	}
-	
-	static ~this() {
-		foreach (string filename, ref Sound s; _soundInstances) {
-			s = null;
-		}
+	/**
+	 * Free / Release the source and buffer of the Sound
+	 */
+	void free() {
+		this._alChunk.free();
 	}
 	
 	/**
@@ -247,15 +292,15 @@ public:
 		switch (ch.bits) {
 			case 8:
 				if (ch.type == ChannelType.Mono)
-					this._format = AL_FORMAT_MONO8;
+					this._alChunk.format = AL_FORMAT_MONO8;
 				else
-					this._format = AL_FORMAT_STEREO8;
+					this._alChunk.format = AL_FORMAT_STEREO8;
 				break;
 			case 16:
 				if (ch.type == ChannelType.Mono)
-					this._format = AL_FORMAT_MONO16;
+					this._alChunk.format = AL_FORMAT_MONO16;
 				else
-					this._format = AL_FORMAT_STEREO16;
+					this._alChunk.format = AL_FORMAT_STEREO16;
 				break;
 			default: throw new Exception("Switch error.");
 		}
@@ -263,7 +308,7 @@ public:
 		this._frequency = frequency;
 		this._channel = ch;
 		
-		alBufferData(this._buffer, this._format, buffer, dataSize, this._frequency);
+		alBufferData(this._alChunk.buffer, this._alChunk.format, buffer, dataSize, this._frequency);
 		
 		this._sourcePos = vec3f(0, 0, 0);
 		this._sourceVel = vec3f(0, 0, 0);
@@ -273,12 +318,12 @@ public:
 		this._status  = Status.None;
 		
 		// Source
-		alSourcei(this._source, AL_BUFFER, this._buffer);
-		alSourcef(this._source, AL_PITCH, 1.0);
-		alSourcef(this._source, AL_GAIN, this._volume);
-		alSourcefv(this._source, AL_POSITION, &this._sourcePos[0]);
-		alSourcefv(this._source, AL_VELOCITY, &this._sourceVel[0]);
-		alSourcei(this._source, AL_LOOPING, this._looping);
+		alSourcei(this._alChunk.source, AL_BUFFER, this._alChunk.buffer);
+		alSourcef(this._alChunk.source, AL_PITCH, 1.0);
+		alSourcef(this._alChunk.source, AL_GAIN, this._volume);
+		alSourcefv(this._alChunk.source, AL_POSITION, &this._sourcePos[0]);
+		alSourcefv(this._alChunk.source, AL_VELOCITY, &this._sourceVel[0]);
+		alSourcei(this._alChunk.source, AL_LOOPING, this._looping);
 	}
 	
 	/**
@@ -292,7 +337,7 @@ public:
 	 * Returns the Format.
 	 */
 	ALenum getFormat() const pure nothrow {
-		return this._format;
+		return this._alChunk.format;
 	}
 	
 	/**
@@ -326,7 +371,7 @@ public:
 	void setVolume(float volume) {
 		this._volume = volume;
 		
-		alSourcef(this._source, AL_GAIN, this._volume);
+		alSourcef(this._alChunk.source, AL_GAIN, this._volume);
 	}
 	
 	/**
@@ -349,7 +394,7 @@ public:
 	void setLooping(bool enable) {
 		this._looping = enable;
 		
-		alSourcei(this._source, AL_LOOPING, this._looping);
+		alSourcei(this._alChunk.source, AL_LOOPING, this._looping);
 	}
 	
 	/**
@@ -373,7 +418,7 @@ public:
 	 * Activate the playing.
 	 */
 	void play() {
-		alSourcePlay(this._source);
+		alSourcePlay(this._alChunk.source);
 		
 		this._status = Status.Playing;
 	}
@@ -382,7 +427,7 @@ public:
 	 * Stop current playing.
 	 */
 	void stop() {
-		alSourceStop(this._source);
+		alSourceStop(this._alChunk.source);
 		
 		this._status = Status.Stopped;
 	}
@@ -391,7 +436,7 @@ public:
 	 * Rewind playing.
 	 */
 	void rewind() {
-		alSourceRewind(this._source);
+		alSourceRewind(this._alChunk.source);
 		
 		this._status = Status.Playing;
 	}
@@ -400,7 +445,7 @@ public:
 	 * Pause playing.
 	 */
 	void pause() {
-		alSourcePause(this._source);
+		alSourcePause(this._alChunk.source);
 		
 		this._status = Status.Paused;
 	}
@@ -411,7 +456,7 @@ public:
 	void setPosition(const vec3f pos) {
 		this._sourcePos = pos;
 		
-		alSourcefv(this._source, AL_POSITION, &pos[0]);
+		alSourcefv(this._alChunk.source, AL_POSITION, &pos[0]);
 	}
 	
 	/**
@@ -434,7 +479,7 @@ public:
 	void setVelocity(const vec3f vel) {
 		this._sourceVel = vel;
 		
-		alSourcefv(this._source, AL_VELOCITY, &vel[0]);
+		alSourcefv(this._alChunk.source, AL_VELOCITY, &vel[0]);
 	}
 	
 	/**

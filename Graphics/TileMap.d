@@ -5,12 +5,14 @@ private {
 	import std.xml;
 	import std.file : read;
 	import std.conv : to;
+	import std.string : format;
 	import std.math : log2, pow, round, ceil, fmax;
-	import std.algorithm : canFind;
+	import std.c.string : memcpy;
 	
 	import derelict.opengl.gltypes;
 	
 	import Dgame.Math.Rect;
+	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Surface;
@@ -70,17 +72,20 @@ public:
 	 * The coordinates in pixel of this tile on the map
 	 */
 	const ushort[2] pixelCoords;/// = void;
-	
 	/**
-	 * CTor
+	 * The coordinates of this tile on the map
 	 */
-	this(ushort gid, string layer, ushort tx, ushort ty) {
-		this.gid = gid;
-		this.layer = layer;
+	const ushort[2] tileCoords;/// = void;
+	
+	void opAssign(ref const Tile rhs) {
+		debug writeln("opAssign Tile");
 		
-		this.pixelCoords[0] = tx;
-		this.pixelCoords[1] = ty;
+		memcpy(&this, &rhs, Tile.sizeof);
 	}
+	
+	//	this(this) {
+	//		debug writeln("Postblit Tile");
+	//	}
 }
 
 struct Sub {
@@ -182,7 +187,9 @@ protected:
 					float vx = col * this._tmi.tileWidth;
 					float vy = row * this._tmi.tileHeight;
 					
-					this._tiles ~= Tile(gid, elem.tag.attr["name"], cast(ushort) vx, cast(ushort) vy);
+					this._tiles ~= Tile(gid, elem.tag.attr["name"],
+					                    [cast(ushort) vx, cast(ushort) vy],
+					                    [col, row]);
 					
 					float vw = this._tmi.tileWidth;
 					float vh = this._tmi.tileHeight;
@@ -393,6 +400,8 @@ public:
 			dstGid *= 8;
 			
 			buffer[srcGid .. srcGid + 8] = buffer[dstGid .. dstGid + 8];
+			
+			this.replaceTileAt(coord, this.getTileAt(newCoords[index]));
 		}
 	}
 	
@@ -413,6 +422,8 @@ public:
 		dstGid *= 8;
 		
 		buffer[srcGid .. srcGid + 8] = buffer[dstGid .. dstGid + 8];
+		
+		this.replaceTileAt(coord, this.getTileAt(newCoord));
 	}
 	
 	/**
@@ -435,6 +446,72 @@ public:
 	 */
 	inout(Tile[]) getTiles() inout {
 		return this._tiles;
+	}
+	
+	/**
+	 * Replace the tile at the given position with the given new Tile.
+	 * If oldtile is not null, the former Tile is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	void replaceTileAt(ref const Vector2s vec, ref const Tile newTile, Tile* oldTile = null) {
+		this.replaceTileAt(vec.x, vec.y, newTile, oldTile);
+	}
+	
+	/**
+	 * Replace the tile at the given position with the given new Tile.
+	 * If oldtile is not null, the former Tile is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	void replaceTileAt(ushort[2] tilePos, ref const Tile newTile, Tile* oldTile = null) {
+		foreach (ref Tile t; this._tiles) {
+			if (t.tileCoords == tilePos) {
+				if (oldTile)
+					memcpy(oldTile, &t, Tile.sizeof);
+				
+				t = newTile;
+			}
+		}
+	}
+	
+	/**
+	 * Replace the tile at the given position with the given new Tile.
+	 * If oldtile is not null, the former Tile is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	void replaceTileAt(ushort x, ushort y, ref const Tile newTile, Tile* oldTile = null) {
+		this.replaceTileAt([x, y], newTile, oldTile);
+	}
+	
+	/**
+	 * Returns the tile at the given position, or throw an Exception
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	ref const(Tile) getTileAt(ref const Vector2s vec) const {
+		return this.getTileAt(vec.x, vec.y);
+	}
+	
+	/**
+	 * Returns the tile at the given position, or throw an Exception
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	ref const(Tile) getTileAt(ushort[2] tilePos) const {
+		foreach (ref const Tile t; this._tiles) {
+			if (t.tileCoords == tilePos)
+				return t;
+		}
+		
+		throw new Exception(.format("No Tile at position %d:%d", tilePos[0], tilePos[1]));
+	}
+	
+	/**
+	 * Returns the tile at the given position, or throw an Exception
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	ref const(Tile) getTileAt(ushort x, ushort y) const {
+		return this.getTileAt([x, y]);
 	}
 	
 	/**

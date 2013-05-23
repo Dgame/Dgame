@@ -93,7 +93,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Shape.setSmooth"></a>void <u>setSmooth</u>(SmoothTarget <i>sTarget</i>, SmoothHint <i>sHint</i> = SmoothHint.Fastest);
+<dt><big><a name="Shape.setSmooth"></a>void <u>setSmooth</u>(SmoothTarget <i>sTarget</i>, SmoothHint <i>sHint</i> = (SmoothHint).Fastest);
 </big></dt>
 <dd>Set target and hint of smoothing.<br><br>
 
@@ -183,7 +183,7 @@ Shape.Type enum.<br><br>
 <dd>Stores multiple Vertices for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.addVectors"></a>void <u>addVectors</u>(const Vector2f[] <i>vec</i>);
+<dt><big><a name="Shape.addVectors"></a>void <u>addVectors</u>(const Vector2!(float)[] <i>vec</i>);
 </big></dt>
 <dd>Stores multiple Pixel coordinates for this Shape.<br><br>
 
@@ -217,7 +217,7 @@ Shape.Type enum.<br><br>
  or fail if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Vector2f[] <i>vec</i>);
+<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Vector2!(float)[] <i>vec</i>);
 </big></dt>
 <dd>Make a new Shape object with the given <i>type</i> and vertices.<br><br>
 
@@ -227,9 +227,14 @@ Shape.Type enum.<br><br>
 <dd>Make a new Shape object with the given <i>type</i> and vertices.<br><br>
 
 </dd>
-<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(float <i>radius</i>, const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
+<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(float <i>radius</i>, ref const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
 </big></dt>
 <dd>Make a new Shape object as Circle.<br><br>
+
+</dd>
+<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(float <i>radius</i>, const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
+</big></dt>
+<dd>Rvalue version<br><br>
 
 </dd>
 </dl>

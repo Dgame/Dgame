@@ -210,7 +210,18 @@ public:
 		this.loadFromMemory(tex.getMemory(), tex.width, tex.height, tex.depth, tex.getFormat());
 	}
 	
+	/**
+	 * DTor
+	 */
 	~this() {
+		this.free();
+	}
+	
+	/**
+	 * Free / Delete the Texture & Memory
+	 * After this call, the Pixel data is invalid.
+	 */
+	void free() {
 		if (this._texId != 0) {
 			debug writeln("Destroy texture");
 			glDeleteTextures(1, &this._texId);

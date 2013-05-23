@@ -30,7 +30,7 @@ rschuett<br><br>
 <dt><big><a name="Sprite.hasTexture"></a>const pure nothrow bool <u>hasTexture</u>();
 </big></dt>
 <dd>Check if the current Sprite has already a Texture/Image.
- If not, nothign can be drawn.
+ If not, nothing can be drawn.
  But it does not check if the current Texture is valid.<br><br>
 
 </dd>
@@ -42,6 +42,18 @@ rschuett<br><br>
 <dt><big><a name="Sprite.getTexture"></a>const ref const(Texture) <u>getTexture</u>();
 </big></dt>
 <dd>Returns the current Texture or <b>null</b> if there is none.<br><br>
+
+</dd>
+<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(const Sprite <i>rhs</i>);
+</big></dt>
+<dd>Check whether the bounding box of this Sprite collide
+ with the bounding box of another Sprite<br><br>
+
+</dd>
+<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(ref const ShortRect <i>rect</i>);
+</big></dt>
+<dd>Check whether the bounding box of this Sprite collide
+ with the given Rect<br><br>
 
 </dd>
 </dl>

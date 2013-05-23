@@ -62,7 +62,7 @@ public:
 	
 	/**
 	 * Check if the current Sprite has already a Texture/Image.
-	 * If not, nothign can be drawn.
+	 * If not, nothing can be drawn.
 	 * But it does not check if the current Texture is valid.
 	 */
 	bool hasTexture() const pure nothrow {

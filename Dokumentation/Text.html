@@ -87,9 +87,9 @@ rschuett<br><br>
 <dd>Replace the current string.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code">Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
-Text t = <font color=blue>new</font> Text(font);
-t(<font color=red>"My new string"</font>);
+<pre class="d_code"> Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
+ Text t = <font color=blue>new</font> Text(font);
+ t(<font color=red>"My new string"</font>);
 </pre>
 <br><br>
 
@@ -99,11 +99,11 @@ t(<font color=red>"My new string"</font>);
 <dd>Replace the current string.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code">Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
-Text t1 = <font color=blue>new</font> Text(font);
-Text t2 = <font color=blue>new</font> Text(font);
-t1(<font color=red>"My new string"</font>);
-t2(t1); <font color=green>// now both t's draw 'My new string' on screen.
+<pre class="d_code"> Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
+ Text t1 = <font color=blue>new</font> Text(font);
+ Text t2 = <font color=blue>new</font> Text(font);
+ t1(<font color=red>"My new string"</font>);
+ t2(t1); <font color=green>// now both t's draw 'My new string' on screen.
 </font></pre>
 <br><br>
 
@@ -113,13 +113,13 @@ t2(t1); <font color=green>// now both t's draw 'My new string' on screen.
 <dd>Concatenate the current string with another.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code">Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
-Text t = <font color=blue>new</font> Text(font);
-t(<font color=red>"My new string"</font>);
-t ~= <font color=red>"is great!"</font>; <font color=green>// t draws now 'My new string is great' on screen.
+<pre class="d_code"> Font fnt = <font color=blue>new</font> Font(<font color=red>"samples/font/arial.ttf"</font>, 12);
+ Text t = <font color=blue>new</font> Text(font);
+ t(<font color=red>"My new string"</font>);
+ t ~= <font color=red>"is great!"</font>; <font color=green>// t draws now 'My new string is great' on screen.
 </font></pre>
  The example above is the same as if you do:
-<pre class="d_code">t += <font color=red>"is great!"</font>;
+<pre class="d_code"> t += <font color=red>"is great!"</font>;
 </pre>
  Both operators (~ and +) are allowed.<br><br>
 

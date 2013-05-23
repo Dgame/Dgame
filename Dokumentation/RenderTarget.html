@@ -136,12 +136,12 @@ rschuett<br><br>
 <dd>Use this function to create a texture for a rendering context.<br><br>
 
 </dd>
-<dt><big><a name="RenderTarget.createHwSurface"></a>HwSurface <u>createHwSurface</u>(ref Surface <i>srfc</i>, bool <i>release</i> = false, HwSurface.Access <i>access</i> = HwSurface.Access.Static);
+<dt><big><a name="RenderTarget.createHwSurface"></a>HwSurface <u>createHwSurface</u>(ref Surface <i>srfc</i>, bool <i>release</i> = false, HwSurface.Access <i>access</i> = (Access).Static);
 </big></dt>
 <dd>Use this function to create a texture from an existing surface.<br><br>
 
 </dd>
-<dt><big><a name="RenderTarget.createHwSurface"></a>HwSurface <u>createHwSurface</u>(Surface <i>srfc</i>, bool <i>release</i> = false, HwSurface.Access <i>access</i> = HwSurface.Access.Static);
+<dt><big><a name="RenderTarget.createHwSurface"></a>HwSurface <u>createHwSurface</u>(Surface <i>srfc</i>, bool <i>release</i> = false, HwSurface.Access <i>access</i> = (Access).Static);
 </big></dt>
 <dd>Rvalue version<br><br>
 
@@ -156,7 +156,7 @@ rschuett<br><br>
 <dd>Set a HwSurface as the current rendering target.<br><br>
 
 </dd>
-<dt><big><a name="RenderTarget.copy"></a>bool <u>copy</u>(ref HwSurface <i>hw</i>, const ShortRect* <i>src</i> = null, const ShortRect* <i>dst</i> = null);
+<dt><big><a name="RenderTarget.copy"></a>bool <u>copy</u>(ref HwSurface <i>hw</i>, const Rect!(short)* <i>src</i> = null, const Rect!(short)* <i>dst</i> = null);
 </big></dt>
 <dd>Use this function to <u>copy</u> a portion of the texture to the current rendering target.<br><br>
 
@@ -181,7 +181,7 @@ rschuett<br><br>
 <dd>Use this function to get the drawing area for the current target.<br><br>
 
 </dd>
-<dt><big><a name="RenderTarget.readPixels"></a>void* <u>readPixels</u>(const ShortRect* <i>rect</i>);
+<dt><big><a name="RenderTarget.readPixels"></a>void* <u>readPixels</u>(const Rect!(short)* <i>rect</i>);
 </big></dt>
 <dd>Use this function to read pixels from the current rendering target.
 <br><br>

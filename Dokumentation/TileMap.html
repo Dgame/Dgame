@@ -44,10 +44,10 @@
 </big></dt>
 <dd>The <u>gid</u> is the Tile id.
  It contains the positions of this tile on the tileset.
-<pre class="d_code"><font color=blue>const</font> <font color=blue>uint</font> tilesPerRow = mapWidth / tileWidth;
+<pre class="d_code"> <font color=blue>const</font> <font color=blue>uint</font> tilesPerRow = mapWidth / tileWidth;
 
-<font color=blue>uint</font> y = <u>gid</u> / tilesPerRow;
-<font color=blue>uint</font> x = <u>gid</u> % tilesPerRow;
+ <font color=blue>uint</font> y = <u>gid</u> / tilesPerRow;
+ <font color=blue>uint</font> x = <u>gid</u> % tilesPerRow;
 </pre>
 <br><br>
 
@@ -59,12 +59,16 @@
 </dd>
 <dt><big><a name="Tile.pixelCoords"></a>const ushort[2] <u>pixelCoords</u>;
 </big></dt>
-<dd>The coordinates in pixel of this tile on the map<br><br>
+<dd>= void;
+<br><br>
+The coordinates in pixel of this tile on the map<br><br>
 
 </dd>
-<dt><big><a name="Tile.this"></a> this(ushort <i>gid</i>, string <i>layer</i>, ushort <i>tx</i>, ushort <i>ty</i>);
+<dt><big><a name="Tile.tileCoords"></a>const ushort[2] <u>tileCoords</u>;
 </big></dt>
-<dd>CTor<br><br>
+<dd>= void;
+<br><br>
+The coordinates of this tile on the map<br><br>
 
 </dd>
 </dl>
@@ -81,7 +85,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s[] <i>newCoords</i>);
+<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2!(short)[] <i>coords</i>, const Vector2!(short)[] <i>newCoords</i>);
 </big></dt>
 <dd>Reload multiple tiles.
  The length of <i>coords</i> must be equal to the length of <i>newCoords</i>.
@@ -109,6 +113,57 @@ rschuett<br><br>
 <dt><big><a name="TileMap.getTiles"></a>inout inout(Tile[]) <u>getTiles</u>();
 </big></dt>
 <dd>Returns all containing tiles<br><br>
+
+</dd>
+<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ref const Vector2s <i>vec</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+</big></dt>
+<dd>Replace the tile at the given position with the given new Tile.
+ If oldtile is not <b>null</b>, the former Tile is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ushort[2u] <i>tilePos</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+</big></dt>
+<dd>Replace the tile at the given position with the given new Tile.
+ If oldtile is not <b>null</b>, the former Tile is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ushort <i>x</i>, ushort <i>y</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+</big></dt>
+<dd>Replace the tile at the given position with the given new Tile.
+ If oldtile is not <b>null</b>, the former Tile is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ref const Vector2s <i>vec</i>);
+</big></dt>
+<dd>Returns the tile at the given position, or throw an Exception
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ushort[2u] <i>tilePos</i>);
+</big></dt>
+<dd>Returns the tile at the given position, or throw an Exception
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ushort <i>x</i>, ushort <i>y</i>);
+</big></dt>
+<dd>Returns the tile at the given position, or throw an Exception
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.getInfo"></a>const pure nothrow ref const(TileMapInfo) <u>getInfo</u>();

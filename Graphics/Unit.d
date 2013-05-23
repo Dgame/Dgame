@@ -10,7 +10,7 @@ private {
 /**
  * Unit extends Spritesheet and represent a Game unit, like a gaming piece.
  * It extends SpriteSheet of a speed and a direction value, which can be manipulated.
- * With this additional values the Uni can move with a specific speed in a specific direction
+ * With this additional values the Unit can move with a specific speed in a specific direction
  * with a optional animation (the spritesheet).
  * 
  * Author: rschuett

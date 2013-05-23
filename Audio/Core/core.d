@@ -9,8 +9,8 @@ package {
 }
 
 private {
+	debug import std.stdio;
 	import std.string : format;
-	import std.stdio;
 	
 	ALCdevice*  my_aldevice;
 	ALCcontext* my_alcontext;
@@ -18,21 +18,20 @@ private {
 
 static this() {
 	// Init openAL
-	writeln("init openAL");
+	debug writeln("init openAL");
+	
 	DerelictAL.load();
 	DerelictOgg.load();
 	DerelictVorbis.load();
 	DerelictVorbisFile.load();
 	
 	my_aldevice = alcOpenDevice(null);
-	if (!my_aldevice) {
+	if (!my_aldevice)
 		throw new Exception("Device is null.");
-	}
 	
 	my_alcontext = alcCreateContext(my_aldevice, null);
-	if (!my_alcontext) {
+	if (!my_alcontext)
 		throw new Exception("Context is null.");
-	}
 	
 	alcMakeContextCurrent(my_alcontext);
 }
