@@ -25,7 +25,7 @@ void main() {
 	
 	Window wnd = new Window(VideoMode(width, height, VideoMode.Default), 100, 50);
 	wnd.setSync(Window.Sync.Disable);
-	//	wnd.setFpsLimit(15);
+	wnd.setFpsLimit(15);
 	/*
 	 {
 	 writeln("<>");
@@ -178,6 +178,9 @@ void main() {
 	
 	TileMap tm = new TileMap("../../map2.tmx");
 	
+	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
+	tof.setPosition(400, 0);
+	
 	while (wnd.isOpen()) {
 		wnd.clear();
 		
@@ -192,6 +195,9 @@ void main() {
 		wnd.draw(circle);
 		
 		sp2.slideViewport();
+		
+		tof.slide();
+		wnd.draw(tof);
 		
 		text.format("Current Fps: %d <-> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
@@ -280,6 +286,8 @@ void main() {
 					} else {
 						tm.reload(Vector2s(1, 0), Vector2s(9, 4));
 					}
+					
+					tof.setRow(1);
 					
 					break;
 					

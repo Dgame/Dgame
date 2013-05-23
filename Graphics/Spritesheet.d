@@ -7,96 +7,102 @@ private {
 }
 
 /**
-* Sprite Sheet extends Sprite. 
-* Sprite Sheet has, besides the texture, 
-* even a viewport and acts as a Texture Atlas.
-*
-* Author: rschuett
-*/
+ * SpriteSheet extends Sprite and has, besides the texture, 
+ * even a viewport and acts as a Texture Atlas.
+ * With slideViewport the viewport slides over the current row of the texture atlas.
+ * With setRow the current row can be changed (increased, decreased).
+ *
+ * Author: rschuett
+ */
 class Spritesheet : Sprite {
 protected:
 	FloatRect _viewport;
-
+	
+	ubyte _row = 0;
+	
 public:
 	/**
-	* CTor
-	*/
-	this() {
-		super();
-	}
-
-	/**
-	* CTor
-	*/
+	 * CTor
+	 */
 	this(Texture tex) {
 		super(tex);
 	}
-
+	
 	/**
-	* CTor
-	*/
+	 * CTor
+	 */
 	this(Texture tex, const FloatRect viewport) {
-		super(tex);
-
+		this(tex);
+		
 		this.setViewport(viewport);
 	}
-
+	
 	/**
-	* Set or replace the current viewport.
-	* This Viewport is also set for the Texture.
-	*/
+	 * Set or replace the current viewport.
+	 * This Viewport is also set for the Texture.
+	 */
 	void setViewport(ref const FloatRect viewport) {
 		assert(this._tex !is null, "No Texture.");
-
+		
 		super._tex.setViewport(viewport);
 		this._viewport = viewport;
 	}
-
+	
 	/**
-	* Rvalue version
-	*/
+	 * Rvalue version
+	 */
 	void setViewport(const FloatRect viewport) {
 		this.setViewport(viewport);
 	}
-
+	
 	/**
-	* Get mutable access to the current Viewport.
-	*/
+	 * Get access to the current Viewport.
+	 */
+	ref const(FloatRect) getViewport() const {
+		return this._viewport;
+	}
+	
+	/**
+	 * Get mutable access to the current Viewport.
+	 */
 	inout(FloatRect)* fetchViewport() inout {
 		return &this._viewport;
 	}
-
+	
 	/**
-	* Get const access of the current Viewport.
-	*/
-	ref const(FloatRect) getViewport() const pure nothrow {
-		return this._viewport;
+	 * Returns the current row (starting value is 0)
+	 */
+	ubyte getRow() const pure nothrow {
+		return this._row;
 	}
-
+	
 	/**
-	* Slides/moves the current Viewport of the Texture.
-	* So the next area of the Texture atlas will be drawn.
-	* With the optional parameter another Viewport as the current will be used.
-	* Returns the coordinates and size of the new area as static array.
-	*/
-	float[4] slideViewport(FloatRect* viewport = null) {
+	 * Set a new row
+	 */
+	void setRow(ubyte row) {
+		this._row = row;
+	}
+	
+	/**
+	 * Slide/move the current Viewport of the Texture.
+	 * So the next area of the Texture atlas will be drawn.
+	 */
+	void slideViewport() {
 		assert(this._tex !is null, "No Texture.");
-
-		float w = viewport is null ? this._viewport.width : viewport.width;
-		float h = viewport is null ? this._viewport.height : viewport.height;
-
+		
+		float w = this._viewport.width;
+		float h = this._viewport.height;
+		
 		FloatRect* rect = super._tex.fetchViewport();
-
-		if ((super._tex.getViewport().x + w) < super._tex.width) {
+		assert(rect !is null);
+		
+		rect.y = this._row * h;
+		if (rect.y >= super._tex.height)
+			rect.y = 0f;
+		
+		if ((rect.x + w) < super._tex.width) {
 			rect.move(w, 0f);
-		} else if ((super._tex.getViewport().y + h) < super._tex.height) {
-			rect.x = 0;
-			rect.move(0f, h);
-		} else {
-			rect.x = 0;
-			rect.y = 0;
-		}
-
-		return [rect.x, rect.y, w, h];
+		} else
+			rect.x = 0f;
 	}
 }

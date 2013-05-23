@@ -338,17 +338,17 @@ public:
 	}
 	
 	/**
+	 * Get const access to the current Viewport.
+	 */
+	ref const(FloatRect) getViewport() const pure nothrow {
+		return this._viewport;
+	}
+	
+	/**
 	 * Get mutable access to the current Viewport.
 	 */
 	inout(FloatRect)* fetchViewport() inout {
 		return &this._viewport;
-	}
-	
-	/**
-	 * Get const access of the current Viewport.
-	 */
-	ref const(FloatRect) getViewport() const pure nothrow {
-		return this._viewport;
 	}
 	
 	/**

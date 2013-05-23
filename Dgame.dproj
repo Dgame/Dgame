@@ -88,6 +88,7 @@
     <Compile Include="Math\Vertex.d" />
     <Compile Include="System\Power.d" />
     <Compile Include="Core\Finalizer.d" />
+    <Compile Include="Graphics\Unit.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

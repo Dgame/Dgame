@@ -8,6 +8,7 @@ public {
 	import Dgame.Graphics.Shape;
 	import Dgame.Graphics.Sprite;
 	import Dgame.Graphics.Spritesheet;
+	import Dgame.Graphics.Unit;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.RenderTarget;
 	import Dgame.Graphics.Text;

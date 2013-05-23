@@ -58,13 +58,13 @@ protected:
 	Color _clearColor = Color.White;
 	
 	string _title;
-	
 	bool _open;
+	bool _fullscreen;
 	ubyte _fpsLimit;
 	
-	Clock _clock;
-	
 	static uint _winCount;
+	
+	Clock _clock;
 	
 public:
 	/**
@@ -138,6 +138,7 @@ public:
 		this.vMode = vMode;
 		
 		this._open = true;
+		this._fullscreen = vMode.mode & VideoMode.Fullscreen;
 		
 		_winCount += 1;
 	}
@@ -498,6 +499,24 @@ public:
 			SDL_ShowWindow(this._window);
 		else
 			SDL_HideWindow(this._window);
+	}
+	
+	/**
+	 * Enable or disable Fullscreen mode.
+	 */
+	void enableFullscreen(bool enable) {
+		if (enable == this._fullscreen)
+			return;
+		
+		if (SDL_SetWindowFullscreen(this._window, enable))
+			this._fullscreen = enable;
+	}
+	
+	/**
+	 * Check whether this Window is currently windowed, or not.
+	 */
+	bool isFullscreen() const pure nothrow {
+		return this._fullscreen;
 	}
 	
 	/**
