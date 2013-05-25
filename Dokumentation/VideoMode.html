@@ -45,12 +45,12 @@ rschuett<br><br>
 <dd><u>Default</u> mode is Shown|OpenGL <br><br>
 
 </dd>
-<dt><big><a name="VideoMode.mode"></a>const uint <u>mode</u>;
+<dt><big><a name="VideoMode.flag"></a>const uint <u>flag</u>;
 </big></dt>
-<dd>The real video <u>mode</u>
+<dd>The real video mode
 <br><br>
 <b>See:</b><br>
-video <u>mode</u> enum<br><br>
+video mode enum<br><br>
 
 </dd>
 <dt><big><a name="VideoMode.width"></a>const ushort <u>width</u>;
@@ -68,7 +68,7 @@ video <u>mode</u> enum<br><br>
 <dd>The refresh rate of this video mode <br><br>
 
 </dd>
-<dt><big><a name="VideoMode.this"></a> this(ushort <i>width</i>, ushort <i>height</i>, uint <i>mode</i>);
+<dt><big><a name="VideoMode.this"></a> this(ushort <i>width</i>, ushort <i>height</i>, uint <i>flag</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -77,6 +77,11 @@ video <u>mode</u> enum<br><br>
 </big></dt>
 <dd><b>Returns:</b><br>
 if the this video mode is valid which means, if it is listed from the OS<br><br>
+
+</dd>
+<dt><big><a name="VideoMode.hasFlag"></a>const pure nothrow bool <u>hasFlag</u>(uint <i>flag</i>);
+</big></dt>
+<dd>Checks whether this VideoMode has the given Flag<br><br>
 
 </dd>
 <dt><big><a name="VideoMode.opEquals"></a>const pure nothrow bool <u>opEquals</u>(ref const VideoMode <i>vm</i>);

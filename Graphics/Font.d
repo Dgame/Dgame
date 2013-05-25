@@ -16,10 +16,11 @@ void _finalizeFont() {
 	debug writefln("Finalize Font (%d)", _finalizer.length);
 	
 	for (size_t i = 0; i < _finalizer.length; i++) {
-		debug writefln(" -> Font finalized: %d", i);
-		
-		if (_finalizer[i])
+		if (_finalizer[i]) {
+			debug writefln(" -> Font finalized: %d", i);
+			
 			_finalizer[i].free();
+		}
 	}
 	
 	_finalizer = null;

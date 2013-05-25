@@ -70,8 +70,6 @@ public:
 	ALuint source;
 	ALuint buffer;
 	
-	ALenum format;
-	
 	bool _finalized = false;
 	
 	/**
@@ -104,10 +102,11 @@ void _finalizeSound() {
 	debug writefln("Finalize Sound (%d)", _finalizer.length);
 	
 	for (size_t i = 0; i < _finalizer.length; i++) {
-		debug writefln(" -> Sound finalized: %d", i);
-		
-		if (_finalizer[i])
+		if (_finalizer[i]) {
+			debug writefln(" -> Sound finalized: %d", i);
+			
 			_finalizer[i].free();
+		}
 	}
 	
 	_finalizer = null;
@@ -125,6 +124,7 @@ void _finalizeSound() {
 class Sound {
 private:
 	ALChunk _alChunk;
+	ALenum _format;
 	
 	uint _frequency;
 	float _volume;
@@ -292,15 +292,15 @@ public:
 		switch (ch.bits) {
 			case 8:
 				if (ch.type == ChannelType.Mono)
-					this._alChunk.format = AL_FORMAT_MONO8;
+					this._format = AL_FORMAT_MONO8;
 				else
-					this._alChunk.format = AL_FORMAT_STEREO8;
+					this._format = AL_FORMAT_STEREO8;
 				break;
 			case 16:
 				if (ch.type == ChannelType.Mono)
-					this._alChunk.format = AL_FORMAT_MONO16;
+					this._format = AL_FORMAT_MONO16;
 				else
-					this._alChunk.format = AL_FORMAT_STEREO16;
+					this._format = AL_FORMAT_STEREO16;
 				break;
 			default: throw new Exception("Switch error.");
 		}
@@ -308,7 +308,7 @@ public:
 		this._frequency = frequency;
 		this._channel = ch;
 		
-		alBufferData(this._alChunk.buffer, this._alChunk.format, buffer, dataSize, this._frequency);
+		alBufferData(this._alChunk.buffer, this._format, buffer, dataSize, this._frequency);
 		
 		this._sourcePos = vec3f(0, 0, 0);
 		this._sourceVel = vec3f(0, 0, 0);
@@ -337,7 +337,7 @@ public:
 	 * Returns the Format.
 	 */
 	ALenum getFormat() const pure nothrow {
-		return this._alChunk.format;
+		return this._format;
 	}
 	
 	/**

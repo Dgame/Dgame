@@ -406,6 +406,25 @@ public:
 	}
 	
 	/**
+	 * Replace multiple tiles with another.
+	 */
+	void reload(const Vector2s[] coords, ref const Vector2s newCoord) {
+		const Tile tile = this.getTileAt(newCoord);
+		
+		foreach (ref const Vector2s coord; coords) {
+			this.reload(coord, newCoord);
+			this.replaceTileAt(coord, tile);
+		}
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	void reload(const Vector2s[] coords, const Vector2s newCoord) {
+		this.reload(coords, newCoord);
+	}
+	
+	/**
 	 * Reload one tile, which means that the tile on the coordinates coord 
 	 * is replaced with the tile (and the tile surface) on the coordinates newCoord
 	 */
@@ -452,19 +471,21 @@ public:
 	 * Replace the tile at the given position with the given new Tile.
 	 * If oldtile is not null, the former Tile is stored there.
 	 * 
+	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	void replaceTileAt(ref const Vector2s vec, ref const Tile newTile, Tile* oldTile = null) {
-		this.replaceTileAt(vec.x, vec.y, newTile, oldTile);
+		this.replaceTileAt(vec.asArray(), newTile, oldTile);
 	}
 	
 	/**
 	 * Replace the tile at the given position with the given new Tile.
 	 * If oldtile is not null, the former Tile is stored there.
 	 * 
+	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(ushort[2] tilePos, ref const Tile newTile, Tile* oldTile = null) {
+	void replaceTileAt(short[2] tilePos, ref const Tile newTile, Tile* oldTile = null) {
 		foreach (ref Tile t; this._tiles) {
 			if (t.tileCoords == tilePos) {
 				if (oldTile)
@@ -479,9 +500,10 @@ public:
 	 * Replace the tile at the given position with the given new Tile.
 	 * If oldtile is not null, the former Tile is stored there.
 	 * 
+	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(ushort x, ushort y, ref const Tile newTile, Tile* oldTile = null) {
+	void replaceTileAt(short x, short y, ref const Tile newTile, Tile* oldTile = null) {
 		this.replaceTileAt([x, y], newTile, oldTile);
 	}
 	
@@ -490,14 +512,14 @@ public:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	ref const(Tile) getTileAt(ref const Vector2s vec) const {
-		return this.getTileAt(vec.x, vec.y);
+		return this.getTileAt(vec.asArray());
 	}
 	
 	/**
 	 * Returns the tile at the given position, or throw an Exception
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	ref const(Tile) getTileAt(ushort[2] tilePos) const {
+	ref const(Tile) getTileAt(short[2] tilePos) const {
 		foreach (ref const Tile t; this._tiles) {
 			if (t.tileCoords == tilePos)
 				return t;
@@ -510,7 +532,7 @@ public:
 	 * Returns the tile at the given position, or throw an Exception
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	ref const(Tile) getTileAt(ushort x, ushort y) const {
+	ref const(Tile) getTileAt(short x, short y) const {
 		return this.getTileAt([x, y]);
 	}
 	

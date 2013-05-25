@@ -91,12 +91,12 @@ public:
 		                                y,				//    int y: initial y position
 		                                vMode.width,	//    int w: width, in pixels
 		                                vMode.height,	//    int h: height, in pixels
-		                                vMode.mode		//    Uint32 flags: window options, see below
+		                                vMode.flag		//    Uint32 flags: window options, see below
 		                                );
 		// Check that the window was successfully made
 		assert(this._window !is null, "Error by creating a SDL2 window.");
 		
-		if (vMode.mode & VideoMode.OpenGL) {
+		if (vMode.flag & VideoMode.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -138,7 +138,7 @@ public:
 		this.vMode = vMode;
 		
 		this._open = true;
-		this._fullscreen = vMode.mode & VideoMode.Fullscreen;
+		this._fullscreen = vMode.flag & VideoMode.Fullscreen;
 		
 		_winCount += 1;
 	}
@@ -370,7 +370,7 @@ public:
 		if (this._fpsLimit)
 			this.getClock().wait(1000 / this._fpsLimit);
 		
-		if (this.vMode.mode & VideoMode.OpenGL)
+		if (this.vMode.flag & VideoMode.OpenGL)
 			SDL_GL_SwapWindow(this._window);
 		else
 			SDL_UpdateWindowSurface(this._window);
@@ -524,12 +524,5 @@ public:
 	 */
 	void setIcon(ref Surface icon) {
 		SDL_SetWindowIcon(this._window, icon.ptr);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setIcon(Surface icon) {
-		this.setIcon(icon);
 	}
 }

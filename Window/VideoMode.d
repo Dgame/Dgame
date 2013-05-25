@@ -36,16 +36,16 @@ public:
 	 * 
 	 * See: video mode enum
 	 */
-	const uint mode;
+	const uint flag;
 	const ushort width;			/** The width of this video mode */
 	const ushort height;		/** The height of this video mode */
 	const ubyte refreshRate; 	/** The refresh rate of this video mode */
 	
 private:
-	this(int width, int height, uint mode, int hz) {
+	this(int width, int height, uint flag, int hz) {
 		this.width  = cast(ushort) width;
 		this.height = cast(ushort) height;
-		this.mode   = mode;
+		this.flag   = flag;
 		this.refreshRate = cast(ubyte) hz;
 	}
 	
@@ -53,8 +53,8 @@ public:
 	/**
 	 * CTor
 	 */
-	this(ushort width, ushort height, uint mode) {
-		this(width, height, mode, 0);
+	this(ushort width, ushort height, uint flag) {
+		this(width, height, flag, 0);
 	}
 	
 	/**
@@ -67,6 +67,13 @@ public:
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Checks whether this VideoMode has the given Flag
+	 */
+	bool hasFlag(uint flag) const pure nothrow {
+		return cast(bool) this.flag & flag;
 	}
 	
 	/**

@@ -94,6 +94,16 @@ rschuett<br><br>
 <u>reload</u> for one tile<br><br>
 
 </dd>
+<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2!(short)[] <i>coords</i>, ref const Vector2s <i>newCoord</i>);
+</big></dt>
+<dd>Replace multiple tiles with another.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2!(short)[] <i>coords</i>, const Vector2s <i>newCoord</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
+
+</dd>
 <dt><big><a name="TileMap.reload"></a>void <u>reload</u>(ref const Vector2s <i>coord</i>, ref const Vector2s <i>newCoord</i>);
 </big></dt>
 <dd>Reload one tile, which means that the tile on the coordinates <i>coord</i>
@@ -121,22 +131,31 @@ rschuett<br><br>
  If oldtile is not <b>null</b>, the former Tile is stored there.
 <br><br>
 <b>Note:</b><br>
-The position must be in tile coordinates, not pixel coordinates.<br><br>
-
-</dd>
-<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ushort[2u] <i>tilePos</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
-</big></dt>
-<dd>Replace the tile at the given position with the given new Tile.
- If oldtile is not <b>null</b>, the former Tile is stored there.
+This method is designated as helper method for reload
 <br><br>
 <b>Note:</b><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ushort <i>x</i>, ushort <i>y</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(short[2u] <i>tilePos</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
 </big></dt>
 <dd>Replace the tile at the given position with the given new Tile.
  If oldtile is not <b>null</b>, the former Tile is stored there.
+<br><br>
+<b>Note:</b><br>
+This method is designated as helper method for reload
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(short <i>x</i>, short <i>y</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+</big></dt>
+<dd>Replace the tile at the given position with the given new Tile.
+ If oldtile is not <b>null</b>, the former Tile is stored there.
+<br><br>
+<b>Note:</b><br>
+This method is designated as helper method for reload
 <br><br>
 <b>Note:</b><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
@@ -150,7 +169,7 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ushort[2u] <i>tilePos</i>);
+<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(short[2u] <i>tilePos</i>);
 </big></dt>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>
@@ -158,7 +177,7 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ushort <i>x</i>, ushort <i>y</i>);
+<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(short <i>x</i>, short <i>y</i>);
 </big></dt>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>

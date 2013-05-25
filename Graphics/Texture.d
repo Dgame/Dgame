@@ -91,6 +91,26 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
 	}
 }
 
+private GLuint*[] _finalizer;
+
+void _finalizeTexture() {
+	debug writefln("Finalize Texture (%d)", _finalizer.length);
+	
+	for (size_t i = 0; i < _finalizer.length; i++) {
+		if (_finalizer[i] && *_finalizer[i] != 0) {
+			debug writefln(" -> Texture finalized: %d", i);
+			
+			glDeleteTextures(1, _finalizer[i]);
+			
+			*_finalizer[i] = 0;
+		}
+	}
+	
+	_finalizer = null;
+	
+	debug writeln(" >> Texture Finalized");
+}
+
 /**
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
@@ -200,6 +220,8 @@ public:
 	this() {
 		glGenTextures(1, &this._texId);
 		
+		_finalizer ~= &this._texId;
+		
 		this.bind();
 	}
 	
@@ -234,7 +256,7 @@ public:
 	/**
 	 * Returns the currently bound texture id.
 	 */
-	static GLuint currentlyBound() {
+	static GLint currentlyBound() {
 		GLint current;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &current);
 		
