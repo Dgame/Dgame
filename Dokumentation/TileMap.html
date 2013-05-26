@@ -24,6 +24,11 @@
 <dd>The map <u>height</u> in pixel<br><br>
 
 </dd>
+<dt><big><a name="TileMapInfo.mapSize"></a>ushort[2] <u>mapSize</u>;
+</big></dt>
+<dd>The map size<br><br>
+
+</dd>
 <dt><big><a name="TileMapInfo.tileWidth"></a>ubyte <u>tileWidth</u>;
 </big></dt>
 <dd>The tile width in pixel (for example: 16, 32, 64)<br><br>
@@ -185,7 +190,10 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>
 <b>Note:</b><br>
-The position must be in tile coordinates, not pixel coordinates.<br><br>
+The position must be in tile coordinates, not pixel coordinates.
+<br><br>
+<b>Note:</b><br>
+This function is fast and takes ~ O(1) for a lookup.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(short <i>x</i>, short <i>y</i>);

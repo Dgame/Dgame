@@ -178,8 +178,8 @@ void main() {
 	
 	Event event;
 	
-	//	TileMap tm = new TileMap("../../level_1.tmx");
-	TileMap tm = new TileMap("../../map2.tmx");
+	TileMap tm = new TileMap("../../level_1.tmx");
+	//TileMap tm = new TileMap("../../map2.tmx");
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);

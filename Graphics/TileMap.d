@@ -39,6 +39,10 @@ public:
 	 */
 	ushort height;
 	/**
+	 * The map size
+	 */
+	ushort[2] mapSize;
+	/**
 	 * The tile width in pixel (for example: 16, 32, 64)
 	 */
 	ubyte tileWidth;
@@ -219,6 +223,10 @@ protected:
 				}
 			}
 		}
+		
+		/// Store the map size
+		this._tmi.mapSize[0] = this._tmi.width;
+		this._tmi.mapSize[1] = this._tmi.height;
 		
 		/// Adjust to real size in pixel
 		this._tmi.width *= this._tmi.tileWidth;
@@ -563,15 +571,22 @@ public:
 	
 	/**
 	 * Returns the tile at the given position, or throw an Exception
+	 * 
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 * Note: This function is fast and takes ~ O(1) for a lookup.
 	 */
 	ref const(Tile) getTileAt(short[2] tilePos) const {
-		foreach (ref const Tile t; this._tiles) {
-			if (t.tileCoords == tilePos)
-				return t;
-		}
+		/*
+		 foreach (ref const Tile t; this._tiles) {
+		 if (t.tileCoords == tilePos)
+		 return t;
+		 }
+		 */
+		uint index = tilePos[1] * this._tmi.mapSize[0] + tilePos[0];
+		if (index >= this._tiles.length)
+			throw new Exception(.format("No Tile at position %d:%d", tilePos[0], tilePos[1]));
 		
-		throw new Exception(.format("No Tile at position %d:%d", tilePos[0], tilePos[1]));
+		return this._tiles[index];
 	}
 	
 	/**
