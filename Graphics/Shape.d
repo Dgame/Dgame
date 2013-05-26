@@ -16,9 +16,8 @@ private {
 	import Dgame.Math.Pixel;
 	import Dgame.System.Buffer;
 	import Dgame.Graphics.Interface.Transformable;
+	import Dgame.Graphics.Interface.Blendable;
 }
-
-public import Dgame.Graphics.Interface.Blendable;
 
 /**
  * Shape defines a drawable convex shape.
@@ -43,10 +42,18 @@ public:
 		Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
 	}
 	
+	/**
+	 * Which Buffer should updated.
+	 * Can be ORed together:
+	 * ----
+	 * Shape s = ...;
+	 * s.update(Shape.Cache.Pixel | Shape.Cache.Color);
+	 * ----
+	 */
 	enum Cache {
-		None   = 0,
-		Pixel  = 1,
-		Color  = 2
+		None   = 0, /// No buffer
+		Pixel  = 1, /// Only the Pixel Buffer
+		Color  = 2  /// Only the Color Buffer
 	}
 	
 	/**
@@ -143,7 +150,9 @@ protected:
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
-		glPushAttrib(GL_CURRENT_BIT | GL_HINT_BIT | GL_ENABLE_BIT | GL_LINE_BIT | GL_POINT_BIT);
+		
+		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT
+		             | GL_HINT_BIT  | GL_LINE_BIT | GL_POINT_BIT);
 		scope(exit) glPopAttrib();
 		
 		bool smoothEnabled = false;
@@ -163,7 +172,6 @@ protected:
 					assert(0);
 			}
 		}
-		scope(exit) if (smoothEnabled) glDisable(this._smoothTarget);
 		
 		if (this._rotAngle != 0)
 			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1);
@@ -173,19 +181,14 @@ protected:
 		if (!this._scale.x != 1.0 && this._scale.y != 1.0)
 			glScalef(this._scale.x, this._scale.y, 0);
 		
-		bool texEnabled = false;
-		if (glIsEnabled(GL_TEXTURE_2D)) {
+		if (glIsEnabled(GL_TEXTURE_2D))
 			glDisable(GL_TEXTURE_2D);
-			
-			texEnabled = true;
-		}
-		scope(exit) if (texEnabled) glEnable(GL_TEXTURE_2D);
 		
 		glLineWidth(this._lineWidth);
 		
 		this._buf.pointTo(Buffer.Target.Color);
 		this._buf.pointTo(Buffer.Target.Vertex);
-		// use blending
+		/// use blending
 		this._processBlendMode();
 		
 		this._buf.drawArrays(!this.shouldFill() ? DefMode : this._type, this._pixels.length);

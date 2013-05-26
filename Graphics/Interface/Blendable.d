@@ -2,7 +2,7 @@ module Dgame.Graphics.Interface.Blendable;
 
 private {
 	debug import std.stdio;
-
+	
 	import Dgame.Graphics.Color;
 }
 
@@ -12,8 +12,8 @@ public {
 }
 
 /**
-* Supported BlendModes
-*/
+ * Supported BlendModes
+ */
 enum BlendMode {
 	Alpha,    /** Pixel = Src * a + Dest * (1 - a) */
 	Add,      /** Pixel = Src + Dest */
@@ -24,32 +24,32 @@ enum BlendMode {
 interface Blendable {
 public:
 	/**
-	* Set the Blendmode.
-	*/
+	 * Set the Blendmode.
+	 */
 	void setBlendMode(BlendMode);
 	/**
-	* Returns the current Blendmode.
-	*/
+	 * Returns the current Blendmode.
+	 */
 	BlendMode getBlendMode() const pure nothrow;
 	/**
-	* Set the Blend Color.
-	*/
+	 * Set the Blend Color.
+	 */
 	void setBlendColor(ref const Color);
 	/**
-	* Rvalue version
-	*/
+	 * Rvalue version
+	 */
 	void setBlendColor(const Color);
 	/**
-	* Returns the current Blend Color.
-	*/
+	 * Returns the current Blend Color.
+	 */
 	ref const(Color) getBlendColor() const pure nothrow;
 	/**
-	* Activate or deactivate the using of the Blend color.
-	*/
+	 * Activate or deactivate the using of the Blend color.
+	 */
 	void useBlendColor(bool);
 	/**
-	* Returns, if using blend color is activated, or not.
-	*/
+	 * Returns, if using blend color is activated, or not.
+	 */
 	bool usingBlendColor() const pure nothrow;
 }
 
@@ -57,87 +57,87 @@ mixin template TBlendable() {
 private:
 	BlendMode _blendMode;
 	Color _blendColor;
-
+	
 	bool _useBlendColor;
-
+	
 protected:
 	void _processBlendMode() const {
 		final switch (this._blendMode) {
 			// Alpha blending
 			case BlendMode.Alpha:
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			break;
-			// Additive blending
+				break;
+				// Additive blending
 			case BlendMode.Add:
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			break;
-			// Multiplicative blending
+				break;
+				// Multiplicative blending
 			case BlendMode.Multiply :
 				glBlendFunc(GL_DST_COLOR, GL_ZERO);
-			break;
-			// No blending
+				break;
+				// No blending
 			case BlendMode.None:
 				glBlendFunc(GL_ONE, GL_ZERO);
-			break;
+				break;
 		}
-
+		
 		if (this._useBlendColor && this._blendMode != BlendMode.None) {
 			float[4] col = this._blendColor.convertToGL();
-
+			
 			version(all)
 				glBlendColor(col[0], col[1], col[2], col[3]);
 			else
 				glColor4f(col[0], col[1], col[2], col[3]);
 		}
 	}
-
+	
 public:
 	/**
-	* Set the Blendmode.
-	*/
+	 * Set the Blendmode.
+	 */
 	void setBlendMode(BlendMode mode) {
 		this._blendMode = mode;
 	}
-
+	
 	/**
-	* Returns the current Blendmode.
-	*/
+	 * Returns the current Blendmode.
+	 */
 	BlendMode getBlendMode() const pure nothrow {
 		return this._blendMode;
 	}
-
+	
 	/**
-	* Set the Blend Color.
-	*/
+	 * Set the Blend Color.
+	 */
 	void setBlendColor(ref const Color col) {
 		this._useBlendColor = true;
 		this._blendColor = col;
 	}
-
+	
 	/**
-	* Rvalue version
-	*/
+	 * Rvalue version
+	 */
 	void setBlendColor(const Color col) {
 		this.setBlendColor(col);
 	}
-
+	
 	/**
-	* Returns the current Blend Color.
-	*/
+	 * Returns the current Blend Color.
+	 */
 	ref const(Color) getBlendColor() const pure nothrow {
 		return this._blendColor;
 	}
-
+	
 	/**
-	* Activate or deactivate the using of the Blend color.
-	*/
+	 * Activate or deactivate the using of the Blend color.
+	 */
 	void useBlendColor(bool use) {
 		this._useBlendColor = use;
 	}
-
+	
 	/**
-	* Returns, if using blend color is activated, or not.
-	*/
+	 * Returns, if using blend color is activated, or not.
+	 */
 	bool usingBlendColor() const pure nothrow {
 		return this._useBlendColor;
 	}

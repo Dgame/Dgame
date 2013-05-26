@@ -87,8 +87,8 @@
     <Compile Include="Math\Pixel.d" />
     <Compile Include="Math\Vertex.d" />
     <Compile Include="System\Power.d" />
-    <Compile Include="Core\Finalizer.d" />
     <Compile Include="Graphics\Unit.d" />
+    <Compile Include="Core\Finalizer.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

@@ -55,6 +55,29 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Shape.Cache"></a>enum <u>Cache</u>;
+</big></dt>
+<dd>Which Buffer should updated.
+ Can be ORed together:
+<pre class="d_code"> Shape s = ...;
+ s.update(Shape.<u>Cache</u>.Pixel | Shape.<u>Cache</u>.Color);
+</pre>
+<br><br>
+
+<dl><dt><big><a name="Shape.Cache.None"></a><u>None</u></big></dt>
+<dd>No buffer<br><br>
+
+</dd>
+<dt><big><a name="Shape.Cache.Pixel"></a><u>Pixel</u></big></dt>
+<dd>Only the <u>Pixel</u> Buffer<br><br>
+
+</dd>
+<dt><big><a name="Shape.Cache.Color"></a><u>Color</u></big></dt>
+<dd>Only the <u>Color</u> Buffer<br><br>
+
+</dd>
+</dl>
+</dd>
 <dt><big><a name="Shape.SmoothTarget"></a>enum <u>SmoothTarget</u>;
 </big></dt>
 <dd>Supported smooth targets.<br><br>

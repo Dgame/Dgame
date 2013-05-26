@@ -43,7 +43,7 @@ public:
 		Alpha = 8	/** Alpha Mask */
 	}
 	
-	version (all) {
+	version (none) {
 		version (LittleEndian) {
 			enum RMask = 0x000000ff; /** Default Red Mask. */
 			enum GMask = 0x0000ff00; /** Default Green Mask. */
@@ -82,14 +82,14 @@ private:
 		assert(srfc.pixels !is null, "Invalid pixel data.");
 	} body {
 		this.free(); /// Free old data
-		//		
-		//		this._sdl_surface = SDL_CreateRGBSurfaceFrom(
-		//			srfc.pixels, 
-		//			srfc.w, srfc.h, 
-		//			srfc.format.BitsPerPixel,
-		//			srfc.format.BytesPerPixel * srfc.w, 
-		//			RMask, GMask, BMask, AMask);
-		//		
+		/*
+		 this._sdl_surface = SDL_CreateRGBSurfaceFrom(
+		 srfc.pixels, 
+		 srfc.w, srfc.h, 
+		 srfc.format.BitsPerPixel,
+		 srfc.format.BytesPerPixel * srfc.w, 
+		 RMask, GMask, BMask, AMask);
+		 */
 		memcpy(this._sdl_surface, srfc, SDL_Surface.sizeof);
 		
 		if (this._sdl_surface is null)
@@ -189,8 +189,8 @@ public:
 		SDL_Surface* srfc = Surface.create(width, height, depth);
 		
 		if (srfc is null)
-			throw new Exception(
-				format("Surface konnte nicht erstellt werden: %s", to!string(SDL_GetError())));
+			throw new Exception(format("Surface konnte nicht erstellt werden: %s",
+			                           to!string(SDL_GetError())));
 		
 		return Surface(srfc, true);
 	}
@@ -552,6 +552,13 @@ public:
 	}
 	
 	/**
+	 * Returns the PixelFormat
+	 */
+	const(SDL_PixelFormat*) getPixelFormat() const pure nothrow {
+		return this._sdl_surface.format;
+	}
+	
+	/**
 	 * Returns if the given color match the color of the given mask of the surface.
 	 *
 	 * See: Surface.Mask enum.
@@ -574,17 +581,17 @@ public:
 	 *
 	 * See: Surface.Mask enum.
 	 */
-	bool isMask(Mask mask, uint col) const pure nothrow {
+	bool isMask(Mask mask, uint col) const /*pure nothrow */{
 		bool result = false;
 		
 		if (mask & Mask.Red)
 			result = this._sdl_surface.format.Rmask == col;
 		if (mask & Mask.Green)
-			result = this._sdl_surface.format.Gmask == col;
+			result = result && this._sdl_surface.format.Gmask == col;
 		if (mask & Mask.Blue)
-			result = this._sdl_surface.format.Bmask == col;
+			result = result && this._sdl_surface.format.Bmask == col;
 		if (mask & Mask.Alpha)
-			result = this._sdl_surface.format.Amask == col;
+			result = result && this._sdl_surface.format.Amask == col;
 		
 		return result;
 	}
@@ -658,26 +665,88 @@ public:
 	}
 	
 	/**
+	 * Use this function to perform a fast, low quality,
+	 * stretch blit between two surfaces of the same pixel format.
+	 * src is the a pointer to a Rect structure which represents the rectangle to be copied, 
+	 * or null to copy the entire surface.
+	 * dst is a pointer to a Rect structure which represents the rectangle that is copied into.
+	 * null means, that the whole srfc is copied to (0|0).
+	 */
+	bool softStretch(ref Surface srfc, const ShortRect* src = null, const ShortRect* dst = null) {
+		return this.softStretch(srfc.ptr, src, dst);
+	}
+	
+	/**
+	 * Same as above, but with a SDL_Surface* instead of a Surface.
+	 */
+	bool softStretch(SDL_Surface* srfc, const ShortRect* src = null, const ShortRect* dst = null) in {
+		assert(srfc !is null, "Null surface cannot be blit.");
+	} body {
+		const SDL_Rect* src_ptr = src ? src.ptr : null;
+		const SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		
+		return SDL_SoftStretch(srfc, src_ptr, this._sdl_surface, dst_ptr) == 0;
+	}
+	
+	/**
+	 * Use this function to perform a fast blit from the source surface to the this surface
+	 */
+	bool upperBlit(ref Surface srfc, const ShortRect* src = null, ShortRect* dst = null) {
+		return this.upperBlit(srfc.ptr, src, dst);
+	}
+	
+	/**
+	 * Same as above, but with a SDL_Surface* instead of a Surface.
+	 */
+	bool upperBlit(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
+		assert(srfc !is null, "Null surface cannot be blit.");
+	} body {
+		const SDL_Rect* src_ptr = src ? src.ptr : null;
+		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		
+		return SDL_UpperBlit(srfc, src_ptr, this._sdl_surface, dst_ptr) == 0;
+	}
+	
+	/**
+	 * Use this function to perform low-level surface blitting only.
+	 */
+	bool lowerBlit(ref Surface srfc, ShortRect* src = null, ShortRect* dst = null) {
+		return this.lowerBlit(srfc.ptr, src, dst);
+	}
+	
+	/**
+	 * Same as above, but with a SDL_Surface* instead of a Surface.
+	 */
+	bool lowerBlit(SDL_Surface* srfc, ShortRect* src = null, ShortRect* dst = null) in {
+		assert(srfc !is null, "Null surface cannot be blit.");
+	} body {
+		SDL_Rect* src_ptr = src ? src.ptr : null;
+		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		
+		return SDL_LowerBlit(srfc, src_ptr, this._sdl_surface, dst_ptr) == 0;
+	}
+	
+	/**
 	 * Use this function to perform a fast blit from the source surface to the this surface.
 	 * src is the a pointer to a Rect structure which represents the rectangle to be copied, 
 	 * or null to copy the entire surface.
 	 * dst is a pointer to a Rect structure which represents the rectangle that is copied into.
 	 * null means, that the whole srfc is copied to (0|0).
 	 */
-	void blit(ref Surface srfc, const ShortRect* src = null, ShortRect* dst = null) {
-		this.blit(srfc.ptr, src, dst);
+	bool blit(ref Surface srfc, const ShortRect* src = null, ShortRect* dst = null) {
+		return this.blit(srfc.ptr, src, dst);
 	}
 	
 	/**
-	 * Same as above, but a SDL_Surface* instead of a Surface.
+	 * Same as above, but with a SDL_Surface* instead of a Surface.
 	 */
-	void blit(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
+	bool blit(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
 		assert(srfc !is null, "Null surface cannot be blit.");
 	} body {
 		const SDL_Rect* src_ptr = src ? src.ptr : null;
 		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
 		
-		SDL_BlitSurface(srfc, src_ptr, this._sdl_surface, dst_ptr);
+		return SDL_BlitSurface(srfc, src_ptr, this._sdl_surface, dst_ptr) == 0;
 	}
 	
 	/**
@@ -686,8 +755,10 @@ public:
 	 */
 	Surface subSurface(ref const ShortRect rect) {
 		SDL_Surface* sub = this.create(rect.width, rect.height);
+		assert(sub !is null);
 		
-		SDL_BlitSurface(this._sdl_surface, rect.ptr, sub, null);
+		if (SDL_BlitSurface(this._sdl_surface, rect.ptr, sub, null) != 0)
+			throw new Exception("An error occured by blitting the subsurface.");
 		
 		return Surface(sub, true);
 	}

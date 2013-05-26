@@ -20,12 +20,13 @@ import Dgame.Core.core : getDgVersion;
 pragma(msg, getDgVersion());
 
 void main() {
-	const ushort width = 640;
-	const ushort height = 480;
+	const ushort width = 1024;
+	const ushort height = 640;
 	
 	Window wnd = new Window(VideoMode(width, height, VideoMode.Default), 100, 50);
-	wnd.setSync(Window.Sync.Disable);
+	//wnd.setSync(Window.Sync.Disable);
 	//	wnd.setFpsLimit(15);
+	wnd.setClearColor(Color.Green);
 	/*
 	 {
 	 writeln("<>");
@@ -41,7 +42,7 @@ void main() {
 	sound[1] = new Sound("../../samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
-	//wnd.setClearColor(Color.Green);
+	
 	writefln("Green Color: %d,%d,%d,%d", Color.Green.red, Color.Green.green, Color.Green.blue, Color.Green.alpha);
 	
 	Shape qs = Shape.make(Shape.Type.Quad, [Vector2f(75, 75),
@@ -177,6 +178,7 @@ void main() {
 	
 	Event event;
 	
+	//	TileMap tm = new TileMap("../../level_1.tmx");
 	TileMap tm = new TileMap("../../map2.tmx");
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
@@ -271,25 +273,31 @@ void main() {
 					//qs.scale(-0.5, -0.5);
 					//qs.rotate(15, 0, 0);
 					//qs.move(150, -25);
-					PowerInfo powI = getPowerInfo();
-					
-					writefln("Es verbleiben %d second bei %d %%. Status: %s",
-					         powI.seconds, powI.percent, powI.state);
-					
-					qs.setPixelColor(colors[cidx++ % colors.length]);
-					qs.setType(Shape.Type.LineLoop);
-					
-					tm.move(5, 5);
-					
-					if (event.keyboard.key == Keyboard.Code.Space) {
-						Image img = new Image("../../new_tilset.png");
-						tm.exchangeTileset(img);
-					} else {
-						tm.reload(Vector2s(1, 0), Vector2s(9, 4));
-					}
-					
-					tof.setRow(1);
-					
+					/+
+					 PowerInfo powI = getPowerInfo();
+					 
+					 writefln("Es verbleiben %d second bei %d %%. Status: %s",
+					 powI.seconds, powI.percent, powI.state);
+					 
+					 qs.setPixelColor(colors[cidx++ % colors.length]);
+					 qs.setType(Shape.Type.LineLoop);
+					 
+					 tm.move(5, 5);
+					 
+					 if (event.keyboard.key == Keyboard.Code.Space) {
+					 Image img = new Image("../../new_tilset.png");
+					 tm.exchangeTileset(img);
+					 } else {
+					 tm.reload(Vector2s(1, 0), Vector2s(9, 4));
+					 }
+					 
+					 tof.setRow(1);
+					 +/
+					//					if (wnd.isFullscreen())
+					//						wnd.setFullscreen(false);
+					//					else
+					//						wnd.setFullscreen(true);
+					//					
 					break;
 					
 				case Event.Type.Quit:

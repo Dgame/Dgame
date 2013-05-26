@@ -80,9 +80,20 @@ The coordinates of this tile on the map<br><br>
 <b>author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="TileMap.this"></a> this(string <i>filename</i>);
+<dl><dt><big><a name="TileMap.compress"></a>const bool <u>compress</u>;
 </big></dt>
-<dd>CTor<br><br>
+<dd>If <u>compress</u> is <b>true</b>, only the needed Tiles are stored
+ (which means that are new tileset is created which contains only the needed tiles)
+ otherwise the whole tileset is taken.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.this"></a> this(string <i>filename</i>, bool <i>compress</i> = true);
+</big></dt>
+<dd>CTor
+<br><br>
+If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
+ (which means that are new tileset is created which contains only the needed tiles)
+ otherwise the whole tileset is taken.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2!(short)[] <i>coords</i>, const Vector2!(short)[] <i>newCoords</i>);

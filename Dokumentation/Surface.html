@@ -71,7 +71,7 @@ rschuett<br><br>
 <dd>Default Blue Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.AMask"></a>uint <u>AMask</u>;
+<dt><big><a name="Surface.AMask"></a>int <u>AMask</u>;
 </big></dt>
 <dd>Default Alpha Mask. <br><br>
 
@@ -314,6 +314,11 @@ whether the call succeeded or not<br><br>
 <dd>Returns the Surface pitch or 0.<br><br>
 
 </dd>
+<dt><big><a name="Surface.getPixelFormat"></a>const pure nothrow const(SDL_PixelFormat*) <u>getPixelFormat</u>();
+</big></dt>
+<dd>Returns the PixelFormat<br><br>
+
+</dd>
 <dt><big><a name="Surface.isMask"></a>const bool <u>isMask</u>(Mask <i>mask</i>, ref const Color <i>col</i>);
 </big></dt>
 <dd>Returns if the given color match the color of the given <i>mask</i> of the surface.
@@ -327,7 +332,7 @@ Surface.Mask enum.<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Surface.isMask"></a>const pure nothrow bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
+<dt><big><a name="Surface.isMask"></a>const bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
 </big></dt>
 <dd>Returns if the given converted color match the color of the given <i>mask</i> of the surface.
 <br><br>
@@ -370,7 +375,42 @@ Surface.Mask enum.<br><br>
 <dd>Returns a pointer of the SDL_Surface<br><br>
 
 </dd>
-<dt><big><a name="Surface.blit"></a>void <u>blit</u>(ref Surface <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+<dt><big><a name="Surface.softStretch"></a>bool <u>softStretch</u>(ref Surface <i>srfc</i>, const Rect!(short)* <i>src</i> = null, const Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Use this function to perform a fast, low quality,
+ stretch blit between two surfaces of the same pixel format.
+ <i>src</i> is the a pointer to a Rect structure which represents the rectangle to be copied,
+ or <b>null</b> to copy the entire surface.
+ <i>dst</i> is a pointer to a Rect structure which represents the rectangle that is copied into.
+ <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
+
+</dd>
+<dt><big><a name="Surface.softStretch"></a>bool <u>softStretch</u>(SDL_Surface* <i>srfc</i>, const Rect!(short)* <i>src</i> = null, const Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
+
+</dd>
+<dt><big><a name="Surface.upperBlit"></a>bool <u>upperBlit</u>(ref Surface <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Use this function to perform a fast blit from the source surface to the this surface<br><br>
+
+</dd>
+<dt><big><a name="Surface.upperBlit"></a>bool <u>upperBlit</u>(SDL_Surface* <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
+
+</dd>
+<dt><big><a name="Surface.lowerBlit"></a>bool <u>lowerBlit</u>(ref Surface <i>srfc</i>, Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Use this function to perform low-level surface blitting only.<br><br>
+
+</dd>
+<dt><big><a name="Surface.lowerBlit"></a>bool <u>lowerBlit</u>(SDL_Surface* <i>srfc</i>, Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+</big></dt>
+<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
+
+</dd>
+<dt><big><a name="Surface.blit"></a>bool <u>blit</u>(ref Surface <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
 </big></dt>
 <dd>Use this function to perform a fast <u>blit</u> from the source surface to the this surface.
  <i>src</i> is the a pointer to a Rect structure which represents the rectangle to be copied,
@@ -379,9 +419,9 @@ Surface.Mask enum.<br><br>
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
 
 </dd>
-<dt><big><a name="Surface.blit"></a>void <u>blit</u>(SDL_Surface* <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
+<dt><big><a name="Surface.blit"></a>bool <u>blit</u>(SDL_Surface* <i>srfc</i>, const Rect!(short)* <i>src</i> = null, Rect!(short)* <i>dst</i> = null);
 </big></dt>
-<dd>Same as above, but a SDL_Surface* instead of a Surface.<br><br>
+<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
 
 </dd>
 <dt><big><a name="Surface.subSurface"></a>Surface <u>subSurface</u>(ref const ShortRect <i>rect</i>);

@@ -45,6 +45,13 @@ public:
 	/**
 	 * Set a new position with coordinates.
 	 */
+	void setPosition(T)(T[2] coord) {
+		this.setPosition(coord[0], coord[1]);
+	}
+	
+	/**
+	 * Set a new position with coordinates.
+	 */
 	void setPosition(T)(T x, T y) {
 		this._position.set(x, y);
 		this._positionChanged(x, y);

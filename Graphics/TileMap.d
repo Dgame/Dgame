@@ -14,7 +14,7 @@ private {
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Drawable;
-	import Dgame.Graphics.Color;
+	//	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
 	import Dgame.System.Buffer;
@@ -90,7 +90,7 @@ public:
 
 struct Sub {
 public:
-	Surface srfc;
+	Surface srfc; /// = void;
 	ushort gid;
 }
 
@@ -141,13 +141,17 @@ ushort calcDim(uint tileNum, ubyte tileDim) {
 }
 
 ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
-	const uint tilesPerRow = width / tw;
+	uint tilesPerRow = width / tw;
 	
 	uint y = gid / tilesPerRow;
 	uint x = gid % tilesPerRow;
 	
-	if (x != 0)
-		x--;
+	if (x)
+		x -= 1;
+	else {
+		y -= 1;
+		x = tilesPerRow - 1;
+	}
 	
 	return [cast(ushort)(x * tw), cast(ushort)(y * th)];
 } unittest {
@@ -160,6 +164,14 @@ ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  * author: rschuett
  */
 class TileMap : Drawable, Transformable {
+public:
+	/**
+	 * If compress is true, only the needed Tiles are stored
+	 * (which means that are new tileset is created which contains only the needed tiles)
+	 * otherwise the whole tileset is taken.
+	 */
+	const bool compress;
+	
 protected:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) read(this._filename));
@@ -246,7 +258,8 @@ protected:
 				
 				src.setPosition(used[t.gid]);
 				
-				subs ~= Sub(tileset.subSurface(src), t.gid);
+				if (this.compress)
+					subs ~= Sub(tileset.subSurface(src), t.gid);
 			} else
 				doubly++;
 			
@@ -255,37 +268,61 @@ protected:
 		
 		debug writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
 		
-		ushort dim = calcDim(used.length, this._tmi.tileWidth);
-		
-		Surface newTileset = Surface.make(dim, dim, 32);
-		newTileset.fill(Color.Black); /// notwendig!
-		
-		src.setPosition(0, 0); /// Reset src
-		
-		ushort row = 0;
-		ushort col = 0;
-		
-		/// Anpassen der Tile Koordinaten
-		foreach (ref Sub sub; subs) {
-			newTileset.blit(sub.srfc, null, &src);
+		if (this.compress) {
+			ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
-			used[sub.gid][0] = col;
-			used[sub.gid][1] = row;
+			Surface newTileset = Surface.make(dim, dim);
+			//newTileset.fill(Color.Black); /// notwendig!
 			
-			col += this._tmi.tileWidth;
-			if (col >= dim) {
-				col = 0;
-				row += this._tmi.tileHeight;
+			src.setPosition(0, 0); /// Reset src
+			
+			ushort row = 0;
+			ushort col = 0;
+			
+			/// Anpassen der Tile Koordinaten
+			//debug char c = '1';
+			foreach (ref Sub sub; subs) {
+				if (!newTileset.blit(sub.srfc, null, &src))
+					throw new Exception("An error occured by blitting the tile on the new tileset.");
+				
+				used[sub.gid][0] = col;
+				used[sub.gid][1] = row;
+				
+				col += this._tmi.tileWidth;
+				if (col >= dim) {
+					col = 0;
+					row += this._tmi.tileHeight;
+				}
+				
+				//debug sub.srfc.saveToFile("tile_" ~ c++ ~ ".png");
+				
+				sub.srfc.free(); /// Free subsurface
+				src.setPosition(col, row);
 			}
 			
-			sub.srfc.free(); /// Free subsurface
-			src.setPosition(col, row);
+			debug newTileset.saveToFile("new_tilset.png");
+			
+			Texture.Format t_fmt = Texture.Format.None;
+			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
+				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+			
+			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height, 
+			                         newTileset.countBits(), t_fmt);
+		} else {
+			Surface newTileset = Surface.make(tileset.width, tileset.height);
+			newTileset.blit(tileset);
+			
+			debug tileset.saveToFile("new_tilset.png");
+			
+			Texture.Format t_fmt = Texture.Format.None;
+			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
+				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+			
+			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height,
+			                         newTileset.countBits(), t_fmt);
 		}
 		
 		subs = null; /// nullify subs
-		
-		debug newTileset.saveToFile("new_tilset.png");
-		this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height);
 		
 		this._loadTexCoords(coordinates);
 	}
@@ -330,19 +367,23 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
+		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT);
+		scope(exit) glPopAttrib();
+		
+		glDisable(GL_BLEND);
+		
 		if (this._rotAngle != 0)
 			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1);
 		
 		glTranslatef(super._position.x, super._position.y, 0);
 		
-		if (!this._scale.x != 1.0 && this._scale.y != 1.0)
+		if (!this._scale.x != 1f && this._scale.y != 1f)
 			glScalef(this._scale.x, this._scale.y, 0);
 		
 		this._buf.pointTo(Buffer.Target.TexCoords);
 		this._buf.pointTo(Buffer.Target.Vertex);
 		
 		this._tex.bind();
-		
 		this._buf.drawArrays(GL_QUADS, this._vCount);
 		
 		this._buf.disableAllStates();
@@ -368,9 +409,14 @@ public:
 	
 	/**
 	 * CTor
+	 * 
+	 * If compress is true, only the needed Tiles are stored
+	 * (which means that are new tileset is created which contains only the needed tiles)
+	 * otherwise the whole tileset is taken.
 	 */
-	this(string filename) {
+	this(string filename, bool compress = true) {
 		this._filename = filename;
+		this.compress = compress;
 		
 		this._tex = new Texture();
 		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.TexCoords);

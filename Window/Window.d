@@ -13,6 +13,7 @@ private {
 	import Dgame.Graphics.RenderTarget;
 	import Dgame.Math.Vector2;
 	import Dgame.Window.VideoMode;
+	import Dgame.Graphics.TileMap;
 	
 	import Dgame.Core.Finalizer;
 }
@@ -122,8 +123,8 @@ public:
 			
 			glDisable(GL_DITHER);
 			
-			//			glEnable(GL_BLEND);
-			//			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			
 			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
 			
@@ -143,6 +144,22 @@ public:
 		_winCount += 1;
 	}
 	
+	/**
+	 * Close and destroy this window.
+	 */
+	void close() {
+		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
+		SDL_GL_DeleteContext(this._glContext);  
+		// Close and destroy the window
+		SDL_DestroyWindow(this._window);
+		
+		this._open = false;
+		
+		_winCount--;
+		
+		if (_winCount == 0)
+			terminate(); /// finalize all remaining sensible SDL memory
+	}
 	
 	/**
 	 * Returns how many windows exist
@@ -170,11 +187,8 @@ public:
 		if (sync == Sync.Enable || sync == Sync.Disable) {
 			int supported = SDL_GL_SetSwapInterval(sync);
 			debug if (supported != 0) writeln("Sync mode is not supported.");
-			
-			return;
-		}
-		
-		throw new Exception("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
+		} else
+			throw new Exception("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
 	}
 	
 	/**
@@ -263,23 +277,6 @@ public:
 	 */
 	ubyte getFpsLimit() const pure nothrow {
 		return this._fpsLimit;
-	}
-	
-	/**
-	 * Close and destroy this window.
-	 */
-	void close() {
-		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
-		SDL_GL_DeleteContext(this._glContext);  
-		// Close and destroy the window
-		SDL_DestroyWindow(this._window);
-		
-		this._open = false;
-		
-		_winCount--;
-		
-		if (_winCount == 0)
-			terminate(); /// finalize all remaining sensible SDL memory
 	}
 	
 	/**
@@ -504,11 +501,11 @@ public:
 	/**
 	 * Enable or disable Fullscreen mode.
 	 */
-	void enableFullscreen(bool enable) {
+	void setFullscreen(bool enable) {
 		if (enable == this._fullscreen)
 			return;
 		
-		if (SDL_SetWindowFullscreen(this._window, enable))
+		if (SDL_SetWindowFullscreen(this._window, enable) == 0)
 			this._fullscreen = enable;
 	}
 	

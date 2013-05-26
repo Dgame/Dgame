@@ -84,6 +84,15 @@ public:
 		this.update();
 	}
 	
+	version(none) {
+		/**
+		 * Rvalue version
+		 */
+		void opAssign(const Color rhs) {
+			this.opAssign(rhs);
+		}
+	}
+	
 	/**
 	 * DTor
 	 */

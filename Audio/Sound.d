@@ -5,8 +5,9 @@ private {
 	import std.algorithm : endsWith;
 	import std.string : toLower;
 	
+	import derelict3.openal.al;
+	
 	//import Dgame.Core.AutoRef;
-	import Dgame.Audio.Core.core;
 	
 	import Dgame.Audio.SoundFile;
 	import Dgame.Audio.VorbisFile;
@@ -98,7 +99,7 @@ public:
 
 private ALChunk*[] _finalizer;
 
-void _finalizeSound() {
+static ~this() {
 	debug writefln("Finalize Sound (%d)", _finalizer.length);
 	
 	for (size_t i = 0; i < _finalizer.length; i++) {
