@@ -282,10 +282,18 @@ public:
  */
 alias Vector2s = Vector2!short;
 /**
+ * Alias for float Vector
+ */
+alias Vector2f = Vector2!float;
+/**
  * Alias for unsigned short Vector
  */
 alias Vector2us = Vector2!ushort;
 /**
- * Alias for float Vector
+ * Alias for byte Vector
  */
-alias Vector2f = Vector2!float;
+alias Vector2b = Vector2!byte;
+/**
+ * Alias for ubyte Vector
+ */
+alias Vector2ub = Vector2!ubyte;

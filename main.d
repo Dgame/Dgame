@@ -24,7 +24,7 @@ void main() {
 	const ushort height = 640;
 	
 	Window wnd = new Window(VideoMode(width, height, VideoMode.Default), 100, 50);
-	//wnd.setSync(Window.Sync.Disable);
+	wnd.setSync(Window.Sync.Disable);
 	//	wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	/*
@@ -178,8 +178,8 @@ void main() {
 	
 	Event event;
 	
-	TileMap tm = new TileMap("../../level_1.tmx");
-	//TileMap tm = new TileMap("../../map2.tmx");
+	//TileMap tm = new TileMap("../../level_1.tmx");
+	TileMap tm = new TileMap("../../map2.tmx");
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);

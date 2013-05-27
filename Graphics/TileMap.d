@@ -41,7 +41,7 @@ public:
 	/**
 	 * The map size
 	 */
-	ushort[2] mapSize;
+	ushort[2] mapSize = void;
 	/**
 	 * The tile width in pixel (for example: 16, 32, 64)
 	 */
@@ -94,7 +94,7 @@ public:
 
 struct Sub {
 public:
-	Surface srfc; /// = void;
+	Surface srfc = void;
 	ushort gid;
 }
 
@@ -522,6 +522,40 @@ public:
 	}
 	
 	/**
+	 * Check whether a tile exist on the given Coordinates.
+	 * If idx isn't null, the calculated index of the Tile at the given position is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	bool isTileAt(ref const Vector2s vec, uint* idx = null) const pure nothrow {
+		return this.isTileAt(vec.asArray(), idx);
+	}
+	
+	/**
+	 * Check whether a tile exist on the given Coordinates.
+	 * If idx isn't null, the calculated index of the Tile at the given position is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	bool isTileAt(short[2] tilePos, uint* idx = null) const pure nothrow {
+		return this.isTileAt(tilePos[0], tilePos[1], idx);
+	}
+	
+	/**
+	 * Check whether a tile exist on the given Coordinates.
+	 * If idx isn't null, the calculated index of the Tile at the given position is stored there.
+	 * 
+	 * Note: The position must be in tile coordinates, not pixel coordinates.
+	 */
+	bool isTileAt(short x, short y, uint* idx = null) const pure nothrow {
+		uint index = y * this._tmi.mapSize[0] + x;
+		if (idx)
+			*idx = index;
+		
+		return index < this._tiles.length;
+	}
+	
+	/**
 	 * Replace the tile at the given position with the given new Tile.
 	 * If oldtile is not null, the former Tile is stored there.
 	 * 
@@ -576,17 +610,7 @@ public:
 	 * Note: This function is fast and takes ~ O(1) for a lookup.
 	 */
 	ref const(Tile) getTileAt(short[2] tilePos) const {
-		/*
-		 foreach (ref const Tile t; this._tiles) {
-		 if (t.tileCoords == tilePos)
-		 return t;
-		 }
-		 */
-		uint index = tilePos[1] * this._tmi.mapSize[0] + tilePos[0];
-		if (index >= this._tiles.length)
-			throw new Exception(.format("No Tile at position %d:%d", tilePos[0], tilePos[1]));
-		
-		return this._tiles[index];
+		return this.getTileAt(tilePos[0], tilePos[1]);
 	}
 	
 	/**
@@ -594,7 +618,11 @@ public:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	ref const(Tile) getTileAt(short x, short y) const {
-		return this.getTileAt([x, y]);
+		uint index = 0;
+		if (this.isTileAt(x, y, &index))
+			throw new Exception(.format("No Tile at position %d:%d", x, y));
+		
+		return this._tiles[index];
 	}
 	
 	/**

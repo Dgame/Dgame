@@ -141,6 +141,33 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 <dd>Returns all containing tiles<br><br>
 
 </dd>
+<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(ref const Vector2s <i>vec</i>, uint* <i>idx</i> = null);
+</big></dt>
+<dd>Check whether a tile exist on the given Coordinates.
+ If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(short[2u] <i>tilePos</i>, uint* <i>idx</i> = null);
+</big></dt>
+<dd>Check whether a tile exist on the given Coordinates.
+ If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(short <i>x</i>, short <i>y</i>, uint* <i>idx</i> = null);
+</big></dt>
+<dd>Check whether a tile exist on the given Coordinates.
+ If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
+<br><br>
+<b>Note:</b><br>
+The position must be in tile coordinates, not pixel coordinates.<br><br>
+
+</dd>
 <dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ref const Vector2s <i>vec</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
 </big></dt>
 <dd>Replace the tile at the given position with the given new Tile.

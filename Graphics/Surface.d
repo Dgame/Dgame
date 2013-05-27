@@ -195,6 +195,9 @@ public:
 		return Surface(srfc, true);
 	}
 	
+	/**
+	 * Create a new SDL_Surface* of the given width, height and depth.
+	 */
 	static SDL_Surface* create(ushort width, ushort height, ubyte depth = 32) in {
 		assert(depth >= 8 && depth <= 32, "Invalid depth.");
 	} body {
@@ -215,6 +218,9 @@ public:
 		return Surface(srfc, true);
 	}
 	
+	/**
+	 * Create a new SDL_Surface* of the given memory, width, height and depth.
+	 */
 	static SDL_Surface* create(void* memory, ushort width, ushort height, ubyte depth = 32) in {
 		assert(memory !is null, "Memory is empty.");
 		assert(depth >= 8 && depth <= 32, "Invalid depth.");

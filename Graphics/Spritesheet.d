@@ -84,6 +84,17 @@ public:
 	}
 	
 	/**
+	 * Reset the Viewport.
+	 */
+	void resetViewport() {
+		float x = this._viewport.x;
+		float y = this._viewport.y + (this._viewport.height * this._row);
+		
+		FloatRect* rect = super._tex.fetchViewport();
+		rect.setPosition(x, y);
+	}
+	
+	/**
 	 * Slide/move the current Viewport of the Texture.
 	 * So the next area of the Texture atlas will be drawn.
 	 */
