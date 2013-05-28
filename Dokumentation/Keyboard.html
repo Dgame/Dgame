@@ -15,7 +15,8 @@
 <br><br>
 <b>Examples:</b><br>
 <pre class="d_code"> <font color=blue>ubyte</font>* keyStates = Keyboard.<u>getState</u>();
- <font color=blue>if</font> (keyStates[Keyboard.Code.Escape]) writeln(<font color=red>"escape is pressed."</font>);
+ <font color=blue>if</font> (keyStates[Keyboard.Code.Escape])
+     writeln(<font color=red>"escape is pressed."</font>);
 </pre>
 <br><br>
 
@@ -30,9 +31,14 @@
 <dd>Use this function to stop receiving any text input events.<br><br>
 
 </dd>
-<dt><big><a name="Keyboard.setTextInputRect"></a>static void <u>setTextInputRect</u>(ShortRect <i>rect</i>);
+<dt><big><a name="Keyboard.setTextInputRect"></a>static void <u>setTextInputRect</u>(ref ShortRect <i>rect</i>);
 </big></dt>
 <dd>Use this function to set the rectangle used to type Unicode text inputs.<br><br>
+
+</dd>
+<dt><big><a name="Keyboard.setTextInputRect"></a>static void <u>setTextInputRect</u>(ShortRect <i>rect</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
 
 </dd>
 <dt><big><a name="Keyboard.isPressed"></a>static bool <u>isPressed</u>(Code <i>code</i>);
@@ -40,7 +46,8 @@
 <dd>Returns if the given Keyboard.Code is pressed.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code"> <font color=blue>if</font> (Keyboard.<u>isPressed</u>(Code.Escape)) writeln(<font color=red>"escape is pressed."</font>);
+<pre class="d_code"> <font color=blue>if</font> (Keyboard.<u>isPressed</u>(Code.Escape))
+     writeln(<font color=red>"escape is pressed."</font>);
 </pre>
 <br><br>
 
@@ -148,7 +155,7 @@ Mod enum<br><br>
 <dt><big><a name="Keyboard.Code"></a>enum <u>Code</u>;
 </big></dt>
 <dd>Supported Keyboard <u>Code</u>.
- That are all possible keys.<br><br>
+ This are all possible keys.<br><br>
 
 <dl><dt><big><a name="Keyboard.Code.Unknown"></a><u>Unknown</u></big></dt>
 <dd><br><br>
@@ -214,7 +221,8 @@ Mod enum<br><br>
 <dd><br><br>
 </dd>
 <dt><big><a name="Keyboard.Code.Esc"></a><u>Esc</u></big></dt>
-<dd><br><br>
+<dd>Shortcut <br><br>
+
 </dd>
 <dt><big><a name="Keyboard.Code.Num0"></a><u>Num0</u></big></dt>
 <dd><br><br>

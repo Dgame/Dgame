@@ -124,13 +124,12 @@ public:
 	 */
 	static void setCursorPosition(short x, short y) {
 		SDL_Window* wnd = SDL_GetMouseFocus();
-		if (wnd !is null) {
+		if (wnd !is null)
 			SDL_WarpMouseInWindow(wnd, x, y);
-		}
 	}
 	
 	/**
 	 *
 	 */
-	alias setCursorPosition warp;
+	alias warp = setCursorPosition;
 }

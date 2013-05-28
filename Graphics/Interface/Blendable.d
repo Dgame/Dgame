@@ -24,6 +24,14 @@ enum BlendMode {
 interface Blendable {
 public:
 	/**
+	 * Enable or Disable blending
+	 */
+	void useBlending(bool enable);
+	/**
+	 * Returns if Blending is enabled
+	 */
+	bool isBlendingEnabled() const pure nothrow;
+	/**
 	 * Set the Blendmode.
 	 */
 	void setBlendMode(BlendMode);
@@ -58,10 +66,14 @@ private:
 	BlendMode _blendMode;
 	Color _blendColor;
 	
+	bool _useBlending;
 	bool _useBlendColor;
 	
 protected:
 	void _processBlendMode() const {
+		if (!this._useBlending)
+			return;
+		
 		final switch (this._blendMode) {
 			// Alpha blending
 			case BlendMode.Alpha:
@@ -92,6 +104,20 @@ protected:
 	}
 	
 public:
+	/**
+	 * Enable or Disable blending
+	 */
+	void useBlending(bool enable) {
+		this._useBlending = enable;
+	}
+	
+	/**
+	 * Returns if Blending is enabled
+	 */
+	bool isBlendingEnabled() const pure nothrow {
+		return this._useBlending;
+	}
+	
 	/**
 	 * Set the Blendmode.
 	 */

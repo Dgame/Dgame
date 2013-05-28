@@ -128,7 +128,7 @@ public:
 			
 			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
 			
-			this.setSync(Sync.Enable);
+			this.setVerticalSync(Sync.Enable);
 			
 			SDL_GL_MakeCurrent(this._window, this._glContext);
 			
@@ -164,7 +164,7 @@ public:
 	/**
 	 * Returns how many windows exist
 	 */
-	uint count() const {
+	static uint count() {
 		return _winCount;
 	}
 	
@@ -183,7 +183,7 @@ public:
 	 *
 	 * See: Sync enum
 	 */
-	void setSync(Sync sync) const {
+	void setVerticalSync(Sync sync) const {
 		if (sync == Sync.Enable || sync == Sync.Disable) {
 			int supported = SDL_GL_SetSwapInterval(sync);
 			debug if (supported != 0) writeln("Sync mode is not supported.");
@@ -192,11 +192,11 @@ public:
 	}
 	
 	/**
-	 * Returns the current Syncronisation mode.
+	 * Returns the current syncronisation mode.
 	 *
 	 * See: Sync enum
 	 */
-	Sync getSync() const {
+	Sync getVerticalSync() const {
 		int result = SDL_GL_GetSwapInterval();
 		
 		return cast(Sync) result;

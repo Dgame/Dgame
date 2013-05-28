@@ -17,6 +17,7 @@ pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictAL.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictOGG.lib");
 
 import Dgame.Core.core : getDgVersion;
+
 pragma(msg, getDgVersion());
 
 void main() {
@@ -24,7 +25,7 @@ void main() {
 	const ushort height = 640;
 	
 	Window wnd = new Window(VideoMode(width, height, VideoMode.Default), 100, 50);
-	wnd.setSync(Window.Sync.Disable);
+	wnd.setVerticalSync(Window.Sync.Disable);
 	//	wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	/*
@@ -202,8 +203,9 @@ void main() {
 		tof.slide();
 		wnd.draw(tof);
 		
-		text.format("Current Fps: %d <-> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
+		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
+		///writefln("Current Fps: %d", wnd.getClock().getCurrentFps());
 		
 		while (EventHandler.poll(&event)) {
 			switch (event.type) { /* Process the appropriate event type */
@@ -309,7 +311,6 @@ void main() {
 		}
 		
 		//qs.move(1, 1);
-		//writefln("Current Fps: %f", wnd.getClock().getCurrentFps());
 		
 		wnd.display();
 		

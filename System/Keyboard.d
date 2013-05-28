@@ -3,91 +3,100 @@ module Dgame.System.Keyboard;
 private {
 	import derelict3.sdl2.functions;
 	import derelict3.sdl2.types;
-
+	
 	import Dgame.Math.Rect;
 }
 
 /**
-*
-*/
+ *
+ */
 final abstract class Keyboard {
 public:
 	/**
-	* Returns a pointer to an ubyte.
-	* With that you can check if some key is pressed without using a event queue.
-	*
-	* Examples:
-	* ---
-	* ubyte* keyStates = Keyboard.getState();
-	* if (keyStates[Keyboard.Code.Escape]) writeln("escape is pressed.");
-	* ---
-	*/
+	 * Returns a pointer to an ubyte.
+	 * With that you can check if some key is pressed without using a event queue.
+	 *
+	 * Examples:
+	 * ---
+	 * ubyte* keyStates = Keyboard.getState();
+	 * if (keyStates[Keyboard.Code.Escape])
+	 *     writeln("escape is pressed.");
+	 * ---
+	 */
 	static ubyte* getState() {
 		return SDL_GetKeyboardState(null);
 	}
-
+	
 	/**
-	* Use this function to start accepting Unicode text input events
-	*/
+	 * Use this function to start accepting Unicode text input events
+	 */
 	static void startTextInput() {
 		SDL_StartTextInput();
 	}
-
+	
 	/**
-	* Use this function to stop receiving any text input events.
-	*/
+	 * Use this function to stop receiving any text input events.
+	 */
 	static void stopTextInput() {
 		SDL_StopTextInput();
 	}
-
+	
 	/**
-	* Use this function to set the rectangle used to type Unicode text inputs.
-	*/
-	static void setTextInputRect(ShortRect rect) {
+	 * Use this function to set the rectangle used to type Unicode text inputs.
+	 */
+	static void setTextInputRect(ref ShortRect rect) {
 		SDL_SetTextInputRect(rect.ptr);
 	}
-
+	
 	/**
-	* Returns if the given Keyboard.Code is pressed.
-	*
-	* Examples:
-	* ---
-	* if (Keyboard.isPressed(Code.Escape)) writeln("escape is pressed.");
-	* ---
-	*/
+	 * Rvalue version
+	 */
+	static void setTextInputRect(ShortRect rect) {
+		Keyboard.setTextInputRect(rect);
+	}
+	
+	/**
+	 * Returns if the given Keyboard.Code is pressed.
+	 *
+	 * Examples:
+	 * ---
+	 * if (Keyboard.isPressed(Code.Escape))
+	 *     writeln("escape is pressed.");
+	 * ---
+	 */
 	static bool isPressed(Code code) {
 		return Keyboard.getState()[code] != 0;
 	}
-
+	
 	/**
-	* Returns the current Keyboard modifier.
-	*
-	* See: Mod enum
-	*/
+	 * Returns the current Keyboard modifier.
+	 *
+	 * See: Mod enum
+	 */
 	static Mod getModifier() {
 		return cast(Mod) SDL_GetModState();
 	}
-
+	
 	/**
-	* Set the current Keyboard modifier.
-	*
-	* See: Mod enum
-	*/
+	 * Set the current Keyboard modifier.
+	 *
+	 * See: Mod enum
+	 */
 	static void setModifier(Mod mod) {
 		SDL_SetModState(mod);
 	}
-
+	
 	/**
-	* Supported Keyboard States
-	*/
+	 * Supported Keyboard States
+	 */
 	enum State {
 		Pressed  = SDL_PRESSED, /** Key is pressed. */
 		Released = SDL_RELEASED /** Key is released. */
 	}
-
+	
 	/**
-	* All supported Keyboard modifiers.
-	*/
+	 * All supported Keyboard modifiers.
+	 */
 	enum Mod {
 		None 	= KMOD_NONE,	/** 0 (no modifier is applicable) */
 		LShift 	= KMOD_LSHIFT,	/** the left Shift key is down */
@@ -101,20 +110,20 @@ public:
 		Num 	= KMOD_NUM,		/** the Num Lock key (may be located on an extended keypad) is down */
 		Caps 	= KMOD_CAPS,	/** the Caps Lock key is down */
 		Mode 	= KMOD_MODE,	/** the AltGr key is down */
-
+		
 		Ctrl 	= KMOD_CTRL, 	/** (Mod.LCtrl|Mod.RCtrl) */
 		Shift 	= KMOD_SHIFT, 	/** (Mod.LShift|Mod.RShift) */
 		Alt 	= KMOD_ALT, 	/** (Mod.LAlt|Mod.RAlt) */
 		Gui 	= KMOD_GUI, 	/** (Mod.LGui|Mod.RGui) */
 	}
-
+	
 	/**
-	* Supported Keyboard Code.
-	* That are all possible keys.
-	*/
+	 * Supported Keyboard Code.
+	 * This are all possible keys.
+	 */
 	enum Code {
 		Unknown = SDLK_UNKNOWN, /** */
-
+		
 		Return = SDLK_RETURN, /** */
 		Escape = SDLK_ESCAPE, /** */
 		Backspace = SDLK_BACKSPACE, /** */
@@ -135,9 +144,9 @@ public:
 		Minus = SDLK_MINUS, /** */
 		Period = SDLK_PERIOD, /** */
 		Slash = SDLK_SLASH, /** */
-
-		Esc = Escape, /** */
-
+		
+		Esc = Escape, /** Shortcut */
+		
 		Num0 = SDLK_0, /** */
 		Num1 = SDLK_1, /** */
 		Num2 = SDLK_2, /** */
@@ -148,7 +157,7 @@ public:
 		Num7 = SDLK_7, /** */
 		Num8 = SDLK_8, /** */
 		Num9 = SDLK_9, /** */
-
+		
 		Colon = SDLK_COLON, /** */
 		Semicolon = SDLK_SEMICOLON, /** */
 		Less = SDLK_LESS, /** */
@@ -156,14 +165,14 @@ public:
 		Greater = SDLK_GREATER, /** */
 		Question = SDLK_QUESTION, /** */
 		At = SDLK_AT, /** */
-
+		
 		Leftbracket = SDLK_LEFTBRACKET, /** */
 		Backslash = SDLK_BACKSLASH, /** */
 		Rightbracket = SDLK_RIGHTBRACKET, /** */
 		Caret = SDLK_CARET, /** */
 		Underscore = SDLK_UNDERSCORE, /** */
 		Backquote = SDLK_BACKQUOTE, /** */
-
+		
 		A = SDLK_a, /** */
 		B = SDLK_b, /** */
 		C = SDLK_c, /** */
@@ -190,9 +199,9 @@ public:
 		X = SDLK_x, /** */
 		Y = SDLK_y, /** */
 		Z = SDLK_z, /** */
-
+		
 		Capslock = SDLK_CAPSLOCK, /** */
-
+		
 		F1 = SDLK_F1, /** */
 		F2 = SDLK_F2, /** */
 		F3 = SDLK_F3, /** */
@@ -205,7 +214,7 @@ public:
 		F10 = SDLK_F10, /** */
 		F11 = SDLK_F11, /** */
 		F12 = SDLK_F12, /** */
-
+		
 		Printscreen = SDLK_PRINTSCREEN, /** */
 		Scrolllock = SDLK_SCROLLLOCK, /** */
 		Pause = SDLK_PAUSE, /** */
@@ -219,7 +228,7 @@ public:
 		Left = SDLK_LEFT, /** */
 		Down = SDLK_DOWN, /** */
 		Up = SDLK_UP, /** */
-
+		
 		NumLockClear = SDLK_NUMLOCKCLEAR, /** */
 		KP_Divide = SDLK_KP_DIVIDE, /** */
 		KP_Multiply = SDLK_KP_MULTIPLY, /** */
@@ -236,7 +245,7 @@ public:
 		KP_8 = SDLK_KP_8, /** */
 		KP_9 = SDLK_KP_9, /** */
 		KP_0 = SDLK_KP_0, /** */
-
+		
 		F13 = SDLK_F13, /** */
 		F14 = SDLK_F14, /** */
 		F15 = SDLK_F15, /** */
@@ -249,7 +258,7 @@ public:
 		F22 = SDLK_F22, /** */
 		F23 = SDLK_F23, /** */
 		F24 = SDLK_F24, /** */
-
+		
 		LCtrl = SDLK_LCTRL, /** */
 		LShift = SDLK_LSHIFT, /** */
 		LAlt = SDLK_LALT, /** */

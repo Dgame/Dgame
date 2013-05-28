@@ -75,21 +75,22 @@ public:
 	/**
 	 * The coordinates in pixel of this tile on the map
 	 */
-	const ushort[2] pixelCoords;/// = void;
+	const ushort[2] pixelCoords;
 	/**
 	 * The coordinates of this tile on the map
 	 */
-	const ushort[2] tileCoords;/// = void;
+	const ushort[2] tileCoords;
 	
 	void opAssign(ref const Tile rhs) {
 		debug writeln("opAssign Tile");
 		
 		memcpy(&this, &rhs, Tile.sizeof);
 	}
-	
-	//	this(this) {
-	//		debug writeln("Postblit Tile");
-	//	}
+	/*
+	 this(this) {
+	 debug writeln("Postblit Tile");
+	 }
+	 */
 }
 
 struct Sub {

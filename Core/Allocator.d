@@ -29,6 +29,9 @@ public:
 		this.mode = mode;
 	}
 	
+	@disable
+	this(this);
+	
 	~this() {
 		if (this.mode != Mode.DontFree)
 			Memory.free(this.data);

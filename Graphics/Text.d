@@ -132,6 +132,21 @@ public:
 	}
 	
 	/**
+	 * Enable or Disable blending
+	 */
+	void useBlending(bool enable) {
+		this._tex.useBlending(enable);
+	}
+	
+	/**
+	 * Returns if Blending is enabled
+	 */
+	bool isBlendingEnabled() const pure nothrow {
+		return this._tex.isBlendingEnabled();
+	}
+	
+	
+	/**
 	 * Set the Blendmode.
 	 */
 	void setBlendMode(BlendMode mode) {
@@ -172,6 +187,7 @@ public:
 	void useBlendColor(bool use) {
 		this._tex.useBlendColor(use);
 	}
+	
 	/**
 	 * Returns, if using blend color is activated, or not.
 	 */
