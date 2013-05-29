@@ -44,7 +44,6 @@
     <OutputName>Dgame</OutputName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="main.d" />
     <Compile Include="Audio\all.d" />
     <Compile Include="Audio\Listener.d" />
     <Compile Include="Audio\Sound.d" />
@@ -89,6 +88,7 @@
     <Compile Include="System\Power.d" />
     <Compile Include="Graphics\Unit.d" />
     <Compile Include="Core\Finalizer.d" />
+    <Compile Include="main.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

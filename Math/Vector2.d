@@ -58,6 +58,9 @@ public:
 		this.set(rhs.x, rhs.y);
 	}
 	
+	/**
+	 * DTor
+	 */
 	~this() {
 		debug writeln("DTor Vector2");
 	}

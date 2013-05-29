@@ -620,7 +620,7 @@ public:
 	 */
 	ref const(Tile) getTileAt(short x, short y) const {
 		uint index = 0;
-		if (this.isTileAt(x, y, &index))
+		if (!this.isTileAt(x, y, &index))
 			throw new Exception(.format("No Tile at position %d:%d", x, y));
 		
 		return this._tiles[index];
