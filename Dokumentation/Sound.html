@@ -65,8 +65,8 @@
 <dd>Short set function.
 <br><br>
 <b>Example:</b><br>
-<pre class="d_code"> Channel ch;
- ch(8, ChannelType.Stereo); <font color=green>// set bits and type for this channel.
+<pre class="d_code">Channel ch;
+ch(8, ChannelType.Stereo); <font color=green>// set bits and type for this channel.
 </font></pre>
 <br><br>
 
@@ -114,8 +114,8 @@ rschuett<br><br>
 <dd>Load from a <i>soundfile</i>.
 <br><br>
 <b>Example:</b><br>
-<pre class="d_code"> Sound s1 = <font color=blue>new</font> Sound();
- s1.<u>loadFromFile</u>(<font color=blue>new</font> VorbisFile(<font color=red>"samples/audio/orchestral.ogg"</font>));
+<pre class="d_code">Sound s1 = <font color=blue>new</font> Sound();
+s1.<u>loadFromFile</u>(<font color=blue>new</font> VorbisFile(<font color=red>"samples/audio/orchestral.ogg"</font>));
 </pre>
 
 <br><br>
@@ -134,9 +134,9 @@ WaveFile<br><br>
 <dd>Load a soundfile from his path.
 <br><br>
 <b>Example:</b><br>
-<pre class="d_code"> Sound s1 = <font color=blue>new</font> Sound();
- <font color=blue>if</font> (s1.<u>loadFromFile</u>(<font color=red>"samples/audio/orchestral.ogg"</font>) <font color=blue>is</font> <font color=blue>null</font>)
-	<font color=blue>throw</font> <font color=blue>new</font> Exception(<font color=red>"Could not load file."</font>);
+<pre class="d_code">Sound s1 = <font color=blue>new</font> Sound();
+<font color=blue>if</font> (s1.<u>loadFromFile</u>(<font color=red>"samples/audio/orchestral.ogg"</font>) <font color=blue>is</font> <font color=blue>null</font>)
+<font color=blue>throw</font> <font color=blue>new</font> Exception(<font color=red>"Could not load file."</font>);
 </pre>
 
 <br><br>

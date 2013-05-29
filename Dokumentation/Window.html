@@ -88,7 +88,7 @@ Sync enum<br><br>
 Sync enum<br><br>
 
 </dd>
-<dt><big><a name="Window.capture"></a>const Image <u>capture</u>(Texture.Format <i>fmt</i> = (Format).BGRA);
+<dt><big><a name="Window.capture"></a>const Image <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
 </big></dt>
 <dd>Capture the pixel data of the current window and
  returns an Image with this pixel data.
@@ -97,9 +97,9 @@ Sync enum<br><br>
  This method is predestinated for screenshots.
 <br><br>
 <b>Example:</b><br>
-<pre class="d_code"> Window wnd = ...
- ...
- wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</font>);
+<pre class="d_code">Window wnd = ...
+...
+wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</font>);
 </pre>
 <br><br>
 
@@ -153,7 +153,7 @@ Dgame.System.Clock<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0);
+<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0.000000);
 </big></dt>
 <dd>Set the color with which this windows clear his buffer.
  This is also the background color of the window.<br><br>

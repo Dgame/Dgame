@@ -1,7 +1,6 @@
 module Dgame.Core.core;
 
 private {
-	import std.stdio : writefln;
 	import std.string : format;
 	import std.conv : to;
 	
@@ -88,8 +87,7 @@ void GLCheckError(string filename, size_t line_number) {
 			default: break;
 		}
 		
-		//throw new Exception(
-		writefln("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
-		         Error, Desc, filename, line_number);
+		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
+		                            Error, Desc, filename, line_number));
 	}
 }

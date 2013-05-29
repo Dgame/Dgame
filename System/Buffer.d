@@ -7,7 +7,6 @@ private {
 	import derelict.opengl.glfuncs;
 	import derelict.opengl.gltypes;
 	
-	import Dgame.Core.core;
 	import Dgame.Math.Vertex;
 }
 

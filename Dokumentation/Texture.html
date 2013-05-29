@@ -11,13 +11,13 @@
  If the format is not supported, it returns 0.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code"> <font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.RGBA) == 32);
- <font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.RGB) == 24);
- <font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.BGRA) == 32);
- <font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.BGR) == 24);
+<pre class="d_code"><font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.RGBA) == 32);
+<font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.RGB) == 24);
+<font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.BGRA) == 32);
+<font color=blue>assert</font>(<u>formatToBits</u>(Texture.Format.BGR) == 24);
 </pre>
 <br><br>
-<b>Example:</b><br><br>
+
 </dd>
 <dt><big><a name="bitsToFormat"></a>pure Texture.Format <u>bitsToFormat</u>(ubyte <i>bits</i>, bool <i>reverse</i> = false);
 </big></dt>
@@ -25,23 +25,23 @@
  If no bit count is supported, it returns Texture.Format.None.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code"> <font color=blue>assert</font>(<u>bitsToFormat</u>(32) == Texture.Format.RGBA);
- <font color=blue>assert</font>(<u>bitsToFormat</u>(24) == Texture.Format.RGB);
- <font color=blue>assert</font>(<u>bitsToFormat</u>(32, <font color=blue>true</font>) == Texture.Format.BGRA);
- <font color=blue>assert</font>(<u>bitsToFormat</u>(24, <font color=blue>true</font>) == Texture.Format.BGR);
+<pre class="d_code"><font color=blue>assert</font>(<u>bitsToFormat</u>(32) == Texture.Format.RGBA);
+<font color=blue>assert</font>(<u>bitsToFormat</u>(24) == Texture.Format.RGB);
+<font color=blue>assert</font>(<u>bitsToFormat</u>(32, <font color=blue>true</font>) == Texture.Format.BGRA);
+<font color=blue>assert</font>(<u>bitsToFormat</u>(24, <font color=blue>true</font>) == Texture.Format.BGR);
 </pre>
 <br><br>
-<b>Example:</b><br><br>
+
 </dd>
 <dt><big><a name="switchFormat"></a>pure Texture.Format <u>switchFormat</u>(Texture.Format <i>fmt</i>, bool <i>alpha</i> = false);
 </big></dt>
 <dd>Switch/Reverse Texture.Format.
 <br><br>
 <b>Examples:</b><br>
-<pre class="d_code"> <font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGB) == Texture.Format.BGR);
- <font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGB, <font color=blue>true</font>) == Texture.Format.BGRA);
- <font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGBA) == Texture.Format.BGRA);
- <font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGBA, <font color=blue>true</font>) == Texture.Format.BGRA);
+<pre class="d_code"><font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGB) == Texture.Format.BGR);
+<font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGB, <font color=blue>true</font>) == Texture.Format.BGRA);
+<font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGBA) == Texture.Format.BGRA);
+<font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGBA, <font color=blue>true</font>) == Texture.Format.BGRA);
 </pre>
 <br><br>
 
@@ -92,7 +92,7 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Texture._render"></a>package const void <u>_render</u>(const ShortRect <i>dst</i>, RenderMode <i>mode</i> = (RenderMode).Normal);
+<dt><big><a name="Texture._render"></a>package const void <u>_render</u>(const ShortRect <i>dst</i>, RenderMode <i>mode</i> = RenderMode.Normal);
 </big></dt>
 <dd>Rvalue version<br><br>
 
@@ -200,7 +200,7 @@ Format enum.<br><br>
 <dd>Get const access to the current Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Texture.fetchViewport"></a>inout inout(Rect!(float))* <u>fetchViewport</u>();
+<dt><big><a name="Texture.fetchViewport"></a>inout inout(FloatRect)* <u>fetchViewport</u>();
 </big></dt>
 <dd>Get mutable access to the current Viewport.<br><br>
 
@@ -231,7 +231,7 @@ link<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.loadFromMemory"></a>void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32, Format <i>fmt</i> = (Format).None);
+<dt><big><a name="Texture.loadFromMemory"></a>void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Load from <i>memory</i>.<br><br>
 
@@ -265,14 +265,14 @@ This method <b>allocates</b> memory.<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.copy"></a>void <u>copy</u>(const Texture <i>tex</i>, Rect!(short)* <i>rect</i> = null);
+<dt><big><a name="Texture.copy"></a>void <u>copy</u>(const Texture <i>tex</i>, ShortRect* <i>rect</i> = null);
 </big></dt>
 <dd>Copy another Texture to this.
  The second parameter is a pointer to the destination <i>rect</i>.
  Is it is <b>null</b> this means the whole <i>tex</i> is copied.<br><br>
 
 </dd>
-<dt><big><a name="Texture.updateMemory"></a>void <u>updateMemory</u>(const void* <i>memory</i>, Rect!(short)* <i>rect</i> = null, Format <i>fmt</i> = (Format).None);
+<dt><big><a name="Texture.updateMemory"></a>void <u>updateMemory</u>(const void* <i>memory</i>, ShortRect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Update the pixel data of this Texture.
  The second parameter is a pointer to the area which is updated.

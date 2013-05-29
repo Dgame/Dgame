@@ -5,7 +5,6 @@ private {
 	
 	import derelict.opengl.gl;
 	
-	import Dgame.Core.core;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
 }
@@ -518,7 +517,7 @@ public:
 		
 		this.bind();
 		
-		glCheck(glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr));
+		glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr);
 		
 		return memory.ptr;
 	}

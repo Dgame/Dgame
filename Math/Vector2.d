@@ -259,7 +259,7 @@ public:
 	/**
 	 * Set new coordinates.
 	 */
-	void set(U)(U x, U y) if (isNumeric!U) {
+	void set(U)(U x, U y) {
 		this.x = cast(T) x;
 		this.y = cast(T) y;
 	}
@@ -267,7 +267,7 @@ public:
 	/**
 	 * Move the current coordinates.
 	 */
-	void move(U)(U x, U y) if (isNumeric!U) {
+	void move(U)(U x, U y) {
 		this.x += x;
 		this.y += y;
 	}

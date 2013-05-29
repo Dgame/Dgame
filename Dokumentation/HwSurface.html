@@ -59,7 +59,7 @@ rschuett<br><br>
 <dd>Destroy the HwSurface<br><br>
 
 </dd>
-<dt><big><a name="HwSurface.getSize"></a>int[2u] <u>getSize</u>();
+<dt><big><a name="HwSurface.getSize"></a>int[2] <u>getSize</u>();
 </big></dt>
 <dd>Returns a two dimensional array filled with the width and the height<br><br>
 
@@ -79,7 +79,7 @@ rschuett<br><br>
 <dd>Checks whether this Surface is lockable and therefore accessable.<br><br>
 
 </dd>
-<dt><big><a name="HwSurface.lock"></a>void* <u>lock</u>(out int <i>pitch</i>, const Rect!(short)* <i>area</i> = null);
+<dt><big><a name="HwSurface.lock"></a>void* <u>lock</u>(out int <i>pitch</i>, const ShortRect* <i>area</i> = null);
 </big></dt>
 <dd>Use this function to <u>lock</u> a portion of the texture for write-only pixel access.
  Returns the pixel data of given <i>area</i>.
@@ -101,17 +101,17 @@ rschuett<br><br>
 <dd>Checks whether the HwSurface is valid.<br><br>
 
 </dd>
-<dt><big><a name="HwSurface.update"></a>void <u>update</u>(const void* <i>pixels</i>, const Rect!(short)* <i>rect</i>, int <i>pitch</i> = -1);
+<dt><big><a name="HwSurface.update"></a>void <u>update</u>(const void* <i>pixels</i>, const ShortRect* <i>rect</i>, int <i>pitch</i> = -1);
 </big></dt>
 <dd>Use this function to <u>update</u> the given texture rectangle with new pixel data.<br><br>
 
 </dd>
-<dt><big><a name="HwSurface.copy"></a>void <u>copy</u>(ref HwSurface <i>hw</i>, const Rect!(short)* <i>rect</i>);
+<dt><big><a name="HwSurface.copy"></a>void <u>copy</u>(ref HwSurface <i>hw</i>, const ShortRect* <i>rect</i>);
 </big></dt>
 <dd>Copy <i>hw</i> onto this HwSurface. <i>rect</i> is the position and size.<br><br>
 
 </dd>
-<dt><big><a name="HwSurface.copy"></a>void <u>copy</u>(ref Surface <i>srfc</i>, Rect!(short)* <i>rect</i>);
+<dt><big><a name="HwSurface.copy"></a>void <u>copy</u>(ref Surface <i>srfc</i>, ShortRect* <i>rect</i>);
 </big></dt>
 <dd>Copy <i>srfc</i> onto this HwSurface. <i>rect</i> is the position and size.<br><br>
 

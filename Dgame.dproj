@@ -20,7 +20,7 @@
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Dgame</OutputName>
-    <ExtraCompilerArguments>-wi -property -debug -DdDokumentation</ExtraCompilerArguments>
+    <ExtraCompilerArguments>-wi -property -DdDokumentation -unittest</ExtraCompilerArguments>
     <DDocDirectory>Dokumentation</DDocDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,6 +31,7 @@
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Dgame</OutputName>
+    <ExtraCompilerArguments>-O -inline -noboundscheck</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,7 +53,6 @@
     <Compile Include="Audio\WaveFile.d" />
     <Compile Include="Audio\Core\core.d" />
     <Compile Include="Core\Allocator.d" />
-    <Compile Include="Core\AutoRef.d" />
     <Compile Include="Core\core.d" />
     <Compile Include="Graphics\all.d" />
     <Compile Include="Graphics\Color.d" />
