@@ -6,6 +6,8 @@ private {
 	import std.traits : isNumeric;
 }
 
+//version = Develop;
+
 @safe
 private bool equals(T, U)(T a, U b) pure nothrow {
 	return a == cast(T) b;
@@ -30,24 +32,24 @@ public:
 	/**
 	 * CTor
 	 */
-	this()(T x, T y) {
+	this(T x, T y) {
 		this.x = x;
 		this.y = y;
 	}
 	
-	/**
-	 * CTor
-	 */
-	this(U)(U x, U y) if (isNumeric!U && !is(U == T)) {
-		this.x = cast(T) x;
-		this.y = cast(T) y;
+	static if (!is(T == int)) {
+		/**
+		 * CTor
+		 */
+		this(int x, int y) {
+			this.x = cast(T) x;
+			this.y = cast(T) y;
+		}
 	}
 	
-	/**
-	 * Postblit
-	 */
+	version(Develop)
 	this(this) {
-		debug writeln("Postblit Vector2");
+		writeln("Postblit Vector2");
 	}
 	
 	/**
@@ -58,11 +60,9 @@ public:
 		this.set(rhs.x, rhs.y);
 	}
 	
-	/**
-	 * DTor
-	 */
+	version(Develop)
 	~this() {
-		debug writeln("DTor Vector2");
+		writeln("DTor Vector2");
 	}
 	
 	/**

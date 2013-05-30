@@ -7,6 +7,8 @@ private {
 	import derelict.opengl.gl;
 }
 
+debug version = Develop;
+
 /**
  * Current Version
  */

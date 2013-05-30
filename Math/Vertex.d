@@ -4,6 +4,8 @@ debug import std.stdio;
 
 private import Dgame.Math.Vector2;
 
+///version = Develop;
+
 /**
  * The Vertex struct contains 3 components for x, y and z which are stored in a static float array.
  * Vertex is a minimalistic structure for coordinates, compared to Vector2 and Pixel.
@@ -35,11 +37,9 @@ public:
 		this(cast(float) x, cast(float) y, cast(float) z);
 	}
 	
-	/**
-	 * Postblit
-	 */
+	version(Develop)
 	this(this) {
-		debug writeln("Postblit Vertex");
+		writeln("Postblit Vertex");
 	}
 	
 	/**
@@ -49,11 +49,9 @@ public:
 		this.data = v.data;
 	}
 	
-	/**
-	 * DTor
-	 */
+	version(Develop)
 	~this() {
-		debug writeln("DTor Vertex");
+		writeln("DTor Vertex");
 	}
 	
 	/**

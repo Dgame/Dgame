@@ -6,6 +6,8 @@ private {
 	import derelict3.sdl2.sdl;
 }
 
+///version = Develop;
+
 /**
  * Color defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
  * Alpha is default 255 (1.0).
@@ -63,11 +65,9 @@ public:
 		this.update();
 	}
 	
-	/**
-	 * Postblit
-	 */
+	version(Develop)
 	this(this) {
-		debug writeln("Postblit Color");
+		writeln("Postblit Color");
 	}
 	
 	/**
@@ -93,11 +93,9 @@ public:
 		}
 	}
 	
-	/**
-	 * DTor
-	 */
+	version(Develop)
 	~this() {
-		debug writeln("DTor Color");
+		writeln("DTor Color");
 	}
 	
 	/**

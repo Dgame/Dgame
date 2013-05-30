@@ -9,6 +9,8 @@ private {
 	import Dgame.Math.Vector2;
 }
 
+///version = Develop;
+
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
  *
@@ -71,11 +73,9 @@ public:
 		this(vec.x, vec.y, width, height);
 	}
 	
-	/**
-	 * Postblit
-	 */
+	version(Develop)
 	this(this) {
-		debug writeln("Postblit Rect");
+		writeln("Postblit Rect");
 	}
 	
 	/**
@@ -86,8 +86,9 @@ public:
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}
 	
+	version(Develop)
 	~this() {
-		debug writeln("DTor Rect");
+		writeln("DTor Rect");
 	}
 	
 	/**
