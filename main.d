@@ -205,12 +205,14 @@ void main() {
 		
 		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
-		///writefln("Current Fps: %d", wnd.getClock().getCurrentFps());
+		
+		if (Keyboard.isPressed(Keyboard.Code.Left))
+			writeln("WUHUHUHU");
 		
 		while (EventHandler.poll(&event)) {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
-					writeln("Oh! Key press: ", event.keyboard.key);
+					writeln("Oh! Key press: ", event.keyboard.code);
 					
 					sp.slideViewport();
 					

@@ -67,8 +67,11 @@ public:
 	 */
 	struct KeyboardEvent {
 		Keyboard.State	state;	/** Keyboard State. See: Dgame.Input.Keyboard. */
-		Keyboard.Code	key;	/** The Key which is released or pressed. */
+		Keyboard.Code	code;	/** The Key which is released or pressed. */
+		Keyboard.ScanCode	scancode;	/** The Key which is released or pressed. */
 		Keyboard.Mod	mod;	/** The Key modifier. */
+		
+		alias key = code;
 		
 		bool repeat;	/** true, if this is a key repeat. */
 		

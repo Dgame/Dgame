@@ -36,7 +36,9 @@ private:
 				event.timestamp = sdl_event.key.timestamp;
 				event.windowId = sdl_event.key.windowID;
 				
-				event.keyboard.key = cast(Keyboard.Code) sdl_event.key.keysym.sym;
+				event.keyboard.code = cast(Keyboard.Code) sdl_event.key.keysym.sym;
+				event.keyboard.scancode = cast(Keyboard.ScanCode) sdl_event.key.keysym.scancode;
+				
 				event.keyboard.repeat = sdl_event.key.repeat != 0;
 				event.keyboard.state = cast(Keyboard.State) sdl_event.key.state;
 				
