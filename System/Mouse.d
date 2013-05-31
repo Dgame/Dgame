@@ -6,7 +6,7 @@ private {
 }
 
 /**
- *
+ * Represent the Mouse
  */
 final abstract class Mouse {
 private:

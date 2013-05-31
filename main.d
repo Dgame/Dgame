@@ -205,10 +205,13 @@ void main() {
 		
 		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
-		
-		if (Keyboard.isPressed(Keyboard.Code.Left))
-			writeln("WUHUHUHU");
-		
+		/*
+		 if (Keyboard.isPressed(Keyboard.Code.Left))
+		 writeln("Left");
+		 
+		 if (Keyboard.isPressed(Keyboard.Code.Right))
+		 writeln("Right");
+		 */
 		while (EventHandler.poll(&event)) {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */

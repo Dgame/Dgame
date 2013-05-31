@@ -9,6 +9,8 @@ private {
 	import derelict3.sdl2.image;
 	import derelict3.sdl2.ttf;
 	import derelict.opengl.gl;
+	
+	import Dgame.System.Keyboard;
 }
 
 public {
@@ -39,6 +41,8 @@ static this() {
 	}
 	
 	assert(TTF_WasInit() == 1, "SDL TTF wurde nicht korrekt initialisiert.");
+	
+	Keyboard.update();
 }
 
 static ~this() {

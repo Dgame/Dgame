@@ -1,7 +1,7 @@
 module Dgame.System.Keyboard;
 
 private {
-	import std.stdio;
+	debug import std.stdio;
 	
 	import derelict3.sdl2.functions;
 	import derelict3.sdl2.types;
@@ -10,13 +10,19 @@ private {
 }
 
 /**
- *
+ * Represent the Keyboard
  */
 final abstract class Keyboard {
+private:
+	static ubyte* _Keys;
+	
 public:
 	/**
-	 * Returns a pointer to an ubyte.
+	 * Returns the pointer to the Keyboard state.
 	 * With that you can check if some key is pressed without using a event queue.
+	 * 
+	 * Note: The state is probably not up to date. If you want the current state, 
+	 * you should take a look at the update method.
 	 *
 	 * Examples:
 	 * ---
@@ -26,7 +32,17 @@ public:
 	 * ---
 	 */
 	static ubyte* getState() {
-		return SDL_GetKeyboardState(null);
+		return _Keys;
+	}
+	
+	/**
+	 * Update the current Keyboard state
+	 * and returns a pointer to the current state.
+	 */
+	static ubyte* update() {
+		_Keys = SDL_GetKeyboardState(null);
+		
+		return _Keys;
 	}
 	
 	/**
@@ -59,6 +75,7 @@ public:
 	
 	/**
 	 * Returns if the given Keyboard.Code is pressed.
+	 * If update is true, the keyboard state is updated before the check is executed.
 	 *
 	 * Examples:
 	 * ---
@@ -66,14 +83,18 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(Code code) {
+	static bool isPressed(Code code, bool update = false) {
+		if (update)
+			Keyboard.update();
+		
 		int scancode = SDL_GetScancodeFromKey(code);
 		
-		return Keyboard.getState()[scancode] == 1;
+		return _Keys[scancode] == 1;
 	}
 	
 	/**
 	 * Returns if the given Keyboard.ScanCode is pressed.
+	 * If update is true, the keyboard state is updated before the check is executed.
 	 *
 	 * Examples:
 	 * ---
@@ -81,8 +102,11 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(ScanCode scancode) {
-		return Keyboard.getState()[scancode] == 1;
+	static bool isPressed(ScanCode scancode, bool update = false) {
+		if (update)
+			Keyboard.update();
+		
+		return _Keys[scancode] == 1;
 	}
 	
 	/**
