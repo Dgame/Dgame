@@ -22,6 +22,8 @@ protected:
 	float _speed  = 0.1f;
 	float _update = 0f;
 	
+	bool _move = true;
+	
 	enum Update = 1f;
 	
 public:
@@ -37,6 +39,31 @@ public:
 	 */
 	this(Texture tex, const FloatRect viewport) {
 		super(tex, viewport);
+	}
+	
+	/**
+	 * Returns if the Unit is stopped or not.
+	 * Default is false
+	 */
+	bool isStopped() const pure nothrow {
+		return this._move;
+	}
+	
+	/**
+	 * Stop movement of the Unit.
+	 * Reset the viewport
+	 */
+	void stop() {
+		this._move = false;
+		
+		super.resetViewport();
+	}
+	
+	/**
+	 * Continue movement
+	 */
+	void resume() {
+		this._move = true;
 	}
 	
 	/**
@@ -78,7 +105,7 @@ public:
 	 * Slide/Move the Unit
 	 */
 	void slide() {
-		if (this._speed <= 0f)
+		if (!this._move || this._speed <= 0f)
 			return;
 		
 		this._update += this._speed;

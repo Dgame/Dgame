@@ -7,11 +7,17 @@
 <br><br>
 <dl><dt><big><a name="Keyboard"></a>abstract class <u>Keyboard</u>;
 </big></dt>
-<dd><br><br>
+<dd>Represent the <u>Keyboard</u><br><br>
+
 <dl><dt><big><a name="Keyboard.getState"></a>static ubyte* <u>getState</u>();
 </big></dt>
-<dd>Returns a pointer to an ubyte.
+<dd>Returns the pointer to the Keyboard state.
  With that you can check if some key is pressed without using a event queue.
+<br><br>
+<b>Note:</b><br>
+The state is probably not up to date. If you want the current state,
+ you should take a look at the update method.
+
 <br><br>
 <b>Examples:</b><br>
 <pre class="d_code"><font color=blue>ubyte</font>* keyStates = Keyboard.<u>getState</u>();
@@ -21,9 +27,10 @@
 <br><br>
 
 </dd>
-<dt><big><a name="Keyboard.update"></a>static void <u>update</u>();
+<dt><big><a name="Keyboard.update"></a>static ubyte* <u>update</u>();
 </big></dt>
-<dd>Update the current Keyboard state<br><br>
+<dd>Update the current Keyboard state
+ and returns a pointer to the current state.<br><br>
 
 </dd>
 <dt><big><a name="Keyboard.startTextInput"></a>static void <u>startTextInput</u>();
@@ -46,9 +53,10 @@
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Keyboard.isPressed"></a>static bool <u>isPressed</u>(Code <i>code</i>);
+<dt><big><a name="Keyboard.isPressed"></a>static bool <u>isPressed</u>(Code <i>code</i>, bool <i>update</i> = false);
 </big></dt>
 <dd>Returns if the given Keyboard.Code is pressed.
+ If <i>update</i> is <b>true</b>, the keyboard state is updated before the check is executed.
 <br><br>
 <b>Examples:</b><br>
 <pre class="d_code"><font color=blue>if</font> (Keyboard.<u>isPressed</u>(Keyboard.Code.Escape))
@@ -57,9 +65,10 @@
 <br><br>
 
 </dd>
-<dt><big><a name="Keyboard.isPressed"></a>static bool <u>isPressed</u>(ScanCode <i>scancode</i>);
+<dt><big><a name="Keyboard.isPressed"></a>static bool <u>isPressed</u>(ScanCode <i>scancode</i>, bool <i>update</i> = false);
 </big></dt>
 <dd>Returns if the given Keyboard.ScanCode is pressed.
+ If <i>update</i> is <b>true</b>, the keyboard state is updated before the check is executed.
 <br><br>
 <b>Examples:</b><br>
 <pre class="d_code"><font color=blue>if</font> (Keyboard.<u>isPressed</u>(Keyboard.ScanCode.Escape))
