@@ -37,8 +37,17 @@ public:
 	/**
 	 * CTor
 	 */
-	this(Texture tex, const FloatRect viewport) {
+	this(Texture tex, ref const FloatRect viewport) {
 		super(tex, viewport);
+	}
+	
+	/**
+	 * CTor
+	 * 
+	 * Rvalue version
+	 */
+	this(Texture tex, const FloatRect viewport) {
+		this(tex, viewport);
 	}
 	
 	/**
