@@ -19,12 +19,12 @@ class Unit : Spritesheet {
 protected:
 	Vector2f _direction;
 	
-	float _speed  = 0.1f;
+	float _speed  = 1f;
 	float _update = 0f;
 	
 	bool _move = true;
 	
-	enum Update = 1f;
+	enum Update = 10f;
 	
 public:
 	/**
@@ -51,10 +51,9 @@ public:
 	}
 	
 	/**
-	 * Returns if the Unit is stopped or not.
-	 * Default is false
+	 * Returns if the Unit moves.
 	 */
-	bool isStopped() const pure nothrow {
+	final bool isMoving() const pure nothrow {
 		return this._move;
 	}
 	
@@ -62,7 +61,7 @@ public:
 	 * Stop movement of the Unit.
 	 * Reset the viewport
 	 */
-	void stop() {
+	final void stop() {
 		this._move = false;
 		
 		super.resetViewport();
@@ -71,47 +70,58 @@ public:
 	/**
 	 * Continue movement
 	 */
-	void resume() {
+	final void resume() {
 		this._move = true;
 	}
 	
 	/**
 	 * Set a new speed
 	 */
-	void setSpeed(float speed) {
+	final void setSpeed(float speed) {
 		this._speed = speed;
 	}
 	
 	/**
-	 * Returns the current speed (starting value is 0.1f)
+	 * Returns the current speed (starting value is 1f)
 	 */
-	float getSpeed() const pure nothrow {
+	final float getSpeed() const pure nothrow {
 		return this._speed;
 	}
 	
 	/**
 	 * Set a new direction
+	 * The direction is the amount of pixels which is added to the current position.
+	 * 
+	 * See: slide
 	 */
-	void setDirection(float x, float y) {
+	final void setDirection(float x, float y) {
 		this._direction.set(x, y);
 	}
 	
 	/**
-	 * Set a new direction
+	 * Set a new direction.
+	 * The direction is the amount of pixels which is added to the current position.
+	 * 
+	 * See: slide
 	 */
-	void setDirection(ref const Vector2f vec) {
+	final void setDirection(ref const Vector2f vec) {
 		this.setDirection(vec.x, vec.y);
 	}
 	
 	/**
 	 * Returns the current directon
 	 */
-	ref const(Vector2f) getDirection() const pure nothrow {
+	final ref const(Vector2f) getDirection() const pure nothrow {
 		return this._direction;
 	}
 	
 	/**
 	 * Slide/Move the Unit
+	 * Every time this method is called the current speed is added to an internal update property.
+	 * If this property reaches 10f, a loop runs as long as this update property is >= 10f.
+	 * Every loop run the direction is added to the current position 
+	 * and the slideViewport method from Spritesheet ist called.
+	 * Also the update property is decreased about 10f every loop run.
 	 */
 	void slide() {
 		if (!this._move || this._speed <= 0f)
@@ -125,11 +135,9 @@ public:
 		float w = this._viewport.width;
 		float h = this._viewport.height;
 		
-		while (this._update >= Update) {
-			this._update -= Update;
-			
-			super.slideViewport();
-			super.move(this._direction);
-		}
+		this._update -= Update;
+		
+		super.slideViewport();
+		super.move(this._direction);
 	}
 }

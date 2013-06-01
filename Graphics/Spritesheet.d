@@ -67,28 +67,28 @@ public:
 	/**
 	 * Get access to the current Viewport.
 	 */
-	ref const(FloatRect) getViewport() const {
+	final ref const(FloatRect) getViewport() const {
 		return this._viewport;
 	}
 	
 	/**
 	 * Get mutable access to the current Viewport.
 	 */
-	inout(FloatRect)* fetchViewport() inout {
+	final inout(FloatRect)* fetchViewport() inout {
 		return &this._viewport;
 	}
 	
 	/**
 	 * Returns the current row (starting value is 0)
 	 */
-	ubyte getRow() const pure nothrow {
+	final ubyte getRow() const pure nothrow {
 		return this._row;
 	}
 	
 	/**
 	 * Set a new row
 	 */
-	void setRow(ubyte row) {
+	final void setRow(ubyte row) {
 		this._row = row;
 	}
 	

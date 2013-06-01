@@ -34,7 +34,7 @@ public:
 	
 	~this() {
 		if (this.mode != Mode.DontFree)
-			Memory.free(this.data);
+			Memory.release(this.data);
 	}
 	
 	ref typeof(this) opOpAssign(string op : "~", U : T)(auto ref U val) {
@@ -68,6 +68,10 @@ public:
 		return this;
 	}
 	
+	bool isValid() const pure nothrow {
+		return this.data !is null;
+	}
+	
 	@property
 	inout(T[]) get() inout {
 		return this.data[0 .. this.length];
@@ -79,7 +83,7 @@ public:
 final abstract class Memory {
 public:
 	static Storage!T alloc(T)(size_t length, Mode mode = Mode.DontFree) {
-		T* mem = cast(T*) .calloc(length, T.sizeof);
+		T* mem = cast(T*) calloc(length, T.sizeof);
 		if (!mem)
 			assert(0, "Out of memory");
 		
@@ -101,16 +105,16 @@ public:
 		return st;
 	}
 	
-	static void free(T)(ref Storage!T st) {
-		.free(st.data);
+	static void release(T)(ref Storage!T st) {
+		Memory.release(st.data);
 	}
 	
-	static void free(T)(T* ptr) {
-		.free(ptr);
+	static void release(T)(ref T* ptr) {
+		free(ptr);
+		ptr = null;
 	}
 } unittest {
 	auto mem = Memory.alloc!float(12);
-	scope(exit) Memory.free(mem);
 	
 	assert(mem.length == 0);
 	assert(mem.capacity == 12);
@@ -134,4 +138,8 @@ public:
 	assert(mem.length == 7);
 	assert(mem.capacity == 12);
 	assert(mem == [42, 1, 2, 3, 4, 5, 6]);
+	
+	Memory.release(mem);
+	
+	assert(!mem.isValid());
 }

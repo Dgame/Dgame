@@ -154,7 +154,7 @@ private:
 	}
 	
 package:
-	void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
+	final void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
 		GLuint previous_texture = Texture.currentlyBound();
 		scope(exit) Texture._reBind(previous_texture);
 		
@@ -205,13 +205,15 @@ package:
 	/**
 	 * Rvalue version
 	 */
-	void _render(const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
+	final void _render(const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
 		this._render(dst, mode);
 	}
 	
 public:
-	// mixin blendable functionality
+	/// mixin blendable functionality
 	mixin TBlendable;
+	
+final:
 	
 	/**
 	 * CTor

@@ -92,22 +92,22 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Texture._render"></a>package const void <u>_render</u>(const ShortRect <i>dst</i>, RenderMode <i>mode</i> = RenderMode.Normal);
+<dt><big><a name="Texture._render"></a>package final const void <u>_render</u>(const ShortRect <i>dst</i>, RenderMode <i>mode</i> = RenderMode.Normal);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.this"></a> this();
+<dt><big><a name="Texture.this"></a>final  this();
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Texture.this"></a> this(ref const Texture <i>tex</i>);
+<dt><big><a name="Texture.this"></a>final  this(ref const Texture <i>tex</i>);
 </big></dt>
 <dd>Postblit<br><br>
 
 </dd>
-<dt><big><a name="Texture.free"></a>void <u>free</u>();
+<dt><big><a name="Texture.free"></a>final void <u>free</u>();
 </big></dt>
 <dd>Free / Delete the Texture &amp; Memory
  After this call, the Pixel data is invalid.<br><br>
@@ -118,27 +118,27 @@ rschuett<br><br>
 <dd>Returns the currently bound texture id.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getId"></a>const pure nothrow GLuint <u>getId</u>();
+<dt><big><a name="Texture.getId"></a>final const pure nothrow GLuint <u>getId</u>();
 </big></dt>
 <dd>Returns the Texture Id.<br><br>
 
 </dd>
-<dt><big><a name="Texture.width"></a>const pure nothrow @property ushort <u>width</u>();
+<dt><big><a name="Texture.width"></a>final const pure nothrow @property ushort <u>width</u>();
 </big></dt>
 <dd>Returns the <u>width</u> of this Texture<br><br>
 
 </dd>
-<dt><big><a name="Texture.height"></a>const pure nothrow @property ushort <u>height</u>();
+<dt><big><a name="Texture.height"></a>final const pure nothrow @property ushort <u>height</u>();
 </big></dt>
 <dd>Returns the <u>height</u> of this Texture.<br><br>
 
 </dd>
-<dt><big><a name="Texture.depth"></a>const pure nothrow @property ubyte <u>depth</u>();
+<dt><big><a name="Texture.depth"></a>final const pure nothrow @property ubyte <u>depth</u>();
 </big></dt>
 <dd>Returns the <u>depth</u>. May often 24 or 32.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getFormat"></a>const pure nothrow Format <u>getFormat</u>();
+<dt><big><a name="Texture.getFormat"></a>final const pure nothrow Format <u>getFormat</u>();
 </big></dt>
 <dd>Returns the Format.
 <br><br>
@@ -146,72 +146,72 @@ rschuett<br><br>
 Format enum.<br><br>
 
 </dd>
-<dt><big><a name="Texture.bind"></a>const void <u>bind</u>();
+<dt><big><a name="Texture.bind"></a>final const void <u>bind</u>();
 </big></dt>
 <dd>Binds this Texture.
  Means this Texture is now activated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.unbind"></a>const void <u>unbind</u>();
+<dt><big><a name="Texture.unbind"></a>final const void <u>unbind</u>();
 </big></dt>
 <dd>Binds this Texture.
  Means this Texture is now deactivated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.isCurrentlyBound"></a>const bool <u>isCurrentlyBound</u>();
+<dt><big><a name="Texture.isCurrentlyBound"></a>final const bool <u>isCurrentlyBound</u>();
 </big></dt>
 <dd>Returns <b>true</b>, if this Texture is currently activated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.enableSmooth"></a>void <u>enableSmooth</u>(bool <i>enable</i>);
+<dt><big><a name="Texture.enableSmooth"></a>final void <u>enableSmooth</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Enable smothing texture filter by the next load.<br><br>
 
 </dd>
-<dt><big><a name="Texture.hasSmooth"></a>const pure nothrow bool <u>hasSmooth</u>();
+<dt><big><a name="Texture.hasSmooth"></a>final const pure nothrow bool <u>hasSmooth</u>();
 </big></dt>
 <dd>Check if smoth texture filter are activated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.hasViewport"></a>const bool <u>hasViewport</u>();
+<dt><big><a name="Texture.hasViewport"></a>final const bool <u>hasViewport</u>();
 </big></dt>
 <dd>Check if this Texture has a Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setViewport"></a>void <u>setViewport</u>(ref const FloatRect <i>viewport</i>);
+<dt><big><a name="Texture.setViewport"></a>final void <u>setViewport</u>(ref const FloatRect <i>viewport</i>);
 </big></dt>
 <dd>Set a Viewport to this Texture.
  A Viewport is a ClipRect that is shorter as the whole Texture.
  If this Texture is drawn only the specific Viewport will be drawn.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setViewport"></a>void <u>setViewport</u>(const FloatRect <i>viewport</i>);
+<dt><big><a name="Texture.setViewport"></a>final void <u>setViewport</u>(const FloatRect <i>viewport</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.unsetViewport"></a>void <u>unsetViewport</u>();
+<dt><big><a name="Texture.unsetViewport"></a>final void <u>unsetViewport</u>();
 </big></dt>
 <dd>Remove/Collapse the current Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getViewport"></a>const pure nothrow ref const(FloatRect) <u>getViewport</u>();
+<dt><big><a name="Texture.getViewport"></a>final const pure nothrow ref const(FloatRect) <u>getViewport</u>();
 </big></dt>
 <dd>Get const access to the current Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Texture.fetchViewport"></a>inout inout(FloatRect)* <u>fetchViewport</u>();
+<dt><big><a name="Texture.fetchViewport"></a>final inout inout(FloatRect)* <u>fetchViewport</u>();
 </big></dt>
 <dd>Get mutable access to the current Viewport.<br><br>
 
 </dd>
-<dt><big><a name="Texture.link"></a>void <u>link</u>(const Texture <i>tex</i>);
+<dt><big><a name="Texture.link"></a>final void <u>link</u>(const Texture <i>tex</i>);
 </big></dt>
 <dd>Link this Texture to another.
  This Texture points now to the other Texture and his data.<br><br>
 
 </dd>
-<dt><big><a name="Texture.partial"></a>const Texture <u>partial</u>(ref const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
+<dt><big><a name="Texture.partial"></a>final const Texture <u>partial</u>(ref const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
 </big></dt>
 <dd>Returns a new Texture object which rested <u>partial</u> of these Texture.
  If you pass as second parameter <b>true</b>, the whole Texture will be copied
@@ -226,27 +226,27 @@ postblit CTor
 link<br><br>
 
 </dd>
-<dt><big><a name="Texture.partial"></a>const Texture <u>partial</u>(const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
+<dt><big><a name="Texture.partial"></a>final const Texture <u>partial</u>(const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.loadFromMemory"></a>void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Load from <i>memory</i>.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setColorkey"></a>void <u>setColorkey</u>(ref const Color <i>colorkey</i>);
+<dt><big><a name="Texture.setColorkey"></a>final void <u>setColorkey</u>(ref const Color <i>colorkey</i>);
 </big></dt>
 <dd>Load from memory with a <i>colorkey</i>.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setColorkey"></a>void <u>setColorkey</u>(const Color <i>colorkey</i>);
+<dt><big><a name="Texture.setColorkey"></a>final void <u>setColorkey</u>(const Color <i>colorkey</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.getMemory"></a>const void* <u>getMemory</u>();
+<dt><big><a name="Texture.getMemory"></a>final const void* <u>getMemory</u>();
 </big></dt>
 <dd>Returns the pixel of this Texture or <b>null</b> if this Texture isn't valid.
 <br><br>
@@ -254,25 +254,25 @@ link<br><br>
 This method <b>allocates</b> memory.<br><br>
 
 </dd>
-<dt><big><a name="Texture.subTexture"></a>Texture <u>subTexture</u>(ref const ShortRect <i>rect</i>);
+<dt><big><a name="Texture.subTexture"></a>final Texture <u>subTexture</u>(ref const ShortRect <i>rect</i>);
 </big></dt>
 <dd>Returns a <u>subTexture</u> of this Texture.
  This isn't similar to partial.<br><br>
 
 </dd>
-<dt><big><a name="Texture.subTexture"></a>Texture <u>subTexture</u>(const ShortRect <i>rect</i>);
+<dt><big><a name="Texture.subTexture"></a>final Texture <u>subTexture</u>(const ShortRect <i>rect</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.copy"></a>void <u>copy</u>(const Texture <i>tex</i>, ShortRect* <i>rect</i> = null);
+<dt><big><a name="Texture.copy"></a>final void <u>copy</u>(const Texture <i>tex</i>, ShortRect* <i>rect</i> = null);
 </big></dt>
 <dd>Copy another Texture to this.
  The second parameter is a pointer to the destination <i>rect</i>.
  Is it is <b>null</b> this means the whole <i>tex</i> is copied.<br><br>
 
 </dd>
-<dt><big><a name="Texture.updateMemory"></a>void <u>updateMemory</u>(const void* <i>memory</i>, ShortRect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.updateMemory"></a>final void <u>updateMemory</u>(const void* <i>memory</i>, ShortRect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Update the pixel data of this Texture.
  The second parameter is a pointer to the area which is updated.

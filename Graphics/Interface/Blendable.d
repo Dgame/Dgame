@@ -104,6 +104,8 @@ protected:
 	}
 	
 public:
+final:
+	
 	/**
 	 * Enable or Disable blending
 	 */

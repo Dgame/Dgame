@@ -33,16 +33,16 @@ public:
 	 * Battery state
 	 */
 	State state;
-}
-
-/**
- * Returns the PowerInfo structure with the currently power informations
- * 
- * See: PowerInfo struct
- */
-PowerInfo getPowerInfo() {
-	int secs, pct;
-	SDL_PowerState state = SDL_GetPowerInfo(&secs, &pct);
 	
-	return PowerInfo(secs, cast(byte) pct, cast(PowerInfo.State) state);
+	/**
+	 * Returns the PowerInfo structure with the currently power informations
+	 * 
+	 * See: PowerInfo struct
+	 */
+	static PowerInfo getInfo() {
+		int secs, pct;
+		SDL_PowerState state = SDL_GetPowerInfo(&secs, &pct);
+		
+		return PowerInfo(secs, cast(byte) pct, cast(PowerInfo.State) state);
+	}
 }

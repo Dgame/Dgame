@@ -88,7 +88,7 @@ rschuett<br><br>
  otherwise the whole tileset is taken.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.this"></a> this(string <i>filename</i>, bool <i>compress</i> = true);
+<dt><big><a name="TileMap.this"></a>final  this(string <i>filename</i>, bool <i>compress</i> = true);
 </big></dt>
 <dd>CTor
 <br><br>
@@ -97,7 +97,7 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
  otherwise the whole tileset is taken.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s[] <i>newCoords</i>);
+<dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s[] <i>newCoords</i>);
 </big></dt>
 <dd>Reload multiple tiles.
  The length of <i>coords</i> must be equal to the length of <i>newCoords</i>.
@@ -106,38 +106,38 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 <u>reload</u> for one tile<br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2s[] <i>coords</i>, ref const Vector2s <i>newCoord</i>);
+<dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(const Vector2s[] <i>coords</i>, ref const Vector2s <i>newCoord</i>);
 </big></dt>
 <dd>Replace multiple tiles with another.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s <i>newCoord</i>);
+<dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s <i>newCoord</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(ref const Vector2s <i>coord</i>, ref const Vector2s <i>newCoord</i>);
+<dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(ref const Vector2s <i>coord</i>, ref const Vector2s <i>newCoord</i>);
 </big></dt>
 <dd>Reload one tile, which means that the tile on the coordinates <i>coord</i>
  is replaced with the tile (and the tile surface) on the coordinates <i>newCoord</i><br><br>
 
 </dd>
-<dt><big><a name="TileMap.reload"></a>void <u>reload</u>(const Vector2s <i>coord</i>, const Vector2s <i>newCoord</i>);
+<dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(const Vector2s <i>coord</i>, const Vector2s <i>newCoord</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="TileMap.exchangeTileset"></a>void <u>exchangeTileset</u>(Texture <i>tex</i>);
+<dt><big><a name="TileMap.exchangeTileset"></a>final void <u>exchangeTileset</u>(Texture <i>tex</i>);
 </big></dt>
 <dd>Exchange the tileset<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTiles"></a>inout inout(Tile[]) <u>getTiles</u>();
+<dt><big><a name="TileMap.getTiles"></a>final inout inout(Tile[]) <u>getTiles</u>();
 </big></dt>
 <dd>Returns all containing tiles<br><br>
 
 </dd>
-<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(ref const Vector2s <i>vec</i>, uint* <i>idx</i> = null);
+<dt><big><a name="TileMap.isTileAt"></a>final const pure nothrow bool <u>isTileAt</u>(ref const Vector2s <i>vec</i>, uint* <i>idx</i> = null);
 </big></dt>
 <dd>Check whether a tile exist on the given Coordinates.
  If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
@@ -146,7 +146,7 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(short[2] <i>tilePos</i>, uint* <i>idx</i> = null);
+<dt><big><a name="TileMap.isTileAt"></a>final const pure nothrow bool <u>isTileAt</u>(short[2] <i>tilePos</i>, uint* <i>idx</i> = null);
 </big></dt>
 <dd>Check whether a tile exist on the given Coordinates.
  If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
@@ -155,7 +155,7 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.isTileAt"></a>const pure nothrow bool <u>isTileAt</u>(short <i>x</i>, short <i>y</i>, uint* <i>idx</i> = null);
+<dt><big><a name="TileMap.isTileAt"></a>final const pure nothrow bool <u>isTileAt</u>(short <i>x</i>, short <i>y</i>, uint* <i>idx</i> = null);
 </big></dt>
 <dd>Check whether a tile exist on the given Coordinates.
  If <i>idx</i> isn't <b>null</b>, the calculated index of the Tile at the given position is stored there.
@@ -164,7 +164,7 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(ref const Vector2s <i>vec</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+<dt><big><a name="TileMap.replaceTileAt"></a>final void <u>replaceTileAt</u>(ref const Vector2s <i>vec</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
 </big></dt>
 <dd>Replace the tile at the given position with the given new Tile.
  If oldtile is not <b>null</b>, the former Tile is stored there.
@@ -176,7 +176,7 @@ This method is designated as helper method for reload
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(short[2] <i>tilePos</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+<dt><big><a name="TileMap.replaceTileAt"></a>final void <u>replaceTileAt</u>(short[2] <i>tilePos</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
 </big></dt>
 <dd>Replace the tile at the given position with the given new Tile.
  If oldtile is not <b>null</b>, the former Tile is stored there.
@@ -188,7 +188,7 @@ This method is designated as helper method for reload
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.replaceTileAt"></a>void <u>replaceTileAt</u>(short <i>x</i>, short <i>y</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
+<dt><big><a name="TileMap.replaceTileAt"></a>final void <u>replaceTileAt</u>(short <i>x</i>, short <i>y</i>, ref const Tile <i>newTile</i>, Tile* <i>oldTile</i> = null);
 </big></dt>
 <dd>Replace the tile at the given position with the given new Tile.
  If oldtile is not <b>null</b>, the former Tile is stored there.
@@ -200,7 +200,7 @@ This method is designated as helper method for reload
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(ref const Vector2s <i>vec</i>);
+<dt><big><a name="TileMap.getTileAt"></a>final const ref const(Tile) <u>getTileAt</u>(ref const Vector2s <i>vec</i>);
 </big></dt>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>
@@ -208,7 +208,7 @@ The position must be in tile coordinates, not pixel coordinates.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(short[2] <i>tilePos</i>);
+<dt><big><a name="TileMap.getTileAt"></a>final const ref const(Tile) <u>getTileAt</u>(short[2] <i>tilePos</i>);
 </big></dt>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>
@@ -219,7 +219,7 @@ The position must be in tile coordinates, not pixel coordinates.
 This function is fast and takes ~ O(1) for a lookup.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getTileAt"></a>const ref const(Tile) <u>getTileAt</u>(short <i>x</i>, short <i>y</i>);
+<dt><big><a name="TileMap.getTileAt"></a>final const ref const(Tile) <u>getTileAt</u>(short <i>x</i>, short <i>y</i>);
 </big></dt>
 <dd>Returns the tile at the given position, or throw an Exception
 <br><br>
@@ -227,12 +227,12 @@ This function is fast and takes ~ O(1) for a lookup.<br><br>
 The position must be in tile coordinates, not pixel coordinates.<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getInfo"></a>const pure nothrow ref const(TileMapInfo) <u>getInfo</u>();
+<dt><big><a name="TileMap.getInfo"></a>final const pure nothrow ref const(TileMapInfo) <u>getInfo</u>();
 </big></dt>
 <dd>Returns the information structure of this tilemap<br><br>
 
 </dd>
-<dt><big><a name="TileMap.getFilename"></a>const pure nothrow string <u>getFilename</u>();
+<dt><big><a name="TileMap.getFilename"></a>final const pure nothrow string <u>getFilename</u>();
 </big></dt>
 <dd>Returns the .xml filename of this tilemap<br><br>
 

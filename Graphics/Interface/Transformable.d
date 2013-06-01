@@ -84,6 +84,8 @@ private:
 	short _rotAngle;
 	
 public:
+final:
+	
 	/**
 	 * Stores the rotation data for the current shape.
 	 * The second parameter is the center point of rotation.

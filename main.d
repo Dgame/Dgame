@@ -280,26 +280,28 @@ void main() {
 					//qs.scale(-0.5, -0.5);
 					//qs.rotate(15, 0, 0);
 					//qs.move(150, -25);
-					/+
-					 PowerInfo powI = getPowerInfo();
-					 
-					 writefln("Es verbleiben %d second bei %d %%. Status: %s",
-					 powI.seconds, powI.percent, powI.state);
-					 
-					 qs.setPixelColor(colors[cidx++ % colors.length]);
-					 qs.setType(Shape.Type.LineLoop);
-					 
-					 tm.move(5, 5);
-					 
+					
+					PowerInfo powI = PowerInfo.getInfo();
+					
+					writefln("Es verbleiben %d second bei %d %%. Status: %s",
+					         powI.seconds, powI.percent, powI.state);
+					
+					qs.setPixelColor(colors[cidx++ % colors.length]);
+					qs.setType(Shape.Type.LineLoop);
+					
+					tm.move(5, 5);
+					
+					/*
 					 if (event.keyboard.key == Keyboard.Code.Space) {
 					 Image img = new Image("../../new_tilset.png");
 					 tm.exchangeTileset(img);
 					 } else {
 					 tm.reload(Vector2s(1, 0), Vector2s(9, 4));
 					 }
-					 
-					 tof.setRow(1);
-					 +/
+					 */
+					
+					tof.setRow(1);
+					
 					//					if (wnd.isFullscreen())
 					//						wnd.setFullscreen(false);
 					//					else

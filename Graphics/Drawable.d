@@ -28,10 +28,12 @@ protected:
 	Vector2f _position;
 	
 public:
+final:
+	
 	/**
 	 * Render method
 	 */
-	final void render() {
+	void render() {
 		this._render();
 	}
 	

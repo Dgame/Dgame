@@ -92,16 +92,16 @@ protected:
 		CCount  = 4
 	}
 	
-protected:
+	//protected:
 	void _updatePixelCache() {
-		const size_t vSize = this._pixels.length * VCount;
+		const uint vSize = this._pixels.length * VCount;
 		debug {
 			const size_t cSize = this._pixels.length * CCount;
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
 		auto vecData = Memory.alloc!float(vSize);
-		scope(exit) Memory.free(vecData);
+		scope(exit) Memory.release(vecData);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			vecData ~= px.getPositionData();
@@ -121,7 +121,7 @@ protected:
 		const size_t cSize = this._pixels.length * CCount;
 		
 		auto colData = Memory.alloc!float(cSize);
-		scope(exit) Memory.free(colData);
+		scope(exit) Memory.release(colData);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			colData ~= px.getColorData();
@@ -202,6 +202,8 @@ public:
 	mixin TBlendable;
 	/// mixin transformable functionality
 	mixin TTransformable;
+	
+final:
 	
 	/**
 	 * CTor

@@ -14,7 +14,6 @@ private {
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Drawable;
-	//	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
 	import Dgame.System.Buffer;
@@ -86,16 +85,11 @@ public:
 		
 		memcpy(&this, &rhs, Tile.sizeof);
 	}
-	/*
-	 this(this) {
-	 debug writeln("Postblit Tile");
-	 }
-	 */
 }
 
-struct Sub {
+struct SubSurface {
 public:
-	Surface srfc = void;
+	Surface clip = void;
 	ushort gid;
 }
 
@@ -250,7 +244,7 @@ protected:
 	void _loadTileset() {
 		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
 		
-		Sub[] subs;
+		SubSurface[] subs;
 		
 		ushort[2][ushort] used;
 		ushort[2]*[] coordinates;
@@ -268,7 +262,7 @@ protected:
 				src.setPosition(used[t.gid]);
 				
 				if (this.compress)
-					subs ~= Sub(tileset.subSurface(src), t.gid);
+					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 			} else
 				doubly++;
 			
@@ -290,8 +284,8 @@ protected:
 			
 			/// Anpassen der Tile Koordinaten
 			//debug char c = '1';
-			foreach (ref Sub sub; subs) {
-				if (!newTileset.blit(sub.srfc, null, &src))
+			foreach (ref SubSurface sub; subs) {
+				if (!newTileset.blit(sub.clip, null, &src))
 					throw new Exception("An error occured by blitting the tile on the new tileset.");
 				
 				used[sub.gid][0] = col;
@@ -305,7 +299,7 @@ protected:
 				
 				//debug sub.srfc.saveToFile("tile_" ~ c++ ~ ".png");
 				
-				sub.srfc.free(); /// Free subsurface
+				sub.clip.free(); /// Free subsurface
 				src.setPosition(col, row);
 			}
 			
@@ -415,6 +409,8 @@ private:
 public:
 	/// mixin transformable functionality
 	mixin TTransformable;
+	
+final:
 	
 	/**
 	 * CTor

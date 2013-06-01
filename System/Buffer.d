@@ -15,7 +15,7 @@ private {
  *
  * Author: rschuett
  */
-class Buffer {
+final class Buffer {
 public:
 	/**
 	 * Declare which Buffer Type is stored.

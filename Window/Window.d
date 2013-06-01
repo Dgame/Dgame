@@ -68,6 +68,8 @@ protected:
 	Clock _clock;
 	
 public:
+final:
+	
 	/**
 	 * CTor
 	 */

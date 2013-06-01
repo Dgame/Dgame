@@ -111,27 +111,27 @@ s.update(Shape.<u>Cache</u>.Pixel | Shape.<u>Cache</u>.Color);
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Shape.this"></a> this(Type <i>type</i>);
+<dt><big><a name="Shape.this"></a>final  this(Type <i>type</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Shape.setSmooth"></a>void <u>setSmooth</u>(SmoothTarget <i>sTarget</i>, SmoothHint <i>sHint</i> = SmoothHint.Fastest);
+<dt><big><a name="Shape.setSmooth"></a>final void <u>setSmooth</u>(SmoothTarget <i>sTarget</i>, SmoothHint <i>sHint</i> = SmoothHint.Fastest);
 </big></dt>
 <dd>Set target and hint of smoothing.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getSmoothTarget"></a>const pure nothrow SmoothTarget <u>getSmoothTarget</u>();
+<dt><big><a name="Shape.getSmoothTarget"></a>final const pure nothrow SmoothTarget <u>getSmoothTarget</u>();
 </big></dt>
 <dd>Return smooth target;<br><br>
 
 </dd>
-<dt><big><a name="Shape.getSmoothHint"></a>const pure nothrow SmoothHint <u>getSmoothHint</u>();
+<dt><big><a name="Shape.getSmoothHint"></a>final const pure nothrow SmoothHint <u>getSmoothHint</u>();
 </big></dt>
 <dd>Returns smooth hint.<br><br>
 
 </dd>
-<dt><big><a name="Shape.update"></a>void <u>update</u>(Cache <i>val</i>);
+<dt><big><a name="Shape.update"></a>final void <u>update</u>(Cache <i>val</i>);
 </big></dt>
 <dd>Activate an <u>update</u>.
  The current shape will be updated.
@@ -139,7 +139,7 @@ s.update(Shape.<u>Cache</u>.Pixel | Shape.<u>Cache</u>.Color);
  but sometimes it is usefull.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setType"></a>void <u>setType</u>(Type <i>type</i>);
+<dt><big><a name="Shape.setType"></a>final void <u>setType</u>(Type <i>type</i>);
 </big></dt>
 <dd>Set or replace the current Shape <i>type</i>.
 <br><br>
@@ -147,7 +147,7 @@ s.update(Shape.<u>Cache</u>.Pixel | Shape.<u>Cache</u>.Color);
 Shape.Type enum.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getType"></a>const pure nothrow Type <u>getType</u>();
+<dt><big><a name="Shape.getType"></a>final const pure nothrow Type <u>getType</u>();
 </big></dt>
 <dd>Returns the Shape Type.
 <br><br>
@@ -155,86 +155,86 @@ Shape.Type enum.<br><br>
 Shape.Type enum.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setPixelColor"></a>void <u>setPixelColor</u>(ref const Color <i>col</i>);
+<dt><big><a name="Shape.setPixelColor"></a>final void <u>setPixelColor</u>(ref const Color <i>col</i>);
 </big></dt>
 <dd>Set for <b>all</b> vertices a (new) color.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setPixelColor"></a>void <u>setPixelColor</u>(const Color <i>col</i>);
+<dt><big><a name="Shape.setPixelColor"></a>final void <u>setPixelColor</u>(const Color <i>col</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Shape.enableFill"></a>void <u>enableFill</u>(bool <i>fill</i>);
+<dt><big><a name="Shape.enableFill"></a>final void <u>enableFill</u>(bool <i>fill</i>);
 </big></dt>
 <dd>Activate <i>fill</i> mode.
  This means the whole shape is drawn and not only the outlines.<br><br>
 
 </dd>
-<dt><big><a name="Shape.shouldFill"></a>const pure nothrow bool <u>shouldFill</u>();
+<dt><big><a name="Shape.shouldFill"></a>final const pure nothrow bool <u>shouldFill</u>();
 </big></dt>
 <dd>Returns if the fill mode is active or not.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setLineWidth"></a>void <u>setLineWidth</u>(ubyte <i>width</i>);
+<dt><big><a name="Shape.setLineWidth"></a>final void <u>setLineWidth</u>(ubyte <i>width</i>);
 </big></dt>
 <dd>Set the line <i>width</i>.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getLineWidth"></a>const pure nothrow ubyte <u>getLineWidth</u>();
+<dt><big><a name="Shape.getLineWidth"></a>final const pure nothrow ubyte <u>getLineWidth</u>();
 </big></dt>
 <dd>Returns the line width.<br><br>
 
 </dd>
-<dt><big><a name="Shape.addVector"></a>void <u>addVector</u>(ref const Vector2f <i>vec</i>);
+<dt><big><a name="Shape.addVector"></a>final void <u>addVector</u>(ref const Vector2f <i>vec</i>);
 </big></dt>
 <dd>Stores Pixel coordinates for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.addVector"></a>void <u>addVector</u>(const Vector2f <i>vec</i>);
+<dt><big><a name="Shape.addVector"></a>final void <u>addVector</u>(const Vector2f <i>vec</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Shape.addPixel"></a>void <u>addPixel</u>(ref const Pixel <i>vx</i>);
+<dt><big><a name="Shape.addPixel"></a>final void <u>addPixel</u>(ref const Pixel <i>vx</i>);
 </big></dt>
 <dd>Stores a Pixel for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.addPixels"></a>void <u>addPixels</u>(const Pixel[] <i>pixels</i>);
+<dt><big><a name="Shape.addPixels"></a>final void <u>addPixels</u>(const Pixel[] <i>pixels</i>);
 </big></dt>
 <dd>Stores multiple Vertices for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.addVectors"></a>void <u>addVectors</u>(const Vector2f[] <i>vec</i>);
+<dt><big><a name="Shape.addVectors"></a>final void <u>addVectors</u>(const Vector2f[] <i>vec</i>);
 </big></dt>
 <dd>Stores multiple Pixel coordinates for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.dropPixel"></a>void <u>dropPixel</u>(size_t <i>index</i>, Pixel* <i>vp</i> = null);
+<dt><big><a name="Shape.dropPixel"></a>final void <u>dropPixel</u>(size_t <i>index</i>, Pixel* <i>vp</i> = null);
 </big></dt>
 <dd>Drop the Pixel on the specific <i>index</i>.
  If <i>vp</i> is not <b>null</b>, the droped Pixel is stored there.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getPixels"></a>const pure nothrow ref const(Pixel[]) <u>getPixels</u>();
+<dt><big><a name="Shape.getPixels"></a>final const pure nothrow ref const(Pixel[]) <u>getPixels</u>();
 </big></dt>
 <dd>Returns all Pixel of this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getPixelAt"></a>inout ref inout(Pixel) <u>getPixelAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.getPixelAt"></a>final inout ref inout(Pixel) <u>getPixelAt</u>(uint <i>idx</i>);
 </big></dt>
 <dd>Returns a reference of the Pixel on the given index
  or fail if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getVectorAt"></a>inout ref inout(Vector2f) <u>getVectorAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.getVectorAt"></a>final inout ref inout(Vector2f) <u>getVectorAt</u>(uint <i>idx</i>);
 </big></dt>
 <dd>Returns a reference of the Pixel coordinates on the given index
  or fail if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getColorAt"></a>inout ref inout(Color) <u>getColorAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.getColorAt"></a>final inout ref inout(Color) <u>getColorAt</u>(uint <i>idx</i>);
 </big></dt>
 <dd>Returns a reference of the Pixel color on the given index
  or fail if the index is out of range.<br><br>

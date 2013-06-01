@@ -119,6 +119,7 @@ protected:
 	}
 	
 public:
+	
 	/**
 	 * CTor
 	 */
@@ -198,7 +199,7 @@ public:
 	/**
 	 * Replace the current Font.
 	 */
-	void replaceFont(ref const Font font) {
+	final void replaceFont(ref const Font font) {
 		this._font = font;
 		this._shouldUpdate = true;
 	}
@@ -206,14 +207,14 @@ public:
 	/**
 	 * Get the image containing the rendered characters.
 	 */
-	const(Texture) getTexture() const pure nothrow {
+	final inout(Texture) getTexture() inout pure nothrow {
 		return this._tex;
 	}
 	
 	/**
 	 * Returns the current Font object.
 	 */
-	Font getFont() {
+	final ref inout(Font) getFont() inout pure nothrow {
 		return this._font;
 	}
 	
@@ -223,7 +224,7 @@ public:
 	 * In most cases, this happens automatically,
 	 * but sometimes it is usefull.
 	 */
-	void update() {
+	final void update() {
 		this._shouldUpdate = true;
 	}
 	
@@ -304,14 +305,14 @@ public:
 	/**
 	 * Returns the current string.
 	 */
-	string getString() const pure nothrow {
+	final string getString() const pure nothrow {
 		return this._text;
 	}
 	
 	/**
 	 * Set the (foreground) color.
 	 */
-	void setColor(ref const Color col) {
+	final void setColor(ref const Color col) {
 		this._shouldUpdate = true;
 		this._fg = col;
 	}
@@ -319,14 +320,14 @@ public:
 	/**
 	 * Rvalue version
 	 */
-	void setColor(const Color col) {
+	final void setColor(const Color col) {
 		this.setColor(col);
 	}
 	
 	/**
 	 * Returns the (foreground) color.
 	 */
-	ref const(Color) getColor() const pure nothrow {
+	final ref const(Color) getColor() const pure nothrow {
 		return this._fg;
 	}
 	
@@ -334,7 +335,7 @@ public:
 	 * Set the background color.
 	 * Only needed if your Font.Mode is not Font.Mode.Solid.
 	 */
-	void setBackgroundColor(ref const Color col) {
+	final void setBackgroundColor(ref const Color col) {
 		this._shouldUpdate = true;
 		this._bg = col;
 	}
@@ -342,14 +343,14 @@ public:
 	/**
 	 * Rvalue version
 	 */
-	void setBackgroundColor(const Color col) {
+	final void setBackgroundColor(const Color col) {
 		this.setBackgroundColor(col);
 	}
 	
 	/**
 	 * Returns the background color.
 	 */
-	ref const(Color) getBackgroundColor() const pure nothrow {
+	final ref const(Color) getBackgroundColor() const pure nothrow {
 		return this._bg;
 	}
 }

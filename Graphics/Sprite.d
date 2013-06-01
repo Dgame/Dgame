@@ -56,7 +56,7 @@ public:
 	/**
 	 * Returns the clip rect, the area which will be drawn on the screen.
 	 */
-	ref const(ShortRect) getClipRect() const pure nothrow {
+	final ref const(ShortRect) getClipRect() const pure nothrow {
 		return this._clip;
 	}
 	
@@ -65,7 +65,7 @@ public:
 	 * If not, nothing can be drawn.
 	 * But it does not check if the current Texture is valid.
 	 */
-	bool hasTexture() const pure nothrow {
+	final bool hasTexture() const pure nothrow {
 		return this._tex !is null;
 	}
 	
@@ -81,7 +81,7 @@ public:
 	/**
 	 * Returns the current Texture or null if there is none.
 	 */
-	ref const(Texture) getTexture() const {
+	final ref const(Texture) getTexture() const {
 		return this._tex;
 	}
 	
