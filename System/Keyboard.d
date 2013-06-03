@@ -23,6 +23,8 @@ public:
 	 * 
 	 * Note: The state is probably not up to date. If you want the current state, 
 	 * you should take a look at the update method.
+	 * 
+	 * See: update
 	 *
 	 * Examples:
 	 * ---
@@ -36,8 +38,15 @@ public:
 	}
 	
 	/**
-	 * Update the current Keyboard state
-	 * and returns a pointer to the current state.
+	 * Update the current Keyboard state and returns a pointer to the current state.
+	 * A value of 1 means that the key is pressed and a value of 0 means that it is not.
+	 * The pointer will be valid for the whole lifetime of the application and should not be freed by the caller.
+	 * 
+	 * Note: This function gives you the current state after all events have been processed, 
+	 * so if a key or button has been pressed and released before you process events, 
+	 * then the pressed state will never show up in the update calls.
+	 * 
+	 * Note: This function doesn't take into account whether shift has been pressed or not. 
 	 */
 	static ubyte* update() {
 		_Keys = SDL_GetKeyboardState(null);

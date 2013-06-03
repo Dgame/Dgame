@@ -99,6 +99,20 @@ final:
 	}
 	
 	/**
+	 * Move the object only in X direction
+	 */
+	void moveX(T)(T x) {
+		this._position.x += x;
+	}
+	
+	/**
+	 * Move the object only in Y direction
+	 */
+	void moveY(T)(T y) {
+		this._position.y += y;
+	}
+	
+	/**
 	 * Move the object.
 	 */
 	void move(T)(ref const Vector2!T vec) {

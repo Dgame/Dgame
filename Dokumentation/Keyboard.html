@@ -19,6 +19,10 @@ The state is probably not up to date. If you want the current state,
  you should take a look at the update method.
 
 <br><br>
+<b>See:</b><br>
+update
+
+<br><br>
 <b>Examples:</b><br>
 <pre class="d_code"><font color=blue>ubyte</font>* keyStates = Keyboard.<u>getState</u>();
 <font color=blue>if</font> (keyStates[Keyboard.ScanCode.Escape])
@@ -29,8 +33,18 @@ The state is probably not up to date. If you want the current state,
 </dd>
 <dt><big><a name="Keyboard.update"></a>static ubyte* <u>update</u>();
 </big></dt>
-<dd>Update the current Keyboard state
- and returns a pointer to the current state.<br><br>
+<dd>Update the current Keyboard state and returns a pointer to the current state.
+ A value of 1 means that the key is pressed and a value of 0 means that it is not.
+ The pointer will be valid for the whole lifetime of the application and should not be freed by the caller.
+<br><br>
+<b>Note:</b><br>
+This function gives you the current state after all events have been processed,
+ so if a key or button has been pressed and released before you process events,
+ then the pressed state will never show up in the <u>update</u> calls.
+
+<br><br>
+<b>Note:</b><br>
+This function doesn't take into account whether shift has been pressed or not.<br><br>
 
 </dd>
 <dt><big><a name="Keyboard.startTextInput"></a>static void <u>startTextInput</u>();
