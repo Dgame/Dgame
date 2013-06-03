@@ -118,10 +118,9 @@ public:
 	/**
 	 * Slide/Move the Unit
 	 * Every time this method is called the current speed is added to an internal update property.
-	 * If this property reaches 10f, a loop runs as long as this update property is >= 10f.
-	 * Every loop run the direction is added to the current position 
+	 * If this property reaches 10f or more, the direction is added to the current position 
 	 * and the slideViewport method from Spritesheet ist called.
-	 * Also the update property is decreased about 10f every loop run.
+	 * Also the update property is decreased about 10f.
 	 */
 	void slide() {
 		if (!this._move || this._speed <= 0f)
@@ -131,9 +130,6 @@ public:
 		
 		if (this._update < Update)
 			return;
-		
-		float w = this._viewport.width;
-		float h = this._viewport.height;
 		
 		this._update -= Update;
 		

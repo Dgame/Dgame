@@ -55,7 +55,7 @@ public:
 		/**
 		 * CTor
 		 */
-		this(int x, int y, uint width, uint height) {
+		this(int x, int y, int width, int height) {
 			this.x = cast(T) x;
 			this.y = cast(T) y;
 			

@@ -430,6 +430,40 @@ final:
 	}
 	
 	/**
+	 * Convert from pixel coordinates to tile coordinates.
+	 */
+	short[2] convertCoords(T)(ref const Vector2!T vec) const pure nothrow {
+		return this.convertCoords(vec.asArray());
+	}
+	
+	/**
+	 * Convert from pixel coordinates to tile coordinates.
+	 */
+	short[2] convertCoords(T)(T[2] coords) const pure nothrow {
+		short x = coords[0] > this._tmi.tileWidth ? cast(short)(coords[0] / this._tmi.tileWidth) : 0;
+		short y = coords[1] > this._tmi.tileHeight ? cast(short)(coords[1] / this._tmi.tileHeight) : 0;
+		
+		return [x, y];
+	}
+	
+	/**
+	 * Convert from tile coordinates to pixel coordinates.
+	 */
+	short[2] reconvertCoords(T)(ref const Vector2!T vec) const pure nothrow {
+		return this.reconvertCoords(vec.asArray());
+	}
+	
+	/**
+	 * Convert from tile coordinates to pixel coordinates.
+	 */
+	short[2] reconvertCoords(T)(T[2] coords) const pure nothrow {
+		short x = coords[0] != 0 ? cast(short)(coords[0] * this._tmi.tileWidth) : 0;
+		short y = coords[1] != 0 ? cast(short)(coords[1] * this._tmi.tileHeight) : 0;
+		
+		return [x, y];
+	}
+	
+	/**
 	 * Reload multiple tiles.
 	 * The length of coords must be equal to the length of newCoords.
 	 * 
