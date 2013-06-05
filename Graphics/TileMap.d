@@ -271,13 +271,24 @@ protected:
 		
 		debug writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
 		
+		/// Compress and load tileset
+		this._compress(tileset, used, subs);
+		
+		subs.destroy(); /// nullify subs
+		
+		this._loadTexCoords(coordinates);
+		
+		used.destroy(); /// nullify used
+	}
+	
+	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
 		if (this.compress) {
 			ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
 			Surface newTileset = Surface.make(dim, dim);
 			//newTileset.fill(Color.Black); /// notwendig!
 			
-			src.setPosition(0, 0); /// Reset src
+			ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
 			
 			ushort row = 0;
 			ushort col = 0;
@@ -324,13 +335,9 @@ protected:
 			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height,
 			                         newTileset.countBits(), t_fmt);
 		}
-		
-		subs = null; /// nullify subs
-		
-		this._loadTexCoords(coordinates);
 	}
 	
-	void _loadTexCoords(ushort[2]*[] coordinates) {
+	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
 		float[] texCoords;
 		
@@ -411,7 +418,6 @@ public:
 	mixin TTransformable;
 	
 final:
-	
 	/**
 	 * CTor
 	 * 
@@ -433,7 +439,7 @@ final:
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
 	short[2] convertCoords(T)(ref const Vector2!T vec) const {
-		return this.convertCoords(vec.asArray());
+		return this.convertCoords(vec.x, vec.y);
 	}
 	
 	/**
@@ -441,7 +447,7 @@ final:
 	 */
 	short[2] convertCoords(T)(T[2] coords) const {
 		short x = coords[0] > this._tmi.tileWidth  ? cast(short) round(coords[0] / this._tmi.tileWidth)  : 0;
-		short y = coords[1] > this._tmi.tileHeight ? cast(short) round(coords[1] / this._tmi.tileHeight) : 0;
+		short y = coords[1] > this._tmi.tileHeight ? cast(short) floor(coords[1] / this._tmi.tileHeight) : 0;
 		
 		return [x, y];
 	}
@@ -450,7 +456,7 @@ final:
 	 * Convert from tile coordinates to pixel coordinates.
 	 */
 	short[2] reconvertCoords(T)(ref const Vector2!T vec) const {
-		return this.reconvertCoords(vec.asArray());
+		return this.reconvertCoords(vec.x, vec.y);
 	}
 	
 	/**
@@ -458,7 +464,7 @@ final:
 	 */
 	short[2] reconvertCoords(T)(T[2] coords) const {
 		short x = coords[0] != 0 ? cast(short) round(coords[0] * this._tmi.tileWidth)  : 0;
-		short y = coords[1] != 0 ? cast(short) round(coords[1] * this._tmi.tileHeight) : 0;
+		short y = coords[1] != 0 ? cast(short) floor(coords[1] * this._tmi.tileHeight) : 0;
 		
 		return [x, y];
 	}
@@ -467,7 +473,7 @@ final:
 	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
 	 */
 	short[2] adjustCoords(T)(ref const Vector2!T vec) const {
-		return this.adjustCoords(vec.asArray());
+		return this.adjustCoords(vec.x, vec.y);
 	}
 	
 	/**
@@ -575,7 +581,7 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	bool isTileAt(ref const Vector2s vec, uint* idx = null) const pure nothrow {
-		return this.isTileAt(vec.asArray(), idx);
+		return this.isTileAt(vec.x, vec.y, idx);
 	}
 	
 	/**
@@ -610,7 +616,7 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	void replaceTileAt(ref const Vector2s vec, ref const Tile newTile, Tile* oldTile = null) {
-		this.replaceTileAt(vec.asArray(), newTile, oldTile);
+		this.replaceTileAt(vec.x, vec.y, newTile, oldTile);
 	}
 	
 	/**
@@ -621,14 +627,7 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	void replaceTileAt(short[2] tilePos, ref const Tile newTile, Tile* oldTile = null) {
-		foreach (ref Tile t; this._tiles) {
-			if (t.tileCoords == tilePos) {
-				if (oldTile)
-					memcpy(oldTile, &t, Tile.sizeof);
-				
-				t = newTile;
-			}
-		}
+		this.replaceTileAt(tilePos[0], tilePos[1], newTile, oldTile);
 	}
 	
 	/**
@@ -639,7 +638,14 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	void replaceTileAt(short x, short y, ref const Tile newTile, Tile* oldTile = null) {
-		this.replaceTileAt([x, y], newTile, oldTile);
+		uint index = 0;
+		
+		if (this.isTileAt(x, y, &index)) {
+			if (oldTile)
+				memcpy(oldTile, &this._tiles[index], Tile.sizeof);
+			
+			this._tiles[index] = newTile;
+		}
 	}
 	
 	/**
@@ -647,7 +653,7 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
 	ref const(Tile) getTileAt(ref const Vector2s vec) const {
-		return this.getTileAt(vec.asArray());
+		return this.getTileAt(vec.x, vec.y);
 	}
 	
 	/**
