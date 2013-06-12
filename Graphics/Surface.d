@@ -11,10 +11,13 @@ private {
 	import derelict3.sdl2.sdl;
 	import derelict3.sdl2.image;
 	
+	import Dgame.Core.SmartPointer;
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;
 }
+
+///version = Develop;
 
 /**
  * Surface is a wrapper for a SDL_Surface.
@@ -71,7 +74,8 @@ public:
 	}
 	
 private:
-	SDL_Surface* _sdl_surface;
+	///SDL_Surface* _sdl_surface;
+	shared_ptr!(SDL_Surface, SDL_FreeSurface) _sdl_surface;
 	
 	string _filename;
 	bool _isLocked;
@@ -90,11 +94,14 @@ private:
 		 srfc.format.BytesPerPixel * srfc.w, 
 		 RMask, GMask, BMask, AMask);
 		 */
-		memcpy(this._sdl_surface, srfc, SDL_Surface.sizeof);
+		SDL_Surface* target;
+		memcpy(target, srfc, SDL_Surface.sizeof);
 		
-		if (this._sdl_surface is null)
-			throw new Exception(
-				format("Surface konnte nicht erstellt werden: %s", to!string(SDL_GetError())));
+		if (target is null)
+			throw new Exception(format("Surface konnte nicht erstellt werden: %s",
+			                           to!string(SDL_GetError())));
+		
+		this._sdl_surface = make_shared(target);
 	}
 	
 public:
@@ -120,12 +127,13 @@ public:
 		if (!link)
 			this._clone(srfc);
 		else
-			this._sdl_surface = srfc;
+			this._sdl_surface = make_shared(srfc);///srfc;
 	}
 	
 	/**
 	 * Postblit
 	 */
+	version(Develop)
 	this(this) {
 		this._sdl_surface.refcount++;
 		debug writeln("Postblit Surface: ", this._sdl_surface.refcount, ':', this.filename);
@@ -150,17 +158,21 @@ public:
 	/**
 	 * DTor
 	 */
+	version(Develop)
 	~this() {
-		if (!this._sdl_surface)
-			return;
-		
-		if (this._sdl_surface.refcount == 1) {
-			debug writeln("DTor Surface", ':', this.filename);
-			this.free();
-		} else {
-			this._sdl_surface.refcount--;
-			debug writeln("Free Surface", ':', this.filename, ':', this._sdl_surface.refcount);
-		}
+		/*
+		 if (!this._sdl_surface)
+		 return;
+		 
+		 if (this._sdl_surface.refcount == 1) {
+		 debug writeln("DTor Surface", ':', this.filename);
+		 this.free();
+		 } else {
+		 this._sdl_surface.refcount--;
+		 debug writeln("Free Surface", ':', this.filename, ':', this._sdl_surface.refcount);
+		 }
+		 */
+		debug writeln("DTor Surface", ':', this.filename);
 	}
 	
 	/**
@@ -168,11 +180,14 @@ public:
 	 * This method is called from the DTor.
 	 */
 	void free() {
-		if (this._sdl_surface) {
-			SDL_FreeSurface(this._sdl_surface);
-			
-			this._sdl_surface = null;
-		}
+		/*
+		 if (this._sdl_surface) {
+		 SDL_FreeSurface(this._sdl_surface);
+		 
+		 this._sdl_surface = null;
+		 }
+		 */
+		this._sdl_surface.release();
 	}
 	
 	/**
@@ -234,7 +249,8 @@ public:
 	 * Returns if the Surface is valid. Which means that the Surface has valid data.
 	 */
 	bool isValid() const pure nothrow {
-		return this._sdl_surface !is null && this._sdl_surface.pixels !is null;
+		return this._sdl_surface.isValid() && this._sdl_surface.pixels !is null;
+		///this._sdl_surface !is null && this._sdl_surface.pixels !is null;
 	}
 	
 	/**
@@ -256,17 +272,23 @@ public:
 		debug writefln("Load Image: %s, %s", filename, filename.ptr);
 		
 		try {
-			this._sdl_surface = IMG_Load(toStringz(filename));
+			///this._sdl_surface = IMG_Load(toStringz(filename));
+			SDL_Surface* srfc = IMG_Load(toStringz(filename));
+			if (srfc is null)
+				throw new Exception(format("Something fails by loading the image: %s",
+				                           to!string(SDL_GetError())));
+			
+			this._sdl_surface = make_shared(srfc);
 		} catch (Throwable e) {
 			throw new Exception(
 				format("Die Datei (%s) konnte nicht geladen werden: %s", filename, e.msg));
 		}
 		
 		this._filename = filename;
-		
-		if (this._sdl_surface is null)
-			throw new Exception(
-				format("Something fails by loading the image: %s", to!string(SDL_GetError())));
+		/*
+		 if (this._sdl_surface is null)
+		 throw new Exception(
+		 format("Something fails by loading the image: %s", to!string(SDL_GetError())));*/
 	}
 	
 	/**
@@ -278,14 +300,16 @@ public:
 	} body {
 		this.free(); /// free old surface data
 		
-		this._sdl_surface = SDL_CreateRGBSurfaceFrom(
+		SDL_Surface* srfc = SDL_CreateRGBSurfaceFrom(
 			memory, width, height, depth,
 			(depth / 8) * width,
 			RMask, GMask, BMask, AMask);
 		
-		if (this._sdl_surface is null)
-			throw new Exception(
-				format("Something fails by loading the image: %s", to!string(SDL_GetError())));
+		if (srfc is null)
+			throw new Exception(format("Something fails by loading the image: %s",
+			                           to!string(SDL_GetError())));
+		
+		this._sdl_surface = make_shared(srfc);
 	}
 	
 	/**
@@ -423,8 +447,9 @@ public:
 		SDL_Surface* adapted = SDL_ConvertSurface(this._sdl_surface, fmt, 0);
 		assert(adapted !is null, "Could not adapt surface.");
 		
-		this.free(); /// free old surface
-		this._sdl_surface = adapted;
+		///this.free(); /// free old surface
+		///this._sdl_surface = adapted;
+		this._sdl_surface.reset(adapted);
 	}
 	
 	/**
@@ -666,8 +691,8 @@ public:
 	 * Returns a pointer of the SDL_Surface
 	 */
 	@property
-	inout(SDL_Surface)* ptr() inout {
-		return this._sdl_surface;
+	inout(SDL_Surface)* ptr() inout pure nothrow {
+		return this._sdl_surface.ptr;
 	}
 	
 	/**

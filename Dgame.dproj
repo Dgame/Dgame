@@ -89,6 +89,7 @@
     <Compile Include="Graphics\Unit.d" />
     <Compile Include="Core\Finalizer.d" />
     <Compile Include="main.d" />
+    <Compile Include="Core\SmartPointer.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

@@ -72,7 +72,7 @@ public:
 	/**
 	 * Set or replace the current Texture.
 	 */
-	void setTexture(Texture tex) in {
+	final void setTexture(Texture tex) in {
 		assert(tex !is null, "Cannot set a null Texture.");
 	} body {
 		this._tex = tex;

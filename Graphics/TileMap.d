@@ -6,7 +6,7 @@ private {
 	import std.file : read;
 	import std.conv : to;
 	import std.string : format;
-	import std.math : log2, pow, round, ceil, fmax;
+	import std.math : log2, pow, round, ceil, floor, fmax;
 	import std.c.string : memcpy;
 	
 	import derelict.opengl.gltypes;
@@ -438,6 +438,15 @@ final:
 	/**
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
+	short[2] convertCoords(T)(T cx, T cy) const {
+		short x = cx > this._tmi.tileWidth  ? cast(short) round(cx / this._tmi.tileWidth)  : 0;
+		short y = cy > this._tmi.tileHeight ? cast(short) floor(cy / this._tmi.tileHeight) : 0;
+		
+		return [x, y];
+	}
+	/**
+	 * Convert from pixel coordinates to tile coordinates.
+	 */
 	short[2] convertCoords(T)(ref const Vector2!T vec) const {
 		return this.convertCoords(vec.x, vec.y);
 	}
@@ -446,8 +455,15 @@ final:
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
 	short[2] convertCoords(T)(T[2] coords) const {
-		short x = coords[0] > this._tmi.tileWidth  ? cast(short) round(coords[0] / this._tmi.tileWidth)  : 0;
-		short y = coords[1] > this._tmi.tileHeight ? cast(short) floor(coords[1] / this._tmi.tileHeight) : 0;
+		return this.convertCoords(coords[0], coords[1]);
+	}
+	
+	/**
+	 * Convert from tile coordinates to pixel coordinates.
+	 */
+	short[2] reconvertCoords(T)(T cx, T cy) const {
+		short x = cx != 0 ? cast(short) round(cx * this._tmi.tileWidth)  : 0;
+		short y = cy != 0 ? cast(short) floor(cy * this._tmi.tileHeight) : 0;
 		
 		return [x, y];
 	}
@@ -463,10 +479,16 @@ final:
 	 * Convert from tile coordinates to pixel coordinates.
 	 */
 	short[2] reconvertCoords(T)(T[2] coords) const {
-		short x = coords[0] != 0 ? cast(short) round(coords[0] * this._tmi.tileWidth)  : 0;
-		short y = coords[1] != 0 ? cast(short) floor(coords[1] * this._tmi.tileHeight) : 0;
+		return this.reconvertCoords(coords[0], coords[1]);
+	}
+	
+	/**
+	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
+	 */
+	short[2] adjustCoords(T)(T cx, T cy) const {
+		short[2] convCoords = this.convertCoords(cx, cy);
 		
-		return [x, y];
+		return this.reconvertCoords(convCoords);
 	}
 	
 	/**
@@ -480,9 +502,7 @@ final:
 	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
 	 */
 	short[2] adjustCoords(T)(T[2] coords) const {
-		short[2] convCoords = this.convertCoords(coords);
-		
-		return this.reconvertCoords(convCoords);
+		return this.adjustCoords(coords[0], coords[1]);
 	}
 	
 	/**
