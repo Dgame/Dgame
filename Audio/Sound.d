@@ -182,7 +182,7 @@ public:
 	/**
 	 * Free / Release the source and buffer of the Sound
 	 */
-	void free() {
+	final void free() {
 		this._alChunk.free();
 	}
 	
@@ -330,14 +330,14 @@ public:
 	/**
 	 * Returns the soundfile.
 	 */
-	ref BaseSoundFile getSoundFile() {
+	final ref BaseSoundFile getSoundFile() {
 		return this._soundfile;
 	}
 	
 	/**
 	 * Returns the Format.
 	 */
-	ALenum getFormat() const pure nothrow {
+	final ALenum getFormat() const pure nothrow {
 		return this._format;
 	}
 	
@@ -346,7 +346,7 @@ public:
 	 *
 	 * See: Status enum
 	 */
-	Status getStatus() const pure nothrow {
+	final Status getStatus() const pure nothrow {
 		return this._status;
 	}
 	
@@ -355,14 +355,14 @@ public:
 	 *
 	 * See: Channel struct
 	 */
-	ref const(Channel) getChannel() const pure nothrow {
+	final ref const(Channel) getChannel() const pure nothrow {
 		return this._channel;
 	}
 	
 	/**
 	 * Returns the current frequency.
 	 */
-	uint getFreqeuency() const pure nothrow {
+	final uint getFreqeuency() const pure nothrow {
 		return this._frequency;
 	}
 	
@@ -385,14 +385,14 @@ public:
 	/**
 	 * Returns the current volume.
 	 */
-	ubyte getVolume() const pure nothrow {
+	final ubyte getVolume() const pure nothrow {
 		return cast(ubyte)(this._volume * ubyte.max);
 	}
 	
 	/**
 	 * Enable looping.
 	 */
-	void setLooping(bool enable) {
+	final void setLooping(bool enable) {
 		this._looping = enable;
 		
 		alSourcei(this._alChunk.source, AL_LOOPING, this._looping);
@@ -401,7 +401,7 @@ public:
 	/**
 	 * Returns if the looping is enabled or not.
 	 */
-	bool getLooping() const pure nothrow {
+	final bool getLooping() const pure nothrow {
 		return this._looping;
 	}
 	
@@ -409,7 +409,7 @@ public:
 	 * Activate the playing.
 	 * If enable is true, the looping is also activated.
 	 */
-	void play(bool enable) {
+	final void play(bool enable) {
 		this.setLooping(enable);
 		
 		this.play();
@@ -418,7 +418,7 @@ public:
 	/**
 	 * Activate the playing.
 	 */
-	void play() {
+	final void play() {
 		alSourcePlay(this._alChunk.source);
 		
 		this._status = Status.Playing;
@@ -427,7 +427,7 @@ public:
 	/**
 	 * Stop current playing.
 	 */
-	void stop() {
+	final void stop() {
 		alSourceStop(this._alChunk.source);
 		
 		this._status = Status.Stopped;
@@ -436,7 +436,7 @@ public:
 	/**
 	 * Rewind playing.
 	 */
-	void rewind() {
+	final void rewind() {
 		alSourceRewind(this._alChunk.source);
 		
 		this._status = Status.Playing;
@@ -445,7 +445,7 @@ public:
 	/**
 	 * Pause playing.
 	 */
-	void pause() {
+	final void pause() {
 		alSourcePause(this._alChunk.source);
 		
 		this._status = Status.Paused;
@@ -470,7 +470,7 @@ public:
 	/**
 	 * Returns the current position.
 	 */
-	ref const(vec3f) getPosition() const pure nothrow {
+	final ref const(vec3f) getPosition() const pure nothrow {
 		return this._sourcePos;
 	}
 	
@@ -493,7 +493,7 @@ public:
 	/**
 	 * Returns the current velocity.
 	 */
-	ref const(vec3f) getVelocity() const pure nothrow {
+	final ref const(vec3f) getVelocity() const pure nothrow {
 		return this._sourceVel;
 	}
 }

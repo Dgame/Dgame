@@ -31,7 +31,7 @@
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Dgame</OutputName>
-    <ExtraCompilerArguments>-O -inline -noboundscheck</ExtraCompilerArguments>
+    <ExtraCompilerArguments>-O -inline -noboundscheck -wi -property -DdDokumentation -unittest</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,7 +53,6 @@
     <Compile Include="Audio\Core\core.d" />
     <Compile Include="Core\Allocator.d" />
     <Compile Include="Core\core.d" />
-    <Compile Include="Graphics\all.d" />
     <Compile Include="Graphics\Color.d" />
     <Compile Include="Graphics\Drawable.d" />
     <Compile Include="Graphics\Font.d" />
@@ -90,6 +89,7 @@
     <Compile Include="Core\Finalizer.d" />
     <Compile Include="main.d" />
     <Compile Include="Core\SmartPointer.d" />
+    <Compile Include="Graphics\all.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

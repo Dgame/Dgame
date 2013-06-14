@@ -97,6 +97,11 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
  otherwise the whole tileset is taken.<br><br>
 
 </dd>
+<dt><big><a name="TileMap.convertCoords"></a>const short[2] <u>convertCoords</u>(T)(T <i>cx</i>, T <i>cy</i>);
+</big></dt>
+<dd>Convert from pixel coordinates to tile coordinates.<br><br>
+
+</dd>
 <dt><big><a name="TileMap.convertCoords"></a>const short[2] <u>convertCoords</u>(T)(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Convert from pixel coordinates to tile coordinates.<br><br>
@@ -107,6 +112,11 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 <dd>Convert from pixel coordinates to tile coordinates.<br><br>
 
 </dd>
+<dt><big><a name="TileMap.reconvertCoords"></a>const short[2] <u>reconvertCoords</u>(T)(T <i>cx</i>, T <i>cy</i>);
+</big></dt>
+<dd>Convert from tile coordinates to pixel coordinates.<br><br>
+
+</dd>
 <dt><big><a name="TileMap.reconvertCoords"></a>const short[2] <u>reconvertCoords</u>(T)(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Convert from tile coordinates to pixel coordinates.<br><br>
@@ -115,6 +125,11 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 <dt><big><a name="TileMap.reconvertCoords"></a>const short[2] <u>reconvertCoords</u>(T)(T[2] <i>coords</i>);
 </big></dt>
 <dd>Convert from tile coordinates to pixel coordinates.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.adjustCoords"></a>const short[2] <u>adjustCoords</u>(T)(T <i>cx</i>, T <i>cy</i>);
+</big></dt>
+<dd>Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.adjustCoords"></a>const short[2] <u>adjustCoords</u>(T)(ref const Vector2!(T) <i>vec</i>);

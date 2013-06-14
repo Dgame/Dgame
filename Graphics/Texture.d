@@ -137,7 +137,9 @@ private:
 	
 	ushort _width, _height;
 	ubyte _depth;
+	
 	bool _smoothEnabled;
+	bool _hasMemory;
 	
 	Format _format;
 	
@@ -154,7 +156,7 @@ private:
 	}
 	
 package:
-	final void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
+	void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
 		GLuint previous_texture = Texture.currentlyBound();
 		scope(exit) Texture._reBind(previous_texture);
 		
@@ -205,7 +207,7 @@ package:
 	/**
 	 * Rvalue version
 	 */
-	final void _render(const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
+	void _render(const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
 		this._render(dst, mode);
 	}
 	
@@ -249,7 +251,7 @@ final:
 			debug writeln("Destroy texture");
 			glDeleteTextures(1, &this._texId);
 			
-			this._texId  = 0;
+			this._texId = 0;
 			this._format = Format.None;
 		}
 	}
@@ -434,11 +436,18 @@ final:
 	/**
 	 * Load from memory.
 	 */
-	void loadFromMemory(void* memory, ushort width, ushort height, 
-	                    ubyte depth = 32, Format fmt = Format.None)
+	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, Format fmt = Format.None)
 	in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
+		if (this._hasMemory && width == this.width && height == this.height) {
+			if (fmt == Format.None || fmt == this._format) {
+				this.updateMemory(memory, null);
+				
+				return;
+			}
+		}
+		
 		this._format = (fmt == Format.None) ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
 		
@@ -458,6 +467,8 @@ final:
 		this._width  = width;
 		this._height = height;
 		this._depth  = depth;
+		
+		this._hasMemory = true;
 	}
 	
 	/**
@@ -466,7 +477,7 @@ final:
 	void setColorkey(ref const Color colorkey) {
 		// Go through pixels
 		void* memory = this.getMemory();
-		scope(exit) destroy(memory);
+		scope(exit) delete memory;
 		
 		size_t size = this._width * this._height;
 		for (size_t i = 0; i < size; ++i) {
@@ -507,7 +518,6 @@ final:
 		    || (this._depth < 24 || this._height == 0 || this._width == 0)) 
 		{
 			debug writeln("@Texture.GetPixels: Null Pixel");
-			
 			return null;
 		}
 		
@@ -639,6 +649,8 @@ final:
 		} else {
 			width  = this._width;
 			height = this._height;
+			
+			x = y = 0;
 		}
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))

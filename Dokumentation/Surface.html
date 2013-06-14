@@ -7,7 +7,10 @@
 <br><br>
 <dl><dt><big><a name="Surface"></a>struct <u>Surface</u>;
 </big></dt>
-<dd><u>Surface</u> is a wrapper for a SDL_Surface.
+<dd>version = Develop;
+<br><br>
+<u>Surface</u> is a wrapper for a SDL_Surface.
+
 <br><br>
 <b>Author:</b><br>
 rschuett<br><br>
@@ -56,23 +59,19 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Surface.RMask"></a>int <u>RMask</u>;
-</big></dt>
+<dt><big><a name="Surface.RMask"></a><u>RMask</u></big></dt>
 <dd>Default Red Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.GMask"></a>int <u>GMask</u>;
-</big></dt>
+<dt><big><a name="Surface.GMask"></a><u>GMask</u></big></dt>
 <dd>Default Green Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.BMask"></a>int <u>BMask</u>;
-</big></dt>
+<dt><big><a name="Surface.BMask"></a><u>BMask</u></big></dt>
 <dd>Default Blue Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.AMask"></a>int <u>AMask</u>;
-</big></dt>
+<dt><big><a name="Surface.AMask"></a><u>AMask</u></big></dt>
 <dd>Default Alpha Mask. <br><br>
 
 </dd>
@@ -380,7 +379,7 @@ Surface.Mask enum.<br><br>
 <dd>Returns the color on the given position.<br><br>
 
 </dd>
-<dt><big><a name="Surface.ptr"></a>inout @property inout(SDL_Surface)* <u>ptr</u>();
+<dt><big><a name="Surface.ptr"></a>inout pure nothrow @property inout(SDL_Surface)* <u>ptr</u>();
 </big></dt>
 <dd>Returns a pointer of the SDL_Surface<br><br>
 

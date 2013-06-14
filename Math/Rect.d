@@ -94,7 +94,7 @@ public:
 	/**
 	 * Supported operations: +=
 	 */
-	Rect!(T) opBinary(string op, U)(ref const Rect!U rect) const {
+	Rect!T opBinary(string op, U)(ref const Rect!U rect) const {
 		switch (op) {
 			case "+":
 				return Rect!T(cast(T)(this.x + rect.x),
@@ -125,7 +125,7 @@ public:
 	/**
 	 * Returns an union of the given and this Rect.
 	 */
-	Rect!(T) getUnion(U)(ref const Rect!U rect) const {
+	Rect!T getUnion(U)(ref const Rect!U rect) const {
 		Rect!T union_rect;
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
 		
@@ -226,7 +226,7 @@ public:
 		this.setPosition(position.x, position.y);
 	}
 	
-	void setPosition(U)(ref U[2] pos) {
+	void setPosition(U)(U[2] pos) {
 		this.setPosition(pos[0], pos[1]);
 	}
 	

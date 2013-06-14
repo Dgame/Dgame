@@ -1,6 +1,7 @@
 module Dgame.Core.SmartPointer;
 
 private {
+	debug import std.stdio;
 	import core.memory : GC;
 	import std.c.string : memcpy;
 }
@@ -23,13 +24,13 @@ public:
 }
 
 shared_ptr!T make_shared(T)(T* ptr)
-	if (is(T == struct) || is (T == class))
+	if (is(T == struct) || is(T == class)) 
 {
 	return shared_ptr!T(ptr);
 }
 
 struct shared_ptr(T, alias _deleter = GC.free)
-	if (is(T == struct) || is (T == class))
+	if (is(T == struct) || is(T == class))
 {
 private:
 	T* _ptr;
@@ -41,14 +42,11 @@ private:
 				this._ptr.__dtor();
 			
 			_deleter(this._ptr);
+			///writeln(__traits(identifier, _deleter));
 		}
 	}
 	
 public:
-	/*
-	 @disable
-	 this();
-	 */
 	@disable
 	this(typeof(null));
 	
@@ -59,7 +57,6 @@ public:
 	
 	this(this) {
 		this._inuse.inc();
-		//writefln("Counter: %d", this._inuse.counter);
 	}
 	
 	@disable
@@ -74,8 +71,9 @@ public:
 	}
 	
 	~this() {
-		if (this._inuse && this._inuse.dec() <= 0)
+		if (this._inuse && this._inuse.dec() <= 0) {
 			this.release();
+		}
 	}
 	
 	@property

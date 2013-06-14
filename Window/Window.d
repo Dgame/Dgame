@@ -46,6 +46,7 @@ public:
 	const VideoMode vMode;
 	
 private:
+	/// Defaults
 	enum {
 		DefaultTitle = "App",
 		DefaultXPos  = 25,
@@ -63,7 +64,7 @@ protected:
 	bool _fullscreen;
 	ubyte _fpsLimit;
 	
-	static uint _winCount;
+	static int _winCount;
 	
 	Clock _clock;
 	
@@ -158,8 +159,7 @@ final:
 		this._open = false;
 		
 		_winCount--;
-		
-		if (_winCount == 0)
+		if (!_winCount)
 			terminate(); /// finalize all remaining sensible SDL memory
 	}
 	
@@ -292,7 +292,7 @@ final:
 	/**
 	 * Init the current clear color.
 	 */
-	void initClearColor() {
+	void initClearColor() const {
 		glClearColor(this._clearColor.red, this._clearColor.green, 
 		             this._clearColor.blue, this._clearColor.alpha);
 	}
@@ -376,16 +376,6 @@ final:
 	}
 	
 	/**
-	 * Returns the current position of the window.
-	 */
-	Vector2s getPosition() {
-		int x, y;
-		this.fetchPosition(&x, &y);
-		
-		return Vector2s(x, y);
-	}
-	
-	/**
 	 * Set a new position to this window
 	 */
 	void setPosition(short x, short y) {
@@ -397,6 +387,16 @@ final:
 	 */
 	void setPosition(ref const Vector2s vec) {
 		this.setPosition(vec.x, vec.y);
+	}
+	
+	/**
+	 * Returns the current position of the window.
+	 */
+	Vector2s getPosition() {
+		int x, y;
+		this.fetchPosition(&x, &y);
+		
+		return Vector2s(x, y);
 	}
 	
 	/**
@@ -414,7 +414,7 @@ final:
 	 * Returns the current title of the window.
 	 */
 	string getTitle() const pure nothrow {
-		return this._title;
+		return this._title; /// SDL_GetWindowTitle(this._window);
 	}
 	
 	/**
@@ -498,6 +498,35 @@ final:
 			SDL_ShowWindow(this._window);
 		else
 			SDL_HideWindow(this._window);
+	}
+	
+	/**
+	 * When input is grabbed the mouse is confined to the window.
+	 */
+	void setGrabbed(bool enable) {
+		SDL_SetWindowGrab(this._window, enable ? SDL_TRUE : SDL_FALSE);
+	}
+	
+	/**
+	 * Returns true, if input is grabbed.
+	 */
+	bool isGrabbed() {
+		return SDL_GetWindowGrab(this._window) == SDL_TRUE;
+	}
+	
+	/**
+	 * Returns the brightness (gamma correction) for the window
+	 * where 0.0 is completely dark and 1.0 is normal brightness.
+	 */
+	float getBrightness() {
+		return SDL_GetWindowBrightness(this._window);
+	}
+	
+	/**
+	 * Set the brightness (gamma correction) for the window.
+	 */
+	bool setBrightness(float bright) {
+		return SDL_SetWindowBrightness(this._window, bright) == 0;
 	}
 	
 	/**

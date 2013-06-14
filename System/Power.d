@@ -7,7 +7,7 @@ private import derelict3.sdl2.sdl;
  * 
  * author: rschuett
  */
-struct PowerInfo {
+struct Power {
 public:
 	/**
 	 * Power states
@@ -39,10 +39,10 @@ public:
 	 * 
 	 * See: PowerInfo struct
 	 */
-	static PowerInfo getInfo() {
+	static Power getInfo() {
 		int secs, pct;
 		SDL_PowerState state = SDL_GetPowerInfo(&secs, &pct);
 		
-		return PowerInfo(secs, cast(byte) pct, cast(PowerInfo.State) state);
+		return Power(secs, cast(byte) pct, cast(State) state);
 	}
 }

@@ -97,7 +97,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Sound.free"></a>void <u>free</u>();
+<dt><big><a name="Sound.free"></a>final void <u>free</u>();
 </big></dt>
 <dd>Free / Release the source and buffer of the Sound<br><br>
 
@@ -155,17 +155,17 @@ WaveFile<br><br>
 <dd>Load from memory.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getSoundFile"></a>ref BaseSoundFile <u>getSoundFile</u>();
+<dt><big><a name="Sound.getSoundFile"></a>final ref BaseSoundFile <u>getSoundFile</u>();
 </big></dt>
 <dd>Returns the soundfile.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getFormat"></a>const pure nothrow ALenum <u>getFormat</u>();
+<dt><big><a name="Sound.getFormat"></a>final const pure nothrow ALenum <u>getFormat</u>();
 </big></dt>
 <dd>Returns the Format.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getStatus"></a>const pure nothrow Status <u>getStatus</u>();
+<dt><big><a name="Sound.getStatus"></a>final const pure nothrow Status <u>getStatus</u>();
 </big></dt>
 <dd>Returns the current status.
 <br><br>
@@ -173,7 +173,7 @@ WaveFile<br><br>
 Status enum<br><br>
 
 </dd>
-<dt><big><a name="Sound.getChannel"></a>const pure nothrow ref const(Channel) <u>getChannel</u>();
+<dt><big><a name="Sound.getChannel"></a>final const pure nothrow ref const(Channel) <u>getChannel</u>();
 </big></dt>
 <dd>Returns the current Channel.
 <br><br>
@@ -181,7 +181,7 @@ Status enum<br><br>
 Channel struct<br><br>
 
 </dd>
-<dt><big><a name="Sound.getFreqeuency"></a>const pure nothrow uint <u>getFreqeuency</u>();
+<dt><big><a name="Sound.getFreqeuency"></a>final const pure nothrow uint <u>getFreqeuency</u>();
 </big></dt>
 <dd>Returns the current frequency.<br><br>
 
@@ -196,43 +196,43 @@ Channel struct<br><br>
 <dd>Set the <i>volume</i>.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getVolume"></a>const pure nothrow ubyte <u>getVolume</u>();
+<dt><big><a name="Sound.getVolume"></a>final const pure nothrow ubyte <u>getVolume</u>();
 </big></dt>
 <dd>Returns the current volume.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setLooping"></a>void <u>setLooping</u>(bool <i>enable</i>);
+<dt><big><a name="Sound.setLooping"></a>final void <u>setLooping</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Enable looping.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getLooping"></a>const pure nothrow bool <u>getLooping</u>();
+<dt><big><a name="Sound.getLooping"></a>final const pure nothrow bool <u>getLooping</u>();
 </big></dt>
 <dd>Returns if the looping is enabled or not.<br><br>
 
 </dd>
-<dt><big><a name="Sound.play"></a>void <u>play</u>(bool <i>enable</i>);
+<dt><big><a name="Sound.play"></a>final void <u>play</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Activate the playing.
  If <i>enable</i> is <b>true</b>, the looping is also activated.<br><br>
 
 </dd>
-<dt><big><a name="Sound.play"></a>void <u>play</u>();
+<dt><big><a name="Sound.play"></a>final void <u>play</u>();
 </big></dt>
 <dd>Activate the playing.<br><br>
 
 </dd>
-<dt><big><a name="Sound.stop"></a>void <u>stop</u>();
+<dt><big><a name="Sound.stop"></a>final void <u>stop</u>();
 </big></dt>
 <dd>Stop current playing.<br><br>
 
 </dd>
-<dt><big><a name="Sound.rewind"></a>void <u>rewind</u>();
+<dt><big><a name="Sound.rewind"></a>final void <u>rewind</u>();
 </big></dt>
 <dd>Rewind playing.<br><br>
 
 </dd>
-<dt><big><a name="Sound.pause"></a>void <u>pause</u>();
+<dt><big><a name="Sound.pause"></a>final void <u>pause</u>();
 </big></dt>
 <dd>Pause playing.<br><br>
 
@@ -247,7 +247,7 @@ Channel struct<br><br>
 <dd>Set the position.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getPosition"></a>const pure nothrow ref const(vec3f) <u>getPosition</u>();
+<dt><big><a name="Sound.getPosition"></a>final const pure nothrow ref const(vec3f) <u>getPosition</u>();
 </big></dt>
 <dd>Returns the current position.<br><br>
 
@@ -262,7 +262,7 @@ Channel struct<br><br>
 <dd>Set the velocity.<br><br>
 
 </dd>
-<dt><big><a name="Sound.getVelocity"></a>const pure nothrow ref const(vec3f) <u>getVelocity</u>();
+<dt><big><a name="Sound.getVelocity"></a>final const pure nothrow ref const(vec3f) <u>getVelocity</u>();
 </big></dt>
 <dd>Returns the current velocity.<br><br>
 

@@ -418,6 +418,7 @@ public:
 	mixin TTransformable;
 	
 final:
+	
 	/**
 	 * CTor
 	 * 

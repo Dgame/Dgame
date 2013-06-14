@@ -8,7 +8,11 @@ private {
 	import std.c.string : memcpy;
 	
 	import derelict3.sdl2.ttf;
+	
+	import Dgame.Core.SmartPointer;
 }
+
+///version = Develop;
 
 private Font*[] _finalizer;
 
@@ -57,7 +61,7 @@ public:
 	}
 	
 private:
-	TTF_Font* _font;
+	shared_ptr!(TTF_Font, TTF_CloseFont) _target;
 	
 	string _fontFile;
 	ubyte _fontSize;
@@ -100,8 +104,10 @@ public:
 	/**
 	 * DTor
 	 */
+	version(Develop)
 	~this() {
-		this.free();
+		///this.free();
+		writeln("Close Font");
 	}
 	
 	/**
@@ -109,15 +115,7 @@ public:
 	 * This function is claaed from the DTor
 	 */
 	void free() {
-		if (this._font) {
-			//	try {
-			debug writeln("close Font: ", this._font, ',', TTF_WasInit());
-			TTF_CloseFont(this._font);
-			debug writeln("Font closed");
-			//} catch (Throwable e) { }
-			
-			this._font = null;
-		}
+		this._target.reset(null);
 	}
 	
 	/**
@@ -126,27 +124,28 @@ public:
 	 * If both are 0, an exception is thrown.
 	 */
 	void loadFromFile(string fontFile, ubyte fontSize = 0) {
-		this.free(); /// Free old data
+		///this.free(); /// Free old data
 		
 		_finalizer ~= &this;
 		
 		assert(this._fontSize != 0 || fontSize != 0, "No size for this font.");
 		
-		if (!exists(fontFile)) {
+		if (!exists(fontFile))
 			throw new Exception("Font File does not exists.");
-		}
 		
 		try {
-			this._font = TTF_OpenFont(fontFile.ptr, fontSize == 0 ? this._fontSize : fontSize);
+			TTF_Font* font = TTF_OpenFont(fontFile.ptr, fontSize == 0 ? this._fontSize : fontSize);
 			debug writefln("#1 -> Error: %s", to!(string)(TTF_GetError()));
+			
+			if (font is null) {
+				debug writefln("#2 -> Error: %s", to!(string)(TTF_GetError()));
+				throw new Exception("Could not load font " ~ fontFile);
+			}
+			
+			this._target.reset(font);
 		} catch (Throwable t) {
 			debug writefln(" -> Font Size: %d", fontSize == 0 ? this._fontSize : fontSize);
 			throw new Exception(.format("Error by opening font file %s: %s.", fontFile, t.msg));
-		}
-		
-		if (this._font is null) {
-			debug writefln("#2 -> Error: %s", to!(string)(TTF_GetError()));
-			throw new Exception("Die Font konnte nicht geladen werden.");
 		}
 		
 		this._fontFile = fontFile;
@@ -166,7 +165,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	void setStyle(Style style) {
-		TTF_SetFontStyle(this._font, style);
+		TTF_SetFontStyle(this._target, style);
 	}
 	
 	/**
@@ -175,7 +174,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	Style getStyle() const {
-		return cast(Style) TTF_GetFontStyle(this._font);
+		return cast(Style) TTF_GetFontStyle(this._target);
 	}
 	
 	/**
@@ -211,10 +210,10 @@ public:
 	}
 	
 	/**
-	 * Returns a TTF_Font pointer.
+	 * Returns a TTFthis._target pointer.
 	 */
 	@property
 	inout(TTF_Font)* ptr() inout {
-		return this._font;
+		return this._target.ptr;
 	}
 }

@@ -281,7 +281,7 @@ void main() {
 					//qs.rotate(15, 0, 0);
 					//qs.move(150, -25);
 					
-					PowerInfo powI = PowerInfo.getInfo();
+					Power powI = Power.getInfo();
 					
 					writefln("Es verbleiben %d second bei %d %%. Status: %s",
 					         powI.seconds, powI.percent, powI.state);

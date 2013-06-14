@@ -27,6 +27,8 @@ protected:
 	enum Update = 10f;
 	
 public:
+final:
+	
 	/**
 	 * CTor
 	 */
@@ -53,7 +55,7 @@ public:
 	/**
 	 * Returns if the Unit moves.
 	 */
-	final bool isMoving() const pure nothrow {
+	bool isMoving() const pure nothrow {
 		return this._move;
 	}
 	
@@ -61,7 +63,7 @@ public:
 	 * Stop movement of the Unit.
 	 * Reset the viewport
 	 */
-	final void stop() {
+	void stop() {
 		this._move = false;
 		
 		super.resetViewport();
@@ -70,21 +72,21 @@ public:
 	/**
 	 * Continue movement
 	 */
-	final void resume() {
+	void resume() {
 		this._move = true;
 	}
 	
 	/**
 	 * Set a new speed
 	 */
-	final void setSpeed(float speed) {
+	void setSpeed(float speed) {
 		this._speed = speed;
 	}
 	
 	/**
 	 * Returns the current speed (starting value is 1f)
 	 */
-	final float getSpeed() const pure nothrow {
+	float getSpeed() const pure nothrow {
 		return this._speed;
 	}
 	
@@ -94,7 +96,7 @@ public:
 	 * 
 	 * See: slide
 	 */
-	final void setDirection(float x, float y) {
+	void setDirection(float x, float y) {
 		this._direction.set(x, y);
 	}
 	
@@ -104,14 +106,14 @@ public:
 	 * 
 	 * See: slide
 	 */
-	final void setDirection(ref const Vector2f vec) {
+	void setDirection(ref const Vector2f vec) {
 		this.setDirection(vec.x, vec.y);
 	}
 	
 	/**
 	 * Returns the current directon
 	 */
-	final ref const(Vector2f) getDirection() const pure nothrow {
+	ref const(Vector2f) getDirection() const pure nothrow {
 		return this._direction;
 	}
 	

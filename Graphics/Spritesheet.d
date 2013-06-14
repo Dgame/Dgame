@@ -50,7 +50,7 @@ public:
 	 * Set or replace the current viewport.
 	 * This Viewport is also set for the Texture.
 	 */
-	void setViewport(ref const FloatRect viewport) {
+	final void setViewport(ref const FloatRect viewport) {
 		assert(this._tex !is null, "No Texture.");
 		
 		super._tex.setViewport(viewport);
@@ -60,7 +60,7 @@ public:
 	/**
 	 * Rvalue version
 	 */
-	void setViewport(const FloatRect viewport) {
+	final void setViewport(const FloatRect viewport) {
 		this.setViewport(viewport);
 	}
 	
@@ -120,9 +120,9 @@ public:
 		if (rect.y >= super._tex.height)
 			rect.y = 0f;
 		
-		if ((rect.x + w) < super._tex.width) {
+		if ((rect.x + w) < super._tex.width)
 			rect.move(w, 0f);
-		} else
+		else
 			rect.x = 0f;
 	}
 }

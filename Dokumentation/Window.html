@@ -137,7 +137,7 @@ Dgame.System.Clock<br><br>
 <dd>Check if this window is still opened.<br><br>
 
 </dd>
-<dt><big><a name="Window.initClearColor"></a>final void <u>initClearColor</u>();
+<dt><big><a name="Window.initClearColor"></a>final const void <u>initClearColor</u>();
 </big></dt>
 <dd>Init the current clear color.<br><br>
 
@@ -185,11 +185,6 @@ Dgame.System.Clock<br><br>
  If the framerate limit is not 0, it waits for (1000 / framerate limit) milliseconds.<br><br>
 
 </dd>
-<dt><big><a name="Window.getPosition"></a>final Vector2s <u>getPosition</u>();
-</big></dt>
-<dd>Returns the current position of the window.<br><br>
-
-</dd>
 <dt><big><a name="Window.setPosition"></a>final void <u>setPosition</u>(short <i>x</i>, short <i>y</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
@@ -198,6 +193,11 @@ Dgame.System.Clock<br><br>
 <dt><big><a name="Window.setPosition"></a>final void <u>setPosition</u>(ref const Vector2s <i>vec</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
+
+</dd>
+<dt><big><a name="Window.getPosition"></a>final Vector2s <u>getPosition</u>();
+</big></dt>
+<dd>Returns the current position of the window.<br><br>
 
 </dd>
 <dt><big><a name="Window.fetchPosition"></a>final void <u>fetchPosition</u>(int* <i>x</i>, int* <i>y</i>);
@@ -261,6 +261,27 @@ the old <i>title</i><br><br>
 </big></dt>
 <dd>Show or hide the window.
  <b>true</b> shows, <b>false</b> hides.<br><br>
+
+</dd>
+<dt><big><a name="Window.setGrabbed"></a>final void <u>setGrabbed</u>(bool <i>enable</i>);
+</big></dt>
+<dd>When input is grabbed the mouse is confined to the window.<br><br>
+
+</dd>
+<dt><big><a name="Window.isGrabbed"></a>final bool <u>isGrabbed</u>();
+</big></dt>
+<dd>Returns <b>true</b>, if input is grabbed.<br><br>
+
+</dd>
+<dt><big><a name="Window.getBrightness"></a>final float <u>getBrightness</u>();
+</big></dt>
+<dd>Returns the brightness (gamma correction) for the window
+ where 0.0 is completely dark and 1.0 is normal brightness.<br><br>
+
+</dd>
+<dt><big><a name="Window.setBrightness"></a>final bool <u>setBrightness</u>(float <i>bright</i>);
+</big></dt>
+<dd>Set the brightness (gamma correction) for the window.<br><br>
 
 </dd>
 <dt><big><a name="Window.setFullscreen"></a>final void <u>setFullscreen</u>(bool <i>enable</i>);

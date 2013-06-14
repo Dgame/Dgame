@@ -14,52 +14,52 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Text.this"></a> this(ref const Font <i>font</i>, string <i>text</i> = "");
+<dl><dt><big><a name="Text.this"></a>final  this(ref const Font <i>font</i>, string <i>text</i> = "");
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Text.useBlending"></a>void <u>useBlending</u>(bool <i>enable</i>);
+<dt><big><a name="Text.useBlending"></a>final void <u>useBlending</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Enable or Disable blending<br><br>
 
 </dd>
-<dt><big><a name="Text.isBlendingEnabled"></a>const pure nothrow bool <u>isBlendingEnabled</u>();
+<dt><big><a name="Text.isBlendingEnabled"></a>final const pure nothrow bool <u>isBlendingEnabled</u>();
 </big></dt>
 <dd>Returns if Blending is enabled<br><br>
 
 </dd>
-<dt><big><a name="Text.setBlendMode"></a>void <u>setBlendMode</u>(BlendMode <i>mode</i>);
+<dt><big><a name="Text.setBlendMode"></a>final void <u>setBlendMode</u>(BlendMode <i>mode</i>);
 </big></dt>
 <dd>Set the Blendmode.<br><br>
 
 </dd>
-<dt><big><a name="Text.getBlendMode"></a>const pure nothrow BlendMode <u>getBlendMode</u>();
+<dt><big><a name="Text.getBlendMode"></a>final const pure nothrow BlendMode <u>getBlendMode</u>();
 </big></dt>
 <dd>Returns the current Blendmode.<br><br>
 
 </dd>
-<dt><big><a name="Text.setBlendColor"></a>void <u>setBlendColor</u>(ref const Color <i>col</i>);
+<dt><big><a name="Text.setBlendColor"></a>final void <u>setBlendColor</u>(ref const Color <i>col</i>);
 </big></dt>
 <dd>Set the Blend Color.<br><br>
 
 </dd>
-<dt><big><a name="Text.setBlendColor"></a>void <u>setBlendColor</u>(const Color <i>col</i>);
+<dt><big><a name="Text.setBlendColor"></a>final void <u>setBlendColor</u>(const Color <i>col</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Text.getBlendColor"></a>const pure nothrow ref const(Color) <u>getBlendColor</u>();
+<dt><big><a name="Text.getBlendColor"></a>final const pure nothrow ref const(Color) <u>getBlendColor</u>();
 </big></dt>
 <dd>Returns the current Blend Color.<br><br>
 
 </dd>
-<dt><big><a name="Text.useBlendColor"></a>void <u>useBlendColor</u>(bool <i>use</i>);
+<dt><big><a name="Text.useBlendColor"></a>final void <u>useBlendColor</u>(bool <i>use</i>);
 </big></dt>
 <dd>Activate or deactivate the using of the Blend color.<br><br>
 
 </dd>
-<dt><big><a name="Text.usingBlendColor"></a>const pure nothrow bool <u>usingBlendColor</u>();
+<dt><big><a name="Text.usingBlendColor"></a>final const pure nothrow bool <u>usingBlendColor</u>();
 </big></dt>
 <dd>Returns, if using blend color is activated, or not.<br><br>
 
@@ -92,7 +92,7 @@ rschuett<br><br>
 <dd>Format a given string and draw it then on the image<br><br>
 
 </dd>
-<dt><big><a name="Text.opCall"></a>void <u>opCall</u>(string <i>text</i>);
+<dt><big><a name="Text.opCall"></a>final void <u>opCall</u>(string <i>text</i>);
 </big></dt>
 <dd>Replace the current string.
 <br><br>
@@ -104,7 +104,7 @@ t(<font color=red>"My new string"</font>);
 <br><br>
 
 </dd>
-<dt><big><a name="Text.opCall"></a>void <u>opCall</u>(ref const Text <i>t</i>);
+<dt><big><a name="Text.opCall"></a>final void <u>opCall</u>(ref const Text <i>t</i>);
 </big></dt>
 <dd>Replace the current string.
 <br><br>
