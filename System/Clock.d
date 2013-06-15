@@ -3,7 +3,7 @@ module Dgame.System.Clock;
 private {
 	debug import std.stdio;
 	
-	import derelict3.sdl2.functions;
+	import derelict.sdl2.functions;
 }
 
 /**

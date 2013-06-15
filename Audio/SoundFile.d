@@ -21,6 +21,9 @@ public:
 	ushort channels;	/** Number of channels */
 	ushort bits;		/** Number of bits */
 	ushort bytes;		/** Number of bytes */
+	
+	@disable
+	this(this);
 }
 
 /**
@@ -87,7 +90,7 @@ public:
 	 * Returns the length of the sound in seconds.
 	 */
 	float getLength() const pure nothrow {
-		return (8.0 * _sFile.dataSize) / (_sFile.bits * _sFile.rate * _sFile.channels);
+		return (8 * _sFile.dataSize) / (_sFile.bits * _sFile.rate * _sFile.channels);
 	}
 	
 	/**

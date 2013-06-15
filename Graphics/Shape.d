@@ -7,8 +7,8 @@ private {
 	
 	import std.c.string : memcpy;
 	
-	import derelict.opengl.gltypes;
-	import derelict.opengl.glfuncs;
+	import derelict2.opengl.gltypes;
+	import derelict2.opengl.glfuncs;
 	
 	import Dgame.Core.Allocator;
 	import Dgame.Graphics.Color;
@@ -100,8 +100,7 @@ protected:
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
-		auto vecData = Memory.alloc!float(vSize);
-		scope(exit) Memory.release(vecData);
+		auto vecData = Memory.alloc!float(vSize, Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			vecData ~= px.getPositionData();
@@ -120,8 +119,7 @@ protected:
 	void _updateColorCache() {
 		const size_t cSize = this._pixels.length * CCount;
 		
-		auto colData = Memory.alloc!float(cSize);
-		scope(exit) Memory.release(colData);
+		auto colData = Memory.alloc!float(cSize, Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			colData ~= px.getColorData();

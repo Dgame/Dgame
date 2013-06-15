@@ -4,7 +4,7 @@ private {
 	debug import std.stdio;
 	import std.traits : isNumeric;
 	
-	import derelict3.sdl2.sdl;
+	import derelict.sdl2.sdl;
 	
 	import Dgame.Math.Vector2;
 }
@@ -220,12 +220,15 @@ public:
 	}
 	
 	/**
-	 * Set a new position vector.
+	 * Set a new position with a vector.
 	 */
 	void setPosition(U)(ref const Vector2!U position) {
 		this.setPosition(position.x, position.y);
 	}
 	
+	/**
+	 * Set a new position with an array.
+	 */
 	void setPosition(U)(U[2] pos) {
 		this.setPosition(pos[0], pos[1]);
 	}
@@ -268,10 +271,8 @@ public:
 	 * The new coordinates <b>and</b> a new size.
 	 */
 	void set(U, V)(U x, U y, V w, V h) {
-		this.x = x;
-		this.y = y;
-		
-		this.setSize(w, h); // calls 'update'
+		this.setPosition(x, y);
+		this.setSize(w, h);
 	}
 	
 	T[4] asArray() const pure nothrow {

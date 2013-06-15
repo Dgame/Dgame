@@ -1,11 +1,11 @@
 module Dgame.Audio.Core.core;
 
 package {
-	import derelict3.openal.al;
+	import derelict.openal.al;
 	
-	import derelict3.ogg.ogg;
-	import derelict3.ogg.vorbis;
-	import derelict3.ogg.vorbisfile;
+	import derelict.ogg.ogg;
+	import derelict.ogg.vorbis;
+	import derelict.ogg.vorbisfile;
 }
 
 private {

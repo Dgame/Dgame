@@ -4,8 +4,8 @@ private {
 	debug import std.stdio;
 	import std.conv : to;
 	
-	import derelict.opengl.glfuncs;
-	import derelict.opengl.gltypes;
+	import derelict2.opengl.gltypes;
+	import derelict2.opengl.glfuncs;
 	
 	import Dgame.Math.Vertex;
 }

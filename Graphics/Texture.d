@@ -3,7 +3,8 @@ module Dgame.Graphics.Texture;
 private {
 	debug import std.stdio;
 	
-	import derelict.opengl.gl;
+	import derelict2.opengl.gltypes;
+	import derelict2.opengl.glfuncs;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
@@ -594,11 +595,15 @@ final:
 		GLuint previous_texture = Texture.currentlyBound();
 		scope(exit) Texture._reBind(previous_texture);
 		
-		if (rect is null) {
-			rect = new ShortRect(0, 0, tex.width, tex.height);
-			assert(rect !is null, "Out of memory.");
+		short rx = 0, ry = 0;
+		ushort rw = tex.width, rh = tex.height;
+		
+		if (rect !is null) {
+			rx = rect.x;
+			ry = rect.y;
+			rw = rect.width;
+			rh = rect.height;
 		}
-		scope(exit) rect = null;
 		
 		int[4] vport;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
@@ -606,17 +611,16 @@ final:
 		///
 		glPushAttrib(GL_VIEWPORT_BIT);
 		
-		glViewport(0, 0, rect.width, rect.height);
+		glViewport(0, 0, rw, rh);
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
-		tex._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]),
-		            RenderMode.Reverse);
+		tex._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]), RenderMode.Reverse);
 		
 		this.bind();
 		
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, 0, 0, rect.width, rect.height);
+		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, rx, ry, 0, 0, rw, rh);
 		
 		glPopAttrib();
 		///

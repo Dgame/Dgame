@@ -1,6 +1,6 @@
 module Dgame.Window.Event;
 
-private import derelict3.sdl2.types;
+private import derelict.sdl2.types;
 
 public {
 	import Dgame.System.Keyboard;

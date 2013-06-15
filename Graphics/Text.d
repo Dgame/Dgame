@@ -4,8 +4,8 @@ private {
 	debug import std.stdio;
 	import std.string : format;
 	
-	import derelict3.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
-	import derelict3.sdl2.ttf;
+	import derelict.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
+	import derelict.sdl2.ttf;
 	
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Color;

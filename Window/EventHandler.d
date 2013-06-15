@@ -3,8 +3,8 @@ module Dgame.Window.EventHandler;
 private {
 	debug import std.stdio;
 	
-	import derelict3.sdl2.types;
-	import derelict3.sdl2.functions;
+	import derelict.sdl2.types;
+	import derelict.sdl2.functions;
 }
 
 public import Dgame.Window.Event;

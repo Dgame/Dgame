@@ -5,10 +5,10 @@ private {
 	import std.string : format;
 	import std.conv : to;
 	
-	import derelict3.sdl2.sdl;
-	import derelict3.sdl2.image;
-	import derelict3.sdl2.ttf;
-	import derelict.opengl.gl;
+	import derelict.sdl2.sdl;
+	import derelict.sdl2.image;
+	import derelict.sdl2.ttf;
+	import derelict2.opengl.gl;
 	
 	import Dgame.System.Keyboard;
 }

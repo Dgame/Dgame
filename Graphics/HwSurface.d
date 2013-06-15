@@ -3,7 +3,7 @@ module Dgame.Graphics.HwSurface;
 private {
 	debug import std.stdio;
 	
-	import derelict3.sdl2.sdl;
+	import derelict.sdl2.sdl;
 	
 	import Dgame.Core.SmartPointer;
 	import Dgame.Graphics.Surface;

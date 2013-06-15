@@ -3,7 +3,7 @@ module Dgame.Graphics.RenderTarget;
 private {
 	import std.c.string : memcpy;
 	
-	import derelict3.sdl2.sdl;
+	import derelict.sdl2.sdl;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Surface;

@@ -12,19 +12,25 @@ enum Mode {
 }
 
 struct Storage(T) {
+private:
+	uint _length;
+	uint _capacity;
+	
 public:
 	T* data;
-	size_t length;
-	
-	const size_t capacity;
 	const Mode mode;
 	
-	this(T* data, size_t cap, Mode mode) {
+	@disable
+	this(typeof(null));
+	
+	this(T* data, uint cap, Mode mode) {
+		debug writeln("Allocate Memory: ", cap, ":", mode);
+		
 		assert(data !is null);
 		
 		this.data = data;
-		this.capacity = cap;
-		this.length = 0;
+		this._capacity = cap;
+		this._length = 0;
 		
 		this.mode = mode;
 	}
@@ -33,13 +39,15 @@ public:
 	this(this);
 	
 	~this() {
-		if (this.mode != Mode.DontFree)
+		if (this.mode != Mode.DontFree && this.isValid()) {
+			debug writeln("Release Memory");
 			Memory.release(this.data);
+		}
 	}
 	
 	ref typeof(this) opOpAssign(string op : "~", U : T)(auto ref U val) {
-		if (this.length < this.capacity)
-			this.data[this.length++] = val;
+		if (this._length < this._capacity)
+			this.data[this._length++] = val;
 		else
 			assert(0, "Out of memory");
 		
@@ -48,8 +56,8 @@ public:
 	
 	ref typeof(this) opOpAssign(string op : "~", U)(U[] values) {
 		foreach (ref U val; values) {
-			if (this.length < this.capacity)
-				this.data[this.length++] = val;
+			if (this._length < this._capacity)
+				this.data[this._length++] = val;
 			else
 				assert(0, "Out of memory");
 		}
@@ -57,15 +65,25 @@ public:
 		return this;
 	}
 	
-	ref typeof(this) opOpAssign(string op : "~", U, size_t N)(ref const U[N] values) {
+	ref typeof(this) opOpAssign(string op : "~", U, uint N)(ref const U[N] values) {
 		foreach (ref const U val; values) {
-			if (this.length < this.capacity)
-				this.data[this.length++] = val;
+			if (this._length < this._capacity)
+				this.data[this._length++] = val;
 			else
 				assert(0, "Out of memory");
 		}
 		
 		return this;
+	}
+	
+	@property
+	uint length() const pure nothrow {
+		return this._length;
+	}
+	
+	@property
+	uint capacity() const pure nothrow {
+		return this._capacity;
 	}
 	
 	bool isValid() const pure nothrow {
@@ -73,8 +91,8 @@ public:
 	}
 	
 	@property
-	inout(T[]) get() inout {
-		return this.data[0 .. this.length];
+	inout(T[]) get() inout pure nothrow {
+		return this.data[0 .. this._length];
 	}
 	
 	alias get this;
@@ -82,7 +100,7 @@ public:
 
 final abstract class Memory {
 public:
-	static Storage!T alloc(T)(size_t length, Mode mode = Mode.DontFree) {
+	static Storage!T alloc(T)(uint length, Mode mode) {
 		T* mem = cast(T*) calloc(length, T.sizeof);
 		if (!mem)
 			assert(0, "Out of memory");
@@ -90,15 +108,18 @@ public:
 		return Storage!T(mem, length, mode);
 	}
 	
-	static ref Storage!T extend(T)(ref Storage!T st, size_t length) {
+	static ref Storage!T extend(T)(ref Storage!T st, uint length, bool* inPlace = null) {
 		if ((st.capacity - st.length) >= length)
 			return st;
 		
-		const size_t old_length = st.length;
+		st._capacity += length;
 		
-		T* data = cast(T*) .realloc(st.data, length * T.sizeof);
+		T* data = cast(T*) .realloc(st.data, st.capacity * T.sizeof);
 		if (!data)
 			assert(0, "Out of memory");
+		
+		if (inPlace)
+			*inPlace = data is st.data;
 		
 		st.data = data;
 		
@@ -114,7 +135,7 @@ public:
 		ptr = null;
 	}
 } unittest {
-	auto mem = Memory.alloc!float(12);
+	auto mem = Memory.alloc!float(12, Mode.DontFree);
 	
 	assert(mem.length == 0);
 	assert(mem.capacity == 12);

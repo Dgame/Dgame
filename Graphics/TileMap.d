@@ -1,7 +1,7 @@
 module Dgame.Graphics.TileMap;
 
 private {
-	debug import std.stdio;
+	import std.stdio;
 	import std.xml;
 	import std.file : read;
 	import std.conv : to;
@@ -9,10 +9,13 @@ private {
 	import std.math : log2, pow, round, ceil, floor, fmax;
 	import std.c.string : memcpy;
 	
-	import derelict.opengl.gltypes;
+	import derelict2.opengl.gltypes;
+	import derelict2.opengl.glfuncs;
+	import derelict.sdl2.sdl;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
+	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
@@ -273,20 +276,18 @@ protected:
 		
 		/// Compress and load tileset
 		this._compress(tileset, used, subs);
-		
-		subs.destroy(); /// nullify subs
+		subs = null; /// nullify subs
 		
 		this._loadTexCoords(coordinates);
-		
-		used.destroy(); /// nullify used
+		used = null; /// nullify used
 	}
 	
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
 		if (this.compress) {
 			ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
-			Surface newTileset = Surface.make(dim, dim);
-			//newTileset.fill(Color.Black); /// notwendig!
+			Surface newTileset = Surface.make(dim, dim, 32);
+			//newTileset.fill(Color.Red); /// notwendig!
 			
 			ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
 			
@@ -294,7 +295,7 @@ protected:
 			ushort col = 0;
 			
 			/// Anpassen der Tile Koordinaten
-			//debug char c = '1';
+			//char c = '0';
 			foreach (ref SubSurface sub; subs) {
 				if (!newTileset.blit(sub.clip, null, &src))
 					throw new Exception("An error occured by blitting the tile on the new tileset.");
@@ -308,13 +309,13 @@ protected:
 					row += this._tmi.tileHeight;
 				}
 				
-				//debug sub.srfc.saveToFile("tile_" ~ c++ ~ ".png");
+				//sub.clip.saveToFile("tile_" ~ c++ ~ ".png");
 				
 				sub.clip.free(); /// Free subsurface
 				src.setPosition(col, row);
 			}
 			
-			debug newTileset.saveToFile("new_tilset.png");
+			//newTileset.saveToFile("new_tilset.png");
 			
 			Texture.Format t_fmt = Texture.Format.None;
 			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
@@ -326,7 +327,7 @@ protected:
 			Surface newTileset = Surface.make(tileset.width, tileset.height);
 			newTileset.blit(tileset);
 			
-			debug tileset.saveToFile("new_tilset.png");
+			//tileset.saveToFile("new_tilset.png");
 			
 			Texture.Format t_fmt = Texture.Format.None;
 			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))

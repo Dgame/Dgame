@@ -7,7 +7,7 @@ private {
 	import std.string : format;
 	import std.c.string : memcpy;
 	
-	import derelict3.sdl2.ttf;
+	import derelict.sdl2.ttf;
 	
 	import Dgame.Core.SmartPointer;
 }

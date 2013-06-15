@@ -4,7 +4,7 @@ private {
 	debug import std.stdio;
 	import std.c.string : memcpy;
 	
-	import derelict3.sdl2.sdl;
+	import derelict.sdl2.sdl;
 }
 
 /**

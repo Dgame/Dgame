@@ -11,7 +11,7 @@ private {
  * A little helper struct to define 
  * n dimensional vector arrays without unnecessary funcitonality.
  */
-struct vecn(T, const size_t Dim) if (isNumeric!T) {
+struct vecn(T, const uint Dim) if (isNumeric!T) {
 public:
 	/**
 	 * Stores the vector values.

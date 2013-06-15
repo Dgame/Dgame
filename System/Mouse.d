@@ -1,8 +1,8 @@
 module Dgame.System.Mouse;
 
 private {
-	import derelict3.sdl2.types;
-	import derelict3.sdl2.functions;
+	import derelict.sdl2.types;
+	import derelict.sdl2.functions;
 }
 
 /**

@@ -3,8 +3,8 @@ module Dgame.System.Keyboard;
 private {
 	debug import std.stdio;
 	
-	import derelict3.sdl2.functions;
-	import derelict3.sdl2.types;
+	import derelict.sdl2.types;
+	import derelict.sdl2.functions;
 	
 	import Dgame.Math.Rect;
 }

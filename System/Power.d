@@ -1,6 +1,6 @@
 module Dgame.System.Power;
 
-private import derelict3.sdl2.sdl;
+private import derelict.sdl2.sdl;
 
 /**
  * This structure provide support for battery lifetime if you are on a laptop etc.

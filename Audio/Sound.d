@@ -5,7 +5,7 @@ private {
 	import std.algorithm : endsWith;
 	import std.string : toLower;
 	
-	import derelict3.openal.al;
+	import derelict.openal.al;
 	
 	//import Dgame.Core.AutoRef;
 	
@@ -58,11 +58,9 @@ public:
 	 * ch(8, ChannelType.Stereo); // set bits and type for this channel.
 	 * ---
 	 */
-	ref Channel opCall(ubyte bits, ChannelType type) {
+	void opCall(ubyte bits, ChannelType type) {
 		this.bits = bits;
 		this.type = type;
-		
-		return this;
 	}
 }
 
@@ -222,11 +220,11 @@ public:
 	void loadFromFile(BaseSoundFile soundfile) in {
 		assert(soundfile !is null, "Soundfile is null.");
 	} body {
-		const SoundFile sFile = soundfile.getData();
+		const SoundFile* sFile = &soundfile.getData();
 		
 		this._soundfile = soundfile;
 		
-		// Load
+		/// Load
 		Channel ch;
 		switch (sFile.bits) {
 			case 8:

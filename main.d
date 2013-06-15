@@ -8,13 +8,13 @@ import Dgame.Audio.all;
 import Dgame.Graphics.TileMap;
 import Dgame.System.all;
 
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictGL.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictUtil.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictGL.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictUtil.lib");
 
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictSDL2.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictUtil.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictAL.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict3\\lib\\DerelictOGG.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictSDL2.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictUtil.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictAL.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictOGG.lib");
 
 import Dgame.Core.core : getDgVersion;
 
@@ -179,8 +179,8 @@ void main() {
 	
 	Event event;
 	
-	//TileMap tm = new TileMap("../../level_1.tmx");
-	TileMap tm = new TileMap("../../map2.tmx");
+	TileMap tm = new TileMap("../../level_1.tmx");
+	//TileMap tm = new TileMap("../../map2.tmx");
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
@@ -221,62 +221,62 @@ void main() {
 					
 					if (event.keyboard.key == Keyboard.Code.Esc) {
 						EventHandler.push(Event.Type.Quit);
-					}/* else if (event.keyboard.key == Keyboard.Code.Num1) {
-					  sound[0].play();
-					  //writeln("set color");
-					  //qs.getVertexAt(0).color = Color.Red;
-					  //qs.update();
-					  } else if (event.keyboard.key == Keyboard.Code.Num2) {
-					  sound[1].play();
-					  //    writeln("set color");
-					  //    qs.getVertexAt(1).color = Color.Cyan;
-					  //    qs.update();
-					  } else if (event.keyboard.key == Keyboard.Code.Num3) {
-					  //    writeln("set color");
-					  //    qs.getVertexAt(2).color = Color.Yellow;
-					  //    qs.update();
-					  } else if (event.keyboard.key == Keyboard.Code.Num4) {
-					  //    writeln("set color");
-					  //    qs.getVertexAt(3).color = Color.Magenta;
-					  //    qs.update();
-					  } else if (event.keyboard.key == Keyboard.Code.Space) {
-					  Keyboard.startTextInput();
-					  } else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
-					  Keyboard.stopTextInput();
-					  } else {
-					  wnd.capture().saveToFile("samples/img/capture.png");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Ctrl) {
-					  writeln("CTRL");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Shift) {
-					  writeln("SHIFT");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Caps) {
-					  writeln("CAPS");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Alt) {
-					  writeln("ALT");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Gui) {
-					  writeln("GUI");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Mode) {
-					  writeln("Alt Gr");
-					  }
-					  
-					  if (Keyboard.getModifier() & Keyboard.Mod.Num) {
-					  writeln("Num Lock");
-					  }
-					  
-					  writefln("Mod: %d", event.keyboard.mod);
-					  */
+					} else if (event.keyboard.key == Keyboard.Code.Num1) {
+						sound[0].play();
+						//writeln("set color");
+						//qs.getVertexAt(0).color = Color.Red;
+						//qs.update();
+					} else if (event.keyboard.key == Keyboard.Code.Num2) {
+						sound[1].play();
+						//    writeln("set color");
+						//    qs.getVertexAt(1).color = Color.Cyan;
+						//    qs.update();
+					} else if (event.keyboard.key == Keyboard.Code.Num3) {
+						//    writeln("set color");
+						//    qs.getVertexAt(2).color = Color.Yellow;
+						//    qs.update();
+					} else if (event.keyboard.key == Keyboard.Code.Num4) {
+						//    writeln("set color");
+						//    qs.getVertexAt(3).color = Color.Magenta;
+						//    qs.update();
+					} else if (event.keyboard.key == Keyboard.Code.Space) {
+						Keyboard.startTextInput();
+					} else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
+						Keyboard.stopTextInput();
+					} else {
+						writeln("Make screenshot");
+						wnd.capture().saveToFile("screenshot.png");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Ctrl) {
+						writeln("CTRL");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Shift) {
+						writeln("SHIFT");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Caps) {
+						writeln("CAPS");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Alt) {
+						writeln("ALT");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Gui) {
+						writeln("GUI");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Mode) {
+						writeln("Alt Gr");
+					}
+					
+					if (Keyboard.getModifier() & Keyboard.Mod.Num) {
+						writeln("Num Lock");
+					}
+					
+					writefln("Mod: %d", event.keyboard.mod);
 					//qs.scale(-0.5, -0.5);
 					//qs.rotate(15, 0, 0);
 					//qs.move(150, -25);

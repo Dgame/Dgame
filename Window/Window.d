@@ -3,18 +3,19 @@ module Dgame.Window.Window;
 private {
 	debug import std.stdio;
 	
-	import derelict3.sdl2.sdl;
-	import derelict.opengl.gl;
+	import derelict.sdl2.sdl;
+	import derelict2.opengl.gl;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Image;
 	import Dgame.Graphics.RenderTarget;
+	import Dgame.Graphics.TileMap;
 	import Dgame.Math.Vector2;
 	import Dgame.Window.VideoMode;
-	import Dgame.Graphics.TileMap;
 	
+	import Dgame.Core.Allocator;
 	import Dgame.Core.Finalizer;
 }
 
@@ -89,15 +90,15 @@ final:
 	 * CTor
 	 */
 	this(VideoMode vMode, short x, short y, string title = DefaultTitle) {
-		// Create an application window with the following settings:
-		this._window = SDL_CreateWindow(title.ptr,		//    const char* title
-		                                x,				//    int x: initial x position
-		                                y,				//    int y: initial y position
-		                                vMode.width,	//    int w: width, in pixels
-		                                vMode.height,	//    int h: height, in pixels
-		                                vMode.flag		//    Uint32 flags: window options, see below
+		/// Create an application window with the following settings:
+		this._window = SDL_CreateWindow(title.ptr,		///    const char* title
+		                                x,				///    int x: initial x position
+		                                y,				///    int y: initial y position
+		                                vMode.width,	///    int w: width, in pixels
+		                                vMode.height,	///    int h: height, in pixels
+		                                vMode.flag		///    Uint32 flags: window options, see below
 		                                );
-		// Check that the window was successfully made
+		/// Check that the window was successfully made
 		assert(this._window !is null, "Error by creating a SDL2 window.");
 		
 		if (vMode.flag & VideoMode.OpenGL) {
@@ -112,7 +113,7 @@ final:
 			assert(this._glContext !is null, "Error while creating gl context.");
 			
 			GLVersion glver = DerelictGL.loadExtendedVersions(DerelictGL.maxVersion()); 
-			//			DerelictGL.loadExtensions();
+			//DerelictGL.loadExtensions();
 			debug writeln("GLVersion: ", glver); /// which gl version
 			
 			glMatrixMode(GL_MODELVIEW);
@@ -151,9 +152,9 @@ final:
 	 * Close and destroy this window.
 	 */
 	void close() {
-		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
+		/// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
 		SDL_GL_DeleteContext(this._glContext);  
-		// Close and destroy the window
+		/// Close and destroy the window
 		SDL_DestroyWindow(this._window);
 		
 		this._open = false;
@@ -219,12 +220,11 @@ final:
 	 * ---
 	 */
 	Image capture(Texture.Format fmt = Texture.Format.BGRA) const {
-		Surface temp = Surface.make(this.vMode.width, this.vMode.height, 32);
+		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
 		
 		const size_t psize = 4 * this.vMode.width * this.vMode.height;
-		void[] pixels = new void[psize];
-		assert(pixels !is null && pixels.length == psize, "Out of memory.");
-		scope(exit) delete pixels;
+		
+		auto pixels = Memory.alloc!ubyte(psize, Mode.AutoFree);
 		
 		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
 		

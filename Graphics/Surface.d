@@ -8,10 +8,11 @@ private {
 	import std.algorithm : reverse;
 	import std.c.string : memcpy;
 	
-	import derelict3.sdl2.sdl;
-	import derelict3.sdl2.image;
+	import derelict.sdl2.sdl;
+	import derelict.sdl2.image;
 	
 	import Dgame.Core.SmartPointer;
+	import Dgame.Core.Allocator;
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;
@@ -46,8 +47,8 @@ public:
 		Alpha = 8	/** Alpha Mask */
 	}
 	
-	/// TODO: auf all setzen
-	version (all) {
+	/// wenn auf all -> blit funktioniert nicht
+	version (none) {
 		version (LittleEndian) {
 			enum {
 				RMask = 0x000000ff, /** Default Red Mask. */
@@ -68,8 +69,13 @@ public:
 			RMask = 0, /** Default Red Mask. */
 			GMask = 0, /** Default Green Mask. */
 			BMask = 0, /** Default Blue Mask. */
-			AMask = 0 /** Default Alpha Mask. */
+			//AMask = 0 /** Default Alpha Mask. */
 		}
+		
+		version (LittleEndian)
+			enum AMask = 0xff000000;
+		else
+			enum AMask = 0x000000ff;
 	}
 	
 	/**
@@ -288,12 +294,14 @@ public:
 	 */
 	void saveToFile(string filename) {
 		if (filename.length < 3)
-			throw new Exception("Dateiname ist nicht zulässig.");
+			throw new Exception("File name is not allowed.");
+		
+		debug writeln("RefCount: ", this._target.refcount);
 		
 		try {
 			SDL_SaveBMP(this.ptr, toStringz(filename));
 		} catch (Throwable e) {
-			const string msg = format("Die Datei (%s) konnte nicht gespeichert werden: %s", filename, e.msg);
+			const string msg = format("The file (%s) could not be saved: %s", filename, e.msg);
 			throw new Exception(msg);
 		}
 	}
@@ -777,13 +785,11 @@ public:
 	 */
 	Surface flip(Flip flip) {
 		ubyte* pixels = cast(ubyte*) this.getPixels();
-		scope(exit) delete pixels;
 		
 		const ubyte bytes = this.countBytes();
 		const size_t memSize = this.width * this.height * bytes;
 		
-		ubyte[] newPixels = new ubyte[memSize];
-		scope(exit) delete newPixels;
+		auto newPixels = Memory.alloc!ubyte(memSize, Mode.AutoFree);
 		
 		final switch (flip) {
 			case Flip.Vertical:
@@ -818,7 +824,7 @@ public:
 				break;
 			case Flip.Vertical | Flip.Horizontal:
 				newPixels[] = pixels[0 .. memSize];
-				reverse(newPixels);
+				reverse(newPixels.get);
 				break;
 		}
 		

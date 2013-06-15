@@ -6,11 +6,6 @@ private {
 	import Dgame.Graphics.Color;
 }
 
-public {
-	import derelict.opengl.gltypes;
-	import derelict.opengl.glfuncs;
-}
-
 /**
  * Supported BlendModes
  */
