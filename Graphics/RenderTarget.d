@@ -204,9 +204,7 @@ public:
 	 * Use this function to create a texture for a rendering context.
 	 */
 	HwSurface createHwSurface(ushort width, ushort height, HwSurface.Access access) {
-		enum format = SDL_PIXELFORMAT_UNKNOWN;
-		
-		SDL_Texture* tex = SDL_CreateTexture(this._target, format, access, width, height);
+		SDL_Texture* tex = SDL_CreateTexture(this._target, SDL_PIXELFORMAT_UNKNOWN, access, width, height);
 		
 		return HwSurface(tex, access);
 	}
@@ -299,8 +297,8 @@ public:
 	
 	/**
 	 * Use this function to read pixels from the current rendering target.
-	 * Warning: This is a very slow operation, and should not be used frequently.
-	 * Warning: This method <b>allocate</b> memory.
+	 * Note: This is a very slow operation, and should not be used frequently.
+	 * Note: This method <b>allocates</b> GC memory.
 	 *
 	 * rect represents the area to read, or null for the entire render target
 	 */

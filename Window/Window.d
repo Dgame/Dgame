@@ -96,8 +96,7 @@ final:
 		                                y,				///    int y: initial y position
 		                                vMode.width,	///    int w: width, in pixels
 		                                vMode.height,	///    int h: height, in pixels
-		                                vMode.flag		///    Uint32 flags: window options, see below
-		                                );
+		                                vMode.flag);    ///    Uint32 flags: window options, see below
 		/// Check that the window was successfully made
 		assert(this._window !is null, "Error by creating a SDL2 window.");
 		

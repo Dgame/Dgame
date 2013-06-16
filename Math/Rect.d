@@ -24,11 +24,11 @@ public:
 	/**
 	 * The x and y coordinates
 	 */
-	T x, y;
+	T x = 0, y = 0;
 	/**
 	 * The width and the height
 	 */
-	T width, height;
+	T width = 0, height = 0;
 	
 	void update() {
 		this._sdl_rect.x = cast(int) this.x;

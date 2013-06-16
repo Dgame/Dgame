@@ -222,13 +222,11 @@ public:
 	}
 	
 	~this() {
-		_deleter(this._ptr);
-		
-		this._ptr = null;
+		this.release();
 	}
 	
 	void reset(T* ptr) {
-		_deleter(this._ptr);
+		this.release();
 		
 		this._ptr = ptr;
 	}
