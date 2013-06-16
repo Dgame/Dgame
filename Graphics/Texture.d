@@ -437,8 +437,7 @@ final:
 	/**
 	 * Load from memory.
 	 */
-	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, Format fmt = Format.None)
-	in {
+	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, Format fmt = Format.None) in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
 		if (this._hasMemory && width == this.width && height == this.height) {

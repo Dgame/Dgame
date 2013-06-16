@@ -11,7 +11,7 @@ enum Mode {
 	DontFree
 }
 
-struct Storage(T) {
+struct Chunk(T) {
 private:
 	uint _length;
 	uint _capacity;
@@ -20,6 +20,7 @@ public:
 	T* data;
 	const Mode mode;
 	
+public:
 	@disable
 	this(typeof(null));
 	
@@ -100,15 +101,15 @@ public:
 
 final abstract class Memory {
 public:
-	static Storage!T alloc(T)(uint length, Mode mode) {
+	static Chunk!T alloc(T)(uint length, Mode mode) {
 		T* mem = cast(T*) calloc(length, T.sizeof);
 		if (!mem)
 			assert(0, "Out of memory");
 		
-		return Storage!T(mem, length, mode);
+		return Chunk!T(mem, length, mode);
 	}
 	
-	static ref Storage!T extend(T)(ref Storage!T st, uint length, bool* inPlace = null) {
+	static ref Chunk!T extend(T)(ref Chunk!T st, uint length, bool* inPlace = null) {
 		if ((st.capacity - st.length) >= length)
 			return st;
 		
@@ -126,7 +127,7 @@ public:
 		return st;
 	}
 	
-	static void release(T)(ref Storage!T st) {
+	static void release(T)(ref Chunk!T st) {
 		Memory.release(st.data);
 	}
 	

@@ -36,8 +36,11 @@ final:
 	/**
 	 * CTor
 	 */
-	this(ref Surface srfc) {
-		super.loadFromMemory(srfc.getPixels(), srfc.width, srfc.height);
+	this(ref Surface srfc, Texture.Format t_fmt = Texture.Format.None) {
+		if (t_fmt == Texture.Format.None && !srfc.isMask(Surface.Mask.Red, 0x000000ff))
+			t_fmt = srfc.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+		
+		super.loadFromMemory(srfc.getPixels(), srfc.width, srfc.height, srfc.countBits(), t_fmt);
 	}
 	
 	/**
@@ -69,7 +72,6 @@ final:
 	 */
 	void loadFromFile(string filename) {
 		Surface img = Surface(filename);
-		
 		super.loadFromMemory(img.getPixels(), img.width, img.height);
 	}
 	

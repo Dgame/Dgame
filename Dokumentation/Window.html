@@ -88,10 +88,10 @@ Sync enum<br><br>
 Sync enum<br><br>
 
 </dd>
-<dt><big><a name="Window.capture"></a>final const Image <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
+<dt><big><a name="Window.capture"></a>final const Surface <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
 </big></dt>
 <dd>Capture the pixel data of the current window and
- returns an Image with this pixel data.
+ returns a Surface with this pixel data.
  You can also alter the format of the pixel data.
  Default is <code>Texture.Format.BGRA</code>.
  This method is predestinated for screenshots.
@@ -100,6 +100,17 @@ Sync enum<br><br>
 <pre class="d_code">Window wnd = ...
 ...
 wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</font>);
+</pre>
+<br><br>
+
+ If you want to use the Screenshot more than only to save it,
+ it could be better to wrap it into an Image.
+
+<br><br>
+<b>Example:</b><br>
+<pre class="d_code">Window wnd = ...
+...
+Image screen = <font color=blue>new</font> Image(wnd.<u>capture</u>());
 </pre>
 <br><br>
 

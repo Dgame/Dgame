@@ -9,7 +9,7 @@ private {
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
-	import Dgame.Graphics.Image;
+	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.RenderTarget;
 	import Dgame.Graphics.TileMap;
 	import Dgame.Math.Vector2;
@@ -207,7 +207,7 @@ final:
 	
 	/**
 	 * Capture the pixel data of the current window and
-	 * returns an Image with this pixel data.
+	 * returns a Surface with this pixel data.
 	 * You can also alter the format of the pixel data.
 	 * Default is <code>Texture.Format.BGRA</code>.
 	 * This method is predestinated for screenshots.
@@ -218,12 +218,21 @@ final:
 	 * ...
 	 * wnd.capture().saveToFile("samples/img/screenshot.png");
 	 * ---
+	 * 
+	 * If you want to use the Screenshot more than only to save it,
+	 * it could be better to wrap it into an Image.
+	 * 
+	 * Example:
+	 * ----
+	 * Window wnd = ...
+	 * ...
+	 * Image screen = new Image(wnd.capture());
+	 * ----
 	 */
-	Image capture(Texture.Format fmt = Texture.Format.BGRA) const {
+	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
 		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
 		
 		const size_t psize = 4 * this.vMode.width * this.vMode.height;
-		
 		auto pixels = Memory.alloc!ubyte(psize, Mode.AutoFree);
 		
 		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
@@ -236,7 +245,7 @@ final:
 			       this.vMode.width * 4);
 		}
 		
-		return new Image(temp);
+		return temp;
 	}
 	
 	/**

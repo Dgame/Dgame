@@ -9,6 +9,7 @@ private {
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Window.Window;
+	import Dgame.Core.SmartPointer;
 }
 
 public import Dgame.Graphics.HwSurface;
@@ -46,10 +47,12 @@ public:
 	const Flags flags;
 	
 private:
-	SDL_Renderer* _sdl_renderer;
+	unique_ptr!(SDL_Renderer, SDL_DestroyRenderer) _target;
 	
 	ushort _width;
 	ushort _height;
+	
+private:
 	
 	/**
 	 * CTor
@@ -57,7 +60,7 @@ private:
 	this(SDL_Renderer* renderer, ushort w, ushort h) {
 		assert(renderer !is null, "Null Renderer.");
 		
-		this._sdl_renderer = renderer;
+		this._target = make_unique(renderer);
 		this._width  = w;
 		this._height = h;
 	}
@@ -69,10 +72,11 @@ private:
 		this._width  = w;
 		this._height = h;
 		
-		return SDL_SetRenderTarget(this._sdl_renderer, tex) == 0;
+		return SDL_SetRenderTarget(this._target, tex) == 0;
 	}
 	
 public:
+	
 	/**
 	 * Use this function to get the renderer associated with the window.
 	 */
@@ -94,45 +98,45 @@ public:
 	 */
 	this(Window win, Flags flags) {
 		SDL_Window* window = SDL_GetWindowFromID(win.id);
-		this._sdl_renderer = SDL_CreateRenderer(window, -1, flags);
+		
+		this(SDL_CreateRenderer(window, -1, flags), win.width, win.height);
 		
 		this.flags = flags;
-		this._width  = win.width;
-		this._height = win.height;
 	}
 	
 	/**
 	 * Use this function to create a 2D software rendering context for a Surface.
 	 */
 	this(ref Surface srfc) {
-		this._sdl_renderer = SDL_CreateSoftwareRenderer(srfc.ptr);
-		
-		this._width  = srfc.width;
-		this._height = srfc.height;
+		this(SDL_CreateSoftwareRenderer(srfc.ptr), srfc.width, srfc.height);
 	}
 	
 	/**
 	 * opAssign
 	 */
 	void opAssign(ref RenderTarget rhs) {
-		memcpy(&this, &rhs, RenderTarget.sizeof);
+		this._target.reset(rhs._target);
+		
+		this._width = rhs._width;
+		this._height = rhs._height;
+	}
+	
+	/**
+	 * opAssign
+	 * Rvalue version
+	 */
+	void opAssign(RenderTarget rhs) {
+		this.opAssign(rhs);
 	}
 	
 	@disable
 	this(this);
 	
 	/**
-	 * DTor
-	 */
-	~this() {
-		this.free();
-	}
-	
-	/**
 	 * Use this function to destroy the rendering context for a window and free associated textures.
 	 */
 	void free() {
-		SDL_DestroyRenderer(this._sdl_renderer);
+		this._target.reset(null);
 	}
 	
 	/**
@@ -155,14 +159,14 @@ public:
 	 * Use this function to update the screen with rendering performed.
 	 */
 	void present() {
-		SDL_RenderPresent(this._sdl_renderer);
+		SDL_RenderPresent(this._target);
 	}
 	
 	/**
 	 * Use this function to set the blend mode for a texture, used by 'copy'.
 	 */
 	void setBlendMode(BlendMode bmode) {
-		SDL_SetRenderDrawBlendMode(this._sdl_renderer, bmode);
+		SDL_SetRenderDrawBlendMode(this._target, bmode);
 	}
 	
 	/**
@@ -170,7 +174,7 @@ public:
 	 */
 	BlendMode getBlendMode() {
 		SDL_BlendMode blendMode;
-		SDL_GetRenderDrawBlendMode(this._sdl_renderer, &blendMode);
+		SDL_GetRenderDrawBlendMode(this._target, &blendMode);
 		
 		return cast(BlendMode) blendMode;
 	}
@@ -193,7 +197,7 @@ public:
 	 * Use this function to set the color used for drawing operations (clear).
 	 */
 	void setDrawColor(ubyte r, ubyte g, ubyte b, ubyte a) {
-		SDL_SetRenderDrawColor(this._sdl_renderer, r, g, b, a);
+		SDL_SetRenderDrawColor(this._target, r, g, b, a);
 	}
 	
 	/**
@@ -202,7 +206,7 @@ public:
 	HwSurface createHwSurface(ushort width, ushort height, HwSurface.Access access) {
 		enum format = SDL_PIXELFORMAT_UNKNOWN;
 		
-		SDL_Texture* tex = SDL_CreateTexture(this._sdl_renderer, format, access, width, height);
+		SDL_Texture* tex = SDL_CreateTexture(this._target, format, access, width, height);
 		
 		return HwSurface(tex, access);
 	}
@@ -216,7 +220,7 @@ public:
 		scope(exit) if (release) srfc.free();
 		
 		if (access & HwSurface.Access.Static) {
-			SDL_Texture* tex = SDL_CreateTextureFromSurface(this._sdl_renderer, srfc.ptr);
+			SDL_Texture* tex = SDL_CreateTextureFromSurface(this._target, srfc.ptr);
 			
 			return HwSurface(tex, access);
 		}
@@ -240,7 +244,7 @@ public:
 	 * Set a Surface as the current rendering target.
 	 */
 	bool setTarget(ref Surface srfc) {
-		SDL_Texture* tex = SDL_CreateTextureFromSurface(this._sdl_renderer, srfc.ptr);
+		SDL_Texture* tex = SDL_CreateTextureFromSurface(this._target, srfc.ptr);
 		
 		return this.setTarget(tex, srfc.width, srfc.height);
 	}
@@ -259,21 +263,21 @@ public:
 		const SDL_Rect* _src = src ? src.ptr : null;
 		const SDL_Rect* _dst = dst ? dst.ptr : null;
 		
-		return SDL_RenderCopy(this._sdl_renderer, hw.ptr, _src, _dst) == 0;
+		return SDL_RenderCopy(this._target, hw.ptr, _src, _dst) == 0;
 	}
 	
 	/**
 	 * Use this function to clear the current rendering target with the drawing color.
 	 */
 	void clear() {
-		SDL_RenderClear(this._sdl_renderer);
+		SDL_RenderClear(this._target);
 	}
 	
 	/**
 	 * Use this function to set the drawing area for rendering on the current target.
 	 */
 	void setViewport(ref const ShortRect view) {
-		SDL_RenderSetViewport(this._sdl_renderer, view.ptr);
+		SDL_RenderSetViewport(this._target, view.ptr);
 	}
 	
 	/**
@@ -288,7 +292,7 @@ public:
 	 */
 	ShortRect getViewport() {
 		ShortRect rect;
-		SDL_RenderGetViewport(this._sdl_renderer, rect.ptr);
+		SDL_RenderGetViewport(this._target, rect.ptr);
 		
 		return rect;
 	}
@@ -302,7 +306,7 @@ public:
 	 */
 	void* readPixels(const ShortRect* rect) {
 		void[] pixels = new void[rect.width * rect.height * 4];
-		SDL_RenderReadPixels(this._sdl_renderer, rect ? rect.ptr : null, 0, &pixels[0], this._width * 4);
+		SDL_RenderReadPixels(this._target, rect ? rect.ptr : null, 0, &pixels[0], this._width * 4);
 		
 		return &pixels[0];
 	}
