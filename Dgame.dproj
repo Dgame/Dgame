@@ -88,8 +88,10 @@
     <Compile Include="Graphics\Unit.d" />
     <Compile Include="Core\Finalizer.d" />
     <Compile Include="main.d" />
-    <Compile Include="Core\SmartPointer.d" />
     <Compile Include="Graphics\all.d" />
+    <Compile Include="Core\SmartPointer\Shared.d" />
+    <Compile Include="Core\SmartPointer\util.d" />
+    <Compile Include="Core\SmartPointer\Unique.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />
@@ -98,5 +100,6 @@
     <Folder Include="Math\" />
     <Folder Include="System\" />
     <Folder Include="Window\" />
+    <Folder Include="Core\SmartPointer\" />
   </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ private {
 	
 	import derelict.sdl2.ttf;
 	
-	import Dgame.Core.SmartPointer;
+	import Dgame.Core.SmartPointer.Shared;
 }
 
 ///version = Develop;

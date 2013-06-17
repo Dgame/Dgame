@@ -81,18 +81,23 @@
 <b>author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="TileMap.compress"></a>const bool <u>compress</u>;
-</big></dt>
-<dd>If <u>compress</u> is <b>true</b>, only the needed Tiles are stored
- (which means that are new tileset is created which contains only the needed tiles)
- otherwise the whole tileset is taken.<br><br>
-
-</dd>
-<dt><big><a name="TileMap.this"></a>final  this(string <i>filename</i>, bool <i>compress</i> = true);
+<dl><dt><big><a name="TileMap.this"></a>final  this(string <i>filename</i>, bool <i>compress</i> = true);
 </big></dt>
 <dd>CTor
 <br><br>
 If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
+ (which means that are new tileset is created which contains only the needed tiles)
+ otherwise the whole tileset is taken.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.load"></a>final void <u>load</u>(string <i>filename</i>, bool <i>compress</i> = true);
+</big></dt>
+<dd>Load a (new) TileMap<br><br>
+
+</dd>
+<dt><big><a name="TileMap.doCompress"></a>final const pure nothrow @property bool <u>doCompress</u>();
+</big></dt>
+<dd>If compress is <b>true</b>, only the needed Tiles are stored
  (which means that are new tileset is created which contains only the needed tiles)
  otherwise the whole tileset is taken.<br><br>
 

@@ -440,6 +440,7 @@ final:
 	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, Format fmt = Format.None) in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
+		/// Possible speedup because 'glTexSubImage2D' is often faster than 'glTexImage2D'.
 		if (this._hasMemory && width == this.width && height == this.height) {
 			if (fmt == Format.None || fmt == this._format) {
 				this.updateMemory(memory, null);

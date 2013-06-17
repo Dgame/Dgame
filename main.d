@@ -179,8 +179,7 @@ void main() {
 	
 	Event event;
 	
-	TileMap tm = new TileMap("../../level_1.tmx");
-	//TileMap tm = new TileMap("../../map2.tmx");
+	TileMap tm = new TileMap("../../map2.tmx");
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
@@ -240,9 +239,10 @@ void main() {
 						//    qs.getVertexAt(3).color = Color.Magenta;
 						//    qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Space) {
-						Keyboard.startTextInput();
+						tm.load("../../level_1.tmx");
+						//Keyboard.startTextInput();
 					} else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
-						Keyboard.stopTextInput();
+						//Keyboard.stopTextInput();
 					} else {
 						writeln("Make screenshot");
 						wnd.capture().saveToFile("screenshot.png");
@@ -289,7 +289,7 @@ void main() {
 					qs.setPixelColor(colors[cidx++ % colors.length]);
 					qs.setType(Shape.Type.LineLoop);
 					
-					tm.move(5, 5);
+					//tm.move(5, 5);
 					
 					/*
 					 if (event.keyboard.key == Keyboard.Code.Space) {

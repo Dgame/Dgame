@@ -190,6 +190,9 @@ public:
 	 * Checks whether the current buffer has already content, or not
 	 */
 	bool isEmpty() const pure nothrow {
+		if (!this.isSomethingBound())
+			return false;
+		
 		return this._dataAssigned[this._curTarget] == false;
 	}
 	
@@ -199,7 +202,22 @@ public:
 	 * See: isEmpty
 	 */
 	void deplete() {
+		if (!this.isSomethingBound())
+			return;
+		
 		this._dataAssigned[this._curTarget] = false;
+	}
+	
+	/**
+	 * Reset all buffer states
+	 * 
+	 * See: isEmpty
+	 */
+	void depleteAll() {
+		foreach (Target id, _; this._targetIds) {
+			this.bind(id);
+			this.deplete();
+		}
 	}
 	
 	/**

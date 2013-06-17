@@ -7,7 +7,7 @@ private {
 	import std.conv : to;
 	import std.string : format;
 	import std.math : log2, pow, round, ceil, floor, fmax;
-	import std.c.string : memcpy;
+	//import std.c.string : memcpy;
 	
 	import derelict2.opengl.gltypes;
 	import derelict2.opengl.glfuncs;
@@ -19,8 +19,9 @@ private {
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
-	import Dgame.System.Buffer;
 	import Dgame.Graphics.Interface.Transformable;
+	import Dgame.System.Buffer;
+	import Dgame.Core.SmartPointer.util;
 }
 
 /**
@@ -166,14 +167,6 @@ ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  * author: rschuett
  */
 class TileMap : Drawable, Transformable {
-public:
-	/**
-	 * If compress is true, only the needed Tiles are stored
-	 * (which means that are new tileset is created which contains only the needed tiles)
-	 * otherwise the whole tileset is taken.
-	 */
-	const bool compress;
-	
 protected:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) read(this._filename));
@@ -238,8 +231,10 @@ protected:
 			this._buf.cache(&vertices[0], vertices.length * float.sizeof);
 		
 		this._buf.unbind();
-		
 		this._vCount = vertices.length;
+		
+		/// Delete vertices
+		Delete(vertices);
 		
 		this._loadTileset();
 	}
@@ -264,7 +259,7 @@ protected:
 				
 				src.setPosition(used[t.gid]);
 				
-				if (this.compress)
+				if (this._doCompress)
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 			} else
 				doubly++;
@@ -272,19 +267,21 @@ protected:
 			coordinates ~= &used[t.gid];
 		}
 		
-		debug writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
+		//writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
 		
-		/// Compress and load tileset
 		this._compress(tileset, used, subs);
-		subs = null; /// nullify subs
-		
 		this._loadTexCoords(coordinates);
-		used = null; /// nullify used
+		
+		/// Delete them
+		Delete(subs);
+		Delete(used);
+		Delete(coordinates);
 	}
 	
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
-		if (this.compress) {
+		if (this._doCompress) {
 			ushort dim = calcDim(used.length, this._tmi.tileWidth);
+			writefln("Used Length: %d, TMI width: %d, Dim: %d", used.length, this._tmi.tileWidth, dim);
 			
 			Surface newTileset = Surface.make(dim, dim, 32);
 			//newTileset.fill(Color.Red); /// notwendig!
@@ -362,6 +359,10 @@ protected:
 			              (ty + th) / tsh]; 			/// #3
 		}
 		
+		File f = File("texcoords.txt", "w+");
+		f.write(texCoords);
+		f.close();
+		
 		this._buf.bind(Buffer.Target.TexCoords);
 		
 		if (!this._buf.isEmpty())
@@ -370,8 +371,10 @@ protected:
 			this._buf.cache(&texCoords[0], texCoords.length * float.sizeof);
 		
 		this._buf.unbind();
-		
 		this._tCount = texCoords.length;
+		
+		/// Delete texCoords
+		Delete(texCoords);
 	}
 	
 	override void _render() {
@@ -411,6 +414,7 @@ private:
 	
 	uint _vCount;
 	uint _tCount;
+	bool _doCompress;
 	
 	Buffer _buf;
 	
@@ -428,13 +432,36 @@ final:
 	 * otherwise the whole tileset is taken.
 	 */
 	this(string filename, bool compress = true) {
-		this._filename = filename;
-		this.compress = compress;
-		
 		this._tex = new Texture();
 		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.TexCoords);
 		
+		this.load(filename, compress);
+	}
+	
+	/**
+	 * Load a (new) TileMap
+	 */
+	void load(string filename, bool compress = true) {
+		this._filename = filename;
+		this._doCompress = compress;
+		
+		this._buf.depleteAll();
+		if (this._tiles.length != 0) {
+			.destroy(this._tmi);
+			Delete(this._tiles);
+		}
+		
 		this._readTileMap();
+	}
+	
+	/**
+	 * If compress is true, only the needed Tiles are stored
+	 * (which means that are new tileset is created which contains only the needed tiles)
+	 * otherwise the whole tileset is taken.
+	 */
+	@property
+	bool doCompress() const pure nothrow {
+		return this._doCompress;
 	}
 	
 	/**
