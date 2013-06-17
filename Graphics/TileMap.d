@@ -1,7 +1,7 @@
 module Dgame.Graphics.TileMap;
 
 private {
-	import std.stdio;
+	debug import std.stdio;
 	import std.xml;
 	import std.file : read;
 	import std.conv : to;
@@ -281,7 +281,6 @@ protected:
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
 		if (this._doCompress) {
 			ushort dim = calcDim(used.length, this._tmi.tileWidth);
-			writefln("Used Length: %d, TMI width: %d, Dim: %d", used.length, this._tmi.tileWidth, dim);
 			
 			Surface newTileset = Surface.make(dim, dim, 32);
 			//newTileset.fill(Color.Red); /// notwendig!
@@ -358,10 +357,6 @@ protected:
 			texCoords ~= [tx != 0 ? tx / tsw : tx,
 			              (ty + th) / tsh]; 			/// #3
 		}
-		
-		File f = File("texcoords.txt", "w+");
-		f.write(texCoords);
-		f.close();
 		
 		this._buf.bind(Buffer.Target.TexCoords);
 		
