@@ -35,23 +35,25 @@ shared_ptr!(T, _deleter) make_shared(T)(T* ptr, void function(ref T*) _deleter)
 	return shared_ptr!(T, _deleter)(ptr);
 }
 
-void Finalize(T)(ref T value) pure nothrow {
-	static if (is(T == struct) && is(typeof(value.__dtor)))
-		value.__dtor();
+void Delete(T)(ref T var) {
+	static if ((is(T == struct) || is(T == class)) && is(typeof(var.__dtor)))
+		var.__dtor();
 	
-	.destroy(value);
-	
-	static if (!is(T == class)) {
+	static if (is(T : U[], U))
+		GC.free(var.ptr);
+	else {
 		static if (is(T : U*, U))
-			GC.free(value);
+			GC.free(var);
 		else
-			GC.free(&value);
+			GC.free(&var);
 	}
+	
+	var = null;
 }
 
 private static int shared_counter = 0;
 
-struct shared_ptr(T, alias _deleter = Finalize)
+struct shared_ptr(T, alias _deleter = Delete)
 	if (is(T == struct) || is(T == class))
 {
 private:
@@ -116,7 +118,7 @@ public:
 	void release() {
 		this._destruct();
 		
-		Finalize(this._inuse);
+		Delete(this._inuse);
 		
 		this._ptr = null;
 		this._inuse = null;
@@ -194,7 +196,7 @@ unique_ptr!(T, _deleter) make_unique(T)(T* ptr, void function(ref T*) _deleter)
 	return unique_ptr!(T, _deleter)(ptr);
 }
 
-struct unique_ptr(T, alias _deleter = Finalize)
+struct unique_ptr(T, alias _deleter = Delete)
 	if (is(T == struct) || is(T == class))
 {
 private:
