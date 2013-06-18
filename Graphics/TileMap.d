@@ -123,7 +123,7 @@ ushort calcDim(uint tileNum, ubyte tileDim) {
 		dim1 = cast(ubyte) ceil(dim1 / 2f);
 		dim2 *= 2;
 	}
-	debug writeln("TileNum: ", tileNum, " - Dim1: ", dim1, " - Dim2: ", dim2);
+	///debug writeln("TileNum: ", tileNum, " - Dim1: ", dim1, " - Dim2: ", dim2);
 	version (none) {
 		return roundToNext2Pot(dim1);
 	} else {
@@ -234,7 +234,7 @@ protected:
 		this._vCount = vertices.length;
 		
 		/// Delete vertices
-		Delete(vertices);
+		deallocate(vertices);
 		
 		this._loadTileset();
 	}
@@ -273,9 +273,9 @@ protected:
 		this._loadTexCoords(coordinates);
 		
 		/// Delete them
-		Delete(subs);
-		Delete(used);
-		Delete(coordinates);
+		deallocate(subs);
+		deallocate(used);
+		deallocate(coordinates);
 	}
 	
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
@@ -369,7 +369,7 @@ protected:
 		this._tCount = texCoords.length;
 		
 		/// Delete texCoords
-		Delete(texCoords);
+		deallocate(texCoords);
 	}
 	
 	override void _render() {
@@ -443,7 +443,7 @@ final:
 		this._buf.depleteAll();
 		if (this._tiles.length != 0) {
 			.destroy(this._tmi);
-			Delete(this._tiles);
+			deallocate(this._tiles);
 		}
 		
 		this._readTileMap();
@@ -463,11 +463,12 @@ final:
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
 	short[2] convertCoords(T)(T cx, T cy) const {
-		short x = cx > this._tmi.tileWidth  ? cast(short) round(cx / this._tmi.tileWidth)  : 0;
-		short y = cy > this._tmi.tileHeight ? cast(short) floor(cy / this._tmi.tileHeight) : 0;
+		short x = cx >= this._tmi.tileWidth  ? cast(short) round(cx / this._tmi.tileWidth)  : 0;
+		short y = cy >= this._tmi.tileHeight ? cast(short) floor(cy / this._tmi.tileHeight) : 0;
 		
 		return [x, y];
 	}
+	
 	/**
 	 * Convert from pixel coordinates to tile coordinates.
 	 */

@@ -38,8 +38,8 @@ shared_ptr!(T, _deleter) make_shared(T)(T* ptr, void function(ref T*) _deleter)
 
 private static int shared_counter = 0;
 
-struct shared_ptr(T, alias _deleter = Delete)
-	if (is(T == struct) || is(T == class))
+struct shared_ptr(T, alias _deleter = deallocate)
+	if (is(T == struct))
 {
 private:
 	T* _ptr;
@@ -103,7 +103,7 @@ public:
 	void release() {
 		this._destruct();
 		
-		Delete(this._inuse);
+		deallocate(this._inuse);
 		
 		this._ptr = null;
 		this._inuse = null;

@@ -18,8 +18,8 @@ unique_ptr!(T, _deleter) make_unique(T)(T* ptr, void function(ref T*) _deleter)
 	return unique_ptr!(T, _deleter)(ptr);
 }
 
-struct unique_ptr(T, alias _deleter = Delete)
-	if (is(T == struct) || is(T == class))
+struct unique_ptr(T, alias _deleter = deallocate)
+	if (is(T == struct))
 {
 private:
 	T* _ptr;
