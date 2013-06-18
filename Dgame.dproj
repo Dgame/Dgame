@@ -31,7 +31,7 @@
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Dgame</OutputName>
-    <ExtraCompilerArguments>-O -inline -noboundscheck -wi -DdDokumentation</ExtraCompilerArguments>
+    <ExtraCompilerArguments>-O -inline -noboundscheck -wi -DdDokumentation -unittest</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

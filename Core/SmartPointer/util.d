@@ -33,11 +33,11 @@ void deallocate(T)(ref T var)
 		
 		this(int i) {
 			this.id = i;
-			debug writeln("CTor ", this.id);
+			debug writeln("A::CTor ", this.id);
 		}
 		
 		~this() {
-			debug writeln("DTor ", this.id);
+			debug writeln("A::DTor ", this.id);
 		}
 	}
 	
@@ -47,11 +47,11 @@ void deallocate(T)(ref T var)
 		
 		this(int i) {
 			this.id = i;
-			debug writeln("CTor ", this.id);
+			debug writeln("B::CTor ", this.id);
 		}
 		
 		~this() {
-			debug writeln("DTor ", this.id);
+			debug writeln("B::DTor ", this.id);
 		}
 	}
 	

@@ -203,8 +203,8 @@ protected:
 					
 					vertices ~= [vx, vy, 0f];		 	/// #1
 					vertices ~= [vx + vw, vy, 0f]; 		/// #2
-					vertices ~= [vx + vw, vy + vh, 0f]; /// #4
 					vertices ~= [vx, vy + vh, 0f]; 		/// #3
+					vertices ~= [vx + vw, vy + vh, 0f]; /// #4
 					
 					col++;
 					if (col >= this._tmi.width) {
@@ -344,18 +344,15 @@ protected:
 		const float tw = this._tmi.tileWidth;
 		const float th = this._tmi.tileHeight;
 		
-		foreach (ushort[2]* tc; coordinates) {
+		foreach (nr, ushort[2]* tc; coordinates) {
 			float tx = (*tc)[0];
 			float ty = (*tc)[1];
 			
-			texCoords ~= [tx != 0 ? tx / tsw : tx,
-			              ty != 0 ? ty / tsh : ty]; 	/// #1
-			texCoords ~= [(tx + tw) / tsw,
-			              ty != 0 ? ty / tsh : ty]; 	/// #2
-			texCoords ~= [(tx + tw) / tsw,
-			              (ty + th) / tsh]; 			/// #4
-			texCoords ~= [tx != 0 ? tx / tsw : tx,
-			              (ty + th) / tsh]; 			/// #3
+			texCoords ~= [tx != 0 ? tx / tsw : tx, ty != 0 ? ty / tsh : ty]; /// #1
+			texCoords ~= [(tx + tw) / tsw,  ty != 0 ? ty / tsh : ty]; 	     /// #2
+			texCoords ~= [tx != 0 ? tx / tsw : tx, (ty + th) / tsh]; 		 /// #3
+			texCoords ~= [(tx + tw) / tsw, (ty + th) / tsh]; 			     /// #4
+			
 		}
 		
 		this._buf.bind(Buffer.Target.TexCoords);
@@ -393,7 +390,7 @@ protected:
 		this._buf.pointTo(Buffer.Target.Vertex);
 		
 		this._tex.bind();
-		this._buf.drawArrays(GL_QUADS, this._vCount);
+		this._buf.drawArrays(GL_TRIANGLE_STRIP, this._vCount);
 		
 		this._buf.disableAllStates();
 		this._buf.unbind();

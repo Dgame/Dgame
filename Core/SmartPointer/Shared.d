@@ -2,7 +2,6 @@ module Dgame.Core.SmartPointer.Shared;
 
 private {
 	debug import std.stdio;
-	import std.c.string : memcpy;
 	
 	import Dgame.Core.SmartPointer.util;
 }
@@ -25,15 +24,9 @@ public:
 }
 
 shared_ptr!T make_shared(T)(T* ptr)
-	if (is(T == struct) || is(T == class)) 
+	if (is(T == struct))
 {
 	return shared_ptr!T(ptr);
-}
-
-shared_ptr!(T, _deleter) make_shared(T)(T* ptr, void function(ref T*) _deleter)
-	if (is(T == struct) || is(T == class)) 
-{
-	return shared_ptr!(T, _deleter)(ptr);
 }
 
 private static int shared_counter = 0;
@@ -50,13 +43,16 @@ private:
 	void _destruct() {
 		if (this._ptr) {
 			_deleter(this._ptr);
-			///writeln(__traits(identifier, _deleter));
+			debug writeln("delete SM with: ", __traits(identifier, _deleter));
 		}
 	}
 	
 public:
 	@disable
 	this(typeof(null));
+	
+	@disable
+	this(ref shared_ptr!T);
 	
 	this(T* ptr) {
 		this._ptr = ptr;
@@ -65,6 +61,12 @@ public:
 		this._isCopy = false;
 		
 		shared_counter++;
+	}
+	
+	this(shared_ptr!T rhs) {
+		this._ptr = rhs._ptr;
+		this._inuse = rhs._inuse;
+		this._inuse.inc();
 	}
 	
 	this(this) {
@@ -81,9 +83,9 @@ public:
 	void opAssign(shared_ptr!T rhs) {
 		this.release();
 		
-		memcpy(&this, &rhs, shared_ptr!T.sizeof);
-		
-		this._inuse = new RefCounter(1);
+		this._ptr = rhs._ptr;
+		this._inuse = rhs._inuse;
+		this._inuse.inc();
 	}
 	
 	~this() {
@@ -93,11 +95,11 @@ public:
 		              shared_counter, " => ",
 		              this._inuse ? this._inuse.counter : -1,
 		              " :: ", __traits(identifier, _deleter), " :: ",
+		              __traits(identifier, T), " :: ",
 		              this._ptr, " :: ", this._isCopy);
 		
-		if (this._inuse && this._inuse.dec() <= 0) {
+		if (this._inuse && this._inuse.dec() <= 0)
 			this.release();
-		}
 	}
 	
 	void release() {
@@ -152,18 +154,21 @@ public:
 	
 	void test(shared_ptr!A rhs) {
 		assert(rhs.isCopy);
+		assert(rhs.id == 42);
 		assert(rhs.valid);
 		assert(rhs.refcount == 2);
 	}
 	
 	shared_ptr!A as = make_shared(new A(42));
 	
+	assert(as.id == 42);
 	assert(as.refcount == 1);
 	assert(as.valid);
 	assert(!as.isCopy);
 	
 	test(as);
 	
+	assert(as.id == 42);
 	assert(as.refcount == 1);
 	assert(as.valid);
 	assert(!as.isCopy);

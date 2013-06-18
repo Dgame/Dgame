@@ -124,6 +124,7 @@ final:
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
 			
+			glShadeModel(GL_FLAT);
 			glDisable(GL_DITHER);
 			
 			glEnable(GL_BLEND);

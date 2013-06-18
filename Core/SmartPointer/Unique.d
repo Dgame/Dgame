@@ -7,15 +7,9 @@ private {
 }
 
 unique_ptr!T make_unique(T)(T* ptr)
-	if (is(T == struct) || is(T == class)) 
+	if (is(T == struct)) 
 {
 	return unique_ptr!T(ptr);
-}
-
-unique_ptr!(T, _deleter) make_unique(T)(T* ptr, void function(ref T*) _deleter)
-	if (is(T == struct) || is(T == class)) 
-{
-	return unique_ptr!(T, _deleter)(ptr);
 }
 
 struct unique_ptr(T, alias _deleter = deallocate)
