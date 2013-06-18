@@ -142,10 +142,18 @@ public:
 	}
 	
 	/**
-	 * Negation.
+	 * Negation
 	 */
 	Vector2!T opNeg() const {
 		return Vector2!T(-this.x, -this.y);
+	}
+	
+	/**
+	 * Negation
+	 */
+	void negate() pure nothrow {
+		this.x = -this.x;
+		this.y = -this.y;
 	}
 	
 	/**

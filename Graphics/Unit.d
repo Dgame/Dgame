@@ -111,10 +111,49 @@ final:
 	}
 	
 	/**
+	 * Reverse the direction
+	 */
+	void reverseDirection() {
+		this._direction.negate();
+	}
+	
+	/**
 	 * Returns the current directon
 	 */
 	ref const(Vector2f) getDirection() const pure nothrow {
 		return this._direction;
+	}
+	
+	/**
+	 * Returns only the x coordinate of the current direction
+	 */
+	@property
+	float dirX() const pure nothrow {
+		return this._direction.x;
+	}
+	
+	/**
+	 * Returns only the y coordinate of the current direction
+	 */
+	@property
+	float dirY() const pure nothrow {
+		return this._direction.y;
+	}
+	
+	/**
+	 * Set only the x coordinate of the current direction
+	 */
+	@property
+	void dirX(float dx) {
+		this._direction.x = dx;
+	}
+	
+	/**
+	 * Set only the y coordinate of the current direction
+	 */
+	@property
+	void dirY(float dy) {
+		this._direction.y = dy;
 	}
 	
 	/**
