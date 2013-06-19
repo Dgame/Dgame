@@ -2,7 +2,7 @@ module Dgame.Graphics.Text;
 
 private {
 	debug import std.stdio;
-	import std.string : format;
+	import std.string : format, toStringz;
 	
 	import derelict.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
 	import derelict.sdl2.ttf;
@@ -55,7 +55,7 @@ private:
 		SDL_Surface* srfc;
 		scope(exit) SDL_FreeSurface(srfc);
 		
-		const char* cstr = this._text.ptr;
+		immutable(char*) cstr = toStringz(this._text);
 		
 		SDL_Color* fg = this._fg.ptr;
 		SDL_Color* bg = this._bg.ptr;
@@ -111,7 +111,7 @@ protected:
 		if (this._text.length == 0)
 			return;
 		
-		assert(this._tex !is null, "No Texture.");
+		assert(this._tex !is null, "No valid Texture.");
 		
 		if (this._shouldUpdate)
 			this._update();
