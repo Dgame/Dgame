@@ -142,6 +142,20 @@ public:
 	}
 	
 	/**
+	 * Supported operation: +, -, *, / and %
+	 */
+	Vector2!T opBinary(string op, U : T)(U number) {
+		switch (op) {
+			case "+": return Vector2!T(this.x + number, this.y + number);
+			case "-": return Vector2!T(this.x - number, this.y - number);
+			case "*": return Vector2!T(this.x * number, this.y * number);
+			case "/": return Vector2!T(this.x / number, this.y / number);
+			case "%": return Vector2!T(this.x % number, this.y % number);
+			default: throw new Exception("Unsupported operator " ~ op);
+		}
+	}
+	
+	/**
 	 * Negation
 	 */
 	Vector2!T opNeg() const {
@@ -183,8 +197,10 @@ public:
 	int opCmp(ref const Vector2!T vec) const pure nothrow {
 		if (this.x > vec.x && this.y > vec.y)
 			return 1;
+		
 		if (this.x < vec.x && this.y < vec.y)
 			return -1;
+		
 		return 0;
 	}
 	

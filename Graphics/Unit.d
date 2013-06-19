@@ -19,7 +19,8 @@ class Unit : Spritesheet {
 protected:
 	Vector2f _direction;
 	
-	float _speed  = 1f;
+	ubyte _speed = 1;
+	float _swap = 1f;
 	float _update = 0f;
 	
 	bool _move = true;
@@ -60,8 +61,7 @@ final:
 	}
 	
 	/**
-	 * Stop movement of the Unit.
-	 * Reset the viewport
+	 * Stop movement of the Unit and reset the viewport
 	 */
 	void stop() {
 		this._move = false;
@@ -77,16 +77,33 @@ final:
 	}
 	
 	/**
+	 * Set a new swap value (starting value is 1f)
+	 * The swap value affect how fast the Spritesheet pictures are swapped.
+	 * The Update value is 10f and every frame the current swap/update counter is increased by the swap value.
+	 * If Update (10f) is reached, the next picture comes.
+	 */
+	void setSwap(float swap) {
+		this._swap = swap;
+	}
+	
+	/**
+	 * Returns the current swap value (starting value is 1f)
+	 */
+	float getSwap() const pure nothrow {
+		return this._swap;
+	}
+	
+	/**
 	 * Set a new speed
 	 */
-	void setSpeed(float speed) {
+	void setSpeed(ubyte speed) {
 		this._speed = speed;
 	}
 	
 	/**
-	 * Returns the current speed (starting value is 1f)
+	 * Returns the current speed (starting value is 1)
 	 */
-	float getSpeed() const pure nothrow {
+	ubyte getSpeed() const pure nothrow {
 		return this._speed;
 	}
 	
@@ -108,6 +125,13 @@ final:
 	 */
 	void setDirection(ref const Vector2f vec) {
 		this.setDirection(vec.x, vec.y);
+	}
+	
+	/**
+	 * Set the direction to 0|0
+	 */
+	void resetDirection() {
+		this._direction.set(0, 0);
 	}
 	
 	/**
@@ -164,10 +188,10 @@ final:
 	 * Also the update property is decreased about 10f.
 	 */
 	void slide() {
-		if (!this._move || this._speed <= 0f)
+		if (!this._move || this._speed == 0 || this._swap <= 0)
 			return;
 		
-		this._update += this._speed;
+		this._update += this._swap;
 		
 		if (this._update < Update)
 			return;
@@ -175,6 +199,12 @@ final:
 		this._update -= Update;
 		
 		super.slideViewport();
-		super.move(this._direction);
+		
+		if (this._speed == 1)
+			super.move(this._direction);
+		else {
+			const Vector2f mulDirection = this._direction * this._speed;
+			super.move(mulDirection);
+		}
 	}
 }
