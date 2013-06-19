@@ -55,7 +55,7 @@ private:
 		SDL_Surface* srfc;
 		scope(exit) SDL_FreeSurface(srfc);
 		
-		immutable(char*) cstr = toStringz(this._text);
+		immutable char* cstr = toStringz(this._text);
 		
 		SDL_Color* fg = this._fg.ptr;
 		SDL_Color* bg = this._bg.ptr;

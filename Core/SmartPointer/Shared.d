@@ -71,7 +71,6 @@ public:
 	
 	this(this) {
 		this._inuse.inc();
-		
 		this._isCopy = true;
 		
 		shared_counter++;
@@ -81,7 +80,10 @@ public:
 	void opAssign(ref shared_ptr!T);
 	
 	void opAssign(shared_ptr!T rhs) {
-		this.release();
+		if (this._inuse && this._inuse.dec() <= 0)
+			this.release();
+		
+		this._isCopy = rhs._isCopy;
 		
 		this._ptr = rhs._ptr;
 		this._inuse = rhs._inuse;
@@ -106,9 +108,6 @@ public:
 		this._destruct();
 		
 		deallocate(this._inuse);
-		
-		this._ptr = null;
-		this._inuse = null;
 	}
 	
 	@property
@@ -146,6 +145,10 @@ public:
 	
 	alias ptr this;
 	
+	bool opEquals(ref const shared_ptr!T rhs) const pure nothrow {
+		return this._ptr == rhs._ptr;
+	}
+	
 } unittest {
 	struct A {
 	public:
@@ -172,5 +175,21 @@ public:
 	assert(as.refcount == 1);
 	assert(as.valid);
 	assert(!as.isCopy);
+	
+	shared_ptr!A s1 = make_shared(new A(111));
+	shared_ptr!A s2 = s1;
+	
+	assert(s1.refcount == 2);
+	assert(s2.refcount == 2);
+	assert(s2.isCopy());
+	assert(s1 == s2);
+	
+	s1 = make_shared(new A(222));
+	
+	assert(s2.isValid());
+	assert(s1.refcount == 1);
+	assert(s2.refcount == 1);
+	assert(s2.isCopy());
+	assert(s1 != s2);
 }
 
