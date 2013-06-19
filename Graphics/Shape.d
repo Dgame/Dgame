@@ -100,7 +100,7 @@ protected:
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
-		auto vecData = Memory.alloc!float(vSize, Mode.AutoFree);
+		auto vecData = Memory.allocate!float(vSize, Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			vecData ~= px.getPositionData();
@@ -119,7 +119,7 @@ protected:
 	void _updateColorCache() {
 		const size_t cSize = this._pixels.length * CCount;
 		
-		auto colData = Memory.alloc!float(cSize, Mode.AutoFree);
+		auto colData = Memory.allocate!float(cSize, Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			colData ~= px.getColorData();

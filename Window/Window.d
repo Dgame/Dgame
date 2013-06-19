@@ -233,7 +233,7 @@ final:
 		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
 		
 		const size_t psize = 4 * this.vMode.width * this.vMode.height;
-		auto pixels = Memory.alloc!ubyte(psize, Mode.AutoFree);
+		auto pixels = Memory.allocate!ubyte(psize, Mode.AutoFree);
 		
 		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
 		

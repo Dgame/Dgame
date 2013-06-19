@@ -101,7 +101,7 @@ public:
 
 final abstract class Memory {
 public:
-	static Chunk!T alloc(T)(uint length, Mode mode) {
+	static Chunk!T allocate(T)(uint length, Mode mode) {
 		T* mem = cast(T*) calloc(length, T.sizeof);
 		if (!mem)
 			assert(0, "Out of memory");
@@ -136,7 +136,7 @@ public:
 		ptr = null;
 	}
 } unittest {
-	auto mem = Memory.alloc!float(12, Mode.DontFree);
+	auto mem = Memory.allocate!float(12, Mode.DontFree);
 	
 	assert(mem.length == 0);
 	assert(mem.capacity == 12);
