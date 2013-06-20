@@ -134,7 +134,6 @@ public:
 	
 	void reset(T* ptr) {
 		this._destruct();
-		
 		this._ptr = ptr;
 	}
 	
@@ -186,7 +185,7 @@ public:
 	
 	s1 = make_shared(new A(222));
 	
-	assert(s2.isValid());
+	assert(s2.valid());
 	assert(s1.refcount == 1);
 	assert(s2.refcount == 1);
 	assert(s2.isCopy());

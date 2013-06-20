@@ -19,7 +19,7 @@ class Unit : Spritesheet {
 protected:
 	Vector2f _direction;
 	
-	ubyte _speed = 1;
+	float _speed = 1f;
 	float _swap = 1f;
 	float _update = 0f;
 	
@@ -96,14 +96,14 @@ final:
 	/**
 	 * Set a new speed
 	 */
-	void setSpeed(ubyte speed) {
+	void setSpeed(float speed) {
 		this._speed = speed;
 	}
 	
 	/**
 	 * Returns the current speed (starting value is 1)
 	 */
-	ubyte getSpeed() const pure nothrow {
+	float getSpeed() const pure nothrow {
 		return this._speed;
 	}
 	
