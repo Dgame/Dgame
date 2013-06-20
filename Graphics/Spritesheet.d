@@ -79,6 +79,17 @@ public:
 	}
 	
 	/**
+	 * Reset the Viewport.
+	 */
+	void resetViewport() {
+		float x = this._viewport.x;
+		float y = this._viewport.y;/// + (this._viewport.height * this._row);
+		
+		FloatRect* rect = super._tex.fetchViewport();
+		rect.setPosition(x, y);
+	}
+	
+	/**
 	 * Returns the current row (starting value is 0)
 	 */
 	final ubyte getRow() const pure nothrow {
@@ -90,17 +101,6 @@ public:
 	 */
 	final void setRow(ubyte row) {
 		this._row = row;
-	}
-	
-	/**
-	 * Reset the Viewport.
-	 */
-	void resetViewport() {
-		float x = this._viewport.x;
-		float y = this._viewport.y + (this._viewport.height * this._row);
-		
-		FloatRect* rect = super._tex.fetchViewport();
-		rect.setPosition(x, y);
 	}
 	
 	/**
