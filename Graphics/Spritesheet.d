@@ -83,7 +83,7 @@ public:
 	 */
 	void resetViewport() {
 		float x = this._viewport.x;
-		float y = this._viewport.y;/// + (this._viewport.height * this._row);
+		float y = this._viewport.y;// + (this._viewport.height * this._row);
 		
 		FloatRect* rect = super._tex.fetchViewport();
 		rect.setPosition(x, y);

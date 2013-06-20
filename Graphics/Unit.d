@@ -23,8 +23,6 @@ protected:
 	float _swap = 1f;
 	float _update = 0f;
 	
-	bool _move = true;
-	
 	enum Update = 10f;
 	
 public:
@@ -54,26 +52,20 @@ final:
 	}
 	
 	/**
-	 * Returns if the Unit moves.
+	 * Returns if the Unit is moving.
+	 * This is proven with a check if speed is > 0f.
 	 */
 	bool isMoving() const pure nothrow {
-		return this._move;
+		return this._speed > 0f;
 	}
 	
 	/**
-	 * Stop movement of the Unit and reset the viewport
+	 * Stop the Unit.
+	 * Reset the viewport and the direction
 	 */
 	void stop() {
-		this._move = false;
-		
 		super.resetViewport();
-	}
-	
-	/**
-	 * Continue movement
-	 */
-	void resume() {
-		this._move = true;
+		this.resetDirection();
 	}
 	
 	/**
@@ -188,7 +180,7 @@ final:
 	 * Also the update property is decreased about 10f.
 	 */
 	void slide() {
-		if (!this._move || this._speed == 0 || this._swap <= 0)
+		if (this._speed == 0f || this._swap <= 0f)
 			return;
 		
 		this._update += this._swap;
