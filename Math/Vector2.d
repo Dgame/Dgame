@@ -4,13 +4,18 @@ private {
 	debug import std.stdio;
 	import std.math : pow, sqrt;
 	import std.traits : isNumeric;
+	
+	import Dgame.Core.Math;
 }
 
 //version = Develop;
 
 @safe
-private bool equals(T, U)(T a, U b) pure nothrow {
-	return a == cast(T) b;
+private bool equals(T, U)(T a, U b) pure nothrow if (isNumeric!T) {
+	static if (is(T == float) || is(T == double) || is(T == real))
+		return fpEqual(a, cast(T) b);
+	else
+		return a == cast(T) b;
 }
 
 /**

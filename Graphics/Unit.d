@@ -1,6 +1,8 @@
 module Dgame.Graphics.Unit;
 
 private {
+	import Dgame.Core.Math;
+	
 	import Dgame.Graphics.Spritesheet;
 	import Dgame.Graphics.Texture;
 	import Dgame.Math.Vector2;
@@ -180,10 +182,10 @@ final:
 	 * Also the update property is decreased about 10f.
 	 */
 	void slide() {
-		if (this._speed == 0f || this._swap <= 0f)
+		if (fpEqual(this._speed, 0f) || fpEqual(this._swap, 0f))
 			return;
 		
-		this._update += this._swap;
+		this._update += this._swap; 
 		
 		if (this._update < Update)
 			return;
@@ -192,7 +194,7 @@ final:
 		
 		super.slideViewport();
 		
-		if (this._speed == 1)
+		if (fpEqual(this._speed, 1f))
 			super.move(this._direction);
 		else {
 			const Vector2f mulDirection = this._direction * this._speed;

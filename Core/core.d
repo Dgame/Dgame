@@ -8,8 +8,6 @@ private {
 	import derelict2.opengl.glfuncs : glGetError;
 }
 
-debug version = Develop;
-
 /**
  * Current Version
  */

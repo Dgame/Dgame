@@ -21,6 +21,8 @@ protected:
 	ubyte _row = 0;
 	
 public:
+final:
+	
 	/**
 	 * CTor
 	 */
@@ -50,7 +52,7 @@ public:
 	 * Set or replace the current viewport.
 	 * This Viewport is also set for the Texture.
 	 */
-	final void setViewport(ref const FloatRect viewport) {
+	void setViewport(ref const FloatRect viewport) {
 		assert(this._tex !is null, "No Texture.");
 		
 		super._tex.setViewport(viewport);
@@ -60,21 +62,21 @@ public:
 	/**
 	 * Rvalue version
 	 */
-	final void setViewport(const FloatRect viewport) {
+	void setViewport(const FloatRect viewport) {
 		this.setViewport(viewport);
 	}
 	
 	/**
 	 * Get access to the current Viewport.
 	 */
-	final ref const(FloatRect) getViewport() const {
+	ref const(FloatRect) getViewport() const {
 		return this._viewport;
 	}
 	
 	/**
 	 * Get mutable access to the current Viewport.
 	 */
-	final inout(FloatRect)* fetchViewport() inout {
+	inout(FloatRect)* fetchViewport() inout {
 		return &this._viewport;
 	}
 	
@@ -92,14 +94,14 @@ public:
 	/**
 	 * Returns the current row (starting value is 0)
 	 */
-	final ubyte getRow() const pure nothrow {
+	ubyte getRow() const pure nothrow {
 		return this._row;
 	}
 	
 	/**
 	 * Set a new row
 	 */
-	final void setRow(ubyte row) {
+	void setRow(ubyte row) {
 		this._row = row;
 	}
 	
