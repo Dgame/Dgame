@@ -210,21 +210,21 @@ public:
 	}
 	
 	/**
-	 * Checks if a vector is empty. This means that his coordinates are the type minimum.
+	 * Checks if this vector is empty. This means that his coordinates are 0.
 	 */
 	bool isEmpty() const pure nothrow {
 		return equals(this.x, 0) && equals(this.y, 0);
 	}
 	
 	/**
-	 * Check if a vector is the origin vector. This means that his length is 1.
+	 * Check if this vector is a unit vector. That means that his length is 1.
 	 */
-	bool isOrigin() const pure nothrow {
+	bool isUnit() const pure nothrow {
 		return equals(this.length, 1);
 	}
 	
 	/**
-	 * Check if a vector is orthogonal to this.
+	 * Check if another vector is orthogonal to this.
 	 */
 	bool isOrtho(U)(ref const Vector2!U vec) const pure nothrow {
 		return equals(this.scalar(vec), 0);

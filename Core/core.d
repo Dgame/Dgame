@@ -27,7 +27,7 @@ string getDgVersion() {
 /**
  *
  */
-void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __LINE__) {
+void glCheck(lazy void Func, string filename = __FILE__, uint line_number = __LINE__) {
 	try {
 		Func();
 	} catch (Throwable e) {
@@ -39,7 +39,7 @@ void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __
 /**
  *
  */
-void GLCheckError(string filename, size_t line_number) {
+void GLCheckError(string filename, uint line_number) {
 	// Get the last error
 	GLenum ErrorCode = glGetError();
 	

@@ -11,12 +11,14 @@ private {
 	import derelict2.opengl.glfuncs;
 	
 	import Dgame.Core.Allocator;
+	import Dgame.Core.Math;
+	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
-	import Dgame.Math.Pixel;
-	import Dgame.System.Buffer;
 	import Dgame.Graphics.Interface.Transformable;
 	import Dgame.Graphics.Interface.Blendable;
+	import Dgame.Math.Pixel;
+	import Dgame.System.Buffer;
 }
 
 /**
@@ -47,13 +49,20 @@ public:
 	 * Can be ORed together:
 	 * ----
 	 * Shape s = ...;
-	 * s.update(Shape.Cache.Pixel | Shape.Cache.Color);
+	 * s.update(Shape.Update.Pixel | Shape.Update.Color);
+	 * ----
+	 * 
+	 * or you can use 'Both'
+	 *  ----
+	 * Shape s = ...;
+	 * s.update(Shape.Update.Both);
 	 * ----
 	 */
-	enum Cache {
+	enum Update {
 		None   = 0, /// No buffer
-		Pixel  = 1, /// Only the Pixel Buffer
-		Color  = 2  /// Only the Color Buffer
+		Vertex = 1, /// Only the Vertex Buffer
+		Color  = 2, /// Only the Color Buffer
+		Both   = 3  /// Both, Vertex and Color Buffer
 	}
 	
 	/**
@@ -76,12 +85,13 @@ public:
 	
 protected:
 	ubyte _lineWidth;
-	Cache _update;
 	bool _shouldFill;
+	bool _autoUpdate;
 	
 	Type _type;
 	SmoothTarget _smoothTarget;
 	SmoothHint	 _smoothHint;
+	Update _update;
 	
 	Pixel[] _pixels;
 	Buffer _buf;
@@ -93,7 +103,7 @@ protected:
 	}
 	
 	//protected:
-	void _updatePixelCache() {
+	void _updateVertexCache() {
 		const uint vSize = this._pixels.length * VCount;
 		debug {
 			const size_t cSize = this._pixels.length * CCount;
@@ -108,7 +118,7 @@ protected:
 		
 		this._buf.bind(Buffer.Target.Vertex);
 		
-		if (!this._buf.isEmpty())
+		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&vecData[0], vSize * float.sizeof);
 		else
 			this._buf.cache(&vecData[0], vSize * float.sizeof, Buffer.Dynamic.Draw);
@@ -127,7 +137,7 @@ protected:
 		
 		this._buf.bind(Buffer.Target.Color);
 		
-		if (!this._buf.isEmpty())
+		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&colData[0], cSize * float.sizeof);
 		else
 			this._buf.cache(&colData[0], cSize * float.sizeof, Buffer.Dynamic.Draw);
@@ -138,13 +148,16 @@ protected:
 	override void _render() {
 		assert(this._buf !is null);
 		
-		if (this._update & Cache.Pixel)
-			this._updatePixelCache();
+		if (this._update & Update.Vertex)
+			this._updateVertexCache();
 		
-		if (this._update & Cache.Color)
+		if (this._update & Update.Color)
 			this._updateColorCache();
 		
-		this._update = Cache.None;
+		this._update = Update.None;
+		
+		if (this._buf.isEmpty(Buffer.Target.Vertex) || this._buf.isEmpty(Buffer.Target.Color))
+			return;
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
@@ -153,10 +166,7 @@ protected:
 		             | GL_HINT_BIT  | GL_LINE_BIT | GL_POINT_BIT);
 		scope(exit) glPopAttrib();
 		
-		bool smoothEnabled = false;
 		if (this._smoothTarget != SmoothTarget.None) {
-			smoothEnabled = true;
-			
 			glEnable(this._smoothTarget);
 			
 			final switch (this._smoothTarget) {
@@ -172,12 +182,12 @@ protected:
 		}
 		
 		if (this._rotAngle != 0)
-			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1);
+			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1f);
 		
-		glTranslatef(super._position.x, super._position.y, 0);
+		glTranslatef(super._position.x, super._position.y, 0f);
 		
-		if (!this._scale.x != 1.0 && this._scale.y != 1.0)
-			glScalef(this._scale.x, this._scale.y, 0);
+		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
+			glScalef(this._scale.x, this._scale.y, 0f);
 		
 		if (glIsEnabled(GL_TEXTURE_2D))
 			glDisable(GL_TEXTURE_2D);
@@ -209,15 +219,14 @@ final:
 	this(Type type) {
 		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.Color);
 		
-		this.update(Cache.Pixel | Cache.Color);
-		
+		this.update(Update.Both);
 		this._lineWidth = 2;
 		
 		this._type = type;
 		this._smoothTarget = SmoothTarget.None;
 		this._smoothHint   = SmoothHint.Fastest;
 		
-		this._scale.set(1, 1);
+		this._scale.set(1f, 1f);
 	}
 	
 	/**
@@ -225,6 +234,27 @@ final:
 	 */
 	~this() {
 		this._pixels = null;
+	}
+	
+	/**
+	 * Activate 'autoUpdate'.
+	 * This means that which every append* or remove* method an update call is sended.
+	 * This spare you the manual call of update, but if you have many calls which cause an update call and 'autoUpdate' is activated
+	 * it could be more performant to disable this and handle the update call(s) by yourself.
+	 * 
+	 * Note: Default this is disabled.
+	 * Note: Methods that do not need to update call, have a  brief note.
+	 */
+	void setAutoUpdate(bool val) {
+		this._autoUpdate = val;
+	}
+	
+	/**
+	 * Returns if 'autoUpdate' is enabled.
+	 * Default is disabled.
+	 */
+	bool isAutoUpdate() const pure nothrow {
+		return this._autoUpdate;
 	}
 	
 	/**
@@ -250,13 +280,12 @@ final:
 	}
 	
 	/**
-	 * Activate an update.
 	 * The current shape will be updated.
-	 * In most cases, this happens automatically,
-	 * but sometimes it is usefull.
+	 * If 'autoUpdate' is activated, this happens automatically,
+	 * otherwise you should use this.
 	 */
-	void update(Cache val) {
-		if (this._update == Cache.None)
+	void update(Update val) {
+		if (this._update == Update.None)
 			this._update = val;
 		else if (!(val & this._update))
 			this._update |= val;
@@ -282,9 +311,12 @@ final:
 	
 	/**
 	 * Set for <b>all</b> vertices a (new) color.
+	 * 
+	 * Note: This method does not need an update call.
 	 */
 	void setPixelColor(ref const Color col) {
-		this.update(Cache.Color);
+		//if (this._autoUpdate)
+		this.update(Update.Color);
 		
 		foreach (ref Pixel v; this._pixels) {
 			v.color = col;
@@ -301,6 +333,8 @@ final:
 	/**
 	 * Activate fill mode.
 	 * This means the whole shape is drawn and not only the outlines.
+	 * 
+	 * Note: This method does not need an update call.
 	 */
 	void enableFill(bool fill) {
 		this._shouldFill = fill;
@@ -315,6 +349,8 @@ final:
 	
 	/**
 	 * Set the line width.
+	 * 
+	 * Note: This method does not need an update call.
 	 */
 	void setLineWidth(ubyte width) {
 		this._lineWidth = width;
@@ -330,52 +366,67 @@ final:
 	/**
 	 * Stores Pixel coordinates for this Shape.
 	 */
-	void addVector(ref const Vector2f vec) {
+	void appendVector(ref const Vector2f vec) {
+		if (this._autoUpdate)
+			this.update(Update.Vertex);
+		
 		this._pixels ~= Pixel(vec);
 	}
 	
 	/**
 	 * Rvalue version
 	 */
-	void addVector(const Vector2f vec) {
-		this.addVector(vec);
+	void appendVector(const Vector2f vec) {
+		this.appendVector(vec);
 	}
 	
 	/**
 	 * Stores a Pixel for this Shape.
 	 */
-	void addPixel(ref const Pixel vx) {
+	void appendPixel(ref const Pixel vx) {
+		if (this._autoUpdate)
+			this.update(Update.Vertex | Update.Color);
+		
 		this._pixels ~= vx;
 	}
 	
 	/**
 	 * Stores multiple Vertices for this Shape.
 	 */
-	void addPixels(const Pixel[] pixels) {
+	void appendPixels(const Pixel[] pixels) {
+		if (this._autoUpdate)
+			this.update(Update.Vertex | Update.Color);
+		
 		this._pixels ~= pixels;
 	}
 	
 	/**
 	 * Stores multiple Pixel coordinates for this Shape.
 	 */
-	void addVectors(const Vector2f[] vec) {
+	void appendVectors(const Vector2f[] vec) {
+		if (this._autoUpdate)
+			this.update(Update.Vertex);
+		
 		foreach (ref const Vector2f v; vec) {
-			this.addVector(v); // unnecessary copies
+			this.appendVector(v);
 		}
 	}
 	
 	/**
-	 * Drop the Pixel on the specific index.
+	 * Remove the Pixel on the specific index.
 	 * If vp is not null, the droped Pixel is stored there.
 	 */
-	void dropPixel(size_t index, Pixel* vp = null) {
+	void remove(uint index, Pixel* vp = null) {
+		if (this._autoUpdate)
+			this.update(Update.Vertex);
+		
 		if (index >= this._pixels.length)
 			return;
 		
 		if (vp)
 			memcpy(vp, &this._pixels[index], Pixel.sizeof);
 		
-		this._pixels = this._pixels.remove(index);
+		this._pixels = .remove(this._pixels, index);
 	}
 	
 	/**
@@ -417,8 +468,8 @@ final:
 	static Shape make(Type type, const Vector2f[] vec) {
 		Shape qs = new Shape(type);
 		
-		for (size_t i = 0; i < vec.length; ++i) {
-			qs.addVector(vec[i]);
+		for (uint i = 0; i < vec.length; ++i) {
+			qs.appendVector(vec[i]);
 		}
 		
 		return qs;
@@ -431,7 +482,7 @@ final:
 		Shape qs = new Shape(type);
 		
 		foreach (ref const Pixel px; pixels) {
-			qs.addPixel(px);
+			qs.appendPixel(px);
 		}
 		
 		return qs;
@@ -443,7 +494,7 @@ final:
 	static Shape makeCircle(float radius, ref const Vector2f center, ubyte vecNum = 30) {
 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
 		
-		const Deg2Rad = (PI * 2) / vecNum;
+		const float Deg2Rad = (PI * 2) / vecNum;
 		
 		Shape qs = new Shape(Type.LineLoop);
 		
@@ -453,7 +504,7 @@ final:
 			float x = center.x + cos(degInRad) * radius;
 			float y = center.y + sin(degInRad) * radius;
 			
-			qs.addVector(Vector2f(x, y));
+			qs.appendVector(Vector2f(x, y));
 		}
 		
 		return qs;

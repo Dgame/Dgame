@@ -225,7 +225,7 @@ protected:
 		
 		this._buf.bind(Buffer.Target.Vertex);
 		
-		if (!this._buf.isEmpty())
+		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&vertices[0], vertices.length * float.sizeof);
 		else
 			this._buf.cache(&vertices[0], vertices.length * float.sizeof);
@@ -357,7 +357,7 @@ protected:
 		
 		this._buf.bind(Buffer.Target.TexCoords);
 		
-		if (!this._buf.isEmpty())
+		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&texCoords[0], texCoords.length * float.sizeof);
 		else
 			this._buf.cache(&texCoords[0], texCoords.length * float.sizeof);

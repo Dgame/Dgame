@@ -189,11 +189,21 @@ public:
 	/**
 	 * Checks whether the current buffer has already content, or not
 	 */
-	bool isEmpty() const pure nothrow {
+	bool isCurrentEmpty() const pure nothrow {
 		if (!this.isSomethingBound())
 			return false;
 		
 		return this._dataAssigned[this._curTarget] == false;
+	}
+	
+	/**
+	 * Checks whether a specific buffer has already content, or not
+	 */
+	bool isEmpty(Target trg) const {
+		if (!(trg & this.targets))
+			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
+		
+		return this._dataAssigned[trg] == false;
 	}
 	
 	/**
@@ -234,7 +244,7 @@ public:
 	 * 
 	 * See: glBufferData
 	 */
-	void cache(const void* ptr, size_t totalSize, uint usage = Static.Draw) {
+	void cache(const void* ptr, uint totalSize, uint usage = Static.Draw) {
 		this._dataAssigned[this._curTarget] = true;
 		
 		ubyte id = this._targetIds[this._curTarget];
@@ -256,7 +266,7 @@ public:
 	 * 
 	 * See: glBufferSubData
 	 */
-	void modify(const void* ptr, size_t totalSize, size_t offset = 0) const {
+	void modify(const void* ptr, uint totalSize, uint offset = 0) const {
 		glBufferSubData(this.type, offset, totalSize, ptr); 
 	}
 	
@@ -321,8 +331,10 @@ public:
 		
 		if (trg & Target.Vertex)
 			glEnableClientState(GL_VERTEX_ARRAY);
+		
 		if (trg & Target.Color)
 			glEnableClientState(GL_COLOR_ARRAY);
+		
 		if (trg & Target.TexCoords)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
@@ -360,7 +372,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(GLenum type, size_t count) const {
+	void drawArrays(GLenum type, uint count) const {
 		glDrawArrays(type, 0, count);
 	}
 	
@@ -368,7 +380,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(GLenum type, size_t count, int[] indices) const {
+	void drawElements(GLenum type, uint count, int[] indices) const {
 		if (indices.length == 0)
 			return;
 		
@@ -379,7 +391,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawRangeElements(GLenum type, size_t count, int[] indices) const {
+	void drawRangeElements(GLenum type, uint count, int[] indices) const {
 		if (indices.length == 0)
 			return;
 		
