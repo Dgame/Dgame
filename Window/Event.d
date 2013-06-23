@@ -59,7 +59,7 @@ public:
 public:
 	Type type; /** The Event Type. */
 	
-	size_t timestamp; /** Milliseconds since the app is running. */
+	uint timestamp; /** Milliseconds since the app is running. */
 	uint windowId;   /** The window which has raised this event. */
 	
 	/**

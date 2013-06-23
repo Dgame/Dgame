@@ -787,13 +787,13 @@ public:
 		ubyte* pixels = cast(ubyte*) this.getPixels();
 		
 		const ubyte bytes = this.countBytes();
-		const size_t memSize = this.width * this.height * bytes;
+		const uint memSize = this.width * this.height * bytes;
 		
 		auto newPixels = Memory.allocate!ubyte(memSize, Mode.AutoFree);
 		
 		final switch (flip) {
 			case Flip.Vertical:
-				const size_t rowSize = this.width * bytes;
+				const uint rowSize = this.width * bytes;
 				
 				ubyte* source = &pixels[this.width * (this.height - 1) * bytes];
 				ubyte* dest = &newPixels[0];

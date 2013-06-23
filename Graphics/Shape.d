@@ -106,7 +106,7 @@ protected:
 	void _updateVertexCache() {
 		const uint vSize = this._pixels.length * VCount;
 		debug {
-			const size_t cSize = this._pixels.length * CCount;
+			const uint cSize = this._pixels.length * CCount;
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
@@ -127,7 +127,7 @@ protected:
 	}
 	
 	void _updateColorCache() {
-		const size_t cSize = this._pixels.length * CCount;
+		const uint cSize = this._pixels.length * CCount;
 		
 		auto colData = Memory.allocate!float(cSize, Mode.AutoFree);
 		

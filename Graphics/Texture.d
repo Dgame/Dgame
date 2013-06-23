@@ -96,7 +96,7 @@ private GLuint*[] _finalizer;
 void _finalizeTexture() {
 	debug writefln("Finalize Texture (%d)", _finalizer.length);
 	
-	for (size_t i = 0; i < _finalizer.length; i++) {
+	for (uint i = 0; i < _finalizer.length; i++) {
 		if (_finalizer[i] && *_finalizer[i] != 0) {
 			debug writefln(" -> Texture finalized: %d", i);
 			
@@ -480,8 +480,8 @@ final:
 		void* memory = this.getMemory();
 		scope(exit) delete memory;
 		
-		size_t size = this._width * this._height;
-		for (size_t i = 0; i < size; ++i) {
+		uint size = this._width * this._height;
+		for (uint i = 0; i < size; ++i) {
 			// Get pixel colors
 			ubyte* colors = cast(ubyte*) &memory[i];
 			
@@ -522,7 +522,7 @@ final:
 			return null;
 		}
 		
-		const size_t msize = this._width * this._height * (this._depth / 8);
+		const uint msize = this._width * this._height * (this._depth / 8);
 		void[] memory = new void[msize];
 		
 		GLuint previous_texture = Texture.currentlyBound();

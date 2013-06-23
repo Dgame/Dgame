@@ -19,7 +19,7 @@ private Font*[] _finalizer;
 void _finalizeFont() {
 	debug writefln("Finalize Font (%d)", _finalizer.length);
 	
-	for (size_t i = 0; i < _finalizer.length; i++) {
+	for (uint i = 0; i < _finalizer.length; i++) {
 		if (_finalizer[i]) {
 			debug writefln(" -> Font finalized: %d", i);
 			

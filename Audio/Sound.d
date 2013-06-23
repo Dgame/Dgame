@@ -100,7 +100,7 @@ private ALChunk*[] _finalizer;
 static ~this() {
 	debug writefln("Finalize Sound (%d)", _finalizer.length);
 	
-	for (size_t i = 0; i < _finalizer.length; i++) {
+	for (uint i = 0; i < _finalizer.length; i++) {
 		if (_finalizer[i]) {
 			debug writefln(" -> Sound finalized: %d", i);
 			

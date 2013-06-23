@@ -14,9 +14,9 @@ private {
  */
 final class Clock {
 private:
-	size_t _startTime;
-	size_t _numFrames;
-	size_t _currentFps;
+	uint _startTime;
+	uint _numFrames;
+	uint _currentFps;
 	
 public:
 	/**
@@ -38,21 +38,21 @@ public:
 	/**
 	 * Returns the milliseconds since reset or the CTor was called.
 	 */
-	size_t getElapsedTime() const {
+	uint getElapsedTime() const {
 		return SDL_GetTicks() - this._startTime;
 	}
 	
 	/**
 	 * Returns the milliseconds since the application was started.
 	 */
-	static size_t getTicks() {
+	static uint getTicks() {
 		return SDL_GetTicks();
 	}
 	
 	/**
 	 * Wait for msecs milliseconds, which means that the application freeze for this time.
 	 */
-	static void wait(size_t msecs) {
+	static void wait(uint msecs) {
 		SDL_Delay(msecs);
 	}
 	
@@ -75,7 +75,7 @@ public:
 	/**
 	 * Returns the current framerate per seconds.
 	 */
-	size_t getCurrentFps() {
+	uint getCurrentFps() {
 		if (this.getElapsedTime() >= 1000) {
 			this._currentFps = this._numFrames;
 			

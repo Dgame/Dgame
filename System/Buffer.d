@@ -256,7 +256,7 @@ public:
 	 * Stores vertex data
 	 */
 	void cache(const Vertex[] vertices, uint usage = Static.Draw) {
-		const size_t len = vertices[0].data.length;
+		const uint len = vertices[0].data.length;
 		
 		this.cache(&vertices[0], len * vertices.length * float.sizeof, usage);
 	}
