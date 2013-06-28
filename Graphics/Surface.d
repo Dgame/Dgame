@@ -789,7 +789,7 @@ public:
 		const ubyte bytes = this.countBytes();
 		const uint memSize = this.width * this.height * bytes;
 		
-		auto newPixels = Memory.allocate!ubyte(memSize, Mode.AutoFree);
+		auto newPixels = Memory.allocate!ubyte(memSize, Memory.Mode.AutoFree);
 		
 		final switch (flip) {
 			case Flip.Vertical:

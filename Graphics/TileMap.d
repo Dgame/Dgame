@@ -7,11 +7,11 @@ private {
 	import std.conv : to;
 	import std.string : format;
 	import std.math : log2, pow, round, ceil, floor, fmax;
-	//import std.c.string : memcpy;
 	
-	import derelict2.opengl.gltypes;
-	import derelict2.opengl.glfuncs;
+	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
+	
+	import Dgame.Core.SmartPointer.util;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
@@ -21,7 +21,6 @@ private {
 	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.Interface.Transformable;
 	import Dgame.System.Buffer;
-	import Dgame.Core.SmartPointer.util;
 }
 
 /**

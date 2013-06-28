@@ -8,7 +8,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.sdl2.image;
 	import derelict.sdl2.ttf;
-	import derelict2.opengl.gl;
+	import derelict.opengl3.gl;
 	
 	import Dgame.System.Keyboard;
 }
@@ -28,7 +28,7 @@ static this() {
 	// Initialize SDL2
 	SDL_Init(SDL_INIT_VIDEO);
 	
-	uint flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
+	const uint flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
 	int initted = IMG_Init(flags);
 	if ((initted & flags) != flags) {
 		string err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";

@@ -1,8 +1,6 @@
 module Dgame.Graphics.RenderTarget;
 
 private {
-	import std.c.string : memcpy;
-	
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Math.Rect;

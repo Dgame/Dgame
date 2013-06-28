@@ -4,11 +4,10 @@ private {
 	debug import std.stdio;
 	import std.math : sin, cos, PI;
 	import std.algorithm : remove;
-	
 	import std.c.string : memcpy;
 	
-	import derelict2.opengl.gltypes;
-	import derelict2.opengl.glfuncs;
+	import derelict.opengl3.gl;
+	import derelict.sdl2.sdl;
 	
 	import Dgame.Core.Allocator;
 	import Dgame.Core.Math;
@@ -19,6 +18,7 @@ private {
 	import Dgame.Graphics.Interface.Blendable;
 	import Dgame.Math.Pixel;
 	import Dgame.System.Buffer;
+	import Dgame.System.VertexArray;
 }
 
 /**
@@ -95,6 +95,7 @@ protected:
 	
 	Pixel[] _pixels;
 	Buffer _buf;
+	VertexArray _vab;
 	
 	enum {
 		DefMode = Type.LineLoop,
@@ -110,7 +111,7 @@ protected:
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
-		auto vecData = Memory.allocate!float(vSize, Mode.AutoFree);
+		auto vecData = Memory.allocate!float(vSize, Memory.Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			vecData ~= px.getPositionData();
@@ -129,7 +130,7 @@ protected:
 	void _updateColorCache() {
 		const uint cSize = this._pixels.length * CCount;
 		
-		auto colData = Memory.allocate!float(cSize, Mode.AutoFree);
+		auto colData = Memory.allocate!float(cSize, Memory.Mode.AutoFree);
 		
 		foreach (ref const Pixel px; this._pixels) {
 			colData ~= px.getColorData();
@@ -148,22 +149,38 @@ protected:
 	override void _render() {
 		assert(this._buf !is null);
 		
-		if (this._update & Update.Vertex)
-			this._updateVertexCache();
-		
-		if (this._update & Update.Color)
-			this._updateColorCache();
-		
-		this._update = Update.None;
+		if (this._update != Update.None) {
+			this._vab.bind();
+			scope(exit) this._vab.unbind();
+			
+			this._buf.bind(Buffer.Target.Vertex);
+			scope(exit) this._buf.unbind();
+			
+			if (this._update & Update.Vertex)
+				this._updateVertexCache();
+			
+			if (this._update & Update.Color)
+				this._updateColorCache();
+			
+			this._buf.pointTo(Buffer.Target.Color);
+			this._buf.pointTo(Buffer.Target.Vertex);
+			
+			this._update = Update.None;
+			
+			this._vab.enable(1);
+		}
 		
 		if (this._buf.isEmpty(Buffer.Target.Vertex) || this._buf.isEmpty(Buffer.Target.Color))
 			return;
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
-		
-		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT
-		             | GL_HINT_BIT  | GL_LINE_BIT | GL_POINT_BIT);
+		glPushAttrib(GL_CURRENT_BIT 
+		             | GL_COLOR_BUFFER_BIT
+		             | GL_ENABLE_BIT
+		             | GL_HINT_BIT
+		             | GL_LINE_BIT
+		             | GL_POINT_BIT);
 		scope(exit) glPopAttrib();
 		
 		if (this._smoothTarget != SmoothTarget.None) {
@@ -194,15 +211,13 @@ protected:
 		
 		glLineWidth(this._lineWidth);
 		
-		this._buf.pointTo(Buffer.Target.Color);
-		this._buf.pointTo(Buffer.Target.Vertex);
 		/// use blending
 		this._processBlendMode();
 		
-		this._buf.drawArrays(!this.shouldFill() ? DefMode : this._type, this._pixels.length);
+		this._vab.bind();
+		scope(exit) this._vab.unbind();
 		
-		this._buf.disableAllStates();
-		this._buf.unbind();
+		this._buf.drawArrays(!this.shouldFill() ? DefMode : this._type, this._pixels.length);
 	}
 	
 public:
@@ -218,6 +233,7 @@ final:
 	 */
 	this(Type type) {
 		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.Color);
+		this._vab = new VertexArray();
 		
 		this.update(Update.Both);
 		this._lineWidth = 2;

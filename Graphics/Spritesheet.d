@@ -15,10 +15,18 @@ private {
  * Author: rschuett
  */
 class Spritesheet : Sprite {
+public:
+	enum Grid {
+		None = 0,
+		Row = 1,
+		Column = 2,
+		Both = Row | Column
+	}
+	
 protected:
 	FloatRect _viewport;
 	
-	ubyte _row = 0;
+	ubyte _row;
 	
 public:
 final:
@@ -108,8 +116,12 @@ final:
 	/**
 	 * Slide/move the current Viewport of the Texture.
 	 * So the next area of the Texture atlas will be drawn.
+	 * With grid you can decide if both, x and y, or only one of them are updated.
+	 * Default both are updated.
+	 * 
+	 * See: Grid
 	 */
-	void slideViewport() {
+	void slideViewport(Grid grid = Grid.Both) {
 		assert(this._tex !is null, "No Texture.");
 		
 		float w = this._viewport.width;
@@ -118,13 +130,17 @@ final:
 		FloatRect* rect = super._tex.fetchViewport();
 		assert(rect !is null);
 		
-		rect.y = this._row * h;
-		if (rect.y >= super._tex.height)
-			rect.y = 0f;
+		if (grid & Grid.Column) {
+			rect.y = this._row * h;
+			if (rect.y >= super._tex.height)
+				rect.y = 0f;
+		}
 		
-		if ((rect.x + w) < super._tex.width)
-			rect.move(w, 0f);
-		else
-			rect.x = 0f;
+		if (grid & Grid.Row) {
+			if ((rect.x + w) < super._tex.width)
+				rect.move(w, 0f);
+			else
+				rect.x = 0f;
+		}
 	}
 }

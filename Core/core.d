@@ -4,8 +4,7 @@ private {
 	import std.string : format;
 	import std.conv : to;
 	
-	import derelict2.opengl.gltypes;
-	import derelict2.opengl.glfuncs : glGetError;
+	import derelict.opengl3.gl;
 }
 
 /**

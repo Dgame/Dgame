@@ -6,11 +6,6 @@ private {
 	import std.c.stdlib : calloc, realloc, free;
 }
 
-enum Mode {
-	AutoFree,
-	DontFree
-}
-
 struct Chunk(T) {
 private:
 	uint _length;
@@ -18,13 +13,13 @@ private:
 	
 public:
 	T* data;
-	const Mode mode;
+	const Memory.Mode mode;
 	
 public:
 	@disable
 	this(typeof(null));
 	
-	this(T* data, uint cap, Mode mode) {
+	this(T* data, uint cap, Memory.Mode mode) {
 		debug writeln("Allocate Memory: ", cap, ":", mode);
 		
 		assert(data !is null);
@@ -40,9 +35,9 @@ public:
 	this(this);
 	
 	~this() {
-		if (this.mode != Mode.DontFree && this.isValid()) {
+		if (this.mode != Memory.Mode.DontFree && this.isValid()) {
 			debug writeln("Release Memory");
-			Memory.release(this.data);
+			Memory.deallocate(this.data);
 		}
 	}
 	
@@ -101,6 +96,11 @@ public:
 
 final abstract class Memory {
 public:
+	enum Mode {
+		AutoFree,
+		DontFree
+	}
+	
 	static Chunk!T allocate(T)(uint length, Mode mode) {
 		T* mem = cast(T*) calloc(length, T.sizeof);
 		if (!mem)
@@ -127,11 +127,11 @@ public:
 		return st;
 	}
 	
-	static void release(T)(ref Chunk!T st) {
-		Memory.release(st.data);
+	static void deallocate(T)(ref Chunk!T st) {
+		Memory.deallocate(st.data);
 	}
 	
-	static void release(T)(ref T* ptr) {
+	static void deallocate(T)(ref T* ptr) {
 		free(ptr);
 		ptr = null;
 	}
@@ -161,7 +161,7 @@ public:
 	assert(mem.capacity == 12);
 	assert(mem == [42, 1, 2, 3, 4, 5, 6]);
 	
-	Memory.release(mem);
+	Memory.deallocate(mem);
 	
 	assert(!mem.isValid());
 }

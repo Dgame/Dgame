@@ -8,11 +8,12 @@ import Dgame.Audio.all;
 import Dgame.Graphics.TileMap;
 import Dgame.System.all;
 
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictGL.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictUtil.lib");
+//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictGL.lib");
+//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictUtil.lib");
 
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictSDL2.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictUtil.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictGL3.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictAL.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictOGG.lib");
 
@@ -36,6 +37,7 @@ void main() {
 	 writeln("</>");
 	 }
 	 */
+	
 	Sound[2] sound;
 	//sound[0] = new Sound(new VorbisFile("samples/audio/orchestral.ogg"));
 	//sound[1] = new Sound(new WaveFile("samples/audio/step.wav"));
@@ -43,7 +45,6 @@ void main() {
 	sound[1] = new Sound("../../samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
-	
 	writefln("Green Color: %d,%d,%d,%d", Color.Green.red, Color.Green.green, Color.Green.blue, Color.Green.alpha);
 	
 	Shape qs = Shape.make(Shape.Type.Quad, [Vector2f(75, 75),
@@ -100,14 +101,13 @@ void main() {
 	
 	Texture tex = new Texture();
 	tex.loadFromMemory(wiki2.getPixels(), wiki2.width, wiki2.height, wiki2.countBits());
-	
 	Texture copy_tex = new Texture();
 	copy_tex.loadFromMemory(copy.getPixels(), copy.width, copy.height, copy.countBits());
 	
 	ShortRect dst_copy = ShortRect(65, 25, copy.width, copy.height);
 	
 	Texture tex3 = tex.subTexture(dst_copy);
-	//writefln("tex3 -> w: %d, h: %d", tex3.width, tex3.height);
+	writefln("\ttex3 -> w: %d, h: %d", tex3.width, tex3.height);
 	Surface texToSrfc2 = Surface.make(tex3.getMemory(), tex3.width, tex3.height, tex3.getFormat().formatToBits());
 	texToSrfc2.saveToFile("../../samples/img/wiki_sub.png");
 	
@@ -183,6 +183,8 @@ void main() {
 	
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
+	
+	writeln("\t\tbefore game loop");
 	
 	while (wnd.isOpen()) {
 		wnd.clear();

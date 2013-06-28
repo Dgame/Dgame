@@ -11,6 +11,12 @@ private {
 
 ///version = Develop;
 
+private SDL_Rect*[] _Rects;
+
+static ~this() {
+	_Rects = null;
+}
+
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
  *
@@ -18,7 +24,16 @@ private {
  */
 struct Rect(T) if (isNumeric!T) {
 private:
-	SDL_Rect _sdl_rect;
+	SDL_Rect _sdl_rect = void;
+	
+	const size_t _id;
+	
+	void _update() pure nothrow {
+		this._sdl_rect.x = cast(int) this.x;
+		this._sdl_rect.y = cast(int) this.y;
+		this._sdl_rect.w = cast(int) this.width;
+		this._sdl_rect.h = cast(int) this.height;
+	}
 	
 public:
 	/**
@@ -29,13 +44,6 @@ public:
 	 * The width and the height
 	 */
 	T width = 0, height = 0;
-	
-	void update() {
-		this._sdl_rect.x = cast(int) this.x;
-		this._sdl_rect.y = cast(int) this.y;
-		this._sdl_rect.w = cast(int) this.width;
-		this._sdl_rect.h = cast(int) this.height;
-	}
 	
 public:
 	/**
@@ -48,7 +56,10 @@ public:
 		this.width  = width;
 		this.height = height;
 		
-		this.update();
+		this._update();
+		
+		_Rects ~= &this._sdl_rect;
+		this._id = _Rects.length - 1;
 	}
 	
 	static if (!is(T == int)) {
@@ -62,7 +73,10 @@ public:
 			this.width  = cast(T) width;
 			this.height = cast(T) height;
 			
-			this.update();
+			this._update();
+			
+			_Rects ~= &this._sdl_rect;
+			this._id = _Rects.length - 1;
 		}
 	}
 	
@@ -92,6 +106,22 @@ public:
 	}
 	
 	/**
+	 * Returns a pointer to the inner SDL_Rect.
+	 */
+	@property
+	inout(SDL_Rect)* ptr() inout {
+		if (_Rects.length == 0 || _Rects.length <= this._id)
+			return null;
+		
+		_Rects[this._id].x = cast(int) this.x;
+		_Rects[this._id].y = cast(int) this.y;
+		_Rects[this._id].w = cast(int) this.width;
+		_Rects[this._id].h = cast(int) this.height;
+		
+		return cast(inout SDL_Rect*) _Rects[this._id]; // not &this._sdl_rect because of copies
+	}
+	
+	/**
 	 * Supported operations: +=
 	 */
 	Rect!T opBinary(string op, U)(ref const Rect!U rect) const {
@@ -111,8 +141,6 @@ public:
 	void collapse() {
 		this.width = this.height = 0;
 		this.x = this.y = 0;
-		
-		this.update();
 	}
 	
 	/**
@@ -192,21 +220,11 @@ public:
 	}
 	
 	/**
-	 * Returns a pointer to an SDL_Rect.
-	 */
-	@property
-	inout(SDL_Rect)* ptr() inout {
-		return &this._sdl_rect;
-	}
-	
-	/**
 	 * Replace current size.
 	 */
 	void setSize(U)(U width, U height) {
 		this.width  = cast(T) width;
 		this.height = cast(T) height;
-		
-		this.update();
 	}
 	
 	/**
@@ -215,8 +233,6 @@ public:
 	void increase(U)(U width, U height) {
 		this.width  += width;
 		this.height += height;
-		
-		this.update();
 	}
 	
 	/**
@@ -239,8 +255,6 @@ public:
 	void setPosition(U)(U x, U y) {
 		this.x = cast(T) x;
 		this.y = cast(T) y;
-		
-		this.update();
 	}
 	
 	/**
@@ -263,8 +277,6 @@ public:
 	void move(U)(U x, U y) {
 		this.x += x;
 		this.y += y;
-		
-		this.update();
 	}
 	
 	/**

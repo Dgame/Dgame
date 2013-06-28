@@ -4,7 +4,11 @@ private {
 	debug import std.stdio;
 	
 	import derelict.sdl2.sdl;
-	import derelict2.opengl.gl;
+	import derelict.opengl3.gl;
+	
+	import Dgame.Core.core : glCheck;
+	import Dgame.Core.Allocator;
+	import Dgame.Core.Finalizer;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -14,9 +18,6 @@ private {
 	import Dgame.Graphics.TileMap;
 	import Dgame.Math.Vector2;
 	import Dgame.Window.VideoMode;
-	
-	import Dgame.Core.Allocator;
-	import Dgame.Core.Finalizer;
 }
 
 public import Dgame.System.Clock;
@@ -96,9 +97,10 @@ final:
 		                                y,				///    int y: initial y position
 		                                vMode.width,	///    int w: width, in pixels
 		                                vMode.height,	///    int h: height, in pixels
-		                                vMode.flag);    ///    Uint32 flags: window options, see below
-		/// Check that the window was successfully made
-		assert(this._window !is null, "Error by creating a SDL2 window.");
+		                                vMode.flag);    ///    Uint32 flags: window options
+		
+		if (this._window is null)
+			throw new Exception("Error by creating a SDL2 window.");
 		
 		if (vMode.flag & VideoMode.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -109,11 +111,19 @@ final:
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			
 			this._glContext = SDL_GL_CreateContext(this._window);
-			assert(this._glContext !is null, "Error while creating gl context.");
+			if (this._glContext is null)
+				throw new Exception("Error while creating gl context.");
 			
-			GLVersion glver = DerelictGL.loadExtendedVersions(DerelictGL.maxVersion()); 
-			//DerelictGL.loadExtensions();
-			debug writeln("GLVersion: ", glver); /// which gl version
+			try {
+				GLVersion glver = DerelictGL.reload();
+			} catch(Exception e) {
+				debug writefln("Derelict loaded GL version: %s, available GL version: %s", DerelictGL.loadedVersion, to!(string)(glGetString(GL_VERSION)));
+				throw e;
+			}
+			
+			//GLVersion glver2 = DerelictGL.loadModernVersions();
+			//			GLVersion glver1 = DerelictGL.loadExtendedVersions(DerelictGL.maxVersion()); 
+			//			debug writeln("GLVersion1: ", glver1, ",GLVersion2: ", glver1, ", max available: ", DerelictGL.maxVersion()); /// which gl version
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -233,7 +243,7 @@ final:
 		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
 		
 		const uint psize = 4 * this.vMode.width * this.vMode.height;
-		auto pixels = Memory.allocate!ubyte(psize, Mode.AutoFree);
+		auto pixels = Memory.allocate!ubyte(psize, Memory.Mode.AutoFree);
 		
 		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
 		

@@ -3,8 +3,7 @@ module Dgame.Graphics.Texture;
 private {
 	debug import std.stdio;
 	
-	import derelict2.opengl.gltypes;
-	import derelict2.opengl.glfuncs;
+	import derelict.opengl3.gl;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
@@ -547,13 +546,14 @@ final:
 		scope(exit) Texture._reBind(previous_texture);
 		
 		Texture tex = new Texture();
-		debug writeln("Format switch: ", this._format.switchFormat(true));
+		debug writeln("Format switch: ", .switchFormat(this._format, true));
 		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
 		
 		int[4] vport;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
 		
 		glPushAttrib(GL_VIEWPORT_BIT);
+		scope(exit) glPopAttrib();
 		
 		FloatRect tex_viewport = this._viewport;
 		this.setViewport(cast(FloatRect) rect);
@@ -571,8 +571,6 @@ final:
 		
 		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, rect.width, rect.height);
 		
-		glPopAttrib();
-		
 		return tex;
 	}
 	
@@ -588,7 +586,8 @@ final:
 	 * The second parameter is a pointer to the destination rect.
 	 * Is it is null this means the whole tex is copied.
 	 */
-	void copy(const Texture tex, ShortRect* rect = null) in {
+	void copy(const Texture tex, ShortRect* rect = null)
+	in {
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
@@ -610,6 +609,7 @@ final:
 		
 		///
 		glPushAttrib(GL_VIEWPORT_BIT);
+		scope(exit) glPopAttrib();
 		
 		glViewport(0, 0, rw, rh);
 		
@@ -621,9 +621,6 @@ final:
 		this.bind();
 		
 		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, rx, ry, 0, 0, rw, rh);
-		
-		glPopAttrib();
-		///
 	}
 	
 	/**
