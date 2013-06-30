@@ -26,7 +26,8 @@ static this() {
 	DerelictGL.load();
 	
 	// Initialize SDL2
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+		throw new Exception("SDL Error: " ~ to!string(SDL_GetError()));
 	
 	const uint flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
 	int initted = IMG_Init(flags);

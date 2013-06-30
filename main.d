@@ -59,7 +59,7 @@ void main() {
 	//qs.setType(Shape.Type.Triangle);
 	
 	Shape circle = Shape.makeCircle(25f, Vector2f(180, 380));
-	circle.setSmooth(Shape.SmoothTarget.Line);
+	circle.setSmooth(Smooth.Target.Line);
 	
 	Shape many = Shape.make(Shape.Type.Quad, [Vector2f(55, 55),
 	                                          Vector2f(60, 55),

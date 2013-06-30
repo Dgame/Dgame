@@ -12,7 +12,7 @@ private {
 	import Dgame.Audio.SoundFile;
 	import Dgame.Audio.VorbisFile;
 	import Dgame.Audio.WaveFile;
-	import Dgame.Audio.Listener;
+	import Dgame.Math.VecN;
 }
 
 /**

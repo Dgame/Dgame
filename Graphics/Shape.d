@@ -22,6 +22,60 @@ private {
 }
 
 /**
+ * Smooth wrapper
+ */
+struct Smooth {
+public:
+	/**
+	 * Supported smooth targets.
+	 */
+	enum Target {
+		None,					 /** No smooth (default). */
+		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
+		Line  = GL_LINE_SMOOTH   /** Enable smooth for lines. */
+	}
+	
+	/**
+	 * Smooth Hints to determine
+	 * which kind of smoothing is made.
+	 */
+	enum Hint {
+		DontCare = GL_DONT_CARE, /** The OpenGL implementation decide on their own. */
+		Fastest = GL_FASTEST,    /** Fastest kind of smooth (default). */
+		Nicest  = GL_NICEST	     /** Nicest but lowest kind of smooth. */
+	}
+	
+	@disable
+	this();
+	
+	@disable
+	this(this);
+	
+	/**
+	 * Returns the current target
+	 */
+	Target getTarget() const pure nothrow {
+		return this.target;
+	}
+	
+	/**
+	 * Return the current hint
+	 */
+	Hint getHint() const pure nothrow {
+		return this.hint;
+	}
+	
+private:
+	Target target;
+	Hint hint;
+	
+	this(Target trg, Hint h) {
+		this.target = target;
+		this.hint = h;
+	}
+}
+
+/**
  * Shape defines a drawable convex shape.
  * It also defines helper functions to draw simple shapes like lines, rectangles, circles, etc.
  *
@@ -53,6 +107,7 @@ public:
 	 * ----
 	 * 
 	 * or you can use 'Both'
+	 * 
 	 *  ----
 	 * Shape s = ...;
 	 * s.update(Shape.Update.Both);
@@ -65,37 +120,20 @@ public:
 		Both   = 3  /// Both, Vertex and Color Buffer
 	}
 	
-	/**
-	 * Supported smooth targets.
-	 */
-	enum SmoothTarget {
-		None,					 /** No smooth (default). */
-		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
-		Line  = GL_LINE_SMOOTH  /** Enable smooth for lines. */
-	}
-	
-	/**
-	 * Smooth Hints to determine
-	 * which kind of smoothing is made.
-	 */
-	enum SmoothHint {
-		Fastest = GL_FASTEST, /** Fastest kind of smooth (default). */
-		Nicest  = GL_NICEST	  /** Nicest but lowest kind of smooth. */
-	}
-	
 protected:
 	ubyte _lineWidth;
 	bool _shouldFill;
 	bool _autoUpdate;
 	
 	Type _type;
-	SmoothTarget _smoothTarget;
-	SmoothHint	 _smoothHint;
+	Smooth _smooth = void;
 	Update _update;
 	
 	Pixel[] _pixels;
 	Buffer _buf;
 	VertexArray _vab;
+	
+private:
 	
 	enum {
 		DefMode = Type.LineLoop,
@@ -103,7 +141,6 @@ protected:
 		CCount  = 4
 	}
 	
-	//protected:
 	void _updateVertexCache() {
 		const uint vSize = this._pixels.length * VCount;
 		debug {
@@ -146,9 +183,7 @@ protected:
 		this._buf.unbind();
 	}
 	
-	override void _render() {
-		assert(this._buf !is null);
-		
+	void _checkForUpdate() {
 		if (this._update != Update.None) {
 			this._vab.bind();
 			scope(exit) this._vab.unbind();
@@ -169,9 +204,15 @@ protected:
 			
 			this._vab.enable(1);
 		}
+	}
+	
+protected:
+	
+	override void _render() {
+		assert(this._buf !is null);
 		
-		if (this._buf.isEmpty(Buffer.Target.Vertex) || this._buf.isEmpty(Buffer.Target.Color))
-			return;
+		/// Update caches
+		this._checkForUpdate();
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
@@ -183,17 +224,17 @@ protected:
 		             | GL_POINT_BIT);
 		scope(exit) glPopAttrib();
 		
-		if (this._smoothTarget != SmoothTarget.None) {
-			glEnable(this._smoothTarget);
+		if (this._smooth.target != Smooth.Target.None) {
+			glEnable(this._smooth.target);
 			
-			final switch (this._smoothTarget) {
-				case SmoothTarget.Point:
-					glHint(GL_POINT_SMOOTH_HINT, this._smoothHint);
+			final switch (this._smooth.target) {
+				case Smooth.Target.Point:
+					glHint(GL_POINT_SMOOTH_HINT, this._smooth.hint);
 					break;
-				case SmoothTarget.Line:
-					glHint(GL_LINE_SMOOTH_HINT, this._smoothHint);
+				case Smooth.Target.Line:
+					glHint(GL_LINE_SMOOTH_HINT, this._smooth.hint);
 					break;
-				case SmoothTarget.None:
+				case Smooth.Target.None:
 					assert(0);
 			}
 		}
@@ -239,8 +280,7 @@ final:
 		this._lineWidth = 2;
 		
 		this._type = type;
-		this._smoothTarget = SmoothTarget.None;
-		this._smoothHint   = SmoothHint.Fastest;
+		this._smooth = Smooth(Smooth.Target.None, Smooth.Hint.Fastest);
 		
 		this._scale.set(1f, 1f);
 	}
@@ -276,23 +316,16 @@ final:
 	/**
 	 * Set target and hint of smoothing.
 	 */
-	void setSmooth(SmoothTarget sTarget, SmoothHint sHint = SmoothHint.Fastest) {
-		this._smoothTarget = sTarget;
-		this._smoothHint = sHint;
+	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) {
+		this._smooth.target = sTarget;
+		this._smooth.hint = sHint;
 	}
 	
 	/**
-	 * Return smooth target;
+	 * Return the current smooth
 	 */
-	SmoothTarget getSmoothTarget() const pure nothrow {
-		return this._smoothTarget;
-	}
-	
-	/**
-	 * Returns smooth hint.
-	 */
-	SmoothHint getSmoothHint() const pure nothrow {
-		return this._smoothHint;
+	ref const(Smooth) getSmooth() const pure nothrow {
+		return this._smooth;
 	}
 	
 	/**

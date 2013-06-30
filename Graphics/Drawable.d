@@ -6,7 +6,8 @@ package {
 }
 
 /**
- * The base class for all drawable objects. Maintains the position where the object is drawn.
+ * The base class for all drawable objects.
+ * Maintains the position where the object is drawn.
  *
  * Author: rschuett
  */

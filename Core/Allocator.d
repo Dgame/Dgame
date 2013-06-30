@@ -136,7 +136,7 @@ public:
 		ptr = null;
 	}
 } unittest {
-	auto mem = Memory.allocate!float(12, Mode.DontFree);
+	auto mem = Memory.allocate!float(12, Memory.Mode.DontFree);
 	
 	assert(mem.length == 0);
 	assert(mem.capacity == 12);

@@ -5,41 +5,8 @@ private {
 	
 	//import Dgame.Core.AutoRef;
 	import Dgame.Audio.Core.core;
+	import Dgame.Math.VecN;
 }
-
-/**
- * A little helper struct to define 
- * n dimensional vector arrays without unnecessary funcitonality.
- */
-struct vecn(T, const uint Dim) if (isNumeric!T) {
-public:
-	/**
-	 * Stores the vector values.
-	 */
-	T[Dim] values;
-	
-	alias values this;
-	
-	/**
-	 * CTor
-	 */
-	this(U...)(U values) {
-		foreach (uint idx, val; values) {
-			if (idx >= Dim)
-				break;
-			this.values[idx] = cast(T) val;
-		}
-	}
-}
-
-/**
- * Alias for a three dimensional vector.
- */
-alias vec3f = vecn!(float, 3);
-/**
- * Alias for a six dimensional vector.
- */
-alias vec6f = vecn!(float, 6);
 
 static this() {
 	Listener.setPosition(vec3f(0, 0, 0));
