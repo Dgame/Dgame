@@ -143,7 +143,7 @@ public:
 	 * Every component is converted into OpenGL style.
 	 * Means every component is in range 0.0 .. 1.0
 	 */
-	float[4] convertToGL() const pure nothrow {
+	float[4] asGLColor() const pure nothrow {
 		return [this.red > 1 ? this.red / 255f : this.red,
 		        this.green > 1 ? this.green / 255f : this.green,
 		        this.blue > 1 ? this.blue / 255f : this.blue,

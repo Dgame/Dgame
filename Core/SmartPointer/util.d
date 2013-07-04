@@ -6,6 +6,10 @@ private {
 	import core.memory : GC;
 }
 
+/**
+ * Deallocate GC memory
+ * Works like delete
+ */
 void deallocate(T)(ref T var)
 	if (isAssignable!(T, typeof(null)) && !isStaticArray!T)
 {

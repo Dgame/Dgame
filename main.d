@@ -184,7 +184,19 @@ void main() {
 	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"), FloatRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
 	
-	writeln("\t\tbefore game loop");
+	float[12] pos = [170, 170, 0,
+	                 310, 170, 0,
+	                 310, 310, 0,
+	                 170, 310, 0];
+	auto cb = Color.Red.asGLColor();
+	float[] cols;
+	cols ~= cb;
+	cols ~= cb;
+	cols ~= cb;
+	cols ~= cb;
+	float[8] texes = [0, 0, 1, 0, 1, 1, 0, 1];
+	
+	Image img = new Image("../../samples/img/wiki.png", Texture.Format.RGB);
 	
 	while (wnd.isOpen()) {
 		wnd.clear();
@@ -200,9 +212,14 @@ void main() {
 		wnd.draw(sp2);
 		
 		sp2.slideViewport();
-		
-		tof.slide();
-		wnd.draw(tof);
+		StaticBuffer.pointTo(PointerTarget.TexCoords, &texes[0]);
+		StaticBuffer.pointTo(PointerTarget.Vertex, &pos[0]);
+		img.bind();
+		StaticBuffer.drawArrays(Primitive.Quad, pos.length);
+		StaticBuffer.disableAllStates();
+		/*
+		 tof.slide();
+		 wnd.draw(tof);*/
 		
 		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);

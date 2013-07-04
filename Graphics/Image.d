@@ -29,8 +29,8 @@ final:
 	/**
 	 * CTor
 	 */
-	this(ref const Texture tex) {
-		super(tex);
+	this(ref const Texture tex, Texture.Format t_fmt = Texture.Format.None) {
+		super(tex, t_fmt);
 	}
 	
 	/**
@@ -46,33 +46,33 @@ final:
 	/**
 	 * CTor
 	 */
-	this(string filename) {
-		this.loadFromFile(filename);
+	this(string filename, Texture.Format t_fmt = Texture.Format.None) {
+		this.loadFromFile(filename, t_fmt);
 	}
 	
 	/**
 	 * Load the image from filename with a colorkey.
 	 */
-	void loadFromFile(string filename, ref const Color colorkey) {
+	void loadFromFile(string filename, ref const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
 		img.setColorkey(colorkey);
 		
-		super.loadFromMemory(img.getPixels(), img.width, img.height);
+		super.loadFromMemory(img.getPixels(), img.width, img.height, 32, t_fmt);
 	}
 	
 	/**
 	 * Rvalue version
 	 */
-	void loadFromFile(string filename, const Color colorkey) {
-		this.loadFromFile(filename, colorkey);
+	void loadFromFile(string filename, const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
+		this.loadFromFile(filename, colorkey, t_fmt);
 	}
 	
 	/**
 	 * Load the image from filename.
 	 */
-	void loadFromFile(string filename) {
+	void loadFromFile(string filename, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
-		super.loadFromMemory(img.getPixels(), img.width, img.height);
+		super.loadFromMemory(img.getPixels(), img.width, img.height, 32, t_fmt);
 	}
 	
 	/**

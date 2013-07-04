@@ -1,9 +1,7 @@
 module Dgame.Audio.SoundFile;
 
-package {
-	import std.c.stdio;
-	import std.file : exists;
-}
+private import std.file : exists;
+package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 
 /**
  * A helper struct for reading from a sound file.

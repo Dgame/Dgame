@@ -2,7 +2,6 @@ module Dgame.Window.VideoMode;
 
 private {
 	debug import std.stdio;
-	import std.c.string : memcpy;
 	
 	import derelict.sdl2.sdl;
 }

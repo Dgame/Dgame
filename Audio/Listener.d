@@ -1,8 +1,6 @@
 module Dgame.Audio.Listener;
 
 private {
-	import std.traits : isNumeric;
-	
 	//import Dgame.Core.AutoRef;
 	import Dgame.Audio.Core.core;
 	import Dgame.Math.VecN;

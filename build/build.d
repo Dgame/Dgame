@@ -3,7 +3,7 @@ import std.stdio : writefln, writeln;
 import std.process : shell, ErrnoException;
 import std.file : read, exists, mkdir, dirEntries, SpanMode;
 import std.array : endsWith;
-import std.string : format, toUpper, capitalize;
+import std.string : format;
 
 enum {
 	MajorVersion = "1",

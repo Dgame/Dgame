@@ -79,7 +79,7 @@ interface Transformable {
 mixin template TTransformable() {
 private:
 	Vector2f _rotation;
-	Vector2f _scale;
+	Vector2f _scale = Vector2f(1f, 1f);
 	
 	short _rotAngle;
 	

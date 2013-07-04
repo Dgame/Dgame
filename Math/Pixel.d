@@ -62,7 +62,7 @@ public:
 	 * red, green, blue and alpha are in range of 0.0 .. 1.0
 	 */
 	float[4] getColorData() const pure nothrow {
-		return this.color.convertToGL();
+		return this.color.asGLColor();
 	}
 	
 	/**

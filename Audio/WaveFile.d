@@ -1,8 +1,6 @@
 module Dgame.Audio.WaveFile;
 
-private {
-	import Dgame.Audio.SoundFile;
-}
+private import Dgame.Audio.SoundFile;
 
 /**
  * A Wave implementation of BaseSoundFile

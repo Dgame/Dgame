@@ -9,32 +9,14 @@ private {
 	import Dgame.Math.Vertex;
 }
 
+/// Public import of StaticBuffer
+public import Dgame.System.StaticBuffer;
+
 /**
- * Buffer is a object oriented wrapper for a Vertex Buffer Object.
- *
- * Author: rschuett
+ * Usage methods
  */
-final class Buffer {
+final abstract class Usage {
 public:
-	/**
-	 * Declare which Buffer Type is stored.
-	 */
-	enum Type {
-		/** The currently bound buffer object stores vertex array data. */
-		Array = GL_ARRAY_BUFFER,
-		/** The currently bound buffer object stores index values ​​for vertex arrays. */
-		Element = GL_ELEMENT_ARRAY_BUFFER
-	}
-	
-	/**
-	 * The access type.
-	 */
-	enum Access {
-		Read  = GL_READ_ONLY,	/** Read only. */
-		Write = GL_WRITE_ONLY,	/** Write only. */
-		ReadWrite = GL_READ_WRITE /** Read and write. */
-	}
-	
 	/**
 	 * Stream usage
 	 */
@@ -97,56 +79,74 @@ public:
 		 */
 		Copy = GL_DYNAMIC_COPY,
 	}
+}
+
+/**
+ * Buffer is a object oriented wrapper for a Vertex Buffer Object.
+ * StaticBuffer is public imported. See there for more details, like PointerTarget.
+ *
+ * Author: rschuett
+ */
+final class Buffer {
+public:
+	/**
+	 * The access type.
+	 */
+	enum Access {
+		Read  = GL_READ_ONLY,	/** Read only. */
+		Write = GL_WRITE_ONLY,	/** Write only. */
+		ReadWrite = GL_READ_WRITE /** Read and write. */
+	}
 	
 	/**
-	 * Declare which data is stored. Possible are Vertices, Colors or Texture coordinates.
+	 * Declare which Buffer Type is stored.
 	 */
-	enum Target {
-		None   = 0,		/** Declare that the data consist of nothing relevant. */
-		Vertex = 1, 	/** Declare that the data consist of vertices. */
-		Color  = 2, 	/** Declare that the data consist of colors. */
-		TexCoords = 4 	/** Declare that the data consist of texture coordinates. */
+	enum Type {
+		/** The currently bound buffer object stores vertex array data. */
+		Array = GL_ARRAY_BUFFER,
+		/** The currently bound buffer object stores index values ​​for vertex arrays. */
+		Element = GL_ELEMENT_ARRAY_BUFFER
 	}
 	
 public:
 	const Type type;
-	const Target targets;
+	const PointerTarget targets;
 	
 private:
 	GLuint[3] _vboId;
 	
-	Target _curTarget;
+	PointerTarget _curTarget;
 	
 	const ubyte _targetNums;
-	const ubyte[Target] _targetIds;
+	const ubyte[PointerTarget] _targetIds;
 	
-	bool[Target] _dataAssigned;
+	bool[PointerTarget] _dataAssigned;
 	
 public:
 	/**
 	 * CTor
 	 */
-	this(Target trg, Type type = Type.Array) {
-		if (trg == Target.None)
-			throw new Exception("Invalid target.");
+	this(PointerTarget trg, Type type = Type.Array) {
+		if (trg == PointerTarget.None)
+			throw new Exception("Invalid PointerTarget.");
 		
 		this.type = type;
 		this.targets = trg;
 		
 		ubyte num = 0;
-		if (Target.Vertex & trg)
-			this._targetIds[Target.Vertex] = num++;
-		if (Target.Color & trg)
-			this._targetIds[Target.Color] = num++;
-		if (Target.TexCoords & trg)
-			this._targetIds[Target.TexCoords] = num++;
+		if (PointerTarget.Vertex & trg)
+			this._targetIds[PointerTarget.Vertex] = num++;
+		if (PointerTarget.Color & trg)
+			this._targetIds[PointerTarget.Color] = num++;
+		if (PointerTarget.TexCoords & trg)
+			this._targetIds[PointerTarget.TexCoords] = num++;
 		
 		this._targetNums = num;
-		this._curTarget = Target.None;
+		this._curTarget = PointerTarget.None;
 		
 		glGenBuffers(num, &this._vboId[0]);
 		
-		foreach (Target id, _; this._targetIds) {
+		foreach (PointerTarget id, _; this._targetIds) {
 			this.bind(id);
 			
 			this._dataAssigned[id] = false;
@@ -154,12 +154,12 @@ public:
 	}
 	
 	/**
-	 * Binds the a specific VBO Target.
+	 * Binds the a specific VBO PointerTarget.
 	 * Now the specific VBO can be used.
 	 * 
-	 * See: Target enum
+	 * See: PointerTarget enum
 	 */
-	void bind(Target trg) {
+	void bind(PointerTarget trg) {
 		if (!(trg & this.targets))
 			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
 		
@@ -170,19 +170,19 @@ public:
 	}
 	
 	/**
-	 * Returns the current Target
+	 * Returns the current PointerTarget
 	 * 
-	 * See: Target enum
+	 * See: PointerTarget enum
 	 */
-	Target getBound() const pure nothrow {
+	PointerTarget getBound() const pure nothrow {
 		return this._curTarget;
 	}
 	
 	/**
-	 * Returns if some Target is currently bound
+	 * Returns if some PointerTarget is currently bound
 	 */
 	bool isSomethingBound() const pure nothrow {
-		return this._curTarget != Target.None;
+		return this._curTarget != PointerTarget.None;
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public:
 	/**
 	 * Checks whether a specific buffer has already content, or not
 	 */
-	bool isEmpty(Target trg) const {
+	bool isEmpty(PointerTarget trg) const {
 		if (!(trg & this.targets))
 			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
 		
@@ -223,7 +223,7 @@ public:
 	 * See: isEmpty
 	 */
 	void depleteAll() {
-		foreach (Target id, _; this._targetIds) {
+		foreach (PointerTarget id, _; this._targetIds) {
 			this.bind(id);
 			this.deplete();
 		}
@@ -233,7 +233,7 @@ public:
 	 * Unbind the current VBO.
 	 */
 	void unbind() {
-		this._curTarget = Target.None;
+		this._curTarget = PointerTarget.None;
 		
 		glBindBuffer(this.type, 0);
 	}
@@ -243,7 +243,7 @@ public:
 	 * 
 	 * See: glBufferData
 	 */
-	void cache(const void* ptr, uint totalSize, uint usage = Static.Draw) {
+	void cache(const void* ptr, uint totalSize, uint usage = Usage.Static.Draw) {
 		this._dataAssigned[this._curTarget] = true;
 		
 		ubyte id = this._targetIds[this._curTarget];
@@ -254,7 +254,7 @@ public:
 	/**
 	 * Stores vertex data
 	 */
-	void cache(const Vertex[] vertices, uint usage = Static.Draw) {
+	void cache(const Vertex[] vertices, uint usage = Usage.Static.Draw) {
 		const uint len = vertices[0].data.length;
 		
 		this.cache(&vertices[0], len * vertices.length * float.sizeof, usage);
@@ -291,115 +291,72 @@ public:
 	}
 	
 	/**
-	 * Points to the current VBO with a specific Target.
+	 * Points to the current VBO with a specific PointerTarget.
 	 * 
 	 * See: glVertexPointer
 	 * See: glColorPointer
 	 * See: glTexCoordPointer
-	 * See: Target enum.
+	 * See: PointerTarget enum.
 	 */
-	void pointTo(Target trg) {
+	void pointTo(PointerTarget trg, ubyte stride = 0) {
 		this.bind(trg);
-		this.enableState(trg);
 		
-		switch (trg) {
-			case Target.None:
-				assert(0, "Invalid Target");
-			case Target.Vertex:
-				glVertexPointer(3, GL_FLOAT, 0, null);
-				break;
-			case Target.Color:
-				glColorPointer(4, GL_FLOAT, 0, null);
-				break;
-			case Target.TexCoords:
-				glTexCoordPointer(2, GL_FLOAT, 0, null);
-				break;
-			default:
-				assert(0, "Point to can only handle *one* pointer target.");
-		}
+		StaticBuffer.pointTo(trg, null, stride);
 	}
 	
 	/**
 	 * Enable a specific client state (with glEnableClientState)
 	 * like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
-	 * with the corresponding Target.
+	 * with the corresponding PointerTarget.
 	 */
-	void enableState(Target trg) {
-		if (trg & Target.None)
-			assert(0, "Invalid Target");
-		
-		if (trg & Target.Vertex)
-			glEnableClientState(GL_VERTEX_ARRAY);
-		
-		if (trg & Target.Color)
-			glEnableClientState(GL_COLOR_ARRAY);
-		
-		if (trg & Target.TexCoords)
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	void enableState(PointerTarget trg) const {
+		StaticBuffer.enableState(trg);
 	}
 	
 	/**
 	 * Enable all client states
 	 */
-	void enableAllStates() {
-		this.enableState(Target.Vertex | Target.Color | Target.TexCoords);
+	void enableAllStates() const {
+		StaticBuffer.enableAllStates();
 	}
 	
 	/**
 	 * Disable all client states
 	 */
-	void disableAllStates() {
-		this.disableState(Target.Vertex | Target.Color | Target.TexCoords);
+	void disableAllStates() const {
+		StaticBuffer.disableAllStates();
 	}
 	
 	/**
 	 * Disable a specific client state (with glDisableClientState)
 	 */
-	void disableState(Target trg) {
-		if (trg & Target.None)
-			assert(0, "Invalid Target");
-		
-		if (trg & Target.Vertex)
-			glDisableClientState(GL_VERTEX_ARRAY);
-		if (trg & Target.Color)
-			glDisableClientState(GL_COLOR_ARRAY);
-		if (trg & Target.TexCoords)
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	void disableState(PointerTarget trg) const {
+		StaticBuffer.disableState(trg);
 	}
 	
 	/**
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(GLenum type, uint count) const {
-		glDrawArrays(type, 0, count);
+	void drawArrays(Primitive type, uint count, uint start = 0) const {
+		StaticBuffer.drawArrays(type, count, start);
 	}
 	
 	/**
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(GLenum type, uint count, int[] indices) const {
-		if (indices.length == 0)
-			return;
-		
-		glDrawElements(type, count, GL_UNSIGNED_INT, &indices[0]); 
+	void drawElements(Primitive type, uint count, int[] indices) const {
+		StaticBuffer.drawElements(type, count, indices);
 	}
 	
 	/**
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
+	 *
+	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(GLenum type, uint count, int[] indices) const {
-		if (indices.length == 0)
-			return;
-		
-		glDrawRangeElements(
-			type,
-			0,
-			indices.length,
-			count,
-			GL_UNSIGNED_INT,
-			&indices[0]);
+	void drawRangeElements(Primitive type, uint count, int[] indices, int start = -1, int end = -1) const {
+		StaticBuffer.drawRangeElements(type, count, indices, start, end);
 	}
 }

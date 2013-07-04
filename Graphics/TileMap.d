@@ -12,10 +12,12 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Core.SmartPointer.util;
+	import Dgame.Core.Math : fpEqual;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
-	import Dgame.Graphics.Color;
+	import Dgame.Math.VecN;
+	//	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
@@ -166,11 +168,11 @@ ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  * author: rschuett
  */
 class TileMap : Drawable, Transformable {
-protected:
+private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) read(this._filename));
 		
-		float[] vertices;
+		vec3f[] vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -200,10 +202,10 @@ protected:
 					float vw = this._tmi.tileWidth;
 					float vh = this._tmi.tileHeight;
 					
-					vertices ~= [vx, vy, 0f];		 	/// #1
-					vertices ~= [vx + vw, vy, 0f]; 		/// #2
-					vertices ~= [vx, vy + vh, 0f]; 		/// #3
-					vertices ~= [vx + vw, vy + vh, 0f]; /// #4
+					vertices ~= vec3f(vx, vy, 0f); /// #1
+					vertices ~= vec3f(vx + vw, vy, 0f); /// #2
+					vertices ~= vec3f(vx, vy + vh, 0f); /// #3
+					vertices ~= vec3f(vx + vw, vy + vh, 0f); /// #4
 					
 					col++;
 					if (col >= this._tmi.width) {
@@ -222,15 +224,16 @@ protected:
 		this._tmi.width *= this._tmi.tileWidth;
 		this._tmi.height *= this._tmi.tileHeight;
 		
-		this._buf.bind(Buffer.Target.Vertex);
+		this._buf.bind(PointerTarget.Vertex);
+		
+		this._vCount = vertices.length;
 		
 		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&vertices[0], vertices.length * float.sizeof);
+			this._buf.modify(&vertices[0], this._vCount * vec3f.sizeof);
 		else
-			this._buf.cache(&vertices[0], vertices.length * float.sizeof);
+			this._buf.cache(&vertices[0], this._vCount * vec3f.sizeof);
 		
 		this._buf.unbind();
-		this._vCount = vertices.length;
 		
 		/// Delete vertices
 		deallocate(vertices);
@@ -335,7 +338,7 @@ protected:
 	
 	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		float[] texCoords;
+		vec2f[] texCoords;
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -347,26 +350,30 @@ protected:
 			float tx = (*tc)[0];
 			float ty = (*tc)[1];
 			
-			texCoords ~= [tx != 0 ? tx / tsw : tx, ty != 0 ? ty / tsh : ty]; /// #1
-			texCoords ~= [(tx + tw) / tsw,  ty != 0 ? ty / tsh : ty]; 	     /// #2
-			texCoords ~= [tx != 0 ? tx / tsw : tx, (ty + th) / tsh]; 		 /// #3
-			texCoords ~= [(tx + tw) / tsw, (ty + th) / tsh]; 			     /// #4
-			
+			texCoords ~= vec2f(tx > 0 ? (tx / tsw) : tx, ty > 0 ? (ty / tsh) : ty); /// #1
+			texCoords ~= vec2f((tx + tw) / tsw,  ty > 0 ? (ty / tsh) : ty); /// #2
+			texCoords ~= vec2f(tx > 0 ? (tx / tsw) : tx, (ty + th) / tsh); /// #3
+			texCoords ~= vec2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
 		
-		this._buf.bind(Buffer.Target.TexCoords);
+		this._buf.bind(PointerTarget.TexCoords);
+		
+		this._tCount = texCoords.length;
 		
 		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&texCoords[0], texCoords.length * float.sizeof);
+			this._buf.modify(&texCoords[0], this._tCount * vec2f.sizeof);
 		else
-			this._buf.cache(&texCoords[0], texCoords.length * float.sizeof);
+			this._buf.cache(&texCoords[0], this._tCount * vec2f.sizeof);
 		
 		this._buf.unbind();
-		this._tCount = texCoords.length;
+		
+		//writeln(this._tCount, "::", this._vCount);
 		
 		/// Delete texCoords
 		deallocate(texCoords);
 	}
+	
+protected:
 	
 	override void _render() {
 		glPushMatrix();
@@ -378,18 +385,18 @@ protected:
 		glDisable(GL_BLEND);
 		
 		if (this._rotAngle != 0)
-			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1);
+			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1f);
 		
-		glTranslatef(super._position.x, super._position.y, 0);
+		glTranslatef(super._position.x, super._position.y, 0f);
 		
-		if (!this._scale.x != 1f && this._scale.y != 1f)
-			glScalef(this._scale.x, this._scale.y, 0);
+		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
+			glScalef(this._scale.x, this._scale.y, 0f);
 		
-		this._buf.pointTo(Buffer.Target.TexCoords);
-		this._buf.pointTo(Buffer.Target.Vertex);
+		this._buf.pointTo(PointerTarget.TexCoords);
+		this._buf.pointTo(PointerTarget.Vertex);
 		
 		this._tex.bind();
-		this._buf.drawArrays(GL_TRIANGLE_STRIP, this._vCount);
+		this._buf.drawArrays(Primitive.TriangleStrip, this._vCount);
 		
 		this._buf.disableAllStates();
 		this._buf.unbind();
@@ -424,7 +431,7 @@ final:
 	 */
 	this(string filename, bool compress = true) {
 		this._tex = new Texture();
-		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.TexCoords);
+		this._buf = new Buffer(PointerTarget.Vertex | PointerTarget.TexCoords);
 		
 		this.load(filename, compress);
 	}
@@ -535,7 +542,7 @@ final:
 	void reload(const Vector2s[] coords, const Vector2s[] newCoords) {
 		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
 		
-		this._buf.bind(Buffer.Target.TexCoords);
+		this._buf.bind(PointerTarget.TexCoords);
 		scope(exit) this._buf.unbind();
 		
 		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];
@@ -577,7 +584,7 @@ final:
 	 * is replaced with the tile (and the tile surface) on the coordinates newCoord
 	 */
 	void reload(ref const Vector2s coord, ref const Vector2s newCoord) {
-		this._buf.bind(Buffer.Target.TexCoords);
+		this._buf.bind(PointerTarget.TexCoords);
 		scope(exit) this._buf.unbind();
 		
 		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];

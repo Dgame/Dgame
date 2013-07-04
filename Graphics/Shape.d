@@ -4,7 +4,7 @@ private {
 	debug import std.stdio;
 	import std.math : sin, cos, PI;
 	import std.algorithm : remove;
-	import std.c.string : memcpy;
+	import core.stdc.string : memcpy;
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
@@ -154,12 +154,12 @@ private:
 			vecData ~= px.getPositionData();
 		}
 		
-		this._buf.bind(Buffer.Target.Vertex);
+		this._buf.bind(PointerTarget.Vertex);
 		
 		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&vecData[0], vSize * float.sizeof);
 		else
-			this._buf.cache(&vecData[0], vSize * float.sizeof, Buffer.Dynamic.Draw);
+			this._buf.cache(&vecData[0], vSize * float.sizeof, Usage.Dynamic.Draw);
 		
 		this._buf.unbind();
 	}
@@ -173,12 +173,12 @@ private:
 			colData ~= px.getColorData();
 		}
 		
-		this._buf.bind(Buffer.Target.Color);
+		this._buf.bind(PointerTarget.Color);
 		
 		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&colData[0], cSize * float.sizeof);
 		else
-			this._buf.cache(&colData[0], cSize * float.sizeof, Buffer.Dynamic.Draw);
+			this._buf.cache(&colData[0], cSize * float.sizeof, Usage.Dynamic.Draw);
 		
 		this._buf.unbind();
 	}
@@ -188,7 +188,8 @@ private:
 			this._vab.bind();
 			scope(exit) this._vab.unbind();
 			
-			this._buf.bind(Buffer.Target.Vertex);
+			/// nötig?
+			this._buf.bind(PointerTarget.Vertex);
 			scope(exit) this._buf.unbind();
 			
 			if (this._update & Update.Vertex)
@@ -197,8 +198,8 @@ private:
 			if (this._update & Update.Color)
 				this._updateColorCache();
 			
-			this._buf.pointTo(Buffer.Target.Color);
-			this._buf.pointTo(Buffer.Target.Vertex);
+			this._buf.pointTo(PointerTarget.Color);
+			this._buf.pointTo(PointerTarget.Vertex);
 			
 			this._update = Update.None;
 			
@@ -258,7 +259,8 @@ protected:
 		this._vab.bind();
 		scope(exit) this._vab.unbind();
 		
-		this._buf.drawArrays(!this.shouldFill() ? DefMode : this._type, this._pixels.length);
+		Primitive ptype = cast(Primitive)(!this.shouldFill() ? DefMode : this._type);
+		this._buf.drawArrays(ptype, this._pixels.length);
 	}
 	
 public:
@@ -273,7 +275,7 @@ final:
 	 * CTor
 	 */
 	this(Type type) {
-		this._buf = new Buffer(Buffer.Target.Vertex | Buffer.Target.Color);
+		this._buf = new Buffer(PointerTarget.Vertex | PointerTarget.Color);
 		this._vab = new VertexArray();
 		
 		this.update(Update.Both);
@@ -281,8 +283,6 @@ final:
 		
 		this._type = type;
 		this._smooth = Smooth(Smooth.Target.None, Smooth.Hint.Fastest);
-		
-		this._scale.set(1f, 1f);
 	}
 	
 	/**

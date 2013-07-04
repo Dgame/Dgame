@@ -2,7 +2,6 @@ module Dgame.Core.core;
 
 private {
 	import std.string : format;
-	import std.conv : to;
 	
 	import derelict.opengl3.gl;
 }

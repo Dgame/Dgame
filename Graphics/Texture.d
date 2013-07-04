@@ -7,6 +7,7 @@ private {
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
+	import Dgame.System.StaticBuffer;
 }
 
 public import Dgame.Graphics.Interface.Blendable;
@@ -122,14 +123,14 @@ public:
 	 * Supported Texture Format
 	 */
 	enum Format {
+		None = 0, /** Take this if you want to declare that you give no Format. */
 		RGB   = GL_RGB,		/** Alias for GL_RGB */
 		RGBA  = GL_RGBA,	/** Alias for GL_RGBA */
 		BGR   = GL_BGR,		/** Alias for GL_BGR */
 		BGRA  = GL_BGRA,	/** Alias for GL_BGRA */
 		Alpha = GL_ALPHA,	/** Alias for GL_ALPHA */
 		Luminance = GL_LUMINANCE, /** Alias for GL_LUMINANCE */
-		LuminanceAlpha = GL_LUMINANCE_ALPHA, /** Alias for GL_LUMINANCE_ALPHA */
-		None /** Take this if you want to declare that you give no Format. */
+		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */
 	}
 	
 private:
@@ -183,25 +184,53 @@ package:
 		
 		// use blending
 		this._processBlendMode();
+		/*
+		 final switch (mode) {
+		 case RenderMode.Normal:
+		 glBegin(GL_QUADS);
+		 glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y);
+		 glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y);
+		 glTexCoord2f(tx + tw, ty + th); glVertex2f(dst.x + dst.width, dst.y + dst.height);
+		 glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y + dst.height);
+		 glEnd();
+		 break;
+		 case RenderMode.Reverse:
+		 glBegin(GL_QUADS);
+		 glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y);
+		 glTexCoord2f(tx + tw, ty + th);	glVertex2f(dst.x + dst.width, dst.y);
+		 glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y + dst.height);
+		 glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y + dst.height);
+		 glEnd();
+		 break;
+		 }
+		 */
 		
+		float[8] texCoords = void;
 		final switch (mode) {
 			case RenderMode.Normal:
-				glBegin(GL_QUADS);
-				glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y);
-				glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y);
-				glTexCoord2f(tx + tw, ty + th); glVertex2f(dst.x + dst.width, dst.y + dst.height);
-				glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y + dst.height);
-				glEnd();
+				texCoords = [tx, ty,
+				             tx + tw, ty,
+				             tx + tw, ty + th,
+				             tx, ty + th];
 				break;
 			case RenderMode.Reverse:
-				glBegin(GL_QUADS);
-				glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y);
-				glTexCoord2f(tx + tw, ty + th);	glVertex2f(dst.x + dst.width, dst.y);
-				glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y + dst.height);
-				glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y + dst.height);
-				glEnd();
+				texCoords = [tx, ty + th,
+				             tx + tw, ty + th,
+				             tx + tw, ty,
+				             tx, ty];
 				break;
 		}
+		
+		float[12] vertices = [dst.x, dst.y, 0f,
+		                      dst.x + dst.width, dst.y, 0f,
+		                      dst.x + dst.width, dst.y + dst.height, 0f,
+		                      dst.x, dst.y + dst.height, 0f];
+		
+		StaticBuffer.pointTo(PointerTarget.TexCoords, &texCoords[0]);
+		StaticBuffer.pointTo(PointerTarget.Vertex, &vertices[0]);
+		this.bind();
+		StaticBuffer.drawArrays(Primitive.Quad, vertices.length);
+		StaticBuffer.disableAllStates();
 	}
 	
 	/**
@@ -231,8 +260,8 @@ final:
 	/**
 	 * Postblit
 	 */
-	this(ref const Texture tex) {
-		this.loadFromMemory(tex.getMemory(), tex.width, tex.height, tex.depth, tex.getFormat());
+	this(ref const Texture tex, Format t_fmt = Format.None) {
+		this.loadFromMemory(tex.getMemory(), tex.width, tex.height, tex.depth, t_fmt ? t_fmt : tex.getFormat());
 	}
 	
 	/**
@@ -441,14 +470,14 @@ final:
 	} body {
 		/// Possible speedup because 'glTexSubImage2D' is often faster than 'glTexImage2D'.
 		if (this._hasMemory && width == this.width && height == this.height) {
-			if (fmt == Format.None || fmt == this._format) {
+			if (!fmt || fmt == this._format) {
 				this.updateMemory(memory, null);
 				
 				return;
 			}
 		}
 		
-		this._format = (fmt == Format.None) ? bitsToFormat(depth) : fmt;
+		this._format = !fmt ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
 		
 		GLuint previous_texture = Texture.currentlyBound();

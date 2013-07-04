@@ -6,7 +6,7 @@ private {
 	import std.file : exists;
 	import std.conv : to;
 	import std.algorithm : reverse;
-	import std.c.string : memcpy;
+	import core.stdc.string : memcpy;
 	
 	import derelict.sdl2.sdl;
 	import derelict.sdl2.image;

@@ -1,7 +1,7 @@
 module Dgame.Core.SmartPointer.Unique;
 
 private {
-	import std.c.string : memcpy;
+	import core.stdc.string : memcpy;
 	
 	import Dgame.Core.SmartPointer.util;
 }

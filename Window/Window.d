@@ -6,7 +6,6 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.core : glCheck;
 	import Dgame.Core.Allocator;
 	import Dgame.Core.Finalizer;
 	
@@ -324,7 +323,7 @@ final:
 		if (this._clearColor != col) {
 			this._clearColor = col;
 			
-			float[4] rgba = col.convertToGL();
+			float[4] rgba = col.asGLColor();
 			
 			glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
 		}

@@ -5,7 +5,6 @@ private {
 	import std.file : exists;
 	import std.conv : to;
 	import std.string : format;
-	import std.c.string : memcpy;
 	
 	import derelict.sdl2.ttf;
 	

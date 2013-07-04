@@ -3,7 +3,7 @@ module Dgame.Core.Allocator;
 private {
 	debug import std.stdio;
 	
-	import std.c.stdlib : calloc, realloc, free;
+	import core.stdc.stdlib : calloc, realloc, free;
 }
 
 struct Chunk(T) {

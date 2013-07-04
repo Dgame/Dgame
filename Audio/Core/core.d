@@ -10,7 +10,6 @@ package {
 
 private {
 	debug import std.stdio;
-	import std.string : format;
 	
 	ALCdevice*  my_aldevice;
 	ALCcontext* my_alcontext;
