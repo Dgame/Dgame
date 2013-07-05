@@ -9,7 +9,7 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Allocator;
+	import Dgame.Core.Memory.Allocator;
 	import Dgame.Core.Math;
 	
 	import Dgame.Graphics.Color;
@@ -142,9 +142,9 @@ private:
 	}
 	
 	void _updateVertexCache() {
-		const uint vSize = this._pixels.length * VCount;
+		const size_t vSize = this._pixels.length * VCount;
 		debug {
-			const uint cSize = this._pixels.length * CCount;
+			const size_t cSize = this._pixels.length * CCount;
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
@@ -165,7 +165,7 @@ private:
 	}
 	
 	void _updateColorCache() {
-		const uint cSize = this._pixels.length * CCount;
+		const size_t cSize = this._pixels.length * CCount;
 		
 		auto colData = Memory.allocate!float(cSize, Memory.Mode.AutoFree);
 		
@@ -517,7 +517,7 @@ final:
 	static Shape make(Type type, const Vector2f[] vec) {
 		Shape qs = new Shape(type);
 		
-		for (uint i = 0; i < vec.length; ++i) {
+		for (size_t i = 0; i < vec.length; ++i) {
 			qs.appendVector(vec[i]);
 		}
 		

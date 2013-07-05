@@ -5,7 +5,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.SmartPointer.Shared;
+	import Dgame.Core.Memory.SmartPointer.Shared;
 	import Dgame.Graphics.Surface;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;

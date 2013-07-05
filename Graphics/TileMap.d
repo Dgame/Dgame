@@ -11,7 +11,7 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.SmartPointer.util;
+	import Dgame.Core.Memory.ScopeList;
 	import Dgame.Core.Math : fpEqual;
 	
 	import Dgame.Math.Rect;
@@ -172,7 +172,7 @@ private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) read(this._filename));
 		
-		vec3f[] vertices;
+		ScopeList!vec3f vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -235,9 +235,6 @@ private:
 		
 		this._buf.unbind();
 		
-		/// Delete vertices
-		deallocate(vertices);
-		
 		this._loadTileset();
 	}
 	
@@ -273,11 +270,6 @@ private:
 		
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
-		
-		/// Delete them
-		deallocate(subs);
-		deallocate(used);
-		deallocate(coordinates);
 	}
 	
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
@@ -338,7 +330,7 @@ private:
 	
 	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		vec2f[] texCoords;
+		ScopeList!vec2f texCoords;
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -366,11 +358,6 @@ private:
 			this._buf.cache(&texCoords[0], this._tCount * vec2f.sizeof);
 		
 		this._buf.unbind();
-		
-		//writeln(this._tCount, "::", this._vCount);
-		
-		/// Delete texCoords
-		deallocate(texCoords);
 	}
 	
 protected:
@@ -410,8 +397,8 @@ private:
 	
 	string _filename;
 	
-	uint _vCount;
-	uint _tCount;
+	size_t _vCount;
+	size_t _tCount;
 	bool _doCompress;
 	
 	Buffer _buf;
@@ -446,7 +433,7 @@ final:
 		this._buf.depleteAll();
 		if (this._tiles.length != 0) {
 			.destroy(this._tmi);
-			deallocate(this._tiles);
+			.destroy(this._tiles);
 		}
 		
 		this._readTileMap();

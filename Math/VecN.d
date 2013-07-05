@@ -42,18 +42,18 @@ public:
 	T opDispatch(string str)() const pure nothrow {
 		static if (str[0] == 'x')
 			return this.values[0];
-		static if (str[0] == 'y')
+		else static if (str[0] == 'y')
 			return this.values[1];
-		static if (str[0] == 'z')
+		else static if (str[0] == 'z')
 			return this.values[2];
-		static if (str[0] == 'w')
+		else static if (str[0] == 'w')
 			return this.values[3];
-		static if (str[0] == 'u')
+		else static if (str[0] == 'u')
 			return this.values[4];
-		static if (str[0] == 'v')
+		else static if (str[0] == 'v')
 			return this.values[5];
-		
-		return 0;
+		else
+			return 0;
 	}
 	
 	/**

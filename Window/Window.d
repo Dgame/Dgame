@@ -6,8 +6,8 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Allocator;
-	import Dgame.Core.Finalizer;
+	import Dgame.Core.Memory.Allocator;
+	import Dgame.Core.Memory.Finalizer;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -176,7 +176,7 @@ final:
 	/**
 	 * Returns how many windows exist
 	 */
-	static uint count() {
+	static int count() {
 		return _winCount;
 	}
 	

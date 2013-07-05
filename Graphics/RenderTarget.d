@@ -7,7 +7,7 @@ private {
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Window.Window;
-	import Dgame.Core.SmartPointer.Unique;
+	import Dgame.Core.Memory.SmartPointer.Unique;
 }
 
 public import Dgame.Graphics.HwSurface;

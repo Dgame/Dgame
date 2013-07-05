@@ -11,8 +11,8 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.sdl2.image;
 	
-	import Dgame.Core.SmartPointer.Shared;
-	import Dgame.Core.Allocator;
+	import Dgame.Core.Memory.SmartPointer.Shared;
+	import Dgame.Core.Memory.Allocator;
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;

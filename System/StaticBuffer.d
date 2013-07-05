@@ -3,8 +3,6 @@ module Dgame.System.StaticBuffer;
 private {
 	debug import std.stdio;
 	
-	import Dgame.Core.core : glCheck;
-	
 	import derelict.opengl3.gl;
 }
 
@@ -121,15 +119,15 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	static void drawArrays(Primitive type, uint count, uint start = 0) {
-		glCheck(glDrawArrays(type, start, count));
+	static void drawArrays(Primitive type, size_t count, uint start = 0) {
+		glDrawArrays(type, start, count);
 	}
 	
 	/**
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	static void drawElements(Primitive type, uint count, int[] indices) {
+	static void drawElements(Primitive type, size_t count, int[] indices) {
 		if (indices.length == 0)
 			return;
 		
@@ -142,7 +140,7 @@ public:
 	 * 
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	static void drawRangeElements(Primitive type, uint count, int[] indices, int start = -1, int end = -1) {
+	static void drawRangeElements(Primitive type, size_t count, int[] indices, int start = -1, int end = -1) {
 		if (indices.length == 0)
 			return;
 		

@@ -27,7 +27,7 @@ public:
 		Minimized	= SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
 		InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /* Grab the input inside the window */
 		
-		Default = Shown|OpenGL /** Default mode is Shown|OpenGL */
+		Default = Shown | OpenGL /** Default mode is Shown|OpenGL */
 	}
 	
 	/**

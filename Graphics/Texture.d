@@ -96,7 +96,7 @@ private GLuint*[] _finalizer;
 void _finalizeTexture() {
 	debug writefln("Finalize Texture (%d)", _finalizer.length);
 	
-	for (uint i = 0; i < _finalizer.length; i++) {
+	for (size_t i = 0; i < _finalizer.length; i++) {
 		if (_finalizer[i] && *_finalizer[i] != 0) {
 			debug writefln(" -> Texture finalized: %d", i);
 			
@@ -204,7 +204,6 @@ package:
 		 break;
 		 }
 		 */
-		
 		float[8] texCoords = void;
 		final switch (mode) {
 			case RenderMode.Normal:

@@ -243,7 +243,7 @@ public:
 	 * 
 	 * See: glBufferData
 	 */
-	void cache(const void* ptr, uint totalSize, uint usage = Usage.Static.Draw) {
+	void cache(const void* ptr, size_t totalSize, uint usage = Usage.Static.Draw) {
 		this._dataAssigned[this._curTarget] = true;
 		
 		ubyte id = this._targetIds[this._curTarget];
@@ -255,7 +255,7 @@ public:
 	 * Stores vertex data
 	 */
 	void cache(const Vertex[] vertices, uint usage = Usage.Static.Draw) {
-		const uint len = vertices[0].data.length;
+		const size_t len = vertices[0].data.length;
 		
 		this.cache(&vertices[0], len * vertices.length * float.sizeof, usage);
 	}
@@ -265,7 +265,7 @@ public:
 	 * 
 	 * See: glBufferSubData
 	 */
-	void modify(const void* ptr, uint totalSize, uint offset = 0) const {
+	void modify(const void* ptr, size_t totalSize, uint offset = 0) const {
 		glBufferSubData(this.type, offset, totalSize, ptr); 
 	}
 	
@@ -338,7 +338,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(Primitive type, uint count, uint start = 0) const {
+	void drawArrays(Primitive type, size_t count, uint start = 0) const {
 		StaticBuffer.drawArrays(type, count, start);
 	}
 	
@@ -346,7 +346,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(Primitive type, uint count, int[] indices) const {
+	void drawElements(Primitive type, size_t count, int[] indices) const {
 		StaticBuffer.drawElements(type, count, indices);
 	}
 	
@@ -356,7 +356,7 @@ public:
 	 *
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(Primitive type, uint count, int[] indices, int start = -1, int end = -1) const {
+	void drawRangeElements(Primitive type, size_t count, int[] indices, int start = -1, int end = -1) const {
 		StaticBuffer.drawRangeElements(type, count, indices, start, end);
 	}
 }

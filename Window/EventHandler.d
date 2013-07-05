@@ -42,17 +42,8 @@ private:
 				event.keyboard.repeat = sdl_event.key.repeat != 0;
 				event.keyboard.state = cast(Keyboard.State) sdl_event.key.state;
 				
-				version(none) {
-					event.keyboard.capslock = (sdl_event.key.keysym.mod & KMOD_CAPS) != 0;
-					event.keyboard.control  = (sdl_event.key.keysym.mod & KMOD_CTRL) != 0;
-					event.keyboard.shift    = (sdl_event.key.keysym.mod & KMOD_SHIFT) != 0;
-					event.keyboard.alt      = (sdl_event.key.keysym.mod & KMOD_ALT) != 0;
-				}
+				event.keyboard.mod = Keyboard.getModifier();
 				
-				version(none)
-					event.keyboard.mod = cast(Keyboard.Mod) sdl_event.key.keysym.mod;
-				else
-					event.keyboard.mod = Keyboard.getModifier();
 				return true;
 			case Event.Type.Window:
 				event.type = Event.Type.Window;
@@ -61,9 +52,11 @@ private:
 				event.timestamp = sdl_event.window.timestamp;
 				
 				event.window.eventId = cast(WindowEventId) sdl_event.window.event;
+				
 				return true;
 			case Event.Type.Quit:
 				event.type = Event.Type.Quit;
+				
 				return true;
 			case Event.Type.MouseButtonDown:
 			case Event.Type.MouseButtonUp:
@@ -79,6 +72,7 @@ private:
 				
 				event.mouseButton.x = cast(short) sdl_event.button.x;
 				event.mouseButton.y = cast(short) sdl_event.button.y;
+				
 				return true;
 			case Event.Type.MouseMotion:
 				event.type = Event.Type.MouseMotion;
@@ -96,6 +90,7 @@ private:
 				
 				event.mouseMotion.rel_x = cast(short) sdl_event.motion.xrel;
 				event.mouseMotion.rel_y = cast(short) sdl_event.motion.yrel;
+				
 				return true;
 			case Event.Type.MouseWheel:
 				event.type = Event.Type.MouseWheel;
@@ -108,6 +103,7 @@ private:
 				
 				event.mouseWheel.delta_x = cast(short) sdl_event.wheel.x;
 				event.mouseWheel.delta_y = cast(short) sdl_event.wheel.y;
+				
 				return true;
 			case Event.Type.TextEdit:
 				event.type = Event.Type.TextEdit;
@@ -118,6 +114,7 @@ private:
 				event.textEdit.text = sdl_event.edit.text;
 				event.textEdit.start = cast(short) sdl_event.edit.start;
 				event.textEdit.length = cast(ushort) sdl_event.edit.length;
+				
 				return true;
 			case Event.Type.TextInput:
 				event.type = Event.Type.TextInput;
@@ -126,8 +123,10 @@ private:
 				event.windowId  = sdl_event.text.windowID;
 				
 				event.textInput.text = sdl_event.text.text;
+				
 				return true;
-			default: return false;
+			default:
+				return false;
 		}
 	}
 	
@@ -153,7 +152,7 @@ public:
 		SDL_Event sdl_event;
 		sdl_event.type = type;
 		
-		return SDL_PushEvent(&sdl_event) != 0;
+		return SDL_PushEvent(&sdl_event) == 1;
 	}
 	
 	/**
@@ -178,7 +177,7 @@ public:
 	 * Returns: if inside of the Event Queue is an Event of the given type.
 	 */
 	static bool hasEvent(Event.Type type) {
-		return SDL_HasEvent(type) != 0;
+		return SDL_HasEvent(type) == SDL_TRUE;
 	}
 	
 	/**
