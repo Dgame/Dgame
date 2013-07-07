@@ -11,7 +11,6 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.ScopeList;
 	import Dgame.Core.Math : fpEqual;
 	
 	import Dgame.Math.Rect;
@@ -172,7 +171,7 @@ private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) read(this._filename));
 		
-		ScopeList!vec3f vertices;
+		vec3f[] vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -235,6 +234,8 @@ private:
 		
 		this._buf.unbind();
 		
+		vertices = null;
+		
 		this._loadTileset();
 	}
 	
@@ -270,6 +271,10 @@ private:
 		
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
+		
+		subs = null;
+		used = null;
+		coordinates = null;
 	}
 	
 	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
@@ -330,7 +335,7 @@ private:
 	
 	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		ScopeList!vec2f texCoords;
+		vec2f[] texCoords;
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -358,6 +363,8 @@ private:
 			this._buf.cache(&texCoords[0], this._tCount * vec2f.sizeof);
 		
 		this._buf.unbind();
+		
+		texCoords = null;
 	}
 	
 protected:
