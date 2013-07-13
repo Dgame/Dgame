@@ -10,7 +10,7 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Core.Memory.Allocator;
-	import Dgame.Core.Math;
+	import Dgame.Core.Math : fpEqual;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -76,6 +76,66 @@ private:
 }
 
 /**
+ * Converts a PrimitiveType of the StaticBuffer into a valid Shape Type.
+ * 
+ * See: Shape.Type enum
+ * See: PrimitiveType enum in StaticBuffer
+ */
+@safe
+Shape.Type primitiveToShape(PrimitiveType ptype) pure nothrow {
+	final switch (ptype) with (PrimitiveType) {
+		case Quad:
+			return Shape.Type.Quad;
+		case QuadStrip:
+			return Shape.Type.QuadStrip;
+		case Triangle:
+			return Shape.Type.Triangle;
+		case TriangleStrip:
+			return Shape.Type.TriangleStrip;
+		case TriangleFan:
+			return Shape.Type.TriangleFan;
+		case Lines:
+			return Shape.Type.Lines;
+		case LineStrip:
+			return Shape.Type.LineStrip;
+		case LineLoop:
+			return Shape.Type.LineLoop;
+		case Polygon:
+			return Shape.Type.Polygon;
+	}
+}
+
+/**
+ * Converts a Shape Type into a valid PrimitiveType of the StaticBuffer 
+ * 
+ * See: Shape.Type enum
+ * See: PrimitiveType enum in StaticBuffer
+ */
+@safe
+PrimitiveType shapeToPrimitive(Shape.Type stype) pure nothrow {
+	final switch (stype) with (Shape.Type) {
+		case Quad:
+			return PrimitiveType.Quad;
+		case QuadStrip:
+			return PrimitiveType.QuadStrip;
+		case Triangle:
+			return PrimitiveType.Triangle;
+		case TriangleStrip:
+			return PrimitiveType.TriangleStrip;
+		case TriangleFan:
+			return PrimitiveType.TriangleFan;
+		case Lines:
+			return PrimitiveType.Lines;
+		case LineStrip:
+			return PrimitiveType.LineStrip;
+		case LineLoop:
+			return PrimitiveType.LineLoop;
+		case Polygon:
+			return PrimitiveType.Polygon;
+	}
+}
+
+/**
  * Shape defines a drawable convex shape.
  * It also defines helper functions to draw simple shapes like lines, rectangles, circles, etc.
  *
@@ -130,13 +190,14 @@ protected:
 	Update _update;
 	
 	Pixel[] _pixels;
+	
 	Buffer _buf;
 	VertexArray _vab;
 	
 private:
 	
 	enum {
-		DefMode = Type.LineLoop,
+		DefaultType = Type.LineLoop,
 		VCount  = 3,
 		CCount  = 4
 	}
@@ -159,7 +220,7 @@ private:
 		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&vecData[0], vSize * float.sizeof);
 		else
-			this._buf.cache(&vecData[0], vSize * float.sizeof, Usage.Dynamic.Draw);
+			this._buf.cache(&vecData[0], vSize * float.sizeof, Usage.Static.Draw);
 		
 		this._buf.unbind();
 	}
@@ -178,7 +239,7 @@ private:
 		if (!this._buf.isCurrentEmpty())
 			this._buf.modify(&colData[0], cSize * float.sizeof);
 		else
-			this._buf.cache(&colData[0], cSize * float.sizeof, Usage.Dynamic.Draw);
+			this._buf.cache(&colData[0], cSize * float.sizeof, Usage.Static.Draw);
 		
 		this._buf.unbind();
 	}
@@ -188,8 +249,7 @@ private:
 			this._vab.bind();
 			scope(exit) this._vab.unbind();
 			
-			/// nötig?
-			this._buf.bind(PointerTarget.Vertex);
+			//this._buf.bind(PointerTarget.Vertex);
 			scope(exit) this._buf.unbind();
 			
 			if (this._update & Update.Vertex)
@@ -203,15 +263,15 @@ private:
 			
 			this._update = Update.None;
 			
-			this._vab.enable(1);
+			//this._vab.enable(1);
 		}
 	}
 	
 protected:
 	
-	override void _render() {
+	override void _render() in {
 		assert(this._buf !is null);
-		
+	} body {
 		/// Update caches
 		this._checkForUpdate();
 		
@@ -259,8 +319,8 @@ protected:
 		this._vab.bind();
 		scope(exit) this._vab.unbind();
 		
-		Primitive ptype = cast(Primitive)(!this.shouldFill() ? DefMode : this._type);
-		this._buf.drawArrays(ptype, this._pixels.length);
+		Type type = !this.shouldFill() ? DefaultType : this._type;
+		this._buf.drawArrays(shapeToPrimitive(type), this._pixels.length);
 	}
 	
 public:
@@ -489,9 +549,9 @@ final:
 	 * Returns a reference of the Pixel on the given index
 	 * or fail if the index is out of range.
 	 */
-	ref inout(Pixel) getPixelAt(uint idx) inout {
+	ref inout(Pixel) getPixelAt(uint idx) inout in {
 		assert(idx < this._pixels.length, "Out of bounds.");
-		
+	} body {
 		return this._pixels[idx];
 	}
 	
@@ -540,9 +600,9 @@ final:
 	/**
 	 * Make a new Shape object as Circle.
 	 */
-	static Shape makeCircle(float radius, ref const Vector2f center, ubyte vecNum = 30) {
+	static Shape makeCircle(float radius, ref const Vector2f center, ubyte vecNum = 30) in {
 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
-		
+	} body {
 		const float Deg2Rad = (PI * 2) / vecNum;
 		
 		Shape qs = new Shape(Type.LineLoop);

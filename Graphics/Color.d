@@ -8,6 +8,12 @@ private {
 
 ///version = Develop;
 
+private SDL_Color[void*] _ColorStore;
+
+static ~this() {
+	_ColorStore = null;
+}
+
 /**
  * Color defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
  * Alpha is default 255 (1.0).
@@ -15,9 +21,6 @@ private {
  * Author: rschuett
  */
 struct Color {
-private:
-	SDL_Color _sdl_color;
-	
 public:
 	static const Color Black   = Color(0,     0,   0); /** Black Color (0, 0, 0) */
 	static const Color White   = Color(255, 255, 255); /** White Color (255, 255, 255) */
@@ -34,13 +37,6 @@ public:
 	 */
 	ubyte red, green, blue, alpha;
 	
-	void update() {
-		this._sdl_color.r = this.red;
-		this._sdl_color.g = this.green;
-		this._sdl_color.b = this.blue;
-		this._sdl_color.unused = this.alpha;
-	}
-	
 	/**
 	 * CTor
 	 */
@@ -49,8 +45,6 @@ public:
 		this.green = green;
 		this.blue  = blue;
 		this.alpha = alpha;
-		
-		this.update();
 	}
 	
 	/**
@@ -61,8 +55,6 @@ public:
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);
 		this.alpha = cast(ubyte)(ubyte.max * alpha);
-		
-		this.update();
 	}
 	
 	version(Develop)
@@ -80,22 +72,37 @@ public:
 		this.green = rhs.green;
 		this.blue  = rhs.blue;
 		this.alpha = rhs.alpha;
-		
-		this.update();
 	}
 	
-	version(none) {
-		/**
-		 * Rvalue version
-		 */
-		void opAssign(const Color rhs) {
-			this.opAssign(rhs);
-		}
+	/**
+	 * Rvalue version
+	 */
+	void opAssign(const Color rhs) {
+		this.opAssign(rhs);
 	}
 	
 	version(Develop)
 	~this() {
 		writeln("DTor Color");
+	}
+	
+	/**
+	 * Returns a SDL_Color pointer.
+	 */
+	@property
+	SDL_Color* ptr() const {
+		const void* key = &this;
+		
+		if (key !in _ColorStore)
+			_ColorStore[key] = SDL_Color(this.red, this.green, this.blue, this.alpha);
+		else {
+			_ColorStore[key].r = this.red;
+			_ColorStore[key].g = this.green;
+			_ColorStore[key].b = this.blue;
+			_ColorStore[key].unused = this.alpha;
+		}
+		
+		return &_ColorStore[key];
 	}
 	
 	/**
@@ -106,8 +113,6 @@ public:
 		this.green = green;
 		this.blue  = blue;
 		this.alpha = alpha;
-		
-		this.update();
 	}
 	
 	/**
@@ -118,16 +123,6 @@ public:
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);
 		this.alpha = cast(ubyte)(ubyte.max * alpha);
-		
-		this.update();
-	}
-	
-	/**
-	 * Returns a SDL_Color pointer.
-	 */
-	@property
-	inout(SDL_Color)* ptr() inout {
-		return &this._sdl_color;
 	}
 	
 	/**
@@ -148,5 +143,19 @@ public:
 		        this.green > 1 ? this.green / 255f : this.green,
 		        this.blue > 1 ? this.blue / 255f : this.blue,
 		        this.alpha > 1 ? this.alpha / 255f : this.alpha];
+	}
+	
+	/**
+	 * Returns the RGBA color information as static array
+	 */
+	ubyte[4] asRGBA() const pure nothrow {
+		return [this.red, this.green, this.blue, this.alpha];
+	}
+	
+	/**
+	 * Returns RGB the color information as static array
+	 */
+	ubyte[3] asRGB() const pure nothrow {
+		return [this.red, this.green, this.blue];
 	}
 }

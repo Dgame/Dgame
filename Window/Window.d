@@ -324,7 +324,6 @@ final:
 			this._clearColor = col;
 			
 			float[4] rgba = col.asGLColor();
-			
 			glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
 		}
 	}
@@ -422,9 +421,9 @@ final:
 	 * The position is stored inside of the pointer.
 	 * The pointer don't have to be null.
 	 */
-	void fetchPosition(int* x, int* y) {
+	void fetchPosition(int* x, int* y) in {
 		assert(x !is null && y !is null, "x or y pointer is null.");
-		
+	} body {
 		SDL_GetWindowPosition(this._window, x, y);
 	}
 	
@@ -466,12 +465,8 @@ final:
 	
 	/**
 	 * Set a new size to this window
-	 * if width or height is zero, the old width/height is used.
 	 */
 	void setSize(ushort width, ushort height) {
-		width = width > 0 ? width : this.vMode.width;
-		height = height > 0 ? height : this.vMode.height;
-		
 		SDL_SetWindowSize(this._window, width, height);
 	}
 	

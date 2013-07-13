@@ -55,9 +55,9 @@ private:
 	/**
 	 * CTor
 	 */
-	this(SDL_Renderer* renderer, ushort w, ushort h) {
+	this(SDL_Renderer* renderer, ushort w, ushort h) in {
 		assert(renderer !is null, "Null Renderer.");
-		
+	} body {
 		this._target = make_unique(renderer);
 		this._width  = w;
 		this._height = h;

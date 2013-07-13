@@ -239,9 +239,9 @@ private:
 		this._loadTileset();
 	}
 	
-	void _loadTileset() {
+	void _loadTileset() in {
 		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
-		
+	} body {
 		SubSurface[] subs;
 		
 		ushort[2][ushort] used;
@@ -390,7 +390,7 @@ protected:
 		this._buf.pointTo(PointerTarget.Vertex);
 		
 		this._tex.bind();
-		this._buf.drawArrays(Primitive.TriangleStrip, this._vCount);
+		this._buf.drawArrays(PrimitiveType.TriangleStrip, this._vCount);
 		
 		this._buf.disableAllStates();
 		this._buf.unbind();
@@ -533,9 +533,9 @@ final:
 	 * 
 	 * See: reload for one tile
 	 */
-	void reload(const Vector2s[] coords, const Vector2s[] newCoords) {
+	void reload(const Vector2s[] coords, const Vector2s[] newCoords) in {
 		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
-		
+	} body {
 		this._buf.bind(PointerTarget.TexCoords);
 		scope(exit) this._buf.unbind();
 		

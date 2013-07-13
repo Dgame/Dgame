@@ -18,9 +18,7 @@ protected:
 	/**
 	 * Possible observer method if the position change.
 	 */
-	void _positionChanged(float dx, float dy) {
-		
-	}
+	void _positionChanged(float dx, float dy) { }
 	
 protected:
 	/**

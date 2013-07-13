@@ -156,9 +156,9 @@ public:
 	/**
 	 * Copy hw onto this HwSurface. rect is the position and size.
 	 */
-	void copy(ref HwSurface hw, const ShortRect* rect) {
+	void copy(ref HwSurface hw, const ShortRect* rect) in {
 		assert(hw.isValid(), "Invalid Surface.");
-		
+	} body {
 		int pitch;
 		void* pixels = hw.lock(pitch);
 		scope(exit) hw.unlock();
@@ -169,9 +169,9 @@ public:
 	/**
 	 * Copy srfc onto this HwSurface. rect is the position and size.
 	 */
-	void copy(ref Surface srfc, ShortRect* rect) {
+	void copy(ref Surface srfc, ShortRect* rect) in {
 		assert(srfc.isValid(), "Invalid Surface.");
-		
+	} body {
 		ShortRect clipRect = srfc.getClipRect();
 		if (rect is null)
 			rect = &clipRect;

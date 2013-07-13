@@ -228,7 +228,7 @@ package:
 		StaticBuffer.pointTo(PointerTarget.TexCoords, &texCoords[0]);
 		StaticBuffer.pointTo(PointerTarget.Vertex, &vertices[0]);
 		this.bind();
-		StaticBuffer.drawArrays(Primitive.Quad, vertices.length);
+		StaticBuffer.drawArrays(PrimitiveType.Quad, vertices.length);
 		StaticBuffer.disableAllStates();
 	}
 	
@@ -614,8 +614,7 @@ final:
 	 * The second parameter is a pointer to the destination rect.
 	 * Is it is null this means the whole tex is copied.
 	 */
-	void copy(const Texture tex, ShortRect* rect = null)
-	in {
+	void copy(const Texture tex, ShortRect* rect = null) in {
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {

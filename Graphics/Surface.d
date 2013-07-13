@@ -420,11 +420,12 @@ public:
 	 * Use this function to adapt the format of another Surface to this surface.
 	 * Works like <code>SLD_DisplayFormat</code>.
 	 */
-	void adaptTo(SDL_PixelFormat* fmt) {
+	void adaptTo(SDL_PixelFormat* fmt) in {
 		assert(fmt !is null, "Null format is invalid.");
-		
+	} body {
 		SDL_Surface* adapted = SDL_ConvertSurface(this._target, fmt, 0);
-		assert(adapted !is null, "Could not adapt surface.");
+		if (adapted is null)
+			throw new Exception("Could not adapt surface.");
 		
 		this._target.reset(adapted);
 	}
@@ -615,7 +616,8 @@ public:
 	 */
 	ubyte* getPixelAt(ushort x, ushort y) const {
 		ubyte* pixels = cast(ubyte*) this.getPixels();
-		assert(pixels !is null);
+		if (pixels is null)
+			throw new Exception("No pixel here.");
 		
 		// pixels[(y * this.Width) + x];
 		return pixels + y * this.getPitch() + x * this.countBytes();
@@ -648,7 +650,6 @@ public:
 	 */
 	Color getColorAt(ushort x, ushort y) const {
 		const uint len = this.width * this.height;
-		//assert(len > 0);
 		
 		if ((x * y) <= len) {
 			ubyte* p = this.getPixelAt(x, y);
@@ -762,7 +763,7 @@ public:
 	 */
 	Surface subSurface(ref const ShortRect rect) {
 		SDL_Surface* sub = this.create(rect.width, rect.height);
-		assert(sub !is null);
+		assert(sub !is null, "Failed to construct a sub surface.");
 		
 		if (SDL_BlitSurface(this._target, rect.ptr, sub, null) != 0)
 			throw new Exception("An error occured by blitting the subsurface.");

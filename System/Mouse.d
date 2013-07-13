@@ -30,7 +30,7 @@ public:
 	/**
 	 *
 	 */
-	enum State : ubyte {
+	enum State {
 		Released, /** */
 		Pressed /** */
 	}
@@ -38,7 +38,7 @@ public:
 	/**
 	 *
 	 */
-	enum MotionStates : ubyte {
+	enum MotionStates {
 		LMask  = getMouseMotionMask!(Button.Left), /** */
 		MMask  = getMouseMotionMask!(Button.Middle), /** */
 		RMask  = getMouseMotionMask!(Button.Right), /** */

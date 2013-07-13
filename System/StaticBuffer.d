@@ -9,7 +9,7 @@ private {
 /**
  * Primitive Types for the draw methods
  */
-enum Primitive {
+enum PrimitiveType {
 	Quad		= GL_QUADS,				/** Declare that the stored vertices are Quads. */
 	QuadStrip	= GL_QUAD_STRIP,		/** Declare that the stored vertices are Quad Strips*/
 	Triangle	= GL_TRIANGLES,			/** Declare that the stored vertices are Triangles. */
@@ -40,7 +40,7 @@ enum PointerTarget {
 final abstract class StaticBuffer {
 public:
 	/**
-	 * Points to the current VBO with a specific PointerTarget.
+	 * Points to a specific PointerTarget.
 	 * 
 	 * See: glVertexPointer
 	 * See: glColorPointer
@@ -116,36 +116,42 @@ public:
 	}
 	
 	/**
-	 * Draw shapes of the specific type from the current VBO data.
+	 * Draw Shapes of a specific type from the data which is addressed through 'pointTo'.
 	 * It will use count vertices.
+	 *
+	 * See: pointTo
 	 */
-	static void drawArrays(Primitive type, size_t count, uint start = 0) {
-		glDrawArrays(type, start, count);
+	static void drawArrays(PrimitiveType ptype, size_t count, uint start = 0) {
+		glDrawArrays(ptype, start, count);
 	}
 	
 	/**
-	 * Draw shapes of the specific type from the current VBO data.
+	 * Draw Shapes of a specific type from the data which is addressed through 'pointTo'.
 	 * It will use count vertices and indices for the correct index per vertex.
+	 * 
+	 * See: pointTo
 	 */
-	static void drawElements(Primitive type, size_t count, int[] indices) {
+	static void drawElements(PrimitiveType ptype, size_t count, int[] indices) {
 		if (indices.length == 0)
 			return;
 		
-		glDrawElements(type, count, GL_UNSIGNED_INT, &indices[0]); 
+		glDrawElements(ptype, count, GL_UNSIGNED_INT, &indices[0]); 
 	}
 	
 	/**
-	 * Draw shapes of the specific type from the current VBO data.
+	 * Draw Shapes of a specific type from the data which is addressed through 'pointTo'.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 * 
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
+	 * 
+	 * See: pointTo
 	 */
-	static void drawRangeElements(Primitive type, size_t count, int[] indices, int start = -1, int end = -1) {
+	static void drawRangeElements(PrimitiveType ptype, size_t count, int[] indices, int start = -1, int end = -1) {
 		if (indices.length == 0)
 			return;
 		
 		glDrawRangeElements(
-			type,
+			ptype,
 			start ? start : 0,
 			end ? end : indices.length,
 			count,

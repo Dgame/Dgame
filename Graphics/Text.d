@@ -34,12 +34,11 @@ protected:
 	Font _font = void;
 	Texture _tex;
 	
-	bool _initLoad;
-	
 private:
-	void _storePixel(SDL_Surface* rhs, Texture.Format fmt) {
+	void _storePixel(SDL_Surface* rhs, Texture.Format fmt) in {
 		assert(this._tex !is null, "No Texture!");
-		
+		assert(rhs !is null, "No Surface!");
+	} body {
 		ushort width  = cast(ushort) rhs.w;
 		ushort height = cast(ushort) rhs.h;
 		
@@ -47,9 +46,9 @@ private:
 	}
 	
 	/// TODO: Improve
-	void _update() {
+	void _update() in {
 		assert(this._tex !is null, "No Texture!");
-		
+	} body {
 		this._shouldUpdate = false;
 		
 		SDL_Surface* srfc;
@@ -78,6 +77,7 @@ private:
 			/// Adapt PixelFormat
 			SDL_PixelFormat fmt;
 			fmt.BitsPerPixel = 24;
+			
 			SDL_Surface* opt = SDL_ConvertSurface(srfc, &fmt, 0);
 			scope(exit) SDL_FreeSurface(opt);
 			
@@ -107,12 +107,9 @@ protected:
 			this._clip.move(dx, dy);
 	}
 	
-	override void _render() {
-		if (this._text.length == 0)
-			return;
-		
+	override void _render() in {
 		assert(this._tex !is null, "No valid Texture.");
-		
+	} body {
 		if (this._shouldUpdate)
 			this._update();
 		
@@ -132,6 +129,13 @@ final:
 		this._shouldUpdate = true;
 		
 		this._tex = new Texture();
+	}
+	
+	/**
+	 * CTor: Rvalue version
+	 */
+	this(const Font font, string text = "") {
+		this(font, text);
 	}
 	
 	/**
@@ -207,6 +211,13 @@ final:
 	}
 	
 	/**
+	 * Rvalue version
+	 */
+	void replaceFont(const Font font) {
+		this.replaceFont(font);
+	}
+	
+	/**
 	 * Get the image containing the rendered characters.
 	 */
 	inout(Texture) getTexture() inout pure nothrow {
@@ -235,6 +246,7 @@ final:
 	 */
 	void format(Args...)(string text, Args args) {
 		string formated = .format(text, args);
+		
 		if (formated != this._text) {
 			this._text = formated;
 			this._shouldUpdate = true;

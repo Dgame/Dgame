@@ -2,11 +2,11 @@ module Dgame.Math.VecN;
 
 private import Dgame.Math.Vector2;
 
-private static immutable ubyte[char] Table;
-
 /**
- * A little helper struct to define
- * an N dimensional vector without unnecessary funcitonality.
+ * VecN is a minimalistic structure for N dimensional coordinates
+ * and without unnecessary functionality.
+ * 
+ * Author: rschuett
  */
 struct VecN(T, const uint Dim) if (isNumeric!T) {
 public:
@@ -21,7 +21,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this(U...)(U values) {
+	this(U...)(U values) if (isNumeric!(U[0])) {
 		uint idx = 0;
 		foreach (val; values) {
 			if (idx >= Dim)
@@ -39,6 +39,7 @@ public:
 	/**
 	 * opDispatch for x, y, z, w, u, v components
 	 */
+	@property
 	T opDispatch(string str)() const pure nothrow {
 		static if (str[0] == 'x')
 			return this.values[0];

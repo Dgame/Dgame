@@ -5,8 +5,6 @@ private {
 	import std.conv : to;
 	
 	import derelict.opengl3.gl;
-	
-	import Dgame.Math.Vertex;
 }
 
 /// Public import of StaticBuffer
@@ -113,7 +111,7 @@ public:
 	const PointerTarget targets;
 	
 private:
-	GLuint[3] _vboId;
+	uint[3] _vboId;
 	
 	PointerTarget _curTarget;
 	
@@ -252,15 +250,6 @@ public:
 	}
 	
 	/**
-	 * Stores vertex data
-	 */
-	void cache(const Vertex[] vertices, uint usage = Usage.Static.Draw) {
-		const size_t len = vertices[0].data.length;
-		
-		this.cache(&vertices[0], len * vertices.length * float.sizeof, usage);
-	}
-	
-	/**
 	 * Modify existing buffer data
 	 * 
 	 * See: glBufferSubData
@@ -338,16 +327,16 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(Primitive type, size_t count, uint start = 0) const {
-		StaticBuffer.drawArrays(type, count, start);
+	void drawArrays(PrimitiveType ptype, size_t count, uint start = 0) const {
+		StaticBuffer.drawArrays(ptype, count, start);
 	}
 	
 	/**
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(Primitive type, size_t count, int[] indices) const {
-		StaticBuffer.drawElements(type, count, indices);
+	void drawElements(PrimitiveType ptype, size_t count, int[] indices) const {
+		StaticBuffer.drawElements(ptype, count, indices);
 	}
 	
 	/**
@@ -356,7 +345,7 @@ public:
 	 *
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(Primitive type, size_t count, int[] indices, int start = -1, int end = -1) const {
-		StaticBuffer.drawRangeElements(type, count, indices, start, end);
+	void drawRangeElements(PrimitiveType ptype, size_t count, int[] indices, int start = -1, int end = -1) const {
+		StaticBuffer.drawRangeElements(ptype, count, indices, start, end);
 	}
 }

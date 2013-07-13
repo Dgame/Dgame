@@ -4,6 +4,5 @@ public {
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Math.VecN;
-	import Dgame.Math.Vertex;
 	import Dgame.Math.Pixel;
 }

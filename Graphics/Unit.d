@@ -1,7 +1,7 @@
 module Dgame.Graphics.Unit;
 
 private {
-	import Dgame.Core.Math;
+	import Dgame.Core.Math : fpEqual;
 	
 	import Dgame.Graphics.Spritesheet;
 	import Dgame.Graphics.Texture;

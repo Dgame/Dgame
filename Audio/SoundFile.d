@@ -65,7 +65,7 @@ public:
 	final void freeBuffer() in {
 		assert(_sFile.buffer !is null);
 	} body {
-		delete _sFile.buffer;
+		.destroy(_sFile.buffer);
 	}
 	
 	/**

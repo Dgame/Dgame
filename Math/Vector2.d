@@ -5,13 +5,15 @@ private {
 	import std.math : pow, sqrt;
 	import std.traits : isNumeric;
 	
-	import Dgame.Core.Math;
+	import Dgame.Core.Math : fpEqual;
 }
 
 //version = Develop;
 
 @safe
-private bool equals(T, U)(T a, U b) pure nothrow if (isNumeric!T) {
+private bool equals(T, U)(T a, U b) pure nothrow 
+	if (isNumeric!T && isNumeric!U)
+{
 	static if (is(T == float) || is(T == double) || is(T == real))
 		return fpEqual(a, cast(T) b);
 	else
@@ -60,7 +62,7 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(U : T)(ref const Vector2!U rhs) {
+	void opAssign(U)(ref const Vector2!U rhs) {
 		debug writeln("opAssign Vector2");
 		this.set(rhs.x, rhs.y);
 	}
@@ -73,7 +75,7 @@ public:
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op, U : T)(ref const Vector2!U vec) {
+	ref Vector2!T opOpAssign(string op, U)(ref const Vector2!U vec) {
 		switch (op) {
 			case "+":
 				this.x += vec.x;
@@ -104,7 +106,7 @@ public:
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op, U : T)(U number) {
+	ref Vector2!T opOpAssign(string op, U)(U number) if (isNumeric!U) {
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -135,7 +137,7 @@ public:
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op, U : T)(ref const Vector2!U vec) {
+	Vector2!T opBinary(string op, U)(ref const Vector2!U vec) {
 		switch (op) {
 			case "+": return Vector2!T(vec.x + this.x, vec.y + this.y);
 			case "-": return Vector2!T(vec.x - this.x, vec.y - this.y);
@@ -149,7 +151,7 @@ public:
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op, U : T)(U number) {
+	Vector2!T opBinary(string op, U)(U number) if (isNumeric!U) {
 		switch (op) {
 			case "+": return Vector2!T(this.x + number, this.y + number);
 			case "-": return Vector2!T(this.x - number, this.y - number);
@@ -185,7 +187,7 @@ public:
 	/**
 	 * opCast: cast this vector to another type.
 	 */
-	Vector2!U opCast(V : Vector2!U, U)() const if (!is(U == bool)) {
+	Vector2!U opCast(V : Vector2!U, U)() const {
 		return Vector2!U(cast(U) this.x, cast(U) this.y);
 	}
 	
@@ -271,7 +273,7 @@ public:
 	 * Calculate the diff between two vectors.
 	 */
 	float diff(U)(ref const Vector2!U vec) const pure nothrow {
-		return sqrt(pow((this.x - vec.x), 2) + pow((this.y - vec.y), 2));
+		return sqrt(pow((this.x - vec.x), 2f) + pow((this.y - vec.y), 2f));
 	}
 	
 	/**
@@ -280,7 +282,7 @@ public:
 	ref Vector2!T normalize() {
 		float len = this.length;
 		
-		if (len != 0) {
+		if (!fpEqual(len, 0f)) {
 			this.x /= len;
 			this.y /= len;
 		}
@@ -291,7 +293,7 @@ public:
 	/**
 	 * Set new coordinates.
 	 */
-	void set(U)(U x, U y) {
+	void set(U)(U x, U y) if (isNumeric!U) {
 		this.x = cast(T) x;
 		this.y = cast(T) y;
 	}
@@ -299,7 +301,7 @@ public:
 	/**
 	 * Move the current coordinates.
 	 */
-	void move(U)(U x, U y) {
+	void move(U)(U x, U y) if (isNumeric!U) {
 		this.x += x;
 		this.y += y;
 	}

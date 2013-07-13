@@ -22,7 +22,7 @@ public:
 	/**
 	 * Color. Default is Color.Black (0, 0, 0)
 	 */
-	Color color = Color.Black;
+	Color color;
 	
 	/**
 	 * CTor
@@ -72,6 +72,7 @@ public:
 		return this.position == px.position && this.color == px.color;
 	}
 	
+	// TODO: empty opCall?
 	// TODO: opCmp
 	// TODO: opHash?
 }

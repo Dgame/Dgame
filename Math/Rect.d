@@ -11,10 +11,10 @@ private {
 
 ///version = Develop;
 
-private SDL_Rect*[] _Rects;
+private SDL_Rect[void*] _RectStore;
 
 static ~this() {
-	_Rects = null;
+	_RectStore = null;
 }
 
 /**
@@ -23,27 +23,17 @@ static ~this() {
  * Author: rschuett
  */
 struct Rect(T) if (isNumeric!T) {
-private:
-	SDL_Rect _sdl_rect = void;
-	
-	const size_t _id;
-	
-	void _update() pure nothrow {
-		this._sdl_rect.x = cast(int) this.x;
-		this._sdl_rect.y = cast(int) this.y;
-		this._sdl_rect.w = cast(int) this.width;
-		this._sdl_rect.h = cast(int) this.height;
-	}
-	
 public:
 	/**
 	 * The x and y coordinates
 	 */
-	T x = 0, y = 0;
+	T x = 0;
+	T y = 0;
 	/**
 	 * The width and the height
 	 */
-	T width = 0, height = 0;
+	T width = 0;
+	T height = 0;
 	
 public:
 	/**
@@ -55,11 +45,6 @@ public:
 		
 		this.width  = width;
 		this.height = height;
-		
-		this._update();
-		
-		_Rects ~= &this._sdl_rect;
-		this._id = _Rects.length - 1;
 	}
 	
 	static if (!is(T == int)) {
@@ -72,11 +57,6 @@ public:
 			
 			this.width  = cast(T) width;
 			this.height = cast(T) height;
-			
-			this._update();
-			
-			_Rects ~= &this._sdl_rect;
-			this._id = _Rects.length - 1;
 		}
 	}
 	
@@ -95,7 +75,7 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(U : T)(ref const Rect!U rhs) {
+	void opAssign(U)(ref const Rect!U rhs) {
 		debug writeln("opAssign Rect");
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}
@@ -109,16 +89,24 @@ public:
 	 * Returns a pointer to the inner SDL_Rect.
 	 */
 	@property
-	inout(SDL_Rect)* ptr() inout {
-		if (_Rects.length == 0 || _Rects.length <= this._id)
-			return null;
+	SDL_Rect* ptr() const {
+		const void* key = &this;
 		
-		_Rects[this._id].x = cast(int) this.x;
-		_Rects[this._id].y = cast(int) this.y;
-		_Rects[this._id].w = cast(int) this.width;
-		_Rects[this._id].h = cast(int) this.height;
+		int x = cast(int) this.x;
+		int y = cast(int) this.y;
+		int w = cast(int) this.width;
+		int h = cast(int) this.height;
 		
-		return cast(inout SDL_Rect*) _Rects[this._id]; // not &this._sdl_rect because of copies
+		if (key !in _RectStore)
+			_RectStore[key] = SDL_Rect(x, y, w, h);
+		else {
+			_RectStore[key].x = x;
+			_RectStore[key].y = y;
+			_RectStore[key].w = w;
+			_RectStore[key].h = h;
+		}
+		
+		return &_RectStore[key];
 	}
 	
 	/**
@@ -131,6 +119,7 @@ public:
 				              cast(T)(this.y + rect.y),
 				              cast(T)(this.width + rect.width),
 				              cast(T)(this.height + rect.height));
+				/// TODO: operations  *, /, -
 			default: throw new Exception("Unsupported Operation: " ~ op);
 		}
 	}
@@ -170,25 +159,22 @@ public:
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(U)(U x, U y) const {
-		return (x >= this.x) && (x < this.x + this.width) && 
-			(y >= this.y) && (y < this.y + this.height);
+	bool contains(U)(U x, U y) const if (isNumeric!U) {
+		return (x >= this.x) && (x < this.x + this.width)
+			&& (y >= this.y) && (y < this.y + this.height);
 	}
 	
 	/**
 	 * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
 	 */
 	bool opEquals(U)(ref const Rect!U rect) const {
-		if (rect is this)
-			return true;
-		
 		return SDL_RectEquals(this.ptr, rect.ptr);
 	}
 	
 	/**
 	 * opCast to another Rect type.
 	 */
-	Rect!U opCast(V : Rect!U, U)() const if (!is(U == bool)) {
+	Rect!U opCast(V : Rect!U, U)() const {
 		return Rect!U(cast(U) this.x,
 		              cast(U) this.y,
 		              cast(U) this.width,
@@ -222,15 +208,22 @@ public:
 	/**
 	 * Replace current size.
 	 */
-	void setSize(U)(U width, U height) {
+	void setSize(U)(U width, U height) if (isNumeric!U) {
 		this.width  = cast(T) width;
 		this.height = cast(T) height;
 	}
 	
 	/**
+	 * Returns the size (width and height) as static array.
+	 */
+	T[2] getSizeAsArray() const pure nothrow {
+		return [this.x, this.y];
+	}
+	
+	/**
 	 * Increase current size.
 	 */
-	void increase(U)(U width, U height) {
+	void increase(U)(U width, U height) if (isNumeric!U) {
 		this.width  += width;
 		this.height += height;
 	}
@@ -245,16 +238,23 @@ public:
 	/**
 	 * Set a new position with an array.
 	 */
-	void setPosition(U)(U[2] pos) {
+	void setPosition(U)(U[2] pos) if (isNumeric!U) {
 		this.setPosition(pos[0], pos[1]);
 	}
 	
 	/**
 	 * Set a new position with coordinates.
 	 */
-	void setPosition(U)(U x, U y) {
+	void setPosition(U)(U x, U y) if (isNumeric!U) {
 		this.x = cast(T) x;
 		this.y = cast(T) y;
+	}
+	
+	/**
+	 * Returns the position as static array.
+	 */
+	T[2] getPositionAsArray() const pure nothrow {
+		return [this.x, this.y];
 	}
 	
 	/**
@@ -274,7 +274,7 @@ public:
 	/**
 	 * Move the object.
 	 */
-	void move(U)(U x, U y) {
+	void move(U)(U x, U y) if (isNumeric!U) {
 		this.x += x;
 		this.y += y;
 	}
@@ -282,11 +282,14 @@ public:
 	/**
 	 * The new coordinates <b>and</b> a new size.
 	 */
-	void set(U, V)(U x, U y, V w, V h) {
+	void set(U, V)(U x, U y, V w, V h) if (isNumeric!U && isNumeric!V) {
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}
 	
+	/**
+	 * Returns the coordinates as static array
+	 */
 	T[4] asArray() const pure nothrow {
 		return [this.x, this.y, this.width, this.height];
 	}

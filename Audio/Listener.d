@@ -1,7 +1,6 @@
 module Dgame.Audio.Listener;
 
 private {
-	//import Dgame.Core.AutoRef;
 	import Dgame.Audio.Core.core;
 	import Dgame.Math.VecN;
 }
@@ -29,10 +28,17 @@ public:
 	/**
 	 * Set the position with a vec3f
 	 */
-	static void setPosition(const vec3f pos) {
+	static void setPosition(ref const vec3f pos) {
 		Listener._listenerPos = pos;
 		
 		alListenerfv(AL_POSITION, &pos[0]);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	static void setPosition(const vec3f pos) {
+		Listener.setPosition(pos);
 	}
 	
 	/**
@@ -52,10 +58,17 @@ public:
 	/**
 	 * Set the celocity with a vec3f.
 	 */
-	static void setVelocity(const vec3f vel) {
+	static void setVelocity(ref const vec3f vel) {
 		_listenerVel = vel;
 		
 		alListenerfv(AL_VELOCITY, &vel[0]);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	static void setVelocity(const vec3f vel) {
+		Listener.setVelocity(vel);
 	}
 	
 	/**
@@ -75,10 +88,17 @@ public:
 	/**
 	 * Set the orientation.
 	 */
-	static void setOrientation(const vec6f ori) {
+	static void setOrientation(ref const vec6f ori) {
 		Listener._listenerOri = ori;
 		
 		alListenerfv(AL_ORIENTATION, &ori[0]);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	static void setOrientation(const vec6f ori) {
+		Listener.setOrientation(ori);
 	}
 	
 	/**

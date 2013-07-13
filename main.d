@@ -188,12 +188,15 @@ void main() {
 	                 310, 170, 0,
 	                 310, 310, 0,
 	                 170, 310, 0];
-	auto cb = Color.Red.asGLColor();
-	float[] cols;
-	cols ~= cb;
-	cols ~= cb;
-	cols ~= cb;
-	cols ~= cb;
+	
+	float[16] cols = void;
+	float[4] rcol = Color.Red.asGLColor();
+	cols[0 .. 4] = rcol[];
+	cols[4 .. 8] = rcol[];
+	cols[8 .. 12] = rcol[];
+	cols[12 .. 16] = rcol[];
+	
+	writeln(cols);
 	float[8] texes = [0, 0, 1, 0, 1, 1, 0, 1];
 	
 	Image img = new Image("../../samples/img/wiki.png", Texture.Format.RGB);
@@ -215,7 +218,7 @@ void main() {
 		StaticBuffer.pointTo(PointerTarget.TexCoords, &texes[0]);
 		StaticBuffer.pointTo(PointerTarget.Vertex, &pos[0]);
 		img.bind();
-		StaticBuffer.drawArrays(Primitive.Quad, pos.length);
+		StaticBuffer.drawArrays(PrimitiveType.Triangle, pos.length);
 		StaticBuffer.disableAllStates();
 		/*
 		 tof.slide();

@@ -4,7 +4,7 @@ private import derelict.opengl3.gl;
 
 /**
  * A Vertex Array stores informations of a Buffer object and restore them if you bind this.
- * This drecrease the calls of the Buffer, because the last state is always stored and can be restored easily.
+ * This decrease the calls of the Buffer, because the last state is always stored and can be restored easily.
  *
  * Author: rschuett
  */

@@ -60,9 +60,9 @@ final:
 	 * Set or replace the current viewport.
 	 * This Viewport is also set for the Texture.
 	 */
-	void setViewport(ref const FloatRect viewport) {
+	void setViewport(ref const FloatRect viewport) in {
 		assert(this._tex !is null, "No Texture.");
-		
+	} body {
 		super._tex.setViewport(viewport);
 		this._viewport = viewport;
 	}
@@ -121,14 +121,14 @@ final:
 	 * 
 	 * See: Grid
 	 */
-	void slideViewport(Grid grid = Grid.Both) {
+	void slideViewport(Grid grid = Grid.Both) in {
 		assert(this._tex !is null, "No Texture.");
-		
+	} body {
 		float w = this._viewport.width;
 		float h = this._viewport.height;
 		
 		FloatRect* rect = super._tex.fetchViewport();
-		assert(rect !is null);
+		//		assert(rect !is null);
 		
 		if (grid & Grid.Column) {
 			rect.y = this._row * h;
