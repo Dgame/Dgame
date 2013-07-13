@@ -110,7 +110,7 @@ public:
 	}
 	
 	/**
-	 * Supported operations: +=
+	 * Supported operations: +=, -=, *=, /=, %=
 	 */
 	Rect!T opBinary(string op, U)(ref const Rect!U rect) const {
 		switch (op) {
@@ -119,7 +119,26 @@ public:
 				              cast(T)(this.y + rect.y),
 				              cast(T)(this.width + rect.width),
 				              cast(T)(this.height + rect.height));
-				/// TODO: operations  *, /, -
+			case "-":
+				return Rect!T(cast(T)(this.x - rect.x),
+				              cast(T)(this.y - rect.y),
+				              cast(T)(this.width - rect.width),
+				              cast(T)(this.height - rect.height));
+			case "*":
+				return Rect!T(cast(T)(this.x * rect.x),
+				              cast(T)(this.y * rect.y),
+				              cast(T)(this.width * rect.width),
+				              cast(T)(this.height * rect.height));
+			case "/":
+				return Rect!T(cast(T)(this.x / rect.x),
+				              cast(T)(this.y / rect.y),
+				              cast(T)(this.width / rect.width),
+				              cast(T)(this.height / rect.height));
+			case "%":
+				return Rect!T(cast(T)(this.x % rect.x),
+				              cast(T)(this.y % rect.y),
+				              cast(T)(this.width % rect.width),
+				              cast(T)(this.height % rect.height));
 			default: throw new Exception("Unsupported Operation: " ~ op);
 		}
 	}
