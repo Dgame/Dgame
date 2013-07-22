@@ -39,7 +39,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this(T x, T y, T width, T height) {
+	this()(T x, T y, T width, T height) { // TODO: Fixed in 2.064
 		this.x = x;
 		this.y = y;
 		
@@ -47,23 +47,17 @@ public:
 		this.height = height;
 	}
 	
-	static if (!is(T == int)) {
-		/**
-		 * CTor
-		 */
-		this(int x, int y, int width, int height) {
-			this.x = cast(T) x;
-			this.y = cast(T) y;
-			
-			this.width  = cast(T) width;
-			this.height = cast(T) height;
-		}
+	/**
+	 * CTor
+	 */
+	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
+		this(cast(T) x, cast(T) y);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2!T vec, T width, T height) {
+	this()(ref const Vector2!T vec, T width, T height) { // TODO: Fixed in 2.064
 		this(vec.x, vec.y, width, height);
 	}
 	

@@ -39,19 +39,16 @@ public:
 	/**
 	 * CTor
 	 */
-	this(T x, T y) {
+	this()(T x, T y) { // TODO: Fixed in 2.064
 		this.x = x;
 		this.y = y;
 	}
 	
-	static if (!is(T == int)) {
-		/**
-		 * CTor
-		 */
-		this(int x, int y) {
-			this.x = cast(T) x;
-			this.y = cast(T) y;
-		}
+	/**
+	 * CTor
+	 */
+	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
+		this(cast(T) x, cast(T) y);
 	}
 	
 	version(Develop)
@@ -201,7 +198,7 @@ public:
 	/**
 	 * Compares two vectors by checking whether the coordinates are greater or less.
 	 */
-	int opCmp(U)(auto ref const Vector2!U vec) const pure nothrow {
+	int opCmp(U)(ref const Vector2!U vec) const pure nothrow {
 		if (this.x > vec.x && this.y > vec.y)
 			return 1;
 		
