@@ -9,8 +9,8 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.Allocator;
 	import Dgame.Core.Math : fpEqual;
+	import Dgame.Core.Memory.Allocator;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -135,6 +135,8 @@ PrimitiveType shapeToPrimitive(Shape.Type stype) pure nothrow {
 	}
 }
 
+private static float[1024] _Buffer = void;
+
 /**
  * Shape defines a drawable convex shape.
  * It also defines helper functions to draw simple shapes like lines, rectangles, circles, etc.
@@ -209,10 +211,25 @@ private:
 			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
 		}
 		
-		auto vecData = Memory.allocate!float(vSize, Memory.Mode.AutoFree);
+		float[] vecData;
+		float* hptr;
 		
+		if (vSize < _Buffer.length)
+			vecData = _Buffer[0 .. vSize];
+		else {
+			vecData = Memory.allocate!float(vSize)[0 .. vSize];
+			hptr = vecData.ptr;
+			
+			debug writeln("Shape allocated.");
+		}
+		
+		scope(exit) if (hptr) Memory.deallocate(hptr);
+		
+		uint i = 0;
 		foreach (ref const Pixel px; this._pixels) {
-			vecData ~= px.getPositionData();
+			vecData[i .. i + VCount] = px.getPositionData()[];
+			
+			i += VCount;
 		}
 		
 		this._buf.bind(PointerTarget.Vertex);
@@ -228,10 +245,23 @@ private:
 	void _updateColorCache() {
 		const size_t cSize = this._pixels.length * CCount;
 		
-		auto colData = Memory.allocate!float(cSize, Memory.Mode.AutoFree);
+		float[] colData;
+		float* hptr;
 		
+		if (cSize < _Buffer.length)
+			colData = _Buffer[0 .. cSize];
+		else {
+			colData = Memory.allocate!float(cSize)[0 .. cSize];
+			hptr = colData.ptr;
+		}
+		
+		scope(exit) if (hptr) Memory.deallocate(hptr);
+		
+		uint i = 0;
 		foreach (ref const Pixel px; this._pixels) {
-			colData ~= px.getColorData();
+			colData[i .. i + CCount] = px.getColorData()[];
+			
+			i += CCount;
 		}
 		
 		this._buf.bind(PointerTarget.Color);

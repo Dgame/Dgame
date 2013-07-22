@@ -45,6 +45,7 @@ public:
 	 */
 	this(this) {
 		debug writeln("Vertex postblit");
+		
 		this.position = position;
 		this.color = color;
 	}

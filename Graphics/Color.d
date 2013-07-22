@@ -49,6 +49,7 @@ public:
 	
 	/**
 	 * CTor
+	 * Expect that every component is in range 0.0 .. 1.0
 	 */
 	this(float red, float green, float blue, float alpha = 1f) {
 		this.red   = cast(ubyte)(ubyte.max * red);

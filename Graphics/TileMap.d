@@ -172,6 +172,10 @@ private:
 		Document doc = new Document(cast(string) read(this._filename));
 		
 		vec3f[] vertices;
+		const size_t cap = vertices.reserve(400);
+		scope(exit) .destroy(vertices);
+		
+		debug writefln("TileMap: Reserve %d vertices.", cap);
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -214,6 +218,8 @@ private:
 				}
 			}
 		}
+		
+		debug writefln("TileMap: Needed %d vertices.", vertices.length);
 		
 		/// Store the map size
 		this._tmi.mapSize[0] = this._tmi.width;
@@ -336,6 +342,10 @@ private:
 	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
 		vec2f[] texCoords;
+		const size_t cap = texCoords.reserve(coordinates.length * 4);
+		scope(exit) .destroy(texCoords);
+		
+		debug writefln("TileMap: Reserve %d texCoords (%d).", cap, coordinates.length * 4);
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -352,6 +362,8 @@ private:
 			texCoords ~= vec2f(tx > 0 ? (tx / tsw) : tx, (ty + th) / tsh); /// #3
 			texCoords ~= vec2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
+		
+		debug writefln("TileMap: Needed %d texCoords.", texCoords.length);
 		
 		this._buf.bind(PointerTarget.TexCoords);
 		

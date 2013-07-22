@@ -215,6 +215,7 @@ void main() {
 		wnd.draw(sp2);
 		
 		sp2.slideViewport();
+		
 		StaticBuffer.pointTo(PointerTarget.TexCoords, &texes[0]);
 		StaticBuffer.pointTo(PointerTarget.Vertex, &pos[0]);
 		img.bind();

@@ -6,8 +6,8 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Memory.Allocator;
 	import Dgame.Core.Memory.Finalizer;
+	import Dgame.Core.Memory.Allocator;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -241,8 +241,11 @@ final:
 	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
 		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
 		
-		const uint psize = 4 * this.vMode.width * this.vMode.height;
-		auto pixels = Memory.allocate!ubyte(psize, Memory.Mode.AutoFree);
+		const uint pSize = 4 * this.vMode.width * this.vMode.height;
+		
+		ubyte[] pixels = Memory.allocate!ubyte(pSize)[0 .. pSize];
+		ubyte* hptr = pixels.ptr;
+		scope(exit) Memory.deallocate(hptr);
 		
 		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
 		

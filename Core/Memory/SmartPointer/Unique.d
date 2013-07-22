@@ -1,18 +1,16 @@
 module Dgame.Core.Memory.SmartPointer.Unique;
 
-private {
-	import core.stdc.string : memcpy;
-	
-	import Dgame.Core.Memory.SmartPointer.util : deallocate;
-}
-
 unique_ptr!T make_unique(T)(T* ptr)
 	if (is(T == struct)) 
 {
 	return unique_ptr!T(ptr);
 }
 
-struct unique_ptr(T, alias _deleter = deallocate)
+void dummyDeleter(void* ptr) pure nothrow {
+	
+}
+
+struct unique_ptr(T, alias _deleter = dummyDeleter)
 	if (is(T == struct))
 {
 private:
@@ -36,15 +34,19 @@ public:
 		if (this.valid)
 			assert(0, "unique_pointer cannot be reassigned");
 		
-		memcpy(&this, &rhs, unique_ptr!T.sizeof);
+		this._ptr = rhs._ptr;
+		
+		if (!is(typeof(this) == typeof(rhs)))
+			rhs._ptr = null; /// to avoid destruction of ptr
 	}
 	
 	~this() {
 		this.release();
 	}
 	
-	void reset(T* ptr) {
-		this.release();
+	void reset(T* ptr, bool release = true) {
+		if (release)
+			this.release();
 		
 		this._ptr = ptr;
 	}

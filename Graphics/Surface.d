@@ -13,6 +13,7 @@ private {
 	
 	import Dgame.Core.Memory.SmartPointer.Shared;
 	import Dgame.Core.Memory.Allocator;
+	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;
@@ -282,7 +283,7 @@ public:
 			RMask, GMask, BMask, AMask);
 		
 		if (srfc is null) {
-			const string err =  to!string(SDL_GetError());
+			const string err = to!string(SDL_GetError());
 			throw new Exception(format("Something fails by loading the image: %s", err));
 		}
 		
@@ -790,7 +791,9 @@ public:
 		const ubyte bytes = this.countBytes();
 		const uint memSize = this.width * this.height * bytes;
 		
-		auto newPixels = Memory.allocate!ubyte(memSize, Memory.Mode.AutoFree);
+		ubyte[] newPixels = Memory.allocate!ubyte(memSize)[0 .. memSize];
+		ubyte* hptr = newPixels.ptr;
+		scope(exit) Memory.deallocate(hptr);
 		
 		final switch (flip) {
 			case Flip.Vertical:
@@ -824,8 +827,8 @@ public:
 				}
 				break;
 			case Flip.Vertical | Flip.Horizontal:
-				newPixels[] = pixels[0 .. memSize];
-				reverse(newPixels.get);
+				newPixels = pixels[0 .. memSize];
+				reverse(newPixels);
 				break;
 		}
 		
