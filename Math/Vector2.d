@@ -1,7 +1,7 @@
 module Dgame.Math.Vector2;
 
 private {
-	debug import std.stdio;
+	import std.stdio;
 	import std.math : pow, sqrt;
 	import std.traits : isNumeric;
 	
@@ -17,7 +17,7 @@ private bool equals(T, U)(T a, U b) pure nothrow
 	static if (is(T == float) || is(T == double) || is(T == real))
 		return fpEqual(a, cast(T) b);
 	else
-		return a == cast(T) b;
+		return a == b;
 }
 
 /**
@@ -189,26 +189,6 @@ public:
 	}
 	
 	/**
-	 * opCast: cast to bool
-	 */
-	bool opCast(U = bool)() const {
-		return !this.isEmpty();
-	}
-	
-	/**
-	 * Compares two vectors by checking whether the coordinates are greater or less.
-	 */
-	int opCmp(U)(ref const Vector2!U vec) const pure nothrow {
-		if (this.x > vec.x && this.y > vec.y)
-			return 1;
-		
-		if (this.x < vec.x && this.y < vec.y)
-			return -1;
-		
-		return 0;
-	}
-	
-	/**
 	 * Checks if this vector is empty. This means that his coordinates are 0.
 	 */
 	bool isEmpty() const pure nothrow {
@@ -306,6 +286,12 @@ public:
 	T[2] asArray() const pure nothrow {
 		return [this.x, this.y];
 	}
+} unittest {
+	Vector2f vec;
+	assert(vec.isEmpty());
+	vec += 1;
+	assert(vec.x == 1f && vec.y == 1f);
+	assert(!vec.isEmpty());
 }
 
 /**
