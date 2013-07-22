@@ -20,6 +20,7 @@ public:
 		glGenVertexArrays(1, &this._vid);
 		
 		this.bind();
+		this.unbind();
 	}
 	
 	/**

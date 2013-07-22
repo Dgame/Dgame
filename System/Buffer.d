@@ -149,6 +149,8 @@ public:
 			
 			this._dataAssigned[id] = false;
 		}
+		
+		this.unbind();
 	}
 	
 	/**
@@ -165,6 +167,15 @@ public:
 		
 		ubyte id = this._targetIds[trg];
 		glBindBuffer(this.type, this._vboId[id]);
+	}
+	
+	/**
+	 * Unbind the current VBO.
+	 */
+	void unbind() {
+		this._curTarget = PointerTarget.None;
+		
+		glBindBuffer(this.type, 0);
 	}
 	
 	/**
@@ -225,15 +236,6 @@ public:
 			this.bind(id);
 			this.deplete();
 		}
-	}
-	
-	/**
-	 * Unbind the current VBO.
-	 */
-	void unbind() {
-		this._curTarget = PointerTarget.None;
-		
-		glBindBuffer(this.type, 0);
 	}
 	
 	/**

@@ -201,7 +201,7 @@ public:
 	/**
 	 * Compares two vectors by checking whether the coordinates are greater or less.
 	 */
-	int opCmp(ref const Vector2!T vec) const pure nothrow {
+	int opCmp(U)(auto ref const Vector2!U vec) const pure nothrow {
 		if (this.x > vec.x && this.y > vec.y)
 			return 1;
 		
