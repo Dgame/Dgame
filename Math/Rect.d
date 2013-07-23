@@ -50,15 +50,15 @@ public:
 	/**
 	 * CTor
 	 */
-	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
-		this(cast(T) x, cast(T) y);
+	this()(ref const Vector2!T vec, T width, T height) { // TODO: Fixed in 2.064
+		this(vec.x, vec.y, width, height);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this()(ref const Vector2!T vec, T width, T height) { // TODO: Fixed in 2.064
-		this(vec.x, vec.y, width, height);
+	this(U)(ref const Rect!U rect) {
+		this(cast(T) rect.x, cast(T) rect.y, cast(T) rect.width, cast(T) rect.height);
 	}
 	
 	version(Develop)
@@ -91,14 +91,13 @@ public:
 		int w = cast(int) this.width;
 		int h = cast(int) this.height;
 		
-		if (key !in _RectStore)
+		if (SDL_Rect* _ptr = key in _RectStore) {
+			_ptr.x = x;
+			_ptr.y = y;
+			_ptr.w = w;
+			_ptr.h = h;
+		} else
 			_RectStore[key] = SDL_Rect(x, y, w, h);
-		else {
-			_RectStore[key].x = x;
-			_RectStore[key].y = y;
-			_RectStore[key].w = w;
-			_RectStore[key].h = h;
-		}
 		
 		return &_RectStore[key];
 	}
@@ -155,8 +154,8 @@ public:
 	/**
 	 * Returns an union of the given and this Rect.
 	 */
-	Rect!T getUnion(U)(ref const Rect!U rect) const {
-		Rect!T union_rect;
+	Rect!T getUnion(ref const Rect!T rect) const {
+		Rect!T union_rect = void;
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
 		
 		return union_rect;
@@ -180,7 +179,7 @@ public:
 	/**
 	 * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
 	 */
-	bool opEquals(U)(ref const Rect!U rect) const {
+	bool opEquals(ref const Rect!T rect) const {
 		return SDL_RectEquals(this.ptr, rect.ptr);
 	}
 	
@@ -195,27 +194,34 @@ public:
 	}
 	
 	/**
-	 * opCast for bool
-	 */
-	bool opCast(U = bool)() const {
-		return !this.isEmpty();
-	}
-	
-	/**
 	 * Checks whether this Rect intersects with an other.
-	 * If, and the parameter 'intersection' isn't null,
+	 * If, and the parameter 'overlap' isn't null,
 	 * the colliding rectangle is stored there.
 	 */
-	bool intersects(U)(ref const Rect!U rect, ShortRect* intersection = null) const {
+	bool intersects(ref const Rect!T rect, Rect!short* overlap = null) const {
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
-			if (intersection !is null)
-				SDL_IntersectRect(this.ptr, rect.ptr, intersection.ptr);
+			if (overlap !is null)
+				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);
 			
 			return true;
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Use this function to calculate a minimal rectangle enclosing a set of points.
+	 */
+	static Rect!T enclosePoints(const Vector2!T[] points) {
+		SDL_Point[] sdl_points;
+		foreach (ref const Vector2!T p; points) {
+			sdl_points ~= SDL_Point(cast(int) p.x, cast(int) p.y);
+		}
 		
+		Rect!T rect = void;
+		SDL_EnclosePoints(&sdl_points[0], points.length, null, rect.ptr);
+		
+		return rect;
 	}
 	
 	/**
@@ -236,7 +242,7 @@ public:
 	/**
 	 * Increase current size.
 	 */
-	void increase(U)(U width, U height) if (isNumeric!U) {
+	void increase(int width, int height) {
 		this.width  += width;
 		this.height += height;
 	}

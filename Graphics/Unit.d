@@ -185,7 +185,7 @@ final:
 		if (fpEqual(this._speed, 0f) || fpEqual(this._swap, 0f))
 			return;
 		
-		this._update += this._swap; 
+		this._update += this._swap;
 		
 		if (this._update < Update)
 			return;
@@ -198,6 +198,7 @@ final:
 			super.move(this._direction);
 		else {
 			const Vector2f mulDirection = this._direction * this._speed;
+			
 			super.move(mulDirection);
 		}
 	}

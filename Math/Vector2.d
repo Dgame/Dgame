@@ -1,8 +1,8 @@
 module Dgame.Math.Vector2;
 
 private {
-	import std.stdio;
-	import std.math : pow, sqrt;
+	debug import std.stdio;
+	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
 	
 	import Dgame.Core.Math : fpEqual;
@@ -49,6 +49,13 @@ public:
 	 */
 	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
 		this(cast(T) x, cast(T) y);
+	}
+	
+	/**
+	 * CTor
+	 */
+	this(U)(ref const Vector2!U vec) {
+		this(vec.x, vec.y);
 	}
 	
 	version(Develop)
@@ -283,6 +290,9 @@ public:
 		this.y += y;
 	}
 	
+	/**
+	 * Returns the Vector as static array.
+	 */
 	T[2] asArray() const pure nothrow {
 		return [this.x, this.y];
 	}

@@ -94,14 +94,13 @@ public:
 	SDL_Color* ptr() const {
 		const void* key = &this;
 		
-		if (key !in _ColorStore)
+		if (SDL_Color* _ptr = key in _ColorStore) {
+			_ptr.r = this.red;
+			_ptr.g = this.green;
+			_ptr.b = this.blue;
+			_ptr.unused = this.alpha;
+		} else
 			_ColorStore[key] = SDL_Color(this.red, this.green, this.blue, this.alpha);
-		else {
-			_ColorStore[key].r = this.red;
-			_ColorStore[key].g = this.green;
-			_ColorStore[key].b = this.blue;
-			_ColorStore[key].unused = this.alpha;
-		}
 		
 		return &_ColorStore[key];
 	}
