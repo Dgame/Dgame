@@ -146,7 +146,7 @@ public:
 				this._destruct();
 			
 			this._shared._ptr = ptr;
-		} else {
+		} else if (ptr !is null) {
 			this._shared = new SharedData!T(ptr, 1);
 			//			this._shared = make_SharedData!T(ptr, 1);
 		}

@@ -184,26 +184,7 @@ package:
 		
 		// use blending
 		this._processBlendMode();
-		/*
-		 final switch (mode) {
-		 case RenderMode.Normal:
-		 glBegin(GL_QUADS);
-		 glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y);
-		 glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y);
-		 glTexCoord2f(tx + tw, ty + th); glVertex2f(dst.x + dst.width, dst.y + dst.height);
-		 glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y + dst.height);
-		 glEnd();
-		 break;
-		 case RenderMode.Reverse:
-		 glBegin(GL_QUADS);
-		 glTexCoord2f(tx, ty + th);		glVertex2f(dst.x, dst.y);
-		 glTexCoord2f(tx + tw, ty + th);	glVertex2f(dst.x + dst.width, dst.y);
-		 glTexCoord2f(tx + tw, ty);		glVertex2f(dst.x + dst.width, dst.y + dst.height);
-		 glTexCoord2f(tx, ty);			glVertex2f(dst.x, dst.y + dst.height);
-		 glEnd();
-		 break;
-		 }
-		 */
+		
 		float[8] texCoords = void;
 		final switch (mode) {
 			case RenderMode.Normal:

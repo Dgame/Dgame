@@ -38,7 +38,7 @@ protected:
 		
 		fseek(fp, 0, SEEK_SET); // Set to the file beginning
 		
-		OggVorbis_File oggFile;
+		OggVorbis_File oggFile = void;
 		
 		if (ov_open(fp, &oggFile, null, 0) < 0)
 			throw new Exception(filename ~ " is no valid Vorbis file.");
@@ -52,7 +52,8 @@ protected:
 		_sFile.dataSize = cast(uint) ov_pcm_total(&oggFile, -1) * _sFile.bytes * pInfo.channels;
 		_sFile.channels = cast(short) pInfo.channels;
 		
-		_sFile.buffer = new char[_sFile.dataSize];
+		//		_sFile.buffer = new char[_sFile.dataSize];
+		_sFile.buffer = new byte[_sFile.dataSize];
 		
 		int current = 0;
 		int endian  = 0; // 0 for Little-Endian, 1 for Big-Endian
@@ -62,15 +63,12 @@ protected:
 		
 		while (current < _sFile.dataSize) { // because it may take several requests to fill our buffer
 			bytes = ov_read(&oggFile,
-			                cast(byte*) _sFile.buffer[current .. $].ptr, 
+			                _sFile.buffer[current .. $].ptr, 
 			                _sFile.dataSize - current, 
 			                endian, 2, 1, &bitStream);
 			
 			current += bytes;
 		}
-		
-		//_sFile.buffer = cast(char*) GC.malloc(char.sizeof * _sFile.dataSize);
-		//_sFile.buffer = &myBuffer[0];
 		
 		ov_clear(&oggFile);
 		

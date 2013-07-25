@@ -50,10 +50,10 @@ protected:
 		
 		fread(&_sFile.dataSize, uint.sizeof, 1, fp);
 		
-		_sFile.buffer = new char[_sFile.dataSize];
+		_sFile.buffer = new byte[_sFile.dataSize];
 		
 		assert(_sFile.buffer !is null);
-		fread(_sFile.buffer.ptr, char.sizeof, _sFile.dataSize, fp);
+		fread(_sFile.buffer.ptr, byte.sizeof, _sFile.dataSize, fp);
 		assert(_sFile.buffer !is null);
 		
 		fclose(fp);

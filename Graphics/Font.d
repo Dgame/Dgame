@@ -50,6 +50,13 @@ public:
 		Normal    = TTF_STYLE_NORMAL		/** Normal text without any style. */
 	}
 	
+	enum Hint {
+		Normal = TTF_HINTING_NORMAL,
+		Light  = TTF_HINTING_LIGHT,
+		Mono   = TTF_HINTING_MONO,
+		None   = TTF_HINTING_NONE
+	}
+	
 	/**
 	 * Font mode
 	 */
@@ -67,6 +74,7 @@ private:
 	
 	Mode _mode;
 	Style _style;
+	Hint _hint;
 	
 public:
 	/**
@@ -111,7 +119,7 @@ public:
 	
 	/**
 	 * Close and release the current font.
-	 * This function is claaed from the DTor
+	 * This function is called from the DTor
 	 */
 	void free() {
 		this._target.reset(null);
@@ -192,6 +200,24 @@ public:
 	 */
 	Mode getMode() const pure nothrow {
 		return this._mode;
+	}
+	
+	/**
+	 * Set a hint for the Font
+	 * 
+	 * See: Hint enum
+	 */
+	void setHint(Hint hint) {
+		this._hint = hint;
+		
+		TTF_SetFontHinting(this._target, hint);
+	}
+	
+	/**
+	 * Returns the current hint
+	 */
+	Hint getHint() const pure nothrow {
+		return this._hint;
 	}
 	
 	/**

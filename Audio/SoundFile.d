@@ -10,7 +10,7 @@ struct SoundFile {
 public:
 	char[4] type;		/** Sound type. e.g. 'wave', 'ogg' */
 	string filename;	/** Sound filename */
-	char[] buffer;		/** Buffer */
+	byte[] buffer;		/** Buffer */
 	
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */

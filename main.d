@@ -167,6 +167,7 @@ void main() {
 	sp2.setPosition(200, 50);
 	
 	Font font = Font("../../samples/font/arial.ttf", 14);
+	font.setHint(Font.Hint.Mono);
 	Text text = new Text(font);
 	text.setColor(Color.Blue);
 	text.setPosition(0, 350);

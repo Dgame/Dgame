@@ -44,7 +44,7 @@ public:
 	/**
 	 * Window VideoMode's
 	 */
-	const VideoMode vMode;
+	const VideoMode vMode;/// = void;
 	
 private:
 	/// Defaults
@@ -56,7 +56,7 @@ private:
 	
 protected:
 	SDL_Window* _window;
-	SDL_GLContext _glContext;
+	SDL_GLContext _glContext = void;
 	
 	Color _clearColor = Color.White;
 	
