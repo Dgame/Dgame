@@ -229,7 +229,7 @@ private:
 		this._tmi.width *= this._tmi.tileWidth;
 		this._tmi.height *= this._tmi.tileHeight;
 		
-		this._buf.bind(PointerTarget.Vertex);
+		this._buf.bind(Primitive.Target.Vertex);
 		
 		this._vCount = vertices.length;
 		
@@ -365,7 +365,7 @@ private:
 		
 		debug writefln("TileMap: Needed %d texCoords.", texCoords.length);
 		
-		this._buf.bind(PointerTarget.TexCoords);
+		this._buf.bind(Primitive.Target.TexCoords);
 		
 		this._tCount = texCoords.length;
 		
@@ -398,11 +398,11 @@ protected:
 		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
 			glScalef(this._scale.x, this._scale.y, 0f);
 		
-		this._buf.pointTo(PointerTarget.TexCoords);
-		this._buf.pointTo(PointerTarget.Vertex);
+		this._buf.pointTo(Primitive.Target.TexCoords);
+		this._buf.pointTo(Primitive.Target.Vertex);
 		
 		this._tex.bind();
-		this._buf.drawArrays(PrimitiveType.TriangleStrip, this._vCount);
+		this._buf.drawArrays(Primitive.Type.TriangleStrip, this._vCount);
 		
 		this._buf.disableAllStates();
 		this._buf.unbind();
@@ -437,7 +437,7 @@ final:
 	 */
 	this(string filename, bool compress = true) {
 		this._tex = new Texture();
-		this._buf = new Buffer(PointerTarget.Vertex | PointerTarget.TexCoords);
+		this._buf = new Buffer(Primitive.Target.Vertex | Primitive.Target.TexCoords);
 		
 		this.load(filename, compress);
 	}
@@ -548,7 +548,7 @@ final:
 	void reload(const Vector2s[] coords, const Vector2s[] newCoords) in {
 		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
 	} body {
-		this._buf.bind(PointerTarget.TexCoords);
+		this._buf.bind(Primitive.Target.TexCoords);
 		scope(exit) this._buf.unbind();
 		
 		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];
@@ -590,7 +590,7 @@ final:
 	 * is replaced with the tile (and the tile surface) on the coordinates newCoord
 	 */
 	void reload(ref const Vector2s coord, ref const Vector2s newCoord) {
-		this._buf.bind(PointerTarget.TexCoords);
+		this._buf.bind(Primitive.Target.TexCoords);
 		scope(exit) this._buf.unbind();
 		
 		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];

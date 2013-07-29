@@ -15,65 +15,70 @@ public {
  */
 struct Pixel {
 public:
+	float x, y, z;
+	float r, g, b, a;
+	
 	/**
-	 * Coordinates
+	 * Disable default CTor
 	 */
-	Vector2f position;
-	/**
-	 * Color. Default is Color.Black (0, 0, 0)
-	 */
-	Color color;
+	@disable
+	this();
 	
 	/**
 	 * CTor
 	 */
 	this(ref const Vector2f position, ref const Color col) {
 		debug writeln("CTor Pixel");
-		this.position = position;
-		this.color = col;
+		this.set(position, col);
 	}
 	/**
 	 * CTor
 	 */
 	this(ref const Vector2f position) {
 		debug writeln("CTor Pixel");
-		this.position = position;
+		this.setPosition(position);
 	}
 	
-	/*
-	 * Postblit
+	/**
+	 * Set both, a (new) position and a (new) color.
 	 */
-	this(this) {
-		debug writeln("Vertex postblit");
+	void set(ref const Vector2f position, ref const Color col) pure nothrow {
+		this.setPosition(position);
+		this.setColor(col);
+	}
+	
+	/**
+	 * Set a (new) position
+	 */
+	void setPosition(ref const Vector2f position) pure nothrow {
+		this.x = position.x;
+		this.y = position.y;
+		this.z = 0f;
+	}
+	
+	/**
+	 * Set a (new) color
+	 */
+	void setColor(ref const Color col) pure nothrow {
+		const float[4] rgba = col.asGLColor();
 		
-		this.position = position;
-		this.color = color;
+		this.r = rgba[0];
+		this.g = rgba[1];
+		this.b = rgba[2];
+		this.a = rgba[3];
 	}
 	
 	/**
-	 * Returns position as 3d coordinates. z is 0.0.
+	 * Create a Color from the color data
 	 */
-	float[3] getPositionData() const pure nothrow {
-		return [this.position.x, this.position.y, 0f];
+	Color getAsColor() const pure nothrow {
+		return Color(this.r, this.g, this.b, this.a);
 	}
 	
 	/**
-	 * Returns color components as static float array.
-	 * The components are converted into OpenGL style, means
-	 * red, green, blue and alpha are in range of 0.0 .. 1.0
+	 * Create a Vector2f from the position data (the z coordinate is ignored).
 	 */
-	float[4] getColorData() const pure nothrow {
-		return this.color.asGLColor();
+	Vector2f getAsVector() const pure nothrow {
+		return Vector2f(this.x, this.y);
 	}
-	
-	/**
-	 * opEquals: compares two Vertices.
-	 */
-	bool opEquals(ref const Pixel px) const pure nothrow {
-		return this.position == px.position && this.color == px.color;
-	}
-	
-	// TODO: empty opCall?
-	// TODO: opCmp
-	// TODO: opHash?
 }

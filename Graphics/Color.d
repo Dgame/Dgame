@@ -40,7 +40,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) {
+	this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) pure nothrow {
 		this.red   = red;
 		this.green = green;
 		this.blue  = blue;
@@ -51,7 +51,7 @@ public:
 	 * CTor
 	 * Expect that every component is in range 0.0 .. 1.0
 	 */
-	this(float red, float green, float blue, float alpha = 1f) {
+	this(float red, float green, float blue, float alpha = 1f) pure nothrow {
 		this.red   = cast(ubyte)(ubyte.max * red);
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);
@@ -108,7 +108,7 @@ public:
 	/**
 	 * Set all color components to new values
 	 */
-	void set(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) {
+	void set(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) pure nothrow {
 		this.red   = red;
 		this.green = green;
 		this.blue  = blue;
@@ -118,7 +118,7 @@ public:
 	/**
 	 * Set all color components to new values
 	 */
-	void set(float red, float green, float blue, float alpha = 1f) {
+	void set(float red, float green, float blue, float alpha = 1f) pure nothrow {
 		this.red   = cast(ubyte)(ubyte.max * red);
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);

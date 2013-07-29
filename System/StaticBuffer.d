@@ -7,28 +7,33 @@ private {
 }
 
 /**
- * Primitive Types for the draw methods
+ * Primitive Types and targets
  */
-enum PrimitiveType {
-	Quad		= GL_QUADS,				/** Declare that the stored vertices are Quads. */
-	QuadStrip	= GL_QUAD_STRIP,		/** Declare that the stored vertices are Quad Strips*/
-	Triangle	= GL_TRIANGLES,			/** Declare that the stored vertices are Triangles. */
-	TriangleStrip = GL_TRIANGLE_STRIP,	/** Declare that the stored vertices are Triangles Strips */
-	TriangleFan = GL_TRIANGLE_FAN,		/** Declare that the stored vertices are Triangles Fans. */
-	Lines		= GL_LINES,				/** Declare that the stored vertices are Lines. */
-	LineStrip	= GL_LINE_STRIP,		/** Declare that the stored vertices are Line Strips. */
-	LineLoop	= GL_LINE_LOOP,			/** Declare that the stored vertices are Line Loops. */
-	Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
-}
-
-/**
- * Declare which data is stored. Possible are Vertices, Colors or Texture coordinates.
- */
-enum PointerTarget {
-	None   = 0,		/** Declare that the data consist of nothing relevant. */
-	Vertex = 1, 	/** Declare that the data consist of vertices. */
-	Color  = 2, 	/** Declare that the data consist of colors. */
-	TexCoords = 4 	/** Declare that the data consist of texture coordinates. */
+final abstract class Primitive {
+	/**
+	 * Primitive Types for the draw methods
+	 */
+	enum Type {
+		Quad		= GL_QUADS,				/** Declare that the stored vertices are Quads. */
+		QuadStrip	= GL_QUAD_STRIP,		/** Declare that the stored vertices are Quad Strips*/
+		Triangle	= GL_TRIANGLES,			/** Declare that the stored vertices are Triangles. */
+		TriangleStrip = GL_TRIANGLE_STRIP,	/** Declare that the stored vertices are Triangles Strips */
+		TriangleFan = GL_TRIANGLE_FAN,		/** Declare that the stored vertices are Triangles Fans. */
+		Lines		= GL_LINES,				/** Declare that the stored vertices are Lines. */
+		LineStrip	= GL_LINE_STRIP,		/** Declare that the stored vertices are Line Strips. */
+		LineLoop	= GL_LINE_LOOP,			/** Declare that the stored vertices are Line Loops. */
+		Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
+	}
+	
+	/**
+	 * Declare which data is stored. Possible are Vertices, Colors or Texture coordinates.
+	 */
+	enum Target {
+		None   = 0,		/** Declare that the data consist of nothing relevant. */
+		Vertex = 1, 	/** Declare that the data consist of vertices. */
+		Color  = 2, 	/** Declare that the data consist of colors. */
+		TexCoords = 4 	/** Declare that the data consist of texture coordinates. */
+	}
 }
 
 /**
@@ -40,49 +45,54 @@ enum PointerTarget {
 final abstract class StaticBuffer {
 public:
 	/**
-	 * Points to a specific PointerTarget.
+	 * Points to a specific Primitive.Target.
 	 * 
 	 * See: glVertexPointer
 	 * See: glColorPointer
 	 * See: glTexCoordPointer
-	 * See: PointerTarget enum.
+	 * See: Primitive.Target enum.
 	 */
-	static void pointTo(PointerTarget trg, const void* ptr = null, ubyte stride = 0) {
+	static void pointTo(Primitive.Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
 		StaticBuffer.enableState(trg);
 		
+		if (offset != 0 && ptr)
+			ptr += offset;
+		else if (!ptr && offset != 0)
+			ptr = cast(void*)(offset);
+		
 		switch (trg) {
-			case PointerTarget.None:
-				assert(0, "Invalid PointerTarget");
-			case PointerTarget.Vertex:
+			case Primitive.Target.None:
+				assert(0, "Invalid Primitive.Target");
+			case Primitive.Target.Vertex:
 				glVertexPointer(3, GL_FLOAT, stride, ptr);
 				break;
-			case PointerTarget.Color:
+			case Primitive.Target.Color:
 				glColorPointer(4, GL_FLOAT, stride, ptr);
 				break;
-			case PointerTarget.TexCoords:
+			case Primitive.Target.TexCoords:
 				glTexCoordPointer(2, GL_FLOAT, stride, ptr);
 				break;
 			default:
-				assert(0, "Point to can only handle *one* pointer PointerTarget.");
+				assert(0, "Point to can only handle *one* pointer Primitive.Target.");
 		}
 	}
 	
 	/**
 	 * Enable a specific client state (with glEnableClientState)
 	 * like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
-	 * with the corresponding PointerTarget.
+	 * with the corresponding Primitive.Target.
 	 */
-	static void enableState(PointerTarget trg) {
-		if (trg & PointerTarget.None)
-			assert(0, "Invalid PointerTarget");
+	static void enableState(Primitive.Target trg) {
+		if (trg & Primitive.Target.None)
+			assert(0, "Invalid Primitive.Target");
 		
-		if (trg & PointerTarget.Vertex)
+		if (trg & Primitive.Target.Vertex)
 			glEnableClientState(GL_VERTEX_ARRAY);
 		
-		if (trg & PointerTarget.Color)
+		if (trg & Primitive.Target.Color)
 			glEnableClientState(GL_COLOR_ARRAY);
 		
-		if (trg & PointerTarget.TexCoords)
+		if (trg & Primitive.Target.TexCoords)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	
@@ -90,28 +100,28 @@ public:
 	 * Enable all client states
 	 */
 	static void enableAllStates() {
-		StaticBuffer.enableState(PointerTarget.Vertex | PointerTarget.Color | PointerTarget.TexCoords);
+		StaticBuffer.enableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
 	}
 	
 	/**
 	 * Disable all client states
 	 */
 	static void disableAllStates() {
-		StaticBuffer.disableState(PointerTarget.Vertex | PointerTarget.Color | PointerTarget.TexCoords);
+		StaticBuffer.disableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
 	}
 	
 	/**
 	 * Disable a specific client state (with glDisableClientState)
 	 */
-	static void disableState(PointerTarget trg) {
-		if (trg & PointerTarget.None)
-			assert(0, "Invalid PointerTarget");
+	static void disableState(Primitive.Target trg) {
+		if (trg & Primitive.Target.None)
+			assert(0, "Invalid Primitive.Target");
 		
-		if (trg & PointerTarget.Vertex)
+		if (trg & Primitive.Target.Vertex)
 			glDisableClientState(GL_VERTEX_ARRAY);
-		if (trg & PointerTarget.Color)
+		if (trg & Primitive.Target.Color)
 			glDisableClientState(GL_COLOR_ARRAY);
-		if (trg & PointerTarget.TexCoords)
+		if (trg & Primitive.Target.TexCoords)
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	
@@ -121,7 +131,7 @@ public:
 	 *
 	 * See: pointTo
 	 */
-	static void drawArrays(PrimitiveType ptype, size_t count, uint start = 0) {
+	static void drawArrays(Primitive.Type ptype, size_t count, uint start = 0) {
 		glDrawArrays(ptype, start, count);
 	}
 	
@@ -131,7 +141,7 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawElements(PrimitiveType ptype, size_t count, int[] indices) {
+	static void drawElements(Primitive.Type ptype, size_t count, int[] indices) {
 		if (indices.length == 0)
 			return;
 		
@@ -146,7 +156,7 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawRangeElements(PrimitiveType ptype, size_t count, int[] indices, int start = -1, int end = -1) {
+	static void drawRangeElements(Primitive.Type ptype, size_t count, int[] indices, int start = -1, int end = -1) {
 		if (indices.length == 0)
 			return;
 		

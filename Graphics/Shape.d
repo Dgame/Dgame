@@ -82,8 +82,8 @@ private:
  * See: PrimitiveType enum in StaticBuffer
  */
 @safe
-Shape.Type primitiveToShape(PrimitiveType ptype) pure nothrow {
-	final switch (ptype) with (PrimitiveType) {
+Shape.Type primitiveToShape(Primitive.Type ptype) pure nothrow {
+	final switch (ptype) with (Primitive.Type) {
 		case Quad:
 			return Shape.Type.Quad;
 		case QuadStrip:
@@ -112,30 +112,28 @@ Shape.Type primitiveToShape(PrimitiveType ptype) pure nothrow {
  * See: PrimitiveType enum in StaticBuffer
  */
 @safe
-PrimitiveType shapeToPrimitive(Shape.Type stype) pure nothrow {
+Primitive.Type shapeToPrimitive(Shape.Type stype) pure nothrow {
 	final switch (stype) with (Shape.Type) {
 		case Quad:
-			return PrimitiveType.Quad;
+			return Primitive.Type.Quad;
 		case QuadStrip:
-			return PrimitiveType.QuadStrip;
+			return Primitive.Type.QuadStrip;
 		case Triangle:
-			return PrimitiveType.Triangle;
+			return Primitive.Type.Triangle;
 		case TriangleStrip:
-			return PrimitiveType.TriangleStrip;
+			return Primitive.Type.TriangleStrip;
 		case TriangleFan:
-			return PrimitiveType.TriangleFan;
+			return Primitive.Type.TriangleFan;
 		case Lines:
-			return PrimitiveType.Lines;
+			return Primitive.Type.Lines;
 		case LineStrip:
-			return PrimitiveType.LineStrip;
+			return Primitive.Type.LineStrip;
 		case LineLoop:
-			return PrimitiveType.LineLoop;
+			return Primitive.Type.LineLoop;
 		case Polygon:
-			return PrimitiveType.Polygon;
+			return Primitive.Type.Polygon;
 	}
 }
-
-private static float[1024] _Buffer = void;
 
 /**
  * Shape defines a drawable convex shape.
@@ -160,36 +158,15 @@ public:
 		Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
 	}
 	
-	/**
-	 * Which Buffer should updated.
-	 * Can be ORed together:
-	 * ----
-	 * Shape s = ...;
-	 * s.update(Shape.Update.Pixel | Shape.Update.Color);
-	 * ----
-	 * 
-	 * or you can use 'Both'
-	 * 
-	 *  ----
-	 * Shape s = ...;
-	 * s.update(Shape.Update.Both);
-	 * ----
-	 */
-	enum Update {
-		None   = 0, /// No buffer
-		Vertex = 1, /// Only the Vertex Buffer
-		Color  = 2, /// Only the Color Buffer
-		Both   = 3  /// Both, Vertex and Color Buffer
-	}
-	
 protected:
 	ubyte _lineWidth;
+	
 	bool _shouldFill;
 	bool _autoUpdate;
+	bool _update;
 	
 	Type _type;
-	Smooth _smooth = void;
-	Update _update;
+	Smooth _smooth = void;;
 	
 	Pixel[] _pixels;
 	
@@ -201,99 +178,32 @@ private:
 	enum {
 		DefaultType = Type.LineLoop,
 		VCount  = 3,
-		CCount  = 4
+		CCount  = 4,
+		VCCount = VCount + CCount
 	}
 	
 	void _updateVertexCache() {
-		const size_t vSize = this._pixels.length * VCount;
-		debug {
-			const size_t cSize = this._pixels.length * CCount;
-			writefln("Type: %s, Vertices: %d, vSize: %d, cSize: %d", this._type, this._pixels.length, vSize, cSize);
-		}
-		
-		float[] vecData;
-		float* hptr;
-		
-		if (vSize < _Buffer.length)
-			vecData = _Buffer[0 .. vSize];
-		else {
-			vecData = Memory.allocate!float(vSize)[0 .. vSize];
-			hptr = vecData.ptr;
-			
-			debug writeln("Shape allocated.");
-		}
-		
-		scope(exit) if (hptr) Memory.deallocate(hptr);
-		
-		uint i = 0;
-		foreach (ref const Pixel px; this._pixels) {
-			vecData[i .. i + VCount] = px.getPositionData()[];
-			
-			i += VCount;
-		}
-		
-		this._buf.bind(PointerTarget.Vertex);
+		this._buf.bind(Primitive.Target.Vertex);
+		scope(exit) this._buf.unbind();
 		
 		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&vecData[0], vSize * float.sizeof);
+			this._buf.modify(&this._pixels[0], this._pixels.length * Pixel.sizeof);
 		else
-			this._buf.cache(&vecData[0], vSize * float.sizeof, Usage.Static.Draw);
-		
-		this._buf.unbind();
-	}
-	
-	void _updateColorCache() {
-		const size_t cSize = this._pixels.length * CCount;
-		
-		float[] colData;
-		float* hptr;
-		
-		if (cSize < _Buffer.length)
-			colData = _Buffer[0 .. cSize];
-		else {
-			colData = Memory.allocate!float(cSize)[0 .. cSize];
-			hptr = colData.ptr;
-		}
-		
-		scope(exit) if (hptr) Memory.deallocate(hptr);
-		
-		uint i = 0;
-		foreach (ref const Pixel px; this._pixels) {
-			colData[i .. i + CCount] = px.getColorData()[];
-			
-			i += CCount;
-		}
-		
-		this._buf.bind(PointerTarget.Color);
-		
-		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&colData[0], cSize * float.sizeof);
-		else
-			this._buf.cache(&colData[0], cSize * float.sizeof, Usage.Static.Draw);
-		
-		this._buf.unbind();
+			this._buf.cache(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Static.Draw);
 	}
 	
 	void _checkForUpdate() {
-		if (this._update != Update.None) {
+		if (this._update) {
 			this._vab.bind();
 			scope(exit) this._vab.unbind();
 			
-			//this._buf.bind(PointerTarget.Vertex);
+			this._updateVertexCache();
 			scope(exit) this._buf.unbind();
 			
-			if (this._update & Update.Vertex)
-				this._updateVertexCache();
+			this._buf.pointTo(Primitive.Target.Vertex, VCCount * float.sizeof);
+			this._buf.pointTo(Primitive.Target.Color, VCCount * float.sizeof, VCount * float.sizeof);
 			
-			if (this._update & Update.Color)
-				this._updateColorCache();
-			
-			this._buf.pointTo(PointerTarget.Color);
-			this._buf.pointTo(PointerTarget.Vertex);
-			
-			this._update = Update.None;
-			
-			//this._vab.enable(1);
+			this._update = false;
 		}
 	}
 	
@@ -365,10 +275,10 @@ final:
 	 * CTor
 	 */
 	this(Type type) {
-		this._buf = new Buffer(PointerTarget.Vertex | PointerTarget.Color);
+		this._buf = new Buffer(Primitive.Target.Vertex/* | Primitive.Target.Color*/);
 		this._vab = new VertexArray();
 		
-		this.update(Update.Both);
+		this._update = true;
 		this._lineWidth = 2;
 		
 		this._type = type;
@@ -391,7 +301,7 @@ final:
 	 * Note: Default this is disabled.
 	 * Note: Methods that do not need to update call, have a  brief note.
 	 */
-	void setAutoUpdate(bool val) {
+	void setAutoUpdate(bool val) pure nothrow {
 		this._autoUpdate = val;
 	}
 	
@@ -406,7 +316,7 @@ final:
 	/**
 	 * Set target and hint of smoothing.
 	 */
-	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) {
+	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) pure nothrow {
 		this._smooth.target = sTarget;
 		this._smooth.hint = sHint;
 	}
@@ -423,11 +333,8 @@ final:
 	 * If 'autoUpdate' is activated, this happens automatically,
 	 * otherwise you should use this.
 	 */
-	void update(Update val) {
-		if (this._update == Update.None)
-			this._update = val;
-		else if (!(val & this._update))
-			this._update |= val;
+	void update(bool update = true) pure nothrow {
+		this._update = update;
 	}
 	
 	/**
@@ -435,7 +342,7 @@ final:
 	 * 
 	 * See: Shape.Type enum.
 	 */
-	void setType(Type type) {
+	void setType(Type type) pure nothrow {
 		this._type = type;
 	}
 	
@@ -454,11 +361,10 @@ final:
 	 * Note: This method does not need an update call.
 	 */
 	void setPixelColor(ref const Color col) {
-		//if (this._autoUpdate)
-		this.update(Update.Color);
+		this.update(true);
 		
 		foreach (ref Pixel v; this._pixels) {
-			v.color = col;
+			v.setColor(col);
 		}
 	}
 	
@@ -475,7 +381,7 @@ final:
 	 * 
 	 * Note: This method does not need an update call.
 	 */
-	void enableFill(bool fill) {
+	void enableFill(bool fill) pure nothrow {
 		this._shouldFill = fill;
 	}
 	
@@ -491,7 +397,7 @@ final:
 	 * 
 	 * Note: This method does not need an update call.
 	 */
-	void setLineWidth(ubyte width) {
+	void setLineWidth(ubyte width) pure nothrow {
 		this._lineWidth = width;
 	}
 	
@@ -507,9 +413,9 @@ final:
 	 */
 	void appendVector(ref const Vector2f vec) {
 		if (this._autoUpdate)
-			this.update(Update.Vertex);
+			this.update(true);
 		
-		this._pixels ~= Pixel(vec);
+		this._pixels ~= Pixel(vec, Color.Black);
 	}
 	
 	/**
@@ -523,8 +429,7 @@ final:
 	 * Stores a Pixel for this Shape.
 	 */
 	void appendPixel(ref const Pixel vx) {
-		if (this._autoUpdate)
-			this.update(Update.Vertex | Update.Color);
+		this.update(this._autoUpdate);
 		
 		this._pixels ~= vx;
 	}
@@ -533,8 +438,7 @@ final:
 	 * Stores multiple Vertices for this Shape.
 	 */
 	void appendPixels(const Pixel[] pixels) {
-		if (this._autoUpdate)
-			this.update(Update.Vertex | Update.Color);
+		this.update(this._autoUpdate);
 		
 		this._pixels ~= pixels;
 	}
@@ -543,8 +447,7 @@ final:
 	 * Stores multiple Pixel coordinates for this Shape.
 	 */
 	void appendVectors(const Vector2f[] vec) {
-		if (this._autoUpdate)
-			this.update(Update.Vertex);
+		this.update(this._autoUpdate);
 		
 		foreach (ref const Vector2f v; vec) {
 			this.appendVector(v);
@@ -556,8 +459,7 @@ final:
 	 * If vp is not null, the droped Pixel is stored there.
 	 */
 	void remove(uint index, Pixel* vp = null) {
-		if (this._autoUpdate)
-			this.update(Update.Vertex);
+		this.update(this._autoUpdate);
 		
 		if (index >= this._pixels.length)
 			return;
@@ -571,7 +473,7 @@ final:
 	/**
 	 * Returns all Pixel of this Shape.
 	 */
-	ref const(Pixel[]) getPixels() const pure nothrow {
+	ref inout(Pixel[]) getPixels() inout pure nothrow {
 		return this._pixels;
 	}
 	
@@ -579,26 +481,8 @@ final:
 	 * Returns a reference of the Pixel on the given index
 	 * or fail if the index is out of range.
 	 */
-	ref inout(Pixel) getPixelAt(uint idx) inout in {
-		assert(idx < this._pixels.length, "Out of bounds.");
-	} body {
-		return this._pixels[idx];
-	}
-	
-	/**
-	 * Returns a reference of the Pixel coordinates on the given index
-	 * or fail if the index is out of range.
-	 */
-	ref inout(Vector2f) getVectorAt(uint idx) inout {
-		return this.getPixelAt(idx).position;
-	}
-	
-	/**
-	 * Returns a reference of the Pixel color on the given index
-	 * or fail if the index is out of range.
-	 */
-	ref inout(Color) getColorAt(uint idx) inout {
-		return this.getPixelAt(idx).color;
+	inout(Pixel)* getPixelAt(uint idx) inout {
+		return idx < this._pixels.length ? &this._pixels[idx] : null;
 	}
 	
 	/**

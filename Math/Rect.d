@@ -277,9 +277,9 @@ public:
 	}
 	
 	/**
-	 * Returns the current position.
+	 * Returns the current position as Vector2!T.
 	 */
-	Vector2!T getPosition() const {
+	Vector2!T getPositionAsVector() const {
 		return Vector2!T(this.x, this.y);
 	}
 	

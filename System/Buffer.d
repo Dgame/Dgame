@@ -108,43 +108,43 @@ public:
 	
 public:
 	const Type type;
-	const PointerTarget targets;
+	const Primitive.Target targets;
 	
 private:
 	uint[3] _vboId;
 	
-	PointerTarget _curTarget;
+	Primitive.Target _curTarget;
 	
 	const ubyte _targetNums;
-	const ubyte[PointerTarget] _targetIds;
+	const ubyte[Primitive.Target] _targetIds;
 	
-	bool[PointerTarget] _dataAssigned;
+	bool[Primitive.Target] _dataAssigned;
 	
 public:
 	/**
 	 * CTor
 	 */
-	this(PointerTarget trg, Type type = Type.Array) {
-		if (trg == PointerTarget.None)
+	this(Primitive.Target trg, Type type = Type.Array) {
+		if (trg == Primitive.Target.None)
 			throw new Exception("Invalid PointerTarget.");
 		
 		this.type = type;
 		this.targets = trg;
 		
 		ubyte num = 0;
-		if (PointerTarget.Vertex & trg)
-			this._targetIds[PointerTarget.Vertex] = num++;
-		if (PointerTarget.Color & trg)
-			this._targetIds[PointerTarget.Color] = num++;
-		if (PointerTarget.TexCoords & trg)
-			this._targetIds[PointerTarget.TexCoords] = num++;
+		if (Primitive.Target.Vertex & trg)
+			this._targetIds[Primitive.Target.Vertex] = num++;
+		if (Primitive.Target.Color & trg)
+			this._targetIds[Primitive.Target.Color] = num++;
+		if (Primitive.Target.TexCoords & trg)
+			this._targetIds[Primitive.Target.TexCoords] = num++;
 		
 		this._targetNums = num;
-		this._curTarget = PointerTarget.None;
+		this._curTarget = Primitive.Target.None;
 		
 		glGenBuffers(num, &this._vboId[0]);
 		
-		foreach (PointerTarget id, _; this._targetIds) {
+		foreach (Primitive.Target id, _; this._targetIds) {
 			this.bind(id);
 			
 			this._dataAssigned[id] = false;
@@ -155,13 +155,14 @@ public:
 	
 	/**
 	 * Binds the a specific VBO PointerTarget.
-	 * Now the specific VBO can be used.
+	 * If the target is invalid (because no such buffer exist)
+	 * nothing happens.
 	 * 
 	 * See: PointerTarget enum
 	 */
-	void bind(PointerTarget trg) {
-		if (!(trg & this.targets))
-			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
+	void bind(Primitive.Target trg) {
+		if ((trg & this.targets) == 0)
+			return;
 		
 		this._curTarget = trg;
 		
@@ -173,7 +174,7 @@ public:
 	 * Unbind the current VBO.
 	 */
 	void unbind() {
-		this._curTarget = PointerTarget.None;
+		this._curTarget = Primitive.Target.None;
 		
 		glBindBuffer(this.type, 0);
 	}
@@ -183,7 +184,7 @@ public:
 	 * 
 	 * See: PointerTarget enum
 	 */
-	PointerTarget getBound() const pure nothrow {
+	Primitive.Target getBound() const pure nothrow {
 		return this._curTarget;
 	}
 	
@@ -191,7 +192,7 @@ public:
 	 * Returns if some PointerTarget is currently bound
 	 */
 	bool isSomethingBound() const pure nothrow {
-		return this._curTarget != PointerTarget.None;
+		return this._curTarget != Primitive.Target.None;
 	}
 	
 	/**
@@ -205,10 +206,12 @@ public:
 	}
 	
 	/**
-	 * Checks whether a specific buffer has already content, or not
+	 * Checks whether a specific buffer has already content, or not.
+	 * If the target is invalid (because no such buffer exist)
+	 * an Exception is thrown.
 	 */
-	bool isEmpty(PointerTarget trg) const {
-		if (!(trg & this.targets))
+	bool isEmpty(Primitive.Target trg) const {
+		if ((trg & this.targets) == 0)
 			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
 		
 		return this._dataAssigned[trg] == false;
@@ -232,7 +235,7 @@ public:
 	 * See: isEmpty
 	 */
 	void depleteAll() {
-		foreach (PointerTarget id, _; this._targetIds) {
+		foreach (Primitive.Target id, _; this._targetIds) {
 			this.bind(id);
 			this.deplete();
 		}
@@ -289,10 +292,10 @@ public:
 	 * See: glTexCoordPointer
 	 * See: PointerTarget enum.
 	 */
-	void pointTo(PointerTarget trg, ubyte stride = 0) {
+	void pointTo(Primitive.Target trg, ubyte stride = 0, ubyte offset = 0) {
 		this.bind(trg);
 		
-		StaticBuffer.pointTo(trg, null, stride);
+		StaticBuffer.pointTo(trg, null, stride, offset);
 	}
 	
 	/**
@@ -300,7 +303,7 @@ public:
 	 * like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	 * with the corresponding PointerTarget.
 	 */
-	void enableState(PointerTarget trg) const {
+	void enableState(Primitive.Target trg) const {
 		StaticBuffer.enableState(trg);
 	}
 	
@@ -321,7 +324,7 @@ public:
 	/**
 	 * Disable a specific client state (with glDisableClientState)
 	 */
-	void disableState(PointerTarget trg) const {
+	void disableState(Primitive.Target trg) const {
 		StaticBuffer.disableState(trg);
 	}
 	
@@ -329,7 +332,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(PrimitiveType ptype, size_t count, uint start = 0) const {
+	void drawArrays(Primitive.Type ptype, size_t count, uint start = 0) const {
 		StaticBuffer.drawArrays(ptype, count, start);
 	}
 	
@@ -337,7 +340,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(PrimitiveType ptype, size_t count, int[] indices) const {
+	void drawElements(Primitive.Type ptype, size_t count, int[] indices) const {
 		StaticBuffer.drawElements(ptype, count, indices);
 	}
 	
@@ -347,7 +350,7 @@ public:
 	 *
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(PrimitiveType ptype, size_t count, int[] indices, int start = -1, int end = -1) const {
+	void drawRangeElements(Primitive.Type ptype, size_t count, int[] indices, int start = -1, int end = -1) const {
 		StaticBuffer.drawRangeElements(ptype, count, indices, start, end);
 	}
 }

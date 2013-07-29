@@ -206,10 +206,10 @@ package:
 		                      dst.x + dst.width, dst.y + dst.height, 0f,
 		                      dst.x, dst.y + dst.height, 0f];
 		
-		StaticBuffer.pointTo(PointerTarget.TexCoords, &texCoords[0]);
-		StaticBuffer.pointTo(PointerTarget.Vertex, &vertices[0]);
+		StaticBuffer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
+		StaticBuffer.pointTo(Primitive.Target.Vertex, &vertices[0]);
 		this.bind();
-		StaticBuffer.drawArrays(PrimitiveType.Quad, vertices.length);
+		StaticBuffer.drawArrays(Primitive.Type.Quad, vertices.length);
 		StaticBuffer.disableAllStates();
 	}
 	
