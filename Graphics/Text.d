@@ -61,13 +61,13 @@ private:
 		
 		final switch (this._font.getMode()) {
 			case Font.Mode.Solid:
-				srfc = TTF_RenderText_Solid(this._font.ptr, cstr, *fg);
+				srfc = TTF_RenderUTF8_Solid(this._font.ptr, cstr, *fg);
 				break;
 			case Font.Mode.Shaded:
-				srfc = TTF_RenderText_Shaded(this._font.ptr, cstr, *fg, *bg);
+				srfc = TTF_RenderUTF8_Shaded(this._font.ptr, cstr, *fg, *bg);
 				break;
 			case Font.Mode.Blended:
-				srfc = TTF_RenderText_Blended(this._font.ptr, cstr, *fg);
+				srfc = TTF_RenderUTF8_Blended(this._font.ptr, cstr, *fg);
 				break;
 		}
 		

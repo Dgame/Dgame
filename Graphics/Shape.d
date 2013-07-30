@@ -166,7 +166,7 @@ protected:
 	bool _update;
 	
 	Type _type;
-	Smooth _smooth = void;;
+	Smooth _smooth = void;
 	
 	Pixel[] _pixels;
 	
@@ -275,7 +275,7 @@ final:
 	 * CTor
 	 */
 	this(Type type) {
-		this._buf = new Buffer(Primitive.Target.Vertex/* | Primitive.Target.Color*/);
+		this._buf = new Buffer(Primitive.Target.Vertex);
 		this._vab = new VertexArray();
 		
 		this._update = true;

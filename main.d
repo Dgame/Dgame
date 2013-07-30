@@ -172,6 +172,8 @@ void main() {
 	text.setColor(Color.Blue);
 	text.setPosition(0, 350);
 	
+	text("При употреблении алкоголя всегда надо закусывать.");
+	
 	//text.setBlendColor(Color.Red);
 	text.setBlendMode(BlendMode.Multiply);
 	
@@ -226,7 +228,7 @@ void main() {
 		 tof.slide();
 		 wnd.draw(tof);*/
 		
-		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
+		//text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
 		/*
 		 if (Keyboard.isPressed(Keyboard.Code.Left))
