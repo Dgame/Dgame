@@ -60,7 +60,7 @@ public:
 		else if (!ptr && offset != 0)
 			ptr = cast(void*)(offset);
 		
-		switch (trg) {
+		final switch (trg) {
 			case Primitive.Target.None:
 				assert(0, "Invalid Primitive.Target");
 			case Primitive.Target.Vertex:
@@ -72,8 +72,6 @@ public:
 			case Primitive.Target.TexCoords:
 				glTexCoordPointer(2, GL_FLOAT, stride, ptr);
 				break;
-			default:
-				assert(0, "Point to can only handle *one* pointer Primitive.Target.");
 		}
 	}
 	
@@ -119,8 +117,10 @@ public:
 		
 		if (trg & Primitive.Target.Vertex)
 			glDisableClientState(GL_VERTEX_ARRAY);
+		
 		if (trg & Primitive.Target.Color)
 			glDisableClientState(GL_COLOR_ARRAY);
+		
 		if (trg & Primitive.Target.TexCoords)
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}

@@ -21,7 +21,7 @@ interface Transformable {
 	/**
 	 * Returns the center point if rotation.
 	 */
-	ref const(Vector2f) getRotation() const;
+	ref const(Vector2f) getRotation() const pure nothrow;
 	/**
 	 * Stores the scale data of this shape.
 	 */
@@ -33,7 +33,7 @@ interface Transformable {
 	/**
 	 * Returns the scale data.
 	 */
-	ref const(Vector2f) getScale() const;
+	ref const(Vector2f) getScale() const pure nothrow;
 	/**
 	 * Returns only the X component of the scale vector
 	 */
@@ -114,7 +114,7 @@ final:
 	/**
 	 * Returns the center point if rotation.
 	 */
-	ref const(Vector2f) getRotation() const {
+	ref const(Vector2f) getRotation() const pure nothrow {
 		return this._rotation;
 	}
 	
@@ -135,7 +135,7 @@ final:
 	/**
 	 * Returns the scale data.
 	 */
-	ref const(Vector2f) getScale() const {
+	ref const(Vector2f) getScale() const pure nothrow {
 		return this._scale;
 	}
 	

@@ -1,7 +1,10 @@
 module Dgame.Audio.SoundFile;
 
+package {
+	debug import std.stdio;
+	import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
+}
 private import std.file : exists;
-package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 
 /**
  * A helper struct for reading from a sound file.
@@ -43,7 +46,7 @@ enum MusicType {
  */
 abstract class BaseSoundFile {
 protected:
-	SoundFile _sFile;
+	SoundFile _sFile = void;
 	
 	abstract void _read(string filename);
 	

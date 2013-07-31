@@ -828,10 +828,10 @@ public:
 				break;
 			case Flip.Vertical | Flip.Horizontal:
 				newPixels = pixels[0 .. memSize];
-				reverse(newPixels);
+				.reverse(newPixels);
 				break;
 		}
 		
-		return Surface.make(newPixels.ptr, this.width, this.height, this.countBits());
+		return Surface.make(hptr, this.width, this.height, this.countBits());
 	}
 }

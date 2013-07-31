@@ -9,8 +9,6 @@ private {
 	import derelict.sdl2.image;
 	import derelict.sdl2.ttf;
 	import derelict.opengl3.gl;
-	
-	import Dgame.System.Keyboard;
 }
 
 public {
@@ -30,20 +28,17 @@ static this() {
 		throw new Exception("SDL Error: " ~ to!string(SDL_GetError()));
 	
 	const uint flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
-	int initted = IMG_Init(flags);
+	const int initted = IMG_Init(flags);
 	if ((initted & flags) != flags) {
-		string err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";
+		const string err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";
 		
 		throw new Exception(.format(err, to!string(IMG_GetError())));
 	}
 	
-	if (TTF_Init() < 0) {
+	if (TTF_Init() < 0)
 		throw new Exception("TTF konnte nicht gestartet werden.");
-	}
 	
 	assert(TTF_WasInit() == 1, "SDL TTF wurde nicht korrekt initialisiert.");
-	
-	Keyboard.update();
 }
 
 static ~this() {

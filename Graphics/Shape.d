@@ -514,7 +514,7 @@ final:
 	/**
 	 * Make a new Shape object as Circle.
 	 */
-	static Shape makeCircle(float radius, ref const Vector2f center, ubyte vecNum = 30) in {
+	static Shape makeCircle(ubyte radius, ref const Vector2f center, ubyte vecNum = 30) in {
 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
 	} body {
 		const float Deg2Rad = (PI * 2) / vecNum;
@@ -536,7 +536,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	static Shape makeCircle(float radius, const Vector2f center, ubyte vecNum = 30) {
+	static Shape makeCircle(ubyte radius, const Vector2f center, ubyte vecNum = 30) {
 		return Shape.makeCircle(radius, center, vecNum);
 	}
 }

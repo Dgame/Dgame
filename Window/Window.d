@@ -102,27 +102,23 @@ final:
 			throw new Exception("Error by creating a SDL2 window.");
 		
 		if (vMode.flag & VideoMode.OpenGL) {
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
+			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
+			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+			SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 			
 			this._glContext = SDL_GL_CreateContext(this._window);
 			if (this._glContext is null)
 				throw new Exception("Error while creating gl context.");
 			
-			try {
-				GLVersion glver = DerelictGL.reload();
-			} catch(Exception e) {
-				debug writefln("Derelict loaded GL version: %s, available GL version: %s", DerelictGL.loadedVersion, to!(string)(glGetString(GL_VERSION)));
-				throw e;
-			}
-			
-			//GLVersion glver2 = DerelictGL.loadModernVersions();
-			//			GLVersion glver1 = DerelictGL.loadExtendedVersions(DerelictGL.maxVersion()); 
-			//			debug writeln("GLVersion1: ", glver1, ",GLVersion2: ", glver1, ", max available: ", DerelictGL.maxVersion()); /// which gl version
+			const GLVersion glver = DerelictGL.reload();
+			debug writefln("Derelict loaded GL version: %s (%s), available GL version: %s",
+			               DerelictGL.loadedVersion, glver, to!(string)(glGetString(GL_VERSION)));
+			if (glver < GLVersion.GL30)
+				throw new Exception("Your OpenGL version is too low.");
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -247,13 +243,13 @@ final:
 		ubyte* hptr = pixels.ptr;
 		scope(exit) Memory.deallocate(hptr);
 		
-		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, pixels.ptr);
+		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, hptr);
 		
 		void* temp_pixels = temp.getPixels();
 		
 		for (ushort i = 0 ; i < this.vMode.height ; i++) {
 			memcpy(temp_pixels + temp.getPitch() * i, 
-			       pixels.ptr + 4 * this.vMode.width * (this.vMode.height - i - 1), 
+			       hptr + 4 * this.vMode.width * (this.vMode.height - i - 1), 
 			       this.vMode.width * 4);
 		}
 		
@@ -326,7 +322,7 @@ final:
 		if (this._clearColor != col) {
 			this._clearColor = col;
 			
-			float[4] rgba = col.asGLColor();
+			const float[4] rgba = col.asGLColor();
 			glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
 		}
 	}

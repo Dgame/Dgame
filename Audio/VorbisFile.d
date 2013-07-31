@@ -51,8 +51,7 @@ protected:
 		_sFile.bytes = 2;
 		_sFile.dataSize = cast(uint) ov_pcm_total(&oggFile, -1) * _sFile.bytes * pInfo.channels;
 		_sFile.channels = cast(short) pInfo.channels;
-		
-		//		_sFile.buffer = new char[_sFile.dataSize];
+		debug writefln("Allocate %d memory for Vorbis.", _sFile.dataSize);
 		_sFile.buffer = new byte[_sFile.dataSize];
 		
 		int current = 0;

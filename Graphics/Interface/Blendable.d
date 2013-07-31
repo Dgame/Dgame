@@ -89,7 +89,7 @@ protected:
 		}
 		
 		if (this._useBlendColor && this._blendMode != BlendMode.None) {
-			float[4] col = this._blendColor.asGLColor();
+			const float[4] col = this._blendColor.asGLColor();
 			
 			version(all)
 				glBlendColor(col[0], col[1], col[2], col[3]);

@@ -23,6 +23,7 @@ public:
 	 * 
 	 * Note: The state is probably not up to date. If you want the current state, 
 	 * you should take a look at the update method.
+	 * <b>You have to call Keyboard.update at least once, otherwise you will get a null pointer exception.</b>
 	 * 
 	 * See: update
 	 *
@@ -33,7 +34,9 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static ubyte* getState() {
+	static ubyte* getState() in {
+		assert(_Keys !is null, "You have to call Keyboard.update first.");
+	} body {
 		return _Keys;
 	}
 	
@@ -45,6 +48,8 @@ public:
 	 * Note: This function gives you the current state after all events have been processed, 
 	 * so if a key or button has been pressed and released before you process events, 
 	 * then the pressed state will never show up in the update calls.
+	 * <b>You have to call Keyboard.update at least once to use e.g. <code>Keyboard.getState</code>,
+	 * otherwise you will get a null pointer exception.</b>
 	 * 
 	 * Note: This function doesn't take into account whether shift has been pressed or not. 
 	 */

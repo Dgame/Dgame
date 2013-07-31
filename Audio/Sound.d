@@ -192,16 +192,30 @@ public:
 	static Sound loadOnce(BaseSoundFile soundfile) in {
 		assert(soundfile !is null, "Soundfile is null.");
 	} body {
-		string filename = soundfile.getFilename();
+		const string filename = soundfile.getFilename();
 		
-		if (filename !in _soundInstances) {
-			Sound s = new Sound();
-			s.loadFromFile(soundfile);
-			
-			_soundInstances[filename] = s;
-		}
+		if (Sound* s = filename in _soundInstances)
+			return *s;
 		
-		return _soundInstances[filename];
+		Sound s = new Sound(soundfile);
+		_soundInstances[filename] = s;
+		
+		return s;
+	}
+	
+	/**
+	 * Load a soundfile from his path and stores the sound object in a static field.
+	 * Then returns the sound object.
+	 * If you try to load the same file on more time, you get the same sound object as before.
+	 */
+	static Sound loadOnce(string filename) {
+		if (Sound* s = filename in _soundInstances)
+			return *s;
+		
+		Sound s = new Sound(filename);
+		_soundInstances[filename] = s;
+		
+		return s;
 	}
 	
 	/**
@@ -271,7 +285,7 @@ public:
 		else if(filename.endsWith(".wav") || filename.endsWith(".wave"))
 			sFile = new WaveFile(filename);
 		else {
-			string lower = toLower(filename);
+			const string lower = toLower(filename);
 			if (lower != filename)
 				this.loadFromFile(lower);
 		}

@@ -49,7 +49,7 @@ protected:
 			throw new Exception("Missing DATA");
 		
 		fread(&_sFile.dataSize, uint.sizeof, 1, fp);
-		
+		debug writefln("Allocate %d memory for Wave.", _sFile.dataSize);
 		_sFile.buffer = new byte[_sFile.dataSize];
 		
 		assert(_sFile.buffer !is null);

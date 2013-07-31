@@ -41,8 +41,10 @@ void main() {
 	Sound[2] sound;
 	//sound[0] = new Sound(new VorbisFile("samples/audio/orchestral.ogg"));
 	//sound[1] = new Sound(new WaveFile("samples/audio/step.wav"));
-	sound[0] = new Sound("../../samples/audio/orchestral.ogg");
-	sound[1] = new Sound("../../samples/audio/step.wav");
+	//sound[0] = new Sound("../../samples/audio/orchestral.ogg");
+	//sound[1] = new Sound("../../samples/audio/step.wav");
+	sound[0] = Sound.loadOnce("../../samples/audio/orchestral.ogg");
+	sound[1] = Sound.loadOnce("../../samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
 	writefln("Green Color: %d,%d,%d,%d", Color.Green.red, Color.Green.green, Color.Green.blue, Color.Green.alpha);
@@ -58,7 +60,7 @@ void main() {
 	qs.setPixelColor(Color.Blue);
 	//qs.setType(Shape.Type.Triangle);
 	
-	Shape circle = Shape.makeCircle(25f, Vector2f(180, 380));
+	Shape circle = Shape.makeCircle(25, Vector2f(180, 380));
 	circle.setSmooth(Smooth.Target.Line);
 	
 	Shape many = Shape.make(Shape.Type.Quad, [Vector2f(55, 55),
@@ -172,7 +174,7 @@ void main() {
 	text.setColor(Color.Blue);
 	text.setPosition(0, 350);
 	
-	text("При употреблении алкоголя всегда надо закусывать.");
+	//	text("При употреблении алкоголя всегда надо закусывать.");
 	
 	//text.setBlendColor(Color.Red);
 	text.setBlendMode(BlendMode.Multiply);
@@ -228,8 +230,8 @@ void main() {
 		 tof.slide();
 		 wnd.draw(tof);*/
 		
-		//text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
-		wnd.draw(text);
+		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
+		
 		/*
 		 if (Keyboard.isPressed(Keyboard.Code.Left))
 		 writeln("Left");
@@ -342,6 +344,8 @@ void main() {
 				default: break;
 			}
 		}
+		
+		wnd.draw(text);
 		
 		//qs.move(1, 1);
 		
