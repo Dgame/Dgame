@@ -158,8 +158,8 @@ private:
 	
 package:
 	void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
@@ -206,10 +206,9 @@ package:
 		                      dst.x + dst.width, dst.y + dst.height, 0f,
 		                      dst.x, dst.y + dst.height, 0f];
 		
-		StaticBuffer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
-		StaticBuffer.pointTo(Primitive.Target.Vertex, &vertices[0]);
-		this.bind();
+		StaticBuffer.bindTexture(this, &texCoords[0], &vertices[0]);
 		StaticBuffer.drawArrays(Primitive.Type.Quad, vertices.length);
+		
 		StaticBuffer.disableAllStates();
 	}
 	
@@ -460,8 +459,8 @@ final:
 		this._format = !fmt ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
 		
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		this.bind();
 		
@@ -533,8 +532,8 @@ final:
 		const uint msize = this._width * this._height * (this._depth / 8);
 		void[] memory = new void[msize];
 		
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		this.bind();
 		
@@ -551,8 +550,8 @@ final:
 		if (this._format == Format.None)
 			return null;
 		
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		Texture tex = new Texture();
 		debug writeln("Format switch: ", .switchFormat(this._format, true));
@@ -599,8 +598,8 @@ final:
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		short rx = 0, ry = 0;
 		ushort rw = tex.width, rh = tex.height;
@@ -665,8 +664,8 @@ final:
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
-		GLuint previous_texture = Texture.currentlyBound();
-		scope(exit) Texture._reBind(previous_texture);
+		//		GLuint previous_texture = Texture.currentlyBound();
+		//		scope(exit) Texture._reBind(previous_texture);
 		
 		this.bind();
 		

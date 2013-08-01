@@ -4,6 +4,8 @@ private {
 	debug import std.stdio;
 	
 	import derelict.opengl3.gl;
+	
+	import Dgame.Graphics.Texture;
 }
 
 /**
@@ -167,5 +169,18 @@ public:
 			count,
 			GL_UNSIGNED_INT,
 			&indices[0]);
+	}
+	
+	static void bindTexture(const Texture tex, float* texelPtr, float* verticesPtr, float* colorPtr = null) {
+		if (texelPtr is null || verticesPtr is null)
+			throw new Exception("Need at least a Primitive.Target.Texture and a Primitive.Target.Vertex.");
+		
+		StaticBuffer.pointTo(Primitive.Target.TexCoords, texelPtr);
+		StaticBuffer.pointTo(Primitive.Target.Vertex, verticesPtr);
+		
+		if (colorPtr !is null)
+			StaticBuffer.pointTo(Primitive.Target.Color, colorPtr);
+		
+		tex.bind();
 	}
 }

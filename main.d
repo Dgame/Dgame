@@ -221,10 +221,17 @@ void main() {
 		
 		sp2.slideViewport();
 		
-		StaticBuffer.pointTo(Primitive.Target.TexCoords, &texes[0]);
-		StaticBuffer.pointTo(Primitive.Target.Vertex, &pos[0]);
-		img.bind();
+		//		StaticBuffer.pointTo(Primitive.Target.TexCoords, &texes[0]);
+		//		StaticBuffer.pointTo(Primitive.Target.Vertex, &pos[0]);
+		//		img.bind();
+		//		StaticBuffer.drawArrays(Primitive.Type.Triangle, pos.length);
+		// Don't forget to clean up
+		//	    img.unbind();
+		//		StaticBuffer.disableAllStates();
+		StaticBuffer.bindTexture(img, &texes[0], &pos[0]);
 		StaticBuffer.drawArrays(Primitive.Type.Triangle, pos.length);
+		// Don't forget to clean up
+		img.unbind();
 		StaticBuffer.disableAllStates();
 		/*
 		 tof.slide();

@@ -194,11 +194,14 @@ private:
 	
 	void _checkForUpdate() {
 		if (this._update) {
+			scope(exit) {
+				this._buf.unbind();
+				this._vab.unbind();
+			}
+			
 			this._vab.bind();
-			scope(exit) this._vab.unbind();
 			
 			this._updateVertexCache();
-			scope(exit) this._buf.unbind();
 			
 			this._buf.pointTo(Primitive.Target.Vertex, VCCount * float.sizeof);
 			this._buf.pointTo(Primitive.Target.Color, VCCount * float.sizeof, VCount * float.sizeof);
@@ -208,7 +211,6 @@ private:
 	}
 	
 protected:
-	
 	override void _render() in {
 		assert(this._buf !is null);
 	} body {
