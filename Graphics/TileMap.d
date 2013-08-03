@@ -325,17 +325,14 @@ private:
 			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height, 
 			                         newTileset.countBits(), t_fmt);
 		} else {
-			Surface newTileset = Surface.make(tileset.width, tileset.height);
-			newTileset.blit(tileset);
-			
 			//tileset.saveToFile("new_tilset.png");
 			
 			Texture.Format t_fmt = Texture.Format.None;
-			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
-				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
+				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height,
-			                         newTileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(tileset.getPixels(), tileset.width, tileset.height,
+			                         tileset.countBits(), t_fmt);
 		}
 	}
 	
@@ -398,10 +395,7 @@ protected:
 		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
 			glScalef(this._scale.x, this._scale.y, 0f);
 		
-		this._buf.pointTo(Primitive.Target.TexCoords);
-		this._buf.pointTo(Primitive.Target.Vertex);
-		
-		this._tex.bind();
+		this._buf.bindTexture(this._tex);
 		this._buf.drawArrays(Primitive.Type.TriangleStrip, this._vCount);
 		
 		this._buf.disableAllStates();
@@ -443,13 +437,14 @@ final:
 	}
 	
 	/**
-	 * Load a (new) TileMap
+	 * Load a new TileMap
 	 */
 	void load(string filename, bool compress = true) {
 		this._filename = filename;
 		this._doCompress = compress;
 		
 		this._buf.depleteAll();
+		
 		if (this._tiles.length != 0) {
 			.destroy(this._tmi);
 			.destroy(this._tiles);

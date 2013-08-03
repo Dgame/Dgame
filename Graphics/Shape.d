@@ -32,7 +32,8 @@ public:
 	enum Target {
 		None,					 /** No smooth (default). */
 		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
-		Line  = GL_LINE_SMOOTH   /** Enable smooth for lines. */
+		Line  = GL_LINE_SMOOTH,   /** Enable smooth for lines. */
+		Polygon = GL_POLYGON_SMOOTH_HINT /** Enable smooth for polygons. */
 	}
 	
 	/**
@@ -228,18 +229,10 @@ protected:
 		scope(exit) glPopAttrib();
 		
 		if (this._smooth.target != Smooth.Target.None) {
-			glEnable(this._smooth.target);
+			if (!glIsEnabled(this._smooth.target))
+				glEnable(this._smooth.target);
 			
-			final switch (this._smooth.target) {
-				case Smooth.Target.Point:
-					glHint(GL_POINT_SMOOTH_HINT, this._smooth.hint);
-					break;
-				case Smooth.Target.Line:
-					glHint(GL_LINE_SMOOTH_HINT, this._smooth.hint);
-					break;
-				case Smooth.Target.None:
-					assert(0);
-			}
+			glHint(this._smooth.target, this._smooth.hint);
 		}
 		
 		if (this._rotAngle != 0)
@@ -475,15 +468,26 @@ final:
 	/**
 	 * Returns all Pixel of this Shape.
 	 */
-	ref inout(Pixel[]) getPixels() inout pure nothrow {
+	const(Pixel[]) getPixels() const pure nothrow {
 		return this._pixels;
 	}
 	
 	/**
-	 * Returns a reference of the Pixel on the given index
-	 * or fail if the index is out of range.
+	 * Returns the Pixel at the given index
+	 * or throws an exception, if the index is out of range.
 	 */
-	inout(Pixel)* getPixelAt(uint idx) inout {
+	ref const(Pixel) getPixelAt(uint idx) const {
+		if (idx < this._pixels.length)
+			return this._pixels[idx];
+		
+		throw new Exception("No Pixel at this index.");
+	}
+	
+	/**
+	 * Returns a pointer of the Pixel at the given index
+	 * or null if the index is out of range.
+	 */
+	inout(Pixel)* fetchPixelAt(uint idx) inout {
 		return idx < this._pixels.length ? &this._pixels[idx] : null;
 	}
 	

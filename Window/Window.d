@@ -135,6 +135,11 @@ final:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			
+			// Hints
+			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+			glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_FASTEST);
+			
 			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
 			
 			this.setVerticalSync(Sync.Enable);

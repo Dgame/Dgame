@@ -130,14 +130,14 @@ final:
 	/**
 	 * Calculate the difference Vector from this position to another.
 	 */
-	Vector2f diff(T)(ref const Vector2!T point) {
+	Vector2f diff(T)(ref const Vector2!T point) const pure nothrow {
 		return this._position.diff(point);
 	}
 	
 	/**
 	 * Calculate the distance from this position to another.
 	 */
-	int distance(T)(ref const Vector2!T point) {
+	int distance(T)(ref const Vector2!T point) const pure nothrow {
 		return this.diff(point).length;
 	}
 }

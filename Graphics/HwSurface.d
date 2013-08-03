@@ -134,7 +134,7 @@ public:
 	 */
 	@property
 	inout(SDL_Texture)* ptr() inout {
-		return this._target;
+		return this._target.ptr;
 	}
 	
 	/**

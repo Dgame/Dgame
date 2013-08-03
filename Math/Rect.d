@@ -6,6 +6,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
+	import Dgame.Core.Memory.Allocator;
 	import Dgame.Math.Vector2;
 }
 
@@ -96,6 +97,8 @@ public:
 			_ptr.y = y;
 			_ptr.w = w;
 			_ptr.h = h;
+			
+			return _ptr;
 		} else
 			_RectStore[key] = SDL_Rect(x, y, w, h);
 		
@@ -213,13 +216,15 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		SDL_Point[] sdl_points;
-		foreach (ref const Vector2!T p; points) {
-			sdl_points ~= SDL_Point(cast(int) p.x, cast(int) p.y);
+		SDL_Point* sdl_points = Memory.allocate!SDL_Point(points.length);
+		scope(exit) Memory.deallocate(sdl_points);
+		
+		foreach (i, ref const Vector2!T p; points) {
+			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 		
 		Rect!T rect = void;
-		SDL_EnclosePoints(&sdl_points[0], points.length, null, rect.ptr);
+		SDL_EnclosePoints(sdl_points, points.length, null, rect.ptr);
 		
 		return rect;
 	}

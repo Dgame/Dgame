@@ -171,10 +171,20 @@ public:
 			&indices[0]);
 	}
 	
+	/**
+	 * Bind a texture with at least his texture coordinates and his vertices.
+	 * It's a shortcut for:
+	 * ----
+	 * StaticBuffer.pointTo(Primitive.Target.TexCoords, texelPtr);
+	 * StaticBuffer.pointTo(Primitive.Target.Vertex, verticesPtr);
+	 * 
+	 * tex.bind();
+	 * ----
+	 * 
+	 * Note: You should clean up with:
+	 * tex.unbind(); and StaticBuffer.disableAllStates();
+	 */
 	static void bindTexture(const Texture tex, float* texelPtr, float* verticesPtr, float* colorPtr = null) {
-		if (texelPtr is null || verticesPtr is null)
-			throw new Exception("Need at least a Primitive.Target.Texture and a Primitive.Target.Vertex.");
-		
 		StaticBuffer.pointTo(Primitive.Target.TexCoords, texelPtr);
 		StaticBuffer.pointTo(Primitive.Target.Vertex, verticesPtr);
 		

@@ -5,6 +5,8 @@ private {
 	import std.conv : to;
 	
 	import derelict.opengl3.gl;
+	
+	import Dgame.Graphics.Texture;
 }
 
 /// Public import of StaticBuffer
@@ -352,5 +354,25 @@ public:
 	 */
 	void drawRangeElements(Primitive.Type ptype, size_t count, int[] indices, int start = -1, int end = -1) const {
 		StaticBuffer.drawRangeElements(ptype, count, indices, start, end);
+	}
+	
+	/**
+	 * Bind a texture to this Buffer.
+	 * It's a shortcut for:
+	 * ----
+	 * buf.pointTo(Primitive.Target.TexCoords);
+	 * buf.pointTo(Primitive.Target.Vertex);
+	 * 
+	 * tex.bind();
+	 * ----
+	 * 
+	 * Note: You should clean up with:
+	 * tex.unbind(); and buf.disableAllStates();
+	 */
+	void bindTexture(const Texture tex) {
+		this.pointTo(Primitive.Target.TexCoords);
+		this.pointTo(Primitive.Target.Vertex);
+		
+		tex.bind();
 	}
 }

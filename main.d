@@ -158,9 +158,10 @@ void main() {
 	                          0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 
 	                          0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 
 	                          0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff];
-	
-	Surface icon = Surface.make(pixels.ptr, 16, 16, 32);
-	wnd.setIcon(icon);
+	{
+		Surface icon = Surface.make(pixels.ptr, 16, 16, 32);
+		wnd.setIcon(icon);
+	}
 	
 	Spritesheet sp = new Spritesheet(new Image("../../samples/img/tileset.png"), FloatRect(119, 0, 16, 16));
 	sp.setPosition(50, 200);

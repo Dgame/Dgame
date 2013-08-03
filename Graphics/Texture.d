@@ -139,7 +139,8 @@ private:
 	ushort _width, _height;
 	ubyte _depth;
 	
-	bool _smoothEnabled;
+	bool _isSmooth;
+	bool _isRepeat;
 	bool _hasMemory;
 	
 	Format _format;
@@ -338,17 +339,31 @@ final:
 	}
 	
 	/**
-	 * Enable smothing texture filter by the next load.
+	 * Set smooth filter for the (next) load.
 	 */
-	void enableSmooth(bool enable) {
-		this._smoothEnabled = enable;
+	void setSmooth(bool enable) {
+		this._isSmooth = enable;
 	}
 	
 	/**
-	 * Check if smoth texture filter are activated.
+	 * Returns if smooth filter are activated.
 	 */
 	bool hasSmooth() const pure nothrow {
-		return this._smoothEnabled;
+		return this._isSmooth;
+	}
+	
+	/**
+	 * Set repeating for the (nexT) load.
+	 **/
+	void setRepeat(bool enable) {
+		this._isRepeat = enable;
+	}
+	
+	/**
+	 * Returns if repeating is enabled.
+	 */
+	bool hasRepeat() const pure nothrow {
+		return this._isRepeat;
 	}
 	
 	/**
@@ -382,7 +397,7 @@ final:
 	}
 	
 	/**
-	 * Get const access to the current Viewport.
+	 * Returns the current Viewport.
 	 */
 	ref const(FloatRect) getViewport() const pure nothrow {
 		return this._viewport;
@@ -467,10 +482,10 @@ final:
 		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this._smoothEnabled ? GL_LINEAR : GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this._smoothEnabled ? GL_LINEAR : GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this._isSmooth ? GL_LINEAR : GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this._isSmooth ? GL_LINEAR : GL_NEAREST);
 		
 		this._width  = width;
 		this._height = height;

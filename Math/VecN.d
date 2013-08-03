@@ -60,7 +60,7 @@ public:
 	/**
 	 * Returns a 2D Vector
 	 */
-	Vector2!T asVector2() const pure nothrow {
+	Vector2!T getAsVector2() const pure nothrow {
 		return Vector2!T(this.x, this.y);
 	}
 	

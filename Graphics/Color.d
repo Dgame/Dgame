@@ -99,6 +99,8 @@ public:
 			_ptr.g = this.green;
 			_ptr.b = this.blue;
 			_ptr.unused = this.alpha;
+			
+			return _ptr;
 		} else
 			_ColorStore[key] = SDL_Color(this.red, this.green, this.blue, this.alpha);
 		

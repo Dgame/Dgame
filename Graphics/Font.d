@@ -50,11 +50,14 @@ public:
 		Normal    = TTF_STYLE_NORMAL		/** Normal text without any style. */
 	}
 	
+	/**
+	 * Font Hints
+	 */
 	enum Hint {
-		Normal = TTF_HINTING_NORMAL,
-		Light  = TTF_HINTING_LIGHT,
-		Mono   = TTF_HINTING_MONO,
-		None   = TTF_HINTING_NONE
+		Normal = TTF_HINTING_NORMAL, /** Normal (default) Hint */
+		Light  = TTF_HINTING_LIGHT,  /** */
+		Mono   = TTF_HINTING_MONO,   /** */
+		None   = TTF_HINTING_NONE    /** No Hint */
 	}
 	
 	/**

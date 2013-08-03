@@ -26,6 +26,7 @@ protected:
 	override void _render() {
 		if (this._tex is null) {
 			debug writeln("Texture couldn't rendered, because it's null.");
+			
 			return;
 		}
 		
