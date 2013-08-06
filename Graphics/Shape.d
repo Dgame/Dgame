@@ -163,7 +163,6 @@ protected:
 	ubyte _lineWidth;
 	
 	bool _shouldFill;
-	bool _autoUpdate;
 	bool _update;
 	
 	Type _type;
@@ -288,27 +287,6 @@ final:
 	}
 	
 	/**
-	 * Activate 'autoUpdate'.
-	 * This means that which every append* or remove* method an update call is sended.
-	 * This spare you the manual call of update, but if you have many calls which cause an update call and 'autoUpdate' is activated
-	 * it could be more performant to disable this and handle the update call(s) by yourself.
-	 * 
-	 * Note: Default this is disabled.
-	 * Note: Methods that do not need to update call, have a  brief note.
-	 */
-	void setAutoUpdate(bool val) pure nothrow {
-		this._autoUpdate = val;
-	}
-	
-	/**
-	 * Returns if 'autoUpdate' is enabled.
-	 * Default is disabled.
-	 */
-	bool isAutoUpdate() const pure nothrow {
-		return this._autoUpdate;
-	}
-	
-	/**
 	 * Set target and hint of smoothing.
 	 */
 	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) pure nothrow {
@@ -407,9 +385,6 @@ final:
 	 * Stores Pixel coordinates for this Shape.
 	 */
 	void appendVector(ref const Vector2f vec) {
-		if (this._autoUpdate)
-			this.update(true);
-		
 		this._pixels ~= Pixel(vec, Color.Black);
 	}
 	
@@ -424,8 +399,6 @@ final:
 	 * Stores a Pixel for this Shape.
 	 */
 	void appendPixel(ref const Pixel vx) {
-		this.update(this._autoUpdate);
-		
 		this._pixels ~= vx;
 	}
 	
@@ -433,8 +406,6 @@ final:
 	 * Stores multiple Vertices for this Shape.
 	 */
 	void appendPixels(const Pixel[] pixels) {
-		this.update(this._autoUpdate);
-		
 		this._pixels ~= pixels;
 	}
 	
@@ -442,8 +413,6 @@ final:
 	 * Stores multiple Pixel coordinates for this Shape.
 	 */
 	void appendVectors(const Vector2f[] vec) {
-		this.update(this._autoUpdate);
-		
 		foreach (ref const Vector2f v; vec) {
 			this.appendVector(v);
 		}
@@ -454,8 +423,6 @@ final:
 	 * If vp is not null, the droped Pixel is stored there.
 	 */
 	void remove(uint index, Pixel* vp = null) {
-		this.update(this._autoUpdate);
-		
 		if (index >= this._pixels.length)
 			return;
 		
