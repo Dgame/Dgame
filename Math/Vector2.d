@@ -47,7 +47,9 @@ public:
 	/**
 	 * CTor
 	 */
-	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
+	this(U)(U x, U y)
+		if (isNumeric!U && !is(U : T))
+	{
 		this(cast(T) x, cast(T) y);
 	}
 	
@@ -110,7 +112,9 @@ public:
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op, U)(U number) if (isNumeric!U) {
+	ref Vector2!T opOpAssign(string op, U)(U number)
+		if (isNumeric!U)
+	{
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -155,7 +159,9 @@ public:
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op, U)(U number) if (isNumeric!U) {
+	Vector2!T opBinary(string op, U)(U number)
+		if (isNumeric!U)
+	{
 		switch (op) {
 			case "+": return Vector2!T(this.x + number, this.y + number);
 			case "-": return Vector2!T(this.x - number, this.y - number);
@@ -263,7 +269,7 @@ public:
 	/**
 	 * Normalize the vector in which the coordinates are divided by the length.
 	 */
-	ref Vector2!T normalize() {
+	ref Vector2!T normalize() pure nothrow {
 		float len = this.length;
 		
 		if (!fpEqual(len, 0f)) {
@@ -277,7 +283,9 @@ public:
 	/**
 	 * Set new coordinates.
 	 */
-	void set(U)(U x, U y) if (isNumeric!U) {
+	void set(U)(U x, U y) pure nothrow
+		if (isNumeric!U)
+	{
 		this.x = cast(T) x;
 		this.y = cast(T) y;
 	}
@@ -285,7 +293,9 @@ public:
 	/**
 	 * Move the current coordinates.
 	 */
-	void move(U)(U x, U y) if (isNumeric!U) {
+	void move(U)(U x, U y) pure nothrow
+		if (isNumeric!U)
+	{
 		this.x += x;
 		this.y += y;
 	}

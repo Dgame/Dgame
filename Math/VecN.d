@@ -13,7 +13,7 @@ public:
 	/**
 	 * Stores the vector values.
 	 */
-	T[Dim] values;
+	T[Dim] values = void;
 	
 	/// Alias
 	alias values this;

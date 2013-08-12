@@ -24,6 +24,11 @@ static ~this() {
  * Author: rschuett
  */
 struct Rect(T) if (isNumeric!T) {
+private:
+	void _adaptToPtr() {
+		this.set(this.ptr.x, this.ptr.y, this.ptr.w, this.ptr.h);
+	}
+	
 public:
 	/**
 	 * The x and y coordinates
@@ -59,7 +64,8 @@ public:
 	 * CTor
 	 */
 	this(U)(ref const Rect!U rect) {
-		this(cast(T) rect.x, cast(T) rect.y, cast(T) rect.width, cast(T) rect.height);
+		this(cast(T) rect.x, cast(T) rect.y,
+		     cast(T) rect.width, cast(T) rect.height);
 	}
 	
 	version(Develop)
@@ -70,7 +76,7 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(U)(ref const Rect!U rhs) {
+	void opAssign(U)(ref const Rect!U rhs) pure nothrow {
 		debug writeln("opAssign Rect");
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}
@@ -108,7 +114,7 @@ public:
 	/**
 	 * Supported operations: +=, -=, *=, /=, %=
 	 */
-	Rect!T opBinary(string op, U)(ref const Rect!U rect) const {
+	Rect!T opBinary(string op, U)(ref const Rect!U rect) const pure nothrow {
 		switch (op) {
 			case "+":
 				return Rect!T(cast(T)(this.x + rect.x),
@@ -142,7 +148,7 @@ public:
 	/**
 	 * Collapse this Rect. Means that the coordinates and the size is set to 0.
 	 */
-	void collapse() {
+	void collapse() pure nothrow {
 		this.width = this.height = 0;
 		this.x = this.y = 0;
 	}
@@ -161,20 +167,24 @@ public:
 		Rect!T union_rect = void;
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
 		
+		union_rect._adaptToPtr();
+		
 		return union_rect;
 	}
 	
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(U)(ref const Vector2!U vec) const {
+	bool contains(U)(ref const Vector2!U vec) const pure nothrow {
 		return this.contains(vec.x, vec.y);
 	}
 	
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(U)(U x, U y) const if (isNumeric!U) {
+	bool contains(U)(U x, U y) const pure nothrow
+		if (isNumeric!U)
+	{
 		return (x >= this.x) && (x < this.x + this.width)
 			&& (y >= this.y) && (y < this.y + this.height);
 	}
@@ -189,7 +199,7 @@ public:
 	/**
 	 * opCast to another Rect type.
 	 */
-	Rect!U opCast(V : Rect!U, U)() const {
+	Rect!U opCast(V : Rect!U, U)() const pure nothrow {
 		return Rect!U(cast(U) this.x,
 		              cast(U) this.y,
 		              cast(U) this.width,
@@ -203,8 +213,11 @@ public:
 	 */
 	bool intersects(ref const Rect!T rect, Rect!short* overlap = null) const {
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
-			if (overlap !is null)
+			if (overlap !is null) {
 				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);
+				
+				overlap._adaptToPtr();
+			}
 			
 			return true;
 		}
@@ -226,13 +239,17 @@ public:
 		Rect!T rect = void;
 		SDL_EnclosePoints(sdl_points, points.length, null, rect.ptr);
 		
+		rect._adaptToPtr();
+		
 		return rect;
 	}
 	
 	/**
 	 * Replace current size.
 	 */
-	void setSize(U)(U width, U height) if (isNumeric!U) {
+	void setSize(U)(U width, U height) pure nothrow
+		if (isNumeric!U)
+	{
 		this.width  = cast(T) width;
 		this.height = cast(T) height;
 	}
@@ -247,7 +264,7 @@ public:
 	/**
 	 * Increase current size.
 	 */
-	void increase(int width, int height) {
+	void increase(int width, int height) pure nothrow {
 		this.width  += width;
 		this.height += height;
 	}
@@ -255,21 +272,25 @@ public:
 	/**
 	 * Set a new position with a vector.
 	 */
-	void setPosition(U)(ref const Vector2!U position) {
+	void setPosition(U)(ref const Vector2!U position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
 	
 	/**
 	 * Set a new position with an array.
 	 */
-	void setPosition(U)(U[2] pos) if (isNumeric!U) {
+	void setPosition(U)(U[2] pos) pure nothrow
+		if (isNumeric!U)
+	{
 		this.setPosition(pos[0], pos[1]);
 	}
 	
 	/**
 	 * Set a new position with coordinates.
 	 */
-	void setPosition(U)(U x, U y) if (isNumeric!U) {
+	void setPosition(U)(U x, U y) pure nothrow
+		if (isNumeric!U)
+	{
 		this.x = cast(T) x;
 		this.y = cast(T) y;
 	}
@@ -284,21 +305,23 @@ public:
 	/**
 	 * Returns the current position as Vector2!T.
 	 */
-	Vector2!T getPositionAsVector() const {
+	Vector2!T getPositionAsVector() const pure nothrow {
 		return Vector2!T(this.x, this.y);
 	}
 	
 	/**
 	 * Move the object.
 	 */
-	void move(U)(ref const Vector2!U vec) {
+	void move(U)(ref const Vector2!U vec) pure nothrow {
 		this.move(vec.x, vec.y);
 	}
 	
 	/**
 	 * Move the object.
 	 */
-	void move(U)(U x, U y) if (isNumeric!U) {
+	void move(U)(U x, U y) pure nothrow
+		if (isNumeric!U)
+	{
 		this.x += x;
 		this.y += y;
 	}
@@ -306,7 +329,9 @@ public:
 	/**
 	 * The new coordinates <b>and</b> a new size.
 	 */
-	void set(U, V)(U x, U y, V w, V h) if (isNumeric!U && isNumeric!V) {
+	void set(U, V)(U x, U y, V w, V h) pure nothrow
+		if (isNumeric!U && isNumeric!V)
+	{
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}
