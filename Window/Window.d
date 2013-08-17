@@ -547,6 +547,13 @@ final:
 	}
 	
 	/**
+	 * Returns the Flags of this Window
+	 */
+	uint getFlags() {
+		return SDL_GetWindowFlags(this._window);
+	}
+	
+	/**
 	 * Enable or disable Fullscreen mode.
 	 */
 	void setFullscreen(bool enable) {

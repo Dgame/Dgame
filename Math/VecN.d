@@ -21,7 +21,9 @@ public:
 	/**
 	 * CTor
 	 */
-	this(U...)(U values) if (isNumeric!(U[0])) {
+	this(U...)(U values)
+		if (isNumeric!(U[0]))
+	{
 		uint idx = 0;
 		foreach (val; values) {
 			if (idx >= Dim)

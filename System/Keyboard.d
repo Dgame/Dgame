@@ -142,6 +142,13 @@ public:
 	}
 	
 	/**
+	 * Returns if screen keyboard is supported.
+	 */
+	static bool hasScreenSupport() {
+		return SDL_HasScreenKeyboardSupport() == SDL_TRUE;
+	}
+	
+	/**
 	 * Supported Keyboard States
 	 */
 	enum State {

@@ -19,6 +19,7 @@ public:
 	 */
 	enum {
 		Fullscreen	= SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
+		Desktop     = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
 		OpenGL		= SDL_WINDOW_OPENGL,	 /** OpenGL support */
 		Shown		= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
 		Borderless	= SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
@@ -69,7 +70,7 @@ public:
 	}
 	
 	/**
-	 * Checks whether this VideoMode has the given Flag
+	 * Checks whether the current VideoMode has the given Flag
 	 */
 	bool hasFlag(uint flag) const pure nothrow {
 		return cast(bool) this.flag & flag;
