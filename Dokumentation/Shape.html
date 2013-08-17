@@ -25,6 +25,10 @@
 <dd>Enable smooth for lines. <br><br>
 
 </dd>
+<dt><big><a name="Smooth.Target.Polygon"></a><u>Polygon</u></big></dt>
+<dd>Enable smooth for polygons. <br><br>
+
+</dd>
 </dl>
 </dd>
 <dt><big><a name="Smooth.Hint"></a>enum <u>Hint</u>;
@@ -57,6 +61,28 @@
 
 </dd>
 </dl>
+</dd>
+<dt><big><a name="primitiveToShape"></a>pure nothrow @safe Shape.Type <u>primitiveToShape</u>(Primitive.Type <i>ptype</i>);
+</big></dt>
+<dd>Converts a PrimitiveType of the StaticBuffer into a valid Shape Type.
+<br><br>
+<b>See:</b><br>
+Shape.Type enum
+<br><br>
+<b>See:</b><br>
+PrimitiveType enum in StaticBuffer<br><br>
+
+</dd>
+<dt><big><a name="shapeToPrimitive"></a>pure nothrow @safe Primitive.Type <u>shapeToPrimitive</u>(Shape.Type <i>stype</i>);
+</big></dt>
+<dd>Converts a Shape Type into a valid PrimitiveType of the StaticBuffer
+<br><br>
+<b>See:</b><br>
+Shape.Type enum
+<br><br>
+<b>See:</b><br>
+PrimitiveType enum in StaticBuffer<br><br>
+
 </dd>
 <dt><big><a name="Shape"></a>class <u>Shape</u>: Dgame.Graphics.Drawable.Drawable, Dgame.Graphics.Interface.Transformable.Transformable, Dgame.Graphics.Interface.Blendable.Blendable;
 </big></dt>
@@ -108,66 +134,12 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Shape.Update"></a>enum <u>Update</u>;
-</big></dt>
-<dd>Which Buffer should updated.
- Can be ORed together:
-<pre class="d_code">Shape s = ...;
-s.update(Shape.<u>Update</u>.Pixel | Shape.<u>Update</u>.Color);
-</pre>
-<br><br>
-or you can use 'Both'
-<br><br>
-
-<pre class="d_code">Shape s = ...;
-s.update(Shape.<u>Update</u>.Both);
-</pre>
-<br><br>
-
-<dl><dt><big><a name="Shape.Update.None"></a><u>None</u></big></dt>
-<dd>No buffer<br><br>
-
-</dd>
-<dt><big><a name="Shape.Update.Vertex"></a><u>Vertex</u></big></dt>
-<dd>Only the <u>Vertex</u> Buffer<br><br>
-
-</dd>
-<dt><big><a name="Shape.Update.Color"></a><u>Color</u></big></dt>
-<dd>Only the <u>Color</u> Buffer<br><br>
-
-</dd>
-<dt><big><a name="Shape.Update.Both"></a><u>Both</u></big></dt>
-<dd><u>Both</u>, Vertex and Color Buffer<br><br>
-
-</dd>
-</dl>
-</dd>
 <dt><big><a name="Shape.this"></a>final  this(Type <i>type</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Shape.setAutoUpdate"></a>final void <u>setAutoUpdate</u>(bool <i>val</i>);
-</big></dt>
-<dd>Activate 'autoUpdate'.
- This means that which every append* or remove* method an update call is sended.
- This spare you the manual call of update, but if you have many calls which cause an update call and 'autoUpdate' is activated
- it could be more performant to disable this and handle the update call(s) by yourself.
-<br><br>
-<b>Note:</b><br>
-Default this is disabled.
-<br><br>
-<b>Note:</b><br>
-Methods that do not need to update call, have a  brief note.<br><br>
-
-</dd>
-<dt><big><a name="Shape.isAutoUpdate"></a>final const pure nothrow bool <u>isAutoUpdate</u>();
-</big></dt>
-<dd>Returns if 'autoUpdate' is enabled.
- Default is disabled.<br><br>
-
-</dd>
-<dt><big><a name="Shape.setSmooth"></a>final void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Hint <i>sHint</i> = Smooth.Hint.Fastest);
+<dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Hint <i>sHint</i> = Smooth.Hint.Fastest);
 </big></dt>
 <dd>Set target and hint of smoothing.<br><br>
 
@@ -177,14 +149,14 @@ Methods that do not need to update call, have a  brief note.<br><br>
 <dd>Return the current smooth<br><br>
 
 </dd>
-<dt><big><a name="Shape.update"></a>final void <u>update</u>(Update <i>val</i>);
+<dt><big><a name="Shape.update"></a>final pure nothrow void <u>update</u>(bool <u>update</u> = true);
 </big></dt>
 <dd>The current shape will be updated.
  If 'autoUpdate' is activated, this happens automatically,
  otherwise you should use this.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setType"></a>final void <u>setType</u>(Type <i>type</i>);
+<dt><big><a name="Shape.setType"></a>final pure nothrow void <u>setType</u>(Type <i>type</i>);
 </big></dt>
 <dd>Set or replace the current Shape <i>type</i>.
 <br><br>
@@ -213,7 +185,7 @@ This method does not need an update call.<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Shape.enableFill"></a>final void <u>enableFill</u>(bool <i>fill</i>);
+<dt><big><a name="Shape.enableFill"></a>final pure nothrow void <u>enableFill</u>(bool <i>fill</i>);
 </big></dt>
 <dd>Activate <i>fill</i> mode.
  This means the whole shape is drawn and not only the outlines.
@@ -227,7 +199,7 @@ This method does not need an update call.<br><br>
 <dd>Returns if the fill mode is active or not.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setLineWidth"></a>final void <u>setLineWidth</u>(ubyte <i>width</i>);
+<dt><big><a name="Shape.setLineWidth"></a>final pure nothrow void <u>setLineWidth</u>(ubyte <i>width</i>);
 </big></dt>
 <dd>Set the line <i>width</i>.
 <br><br>
@@ -271,27 +243,21 @@ This method does not need an update call.<br><br>
  If <i>vp</i> is not <b>null</b>, the droped Pixel is stored there.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getPixels"></a>final const pure nothrow ref const(Pixel[]) <u>getPixels</u>();
+<dt><big><a name="Shape.getPixels"></a>final const pure nothrow const(Pixel[]) <u>getPixels</u>();
 </big></dt>
 <dd>Returns all Pixel of this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getPixelAt"></a>final inout ref inout(Pixel) <u>getPixelAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.getPixelAt"></a>final const ref const(Pixel) <u>getPixelAt</u>(uint <i>idx</i>);
 </big></dt>
-<dd>Returns a reference of the Pixel on the given index
- or fail if the index is out of range.<br><br>
+<dd>Returns the Pixel at the given index
+ or throws an exception, if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getVectorAt"></a>final inout ref inout(Vector2f) <u>getVectorAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.fetchPixelAt"></a>final inout inout(Pixel)* <u>fetchPixelAt</u>(uint <i>idx</i>);
 </big></dt>
-<dd>Returns a reference of the Pixel coordinates on the given index
- or fail if the index is out of range.<br><br>
-
-</dd>
-<dt><big><a name="Shape.getColorAt"></a>final inout ref inout(Color) <u>getColorAt</u>(uint <i>idx</i>);
-</big></dt>
-<dd>Returns a reference of the Pixel color on the given index
- or fail if the index is out of range.<br><br>
+<dd>Returns a pointer of the Pixel at the given index
+ or <b>null</b> if the index is out of range.<br><br>
 
 </dd>
 <dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Vector2f[] <i>vec</i>);
@@ -304,12 +270,12 @@ This method does not need an update call.<br><br>
 <dd>Make a new Shape object with the given <i>type</i> and vertices.<br><br>
 
 </dd>
-<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(float <i>radius</i>, ref const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
+<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(ubyte <i>radius</i>, ref const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
 </big></dt>
 <dd>Make a new Shape object as Circle.<br><br>
 
 </dd>
-<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(float <i>radius</i>, const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
+<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(ubyte <i>radius</i>, const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
 </big></dt>
 <dd>Rvalue version<br><br>
 

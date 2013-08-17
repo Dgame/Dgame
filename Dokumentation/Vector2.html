@@ -22,37 +22,42 @@ rschuett<br><br>
 <dd><u>y</u> coordinate<br><br>
 
 </dd>
-<dt><big><a name="this"></a> this(T <i>x</i>, T <i>y</i>);
+<dt><big><a name="this"></a> this()(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="this"></a> this(int <i>x</i>, int <i>y</i>);
+<dt><big><a name="this"></a> this(U)(U <i>x</i>, U <i>y</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="opAssign"></a>void <u>opAssign</u>(U : T)(ref const Vector2!(U) <i>rhs</i>);
+<dt><big><a name="this"></a> this(U)(ref const Vector2!(U) <i>vec</i>);
+</big></dt>
+<dd>CTor<br><br>
+
+</dd>
+<dt><big><a name="opAssign"></a>void <u>opAssign</u>(U)(ref const Vector2!(U) <i>rhs</i>);
 </big></dt>
 <dd><u>opAssign</u><br><br>
 
 </dd>
-<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U : T)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U)(ref const Vector2!(U) <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U : T)(U <i>number</i>);
+<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U)(U <i>number</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U : T)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U)(ref const Vector2!(U) <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
 </dd>
-<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U : T)(U <i>number</i>);
+<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U)(U <i>number</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
@@ -76,17 +81,6 @@ rschuett<br><br>
 </big></dt>
 <dd><b>opCast:</b><br>
 cast this vector to another type.<br><br>
-
-</dd>
-<dt><big><a name="opCast"></a>const bool <u>opCast</u>(U = bool)();
-</big></dt>
-<dd><b>opCast:</b><br>
-cast to bool<br><br>
-
-</dd>
-<dt><big><a name="opCmp"></a>const pure nothrow int <u>opCmp</u>(ref const Vector2!(T) <i>vec</i>);
-</big></dt>
-<dd>Compares two vectors by checking whether the coordinates are greater or less.<br><br>
 
 </dd>
 <dt><big><a name="isEmpty"></a>const pure nothrow bool <u>isEmpty</u>();
@@ -131,19 +125,24 @@ cast to bool<br><br>
 <dd>Calculate the <u>diff</u> between two vectors.<br><br>
 
 </dd>
-<dt><big><a name="normalize"></a>Vector2!(T) <u>normalize</u>();
+<dt><big><a name="normalize"></a>pure nothrow Vector2!(T) <u>normalize</u>();
 </big></dt>
 <dd>Normalize the vector in which the coordinates are divided by the length.<br><br>
 
 </dd>
-<dt><big><a name="set"></a>void <u>set</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="set"></a>pure nothrow void <u>set</u>(U)(U <i>x</i>, U <i>y</i>);
 </big></dt>
 <dd>Set new coordinates.<br><br>
 
 </dd>
-<dt><big><a name="move"></a>void <u>move</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="move"></a>pure nothrow void <u>move</u>(U)(U <i>x</i>, U <i>y</i>);
 </big></dt>
 <dd>Move the current coordinates.<br><br>
+
+</dd>
+<dt><big><a name="asArray"></a>const pure nothrow T[2] <u>asArray</u>();
+</big></dt>
+<dd>Returns the Vector as static array.<br><br>
 
 </dd>
 </dl>

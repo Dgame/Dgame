@@ -163,14 +163,24 @@ Format enum.<br><br>
 <dd>Returns <b>true</b>, if this Texture is currently activated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.enableSmooth"></a>final void <u>enableSmooth</u>(bool <i>enable</i>);
+<dt><big><a name="Texture.setSmooth"></a>final void <u>setSmooth</u>(bool <i>enable</i>);
 </big></dt>
-<dd>Enable smothing texture filter by the next load.<br><br>
+<dd>Set smooth filter for the (next) load.<br><br>
 
 </dd>
 <dt><big><a name="Texture.hasSmooth"></a>final const pure nothrow bool <u>hasSmooth</u>();
 </big></dt>
-<dd>Check if smoth texture filter are activated.<br><br>
+<dd>Returns if smooth filter are activated.<br><br>
+
+</dd>
+<dt><big><a name="Texture.setRepeat"></a>final void <u>setRepeat</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Set repeating for the (nexT) load.<br><br>
+
+</dd>
+<dt><big><a name="Texture.hasRepeat"></a>final const pure nothrow bool <u>hasRepeat</u>();
+</big></dt>
+<dd>Returns if repeating is enabled.<br><br>
 
 </dd>
 <dt><big><a name="Texture.hasViewport"></a>final const bool <u>hasViewport</u>();
@@ -197,7 +207,7 @@ Format enum.<br><br>
 </dd>
 <dt><big><a name="Texture.getViewport"></a>final const pure nothrow ref const(FloatRect) <u>getViewport</u>();
 </big></dt>
-<dd>Get const access to the current Viewport.<br><br>
+<dd>Returns the current Viewport.<br><br>
 
 </dd>
 <dt><big><a name="Texture.fetchViewport"></a>final inout inout(FloatRect)* <u>fetchViewport</u>();

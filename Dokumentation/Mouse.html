@@ -9,9 +9,15 @@
 </big></dt>
 <dd>Represent the <u>Mouse</u><br><br>
 
-<dl><dt><big><a name="Mouse.Button"></a>enum <u>Button</u>;
+<dl><dt><big><a name="Mouse.Cursor"></a>alias <u>Cursor</u> = SDL_Cursor*;
 </big></dt>
-<dd><br><br>
+<dd>Shorthand for SDL_Cursor*<br><br>
+
+</dd>
+<dt><big><a name="Mouse.Button"></a>enum <u>Button</u>;
+</big></dt>
+<dd>Supported mouse buttons<br><br>
+
 <dl><dt><big><a name="Mouse.Button.Left"></a><u>Left</u></big></dt>
 <dd><br><br>
 </dd>
@@ -34,7 +40,8 @@
 </dd>
 <dt><big><a name="Mouse.State"></a>enum <u>State</u>;
 </big></dt>
-<dd><br><br>
+<dd>Supported mouse states<br><br>
+
 <dl><dt><big><a name="Mouse.State.Released"></a><u>Released</u></big></dt>
 <dd><br><br>
 </dd>
@@ -45,7 +52,8 @@
 </dd>
 <dt><big><a name="Mouse.MotionStates"></a>enum <u>MotionStates</u>;
 </big></dt>
-<dd><br><br>
+<dd>Supported mouse motion states<br><br>
+
 <dl><dt><big><a name="Mouse.MotionStates.LMask"></a><u>LMask</u></big></dt>
 <dd><br><br>
 </dd>
@@ -63,53 +71,94 @@
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Mouse.create"></a>static SDL_Cursor* <u>create</u>(SDL_Surface* <i>surface</i>, short <i>x</i>, short <i>y</i>);
+<dt><big><a name="Mouse.create"></a>static Cursor <u>create</u>(ref Surface <i>srfc</i>, short <i>x</i>, short <i>y</i>);
 </big></dt>
-<dd><br><br>
+<dd>Creates a cursor at the given positions with the given Surface.<br><br>
+
 </dd>
-<dt><big><a name="Mouse.create"></a>static SDL_Cursor* <u>create</u>(const ubyte* <i>data</i>, const ubyte* <i>mask</i>, ushort <i>width</i>, ushort <i>height</i>, short <i>x</i>, short <i>y</i>);
+<dt><big><a name="Mouse.create"></a>static Cursor <u>create</u>(const ubyte* <i>data</i>, const ubyte* <i>mask</i>, ushort <i>width</i>, ushort <i>height</i>, short <i>x</i>, short <i>y</i>);
 </big></dt>
-<dd><br><br>
+<dd>Creates a cursor from pixel <i>data</i>.
+<br><br>
+<b>See:</b><br>
+<br><br>
+<b>http:</b><br>
+//wiki.libsdl.org/moin.fcg/SDL_CreateCursor<br><br>
+
 </dd>
-<dt><big><a name="Mouse.destroyCursor"></a>static void <u>destroyCursor</u>(SDL_Cursor* <i>cursor</i>);
+<dt><big><a name="Mouse.destroyCursor"></a>static void <u>destroyCursor</u>(Cursor <i>cursor</i>);
 </big></dt>
-<dd><br><br>
+<dd>Destroys the given <i>cursor</i>.<br><br>
+
 </dd>
-<dt><big><a name="Mouse.setCursor"></a>static void <u>setCursor</u>(SDL_Cursor* <i>cursor</i>);
+<dt><big><a name="Mouse.setCursor"></a>static void <u>setCursor</u>(Cursor <i>cursor</i>);
 </big></dt>
-<dd><br><br>
+<dd>Set a new <i>cursor</i>.<br><br>
+
 </dd>
-<dt><big><a name="Mouse.getCursor"></a>static SDL_Cursor* <u>getCursor</u>();
+<dt><big><a name="Mouse.getCursor"></a>static Cursor <u>getCursor</u>();
 </big></dt>
-<dd><br><br>
+<dd>Returns the current cursor.<br><br>
+
 </dd>
-<dt><big><a name="Mouse.getState"></a>static uint <u>getState</u>();
+<dt><big><a name="Mouse.getState"></a>static uint <u>getState</u>(int* <i>x</i> = null, int* <i>y</i> = null);
 </big></dt>
-<dd><br><br>
+<dd>Returns the mouse state and (if <i>y</i> and <i>y</i> aren't <b>null</b>) the current position.
+<br><br>
+<b>See:</b><br>
+Mouse.State enum<br><br>
+
+</dd>
+<dt><big><a name="Mouse.getRelativeState"></a>static uint <u>getRelativeState</u>(int* <i>x</i> = null, int* <i>y</i> = null);
+</big></dt>
+<dd>Returns the relative mouse state and (if <i>y</i> and <i>y</i> aren't <b>null</b>) the relative position.
+ This means the difference of the positions since the last call of this method.
+<br><br>
+<b>See:</b><br>
+Mouse.RelativeState enum<br><br>
+
 </dd>
 <dt><big><a name="Mouse.hasState"></a>static bool <u>hasState</u>(Button <i>btn</i>);
 </big></dt>
-<dd><br><br>
+<dd>Returns if the given button is pressed.
+<br><br>
+<b>See:</b><br>
+Mouse.Button<br><br>
+
 </dd>
-<dt><big><a name="Mouse.fetchCursorPosition"></a>static void <u>fetchCursorPosition</u>(int* <i>x</i>, int* <i>y</i>);
+<dt><big><a name="Mouse.hasRelativeState"></a>static bool <u>hasRelativeState</u>(Button <i>btn</i>);
 </big></dt>
 <dd><br><br>
 </dd>
 <dt><big><a name="Mouse.getCursorPosition"></a>static int[2] <u>getCursorPosition</u>();
 </big></dt>
-<dd><br><br>
+<dd>Returns the cursor position as static array.<br><br>
+
 </dd>
 <dt><big><a name="Mouse.showCursor"></a>static void <u>showCursor</u>(bool <i>enable</i>);
 </big></dt>
-<dd><br><br>
+<dd>Enable or disable that the cursor is shown on the window.<br><br>
+
 </dd>
 <dt><big><a name="Mouse.setCursorPosition"></a>static void <u>setCursorPosition</u>(short <i>x</i>, short <i>y</i>);
 </big></dt>
-<dd><br><br>
+<dd>Set the cursor position inside the window.<br><br>
+
 </dd>
 <dt><big><a name="Mouse.warp"></a>alias <u>warp</u> = setCursorPosition;
 </big></dt>
-<dd><br><br>
+<dd>Alias for setting cursor position<br><br>
+
+</dd>
+<dt><big><a name="Mouse.hasRelativeMouse"></a>static bool <u>hasRelativeMouse</u>();
+</big></dt>
+<dd>Returns if the Relative mouse mode is enabled/supported.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.enableRelativeMouse"></a>static bool <u>enableRelativeMouse</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Tries to <i>enable</i>/disable the relative mouse mode.<br><br>
+
 </dd>
 </dl>
 </dd>

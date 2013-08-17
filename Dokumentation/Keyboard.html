@@ -17,6 +17,7 @@
 <b>Note:</b><br>
 The state is probably not up to date. If you want the current state,
  you should take a look at the update method.
+ <b>You have to call Keyboard.update at least once, otherwise you will get a <b>null</b> pointer exception.</b>
 
 <br><br>
 <b>See:</b><br>
@@ -41,6 +42,8 @@ update
 This function gives you the current state after all events have been processed,
  so if a key or button has been pressed and released before you process events,
  then the pressed state will never show up in the <u>update</u> calls.
+ <b>You have to call Keyboard.<u>update</u> at least once to use e.g. <code>Keyboard.getState</code>,
+ otherwise you will get a <b>null</b> pointer exception.</b>
 
 <br><br>
 <b>Note:</b><br>
@@ -105,6 +108,11 @@ Mod enum<br><br>
 <br><br>
 <b>See:</b><br>
 Mod enum<br><br>
+
+</dd>
+<dt><big><a name="Keyboard.hasScreenSupport"></a>static bool <u>hasScreenSupport</u>();
+</big></dt>
+<dd>Returns if screen keyboard is supported.<br><br>
 
 </dd>
 <dt><big><a name="Keyboard.State"></a>enum <u>State</u>;

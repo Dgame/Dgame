@@ -7,11 +7,8 @@
 <br><br>
 <dl><dt><big><a name="Color"></a>struct <u>Color</u>;
 </big></dt>
-<dd>version = Develop;
-<br><br>
-<u>Color</u> defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
+<dd><u>Color</u> defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
  Alpha is default 255 (1.0).
-
 <br><br>
 <b>Author:</b><br>
 rschuett<br><br>
@@ -81,14 +78,15 @@ rschuett<br><br>
 <dd>The color components<br><br>
 
 </dd>
-<dt><big><a name="Color.this"></a> this(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, ubyte <i>alpha</i> = 255);
+<dt><big><a name="Color.this"></a>pure nothrow  this(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, ubyte <i>alpha</i> = 255);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Color.this"></a> this(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 1.00000F);
+<dt><big><a name="Color.this"></a>pure nothrow  this(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 1.00000F);
 </big></dt>
-<dd>CTor<br><br>
+<dd>CTor
+ Expect that every component is in range 0.0 .. 1.0<br><br>
 
 </dd>
 <dt><big><a name="Color.opAssign"></a>void <u>opAssign</u>(ref const Color <i>rhs</i>);
@@ -96,19 +94,24 @@ rschuett<br><br>
 <dd><u>opAssign</u><br><br>
 
 </dd>
-<dt><big><a name="Color.set"></a>void <u>set</u>(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, ubyte <i>alpha</i> = 255);
+<dt><big><a name="Color.opAssign"></a>void <u>opAssign</u>(const Color <i>rhs</i>);
 </big></dt>
-<dd>Set all color components to new values<br><br>
+<dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Color.set"></a>void <u>set</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 1.00000F);
-</big></dt>
-<dd>Set all color components to new values<br><br>
-
-</dd>
-<dt><big><a name="Color.ptr"></a>inout @property inout(SDL_Color)* <u>ptr</u>();
+<dt><big><a name="Color.ptr"></a>const @property SDL_Color* <u>ptr</u>();
 </big></dt>
 <dd>Returns a SDL_Color pointer.<br><br>
+
+</dd>
+<dt><big><a name="Color.set"></a>pure nothrow void <u>set</u>(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, ubyte <i>alpha</i> = 255);
+</big></dt>
+<dd>Set all color components to new values<br><br>
+
+</dd>
+<dt><big><a name="Color.set"></a>pure nothrow void <u>set</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 1.00000F);
+</big></dt>
+<dd>Set all color components to new values<br><br>
 
 </dd>
 <dt><big><a name="Color.opEquals"></a>const pure nothrow bool <u>opEquals</u>(ref const Color <i>col</i>);
@@ -122,6 +125,16 @@ compares two Colors.<br><br>
 <dd>Returns a static float array with all color components.
  Every component is converted into OpenGL style.
  Means every component is in range 0.0 .. 1.0<br><br>
+
+</dd>
+<dt><big><a name="Color.asRGBA"></a>const pure nothrow ubyte[4] <u>asRGBA</u>();
+</big></dt>
+<dd>Returns the RGBA color information as static array<br><br>
+
+</dd>
+<dt><big><a name="Color.asRGB"></a>const pure nothrow ubyte[3] <u>asRGB</u>();
+</big></dt>
+<dd>Returns RGB the color information as static array<br><br>
 
 </dd>
 </dl>

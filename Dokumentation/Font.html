@@ -39,6 +39,26 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Font.Hint"></a>enum <u>Hint</u>;
+</big></dt>
+<dd>Font Hints<br><br>
+
+<dl><dt><big><a name="Font.Hint.Normal"></a><u>Normal</u></big></dt>
+<dd><u>Normal</u> (default) Hint <br><br>
+
+</dd>
+<dt><big><a name="Font.Hint.Light"></a><u>Light</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Font.Hint.Mono"></a><u>Mono</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Font.Hint.None"></a><u>None</u></big></dt>
+<dd>No Hint <br><br>
+
+</dd>
+</dl>
+</dd>
 <dt><big><a name="Font.Mode"></a>enum <u>Mode</u>;
 </big></dt>
 <dd>Font mode<br><br>
@@ -70,7 +90,7 @@ rschuett<br><br>
 <dt><big><a name="Font.free"></a>void <u>free</u>();
 </big></dt>
 <dd>Close and release the current font.
- This function is claaed from the DTor<br><br>
+ This function is called from the DTor<br><br>
 
 </dd>
 <dt><big><a name="Font.loadFromFile"></a>void <u>loadFromFile</u>(string <i>fontFile</i>, ubyte <i>fontSize</i> = 0);
@@ -115,6 +135,19 @@ Font.Mode enum<br><br>
 <br><br>
 <b>See:</b><br>
 Font.Mode enum<br><br>
+
+</dd>
+<dt><big><a name="Font.setHint"></a>void <u>setHint</u>(Hint <i>hint</i>);
+</big></dt>
+<dd>Set a <i>hint</i> for the Font
+<br><br>
+<b>See:</b><br>
+Hint enum<br><br>
+
+</dd>
+<dt><big><a name="Font.getHint"></a>const pure nothrow Hint <u>getHint</u>();
+</big></dt>
+<dd>Returns the current hint<br><br>
 
 </dd>
 <dt><big><a name="Font.setSize"></a>void <u>setSize</u>(ubyte <i>size</i>);

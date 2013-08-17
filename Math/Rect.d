@@ -76,7 +76,7 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(U)(ref const Rect!U rhs) pure nothrow {
+	void opAssign(U)(ref const Rect!U rhs) {
 		debug writeln("opAssign Rect");
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}

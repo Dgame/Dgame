@@ -37,7 +37,9 @@ rschuett<br><br>
 </dd>
 <dt><big><a name="Window.vMode"></a>const VideoMode <u>vMode</u>;
 </big></dt>
-<dd>Window VideoMode's<br><br>
+<dd>= void;
+<br><br>
+Window VideoMode's<br><br>
 
 </dd>
 <dt><big><a name="Window.this"></a>final  this(VideoMode <i>vMode</i>);
@@ -243,8 +245,7 @@ the old <i>title</i><br><br>
 </dd>
 <dt><big><a name="Window.setSize"></a>final void <u>setSize</u>(ushort <i>width</i>, ushort <i>height</i>);
 </big></dt>
-<dd>Set a new size to this window
- if <i>width</i> or <i>height</i> is zero, the old <i>width</i>/<i>height</i> is used.<br><br>
+<dd>Set a new size to this window<br><br>
 
 </dd>
 <dt><big><a name="Window.raise"></a>final void <u>raise</u>();
@@ -293,6 +294,11 @@ the old <i>title</i><br><br>
 <dt><big><a name="Window.setBrightness"></a>final bool <u>setBrightness</u>(float <i>bright</i>);
 </big></dt>
 <dd>Set the brightness (gamma correction) for the window.<br><br>
+
+</dd>
+<dt><big><a name="Window.getFlags"></a>final uint <u>getFlags</u>();
+</big></dt>
+<dd>Returns the Flags of this Window<br><br>
 
 </dd>
 <dt><big><a name="Window.setFullscreen"></a>final void <u>setFullscreen</u>(bool <i>enable</i>);

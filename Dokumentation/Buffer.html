@@ -114,21 +114,27 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Buffer.this"></a> this(PointerTarget <i>trg</i>, Type <i>type</i> = Type.Array);
+<dt><big><a name="Buffer.this"></a> this(Primitive.Target <i>trg</i>, Type <i>type</i> = Type.Array);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Buffer.bind"></a>void <u>bind</u>(PointerTarget <i>trg</i>);
+<dt><big><a name="Buffer.bind"></a>void <u>bind</u>(Primitive.Target <i>trg</i>);
 </big></dt>
 <dd>Binds the a specific VBO PointerTarget.
- Now the specific VBO can be used.
+ If the target is invalid (because no such buffer exist)
+ nothing happens.
 <br><br>
 <b>See:</b><br>
 PointerTarget enum<br><br>
 
 </dd>
-<dt><big><a name="Buffer.getBound"></a>const pure nothrow PointerTarget <u>getBound</u>();
+<dt><big><a name="Buffer.unbind"></a>void <u>unbind</u>();
+</big></dt>
+<dd>Unbind the current VBO.<br><br>
+
+</dd>
+<dt><big><a name="Buffer.getBound"></a>const pure nothrow Primitive.Target <u>getBound</u>();
 </big></dt>
 <dd>Returns the current PointerTarget
 <br><br>
@@ -146,9 +152,11 @@ PointerTarget enum<br><br>
 <dd>Checks whether the current buffer has already content, or not<br><br>
 
 </dd>
-<dt><big><a name="Buffer.isEmpty"></a>const bool <u>isEmpty</u>(PointerTarget <i>trg</i>);
+<dt><big><a name="Buffer.isEmpty"></a>const bool <u>isEmpty</u>(Primitive.Target <i>trg</i>);
 </big></dt>
-<dd>Checks whether a specific buffer has already content, or not<br><br>
+<dd>Checks whether a specific buffer has already content, or not.
+ If the target is invalid (because no such buffer exist)
+ an Exception is thrown.<br><br>
 
 </dd>
 <dt><big><a name="Buffer.deplete"></a>void <u>deplete</u>();
@@ -167,22 +175,12 @@ isEmpty<br><br>
 isEmpty<br><br>
 
 </dd>
-<dt><big><a name="Buffer.unbind"></a>void <u>unbind</u>();
-</big></dt>
-<dd>Unbind the current VBO.<br><br>
-
-</dd>
 <dt><big><a name="Buffer.cache"></a>void <u>cache</u>(const void* <i>ptr</i>, size_t <i>totalSize</i>, uint <i>usage</i> = Usage.Static.Draw);
 </big></dt>
 <dd>Stores data in the current VBO.
 <br><br>
 <b>See:</b><br>
 glBufferData<br><br>
-
-</dd>
-<dt><big><a name="Buffer.cache"></a>void <u>cache</u>(const Vertex[] <i>vertices</i>, uint <i>usage</i> = Usage.Static.Draw);
-</big></dt>
-<dd>Stores vertex data<br><br>
 
 </dd>
 <dt><big><a name="Buffer.modify"></a>const void <u>modify</u>(const void* <i>ptr</i>, size_t <i>totalSize</i>, uint <i>offset</i> = 0);
@@ -214,7 +212,7 @@ glMapBuffer<br><br>
 map method<br><br>
 
 </dd>
-<dt><big><a name="Buffer.pointTo"></a>void <u>pointTo</u>(PointerTarget <i>trg</i>, ubyte <i>stride</i> = 0);
+<dt><big><a name="Buffer.pointTo"></a>void <u>pointTo</u>(Primitive.Target <i>trg</i>, ubyte <i>stride</i> = 0, ubyte <i>offset</i> = 0);
 </big></dt>
 <dd>Points to the current VBO with a specific PointerTarget.
 <br><br>
@@ -231,7 +229,7 @@ glTexCoordPointer
 PointerTarget enum.<br><br>
 
 </dd>
-<dt><big><a name="Buffer.enableState"></a>const void <u>enableState</u>(PointerTarget <i>trg</i>);
+<dt><big><a name="Buffer.enableState"></a>const void <u>enableState</u>(Primitive.Target <i>trg</i>);
 </big></dt>
 <dd>Enable a specific client state (with glEnableClientState)
  like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
@@ -248,30 +246,45 @@ PointerTarget enum.<br><br>
 <dd>Disable all client states<br><br>
 
 </dd>
-<dt><big><a name="Buffer.disableState"></a>const void <u>disableState</u>(PointerTarget <i>trg</i>);
+<dt><big><a name="Buffer.disableState"></a>const void <u>disableState</u>(Primitive.Target <i>trg</i>);
 </big></dt>
 <dd>Disable a specific client state (with glDisableClientState)<br><br>
 
 </dd>
-<dt><big><a name="Buffer.drawArrays"></a>const void <u>drawArrays</u>(Primitive <i>type</i>, size_t <i>count</i>, uint <i>start</i> = 0);
+<dt><big><a name="Buffer.drawArrays"></a>const void <u>drawArrays</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, uint <i>start</i> = 0);
 </big></dt>
-<dd>Draw shapes of the specific <i>type</i> from the current VBO data.
+<dd>Draw shapes of the specific type from the current VBO data.
  It will use <i>count</i> vertices.<br><br>
 
 </dd>
-<dt><big><a name="Buffer.drawElements"></a>const void <u>drawElements</u>(Primitive <i>type</i>, size_t <i>count</i>, int[] <i>indices</i>);
+<dt><big><a name="Buffer.drawElements"></a>const void <u>drawElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, int[] <i>indices</i>);
 </big></dt>
-<dd>Draw shapes of the specific <i>type</i> from the current VBO data.
+<dd>Draw shapes of the specific type from the current VBO data.
  It will use <i>count</i> vertices and <i>indices</i> for the correct index per vertex.<br><br>
 
 </dd>
-<dt><big><a name="Buffer.drawRangeElements"></a>const void <u>drawRangeElements</u>(Primitive <i>type</i>, size_t <i>count</i>, int[] <i>indices</i>, int <i>start</i> = -1, int <i>end</i> = -1);
+<dt><big><a name="Buffer.drawRangeElements"></a>const void <u>drawRangeElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, int[] <i>indices</i>, int <i>start</i> = -1, int <i>end</i> = -1);
 </big></dt>
-<dd>Draw shapes of the specific <i>type</i> from the current VBO data.
+<dd>Draw shapes of the specific type from the current VBO data.
  It will use <i>count</i> vertices and <i>indices</i> for the correct index per vertex.
 <br><br>
 <b>Note:</b><br>
 If <i>start</i> or <i>end</i> are -1 or below, 0 and <i>indices</i>.length are used.<br><br>
+
+</dd>
+<dt><big><a name="Buffer.bindTexture"></a>void <u>bindTexture</u>(const Texture <i>tex</i>);
+</big></dt>
+<dd>Bind a texture to this Buffer.
+ It's a shortcut for:
+<pre class="d_code">buf.pointTo(Primitive.Target.TexCoords);
+buf.pointTo(Primitive.Target.Vertex);
+
+<i>tex</i>.bind();
+</pre>
+<br><br>
+<b>Note:</b><br>
+You should clean up with:
+ <i>tex</i>.unbind(); and buf.disableAllStates();<br><br>
 
 </dd>
 </dl>
