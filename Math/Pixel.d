@@ -15,7 +15,13 @@ public {
  */
 struct Pixel {
 public:
+	/**
+	 * The coordinates
+	 */
 	float x, y, z;
+	/**
+	 * The color components
+	 */
 	float r, g, b, a;
 	
 	/**

@@ -118,7 +118,7 @@ final:
 			debug writefln("Derelict loaded GL version: %s (%s), available GL version: %s",
 			               DerelictGL.loadedVersion, glver, to!(string)(glGetString(GL_VERSION)));
 			if (glver < GLVersion.GL30)
-				throw new Exception("Your OpenGL version is too low.");
+				throw new Exception("Your OpenGL version is too low. Need at least GL 3.0.");
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -390,9 +390,12 @@ final:
 		if (this._fpsLimit)
 			this.getClock().wait(1000 / this._fpsLimit);
 		
-		if (this.vMode.flag & VideoMode.OpenGL)
+		if (this.vMode.flag & VideoMode.OpenGL) {
+			if (_winCount > 1)
+				SDL_GL_MakeCurrent(this._window, this._glContext);
+			
 			SDL_GL_SwapWindow(this._window);
-		else
+		} else
 			SDL_UpdateWindowSurface(this._window);
 	}
 	

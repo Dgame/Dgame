@@ -19,7 +19,7 @@ private {
 	import Dgame.Graphics.Color;
 }
 
-///version = Develop;
+//version = Develop;
 
 /**
  * Surface is a wrapper for a SDL_Surface.
@@ -48,35 +48,16 @@ public:
 		Alpha = 8	/** Alpha Mask */
 	}
 	
-	/// wenn auf all -> blit funktioniert nicht
-	version (none) {
-		version (LittleEndian) {
-			enum {
-				RMask = 0x000000ff, /** Default Red Mask. */
-				GMask = 0x0000ff00, /** Default Green Mask. */
-				BMask = 0x00ff0000, /** Default Blue Mask. */
-				AMask = 0xff000000 /** Default Alpha Mask. */
-			}
-		} else {
-			enum {
-				RMask = 0xff000000, /** Default Red Mask. */
-				GMask = 0x00ff0000, /** Default Green Mask. */
-				BMask = 0x0000ff00, /** Default Blue Mask. */
-				AMask = 0x000000ff /** Default Alpha Mask. */
-			}
-		}
+	enum {
+		RMask = 0, /** Default Red Mask. */
+		GMask = 0, /** Default Green Mask. */
+		BMask = 0, /** Default Blue Mask. */
+	}
+	
+	version (LittleEndian) {
+		enum AMask = 0xff000000;
 	} else {
-		enum {
-			RMask = 0, /** Default Red Mask. */
-			GMask = 0, /** Default Green Mask. */
-			BMask = 0, /** Default Blue Mask. */
-			//AMask = 0 /** Default Alpha Mask. */
-		}
-		
-		version (LittleEndian)
-			enum AMask = 0xff000000;
-		else
-			enum AMask = 0x000000ff;
+		enum AMask = 0x000000ff;
 	}
 	
 	/**
@@ -94,19 +75,37 @@ private:
 	bool _isLocked;
 	
 private:
-	void _clone(SDL_Surface* srfc) in {
+	/**
+	 * CTor
+	 */
+	this(SDL_Surface* srfc) in {
 		assert(srfc !is null, "Invalid SDL_Surface.");
 		assert(srfc.pixels !is null, "Invalid pixel data.");
 	} body {
-		SDL_Surface* target;
-		memcpy(target, srfc, SDL_Surface.sizeof);
+		debug writeln("CTor Surface with SDL_Surface");
 		
-		if (target is null) {
-			const string err = to!string(SDL_GetError());
-			throw new Exception(format("Surface konnte nicht erstellt werden: %s", err));
-		}
-		
-		this._target.reset(target);
+		this._target = make_shared(srfc);
+	}
+	
+	/**
+	 * Create a new SDL_Surface* of the given width, height and depth.
+	 */
+	static SDL_Surface* create(ushort width, ushort height, ubyte depth = 32) in {
+		assert(depth >= 8 && depth <= 32, "Invalid depth.");
+	} body {
+		return SDL_CreateRGBSurface(0, width, height, depth, RMask, GMask, BMask, AMask);
+	}
+	
+	/**
+	 * Create a new SDL_Surface* of the given memory, width, height and depth.
+	 */
+	static SDL_Surface* create(void* memory, ushort width, ushort height, ubyte depth = 32) in {
+		assert(memory !is null, "Memory is empty.");
+		assert(depth >= 8 && depth <= 32, "Invalid depth.");
+	} body {
+		return SDL_CreateRGBSurfaceFrom(memory, width, height, depth,
+		                                (depth / 8) * width,
+		                                RMask, GMask, BMask, AMask);
 	}
 	
 public:
@@ -118,50 +117,34 @@ public:
 		this.loadFromFile(filename);
 	}
 	
-	/**
-	 * CTor
-	 * If link is true, srfc is linked to this.
-	 * Otherwise a copy is created.
-	 */
-	this(SDL_Surface* srfc, bool link) in {
-		assert(srfc !is null, "Invalid SDL_Surface.");
-		assert(srfc.pixels !is null, "Invalid pixel data.");
-	} body {
-		debug writeln("CTor Surface: ", link);
-		
-		if (!link)
-			this._clone(srfc);
-		else
-			this._target = make_shared(srfc);
-	}
-	
-	/**
-	 * Postblit
-	 */
 	version(Develop)
 	this(this) {
-		debug writeln("Postblit Surface: ", this._target.refcount, ':', this.filename, ", ", this.filename.ptr);
+		debug writeln("Postblit Surface: ",
+		              this._target.refcount, ':',
+		              this.filename, ", ",
+		              this.filename.ptr);
 	}
 	
 	/**
 	 * opAssign
 	 */
 	void opAssign(ref Surface rhs) {
-		debug writeln("op Assign lvalue");
-		this._clone(rhs.ptr);
+		debug writeln("opAssign lvalue");
+		
+		this._filename = rhs.filename;
+		this._isLocked = rhs.isLocked();
+		
+		this._target = rhs._target;
 	}
 	
 	/**
 	 * Rvalue version
 	 */
 	void opAssign(Surface rhs) {
-		debug writeln("op Assign rvalue");
+		debug writeln("opAssign rvalue");
 		this.opAssign(rhs);
 	}
 	
-	/**
-	 * DTor
-	 */
 	version(Develop)
 	~this() {
 		debug writeln("DTor Surface", ':', this.filename, ", ", this.filename.ptr);
@@ -193,16 +176,7 @@ public:
 			throw new Exception(format("Surface konnte nicht erstellt werden: %s", err));
 		}
 		
-		return Surface(srfc, true);
-	}
-	
-	/**
-	 * Create a new SDL_Surface* of the given width, height and depth.
-	 */
-	static SDL_Surface* create(ushort width, ushort height, ubyte depth = 32) in {
-		assert(depth >= 8 && depth <= 32, "Invalid depth.");
-	} body {
-		return SDL_CreateRGBSurface(0, width, height, depth, RMask, GMask, BMask, AMask);
+		return Surface(srfc);
 	}
 	
 	/**
@@ -216,19 +190,7 @@ public:
 			throw new Exception(format("Surface konnte nicht erstellt werden: %s", err));
 		}
 		
-		return Surface(srfc, true);
-	}
-	
-	/**
-	 * Create a new SDL_Surface* of the given memory, width, height and depth.
-	 */
-	static SDL_Surface* create(void* memory, ushort width, ushort height, ubyte depth = 32) in {
-		assert(memory !is null, "Memory is empty.");
-		assert(depth >= 8 && depth <= 32, "Invalid depth.");
-	} body {
-		return SDL_CreateRGBSurfaceFrom(memory, width, height, depth,
-		                                (depth / 8) * width,
-		                                RMask, GMask, BMask, AMask);
+		return Surface(srfc);
 	}
 	
 	/**
@@ -297,7 +259,7 @@ public:
 		if (filename.length < 3)
 			throw new Exception("File name is not allowed.");
 		
-		debug writeln("RefCount: ", this._target.refcount);
+		debug writeln("RefCount: ", this._target.ptr.refcount);
 		
 		try {
 			SDL_SaveBMP(this.ptr, toStringz(filename));
@@ -312,7 +274,7 @@ public:
 	 */
 	@property
 	ushort width() const pure nothrow {
-		return this._target !is null ? cast(ushort) this._target.w : 0;
+		return this._target.ptr !is null ? cast(ushort) this._target.ptr.w : 0;
 	}
 	
 	/**
@@ -320,7 +282,7 @@ public:
 	 */
 	@property
 	ushort height() const pure nothrow {
-		return this._target !is null ? cast(ushort) this._target.h : 0;
+		return this._target.ptr !is null ? cast(ushort) this._target.ptr.h : 0;
 	}
 	
 	/**
@@ -330,9 +292,9 @@ public:
 	 */
 	void fill(ref const Color col, const ShortRect* rect = null) {
 		const SDL_Rect* ptr = rect ? rect.ptr : null;
-		uint key = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
+		uint key = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
 		
-		SDL_FillRect(this._target, ptr, key);
+		SDL_FillRect(this._target.ptr, ptr, key);
 	}
 	
 	/**
@@ -347,9 +309,9 @@ public:
 	 */
 	void fillAreas(ref const Color col, const ShortRect[] rects) {
 		const SDL_Rect* ptr = (rects.length > 0) ? rects[0].ptr : null;
-		uint key = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
+		uint key = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
 		
-		SDL_FillRects(this._target, ptr, rects.length, key);
+		SDL_FillRects(this._target.ptr, ptr, rects.length, key);
 	}
 	
 	/**
@@ -368,7 +330,7 @@ public:
 	 * Returns: whether the call succeeded or not
 	 */
 	bool optimizeRLE(bool enable) {
-		return SDL_SetSurfaceRLE(this._target, enable) == 0;
+		return SDL_SetSurfaceRLE(this._target.ptr, enable) == 0;
 	}
 	
 	/**
@@ -377,7 +339,7 @@ public:
 	 * Returns: whether the call succeeded or not
 	 */
 	bool lock() {
-		if (SDL_LockSurface(this._target) == 0)
+		if (SDL_LockSurface(this._target.ptr) == 0)
 			this._isLocked = true;
 		
 		return this._isLocked;
@@ -389,7 +351,7 @@ public:
 	void unlock() {
 		this._isLocked = false;
 		
-		SDL_UnlockSurface(this._target);
+		SDL_UnlockSurface(this._target.ptr);
 	}
 	
 	/**
@@ -403,7 +365,7 @@ public:
 	 * Use this function to determine whether a surface must be locked for access.
 	 */
 	bool mustLock() {
-		return SDL_MUSTLOCK(this._target) == SDL_TRUE;
+		return SDL_MUSTLOCK(this._target.ptr) == SDL_TRUE;
 	}
 	
 	/**
@@ -424,7 +386,7 @@ public:
 	void adaptTo(SDL_PixelFormat* fmt) in {
 		assert(fmt !is null, "Null format is invalid.");
 	} body {
-		SDL_Surface* adapted = SDL_ConvertSurface(this._target, fmt, 0);
+		SDL_Surface* adapted = SDL_ConvertSurface(this._target.ptr, fmt, 0);
 		if (adapted is null)
 			throw new Exception("Could not adapt surface.");
 		
@@ -451,11 +413,11 @@ public:
 	void setColorkey(ubyte red, ubyte green, ubyte blue, short alpha = -1) {
 		uint key;
 		if (alpha >= 0)
-			key = SDL_MapRGBA(this._target.format, red, green, blue, cast(ubyte) alpha);
+			key = SDL_MapRGBA(this._target.ptr.format, red, green, blue, cast(ubyte) alpha);
 		else
-			key = SDL_MapRGB(this._target.format, red, green, blue);
+			key = SDL_MapRGB(this._target.ptr.format, red, green, blue);
 		
-		SDL_SetColorKey(this._target, SDL_TRUE, key);
+		SDL_SetColorKey(this._target.ptr, SDL_TRUE, key);
 	}
 	
 	/**
@@ -463,10 +425,10 @@ public:
 	 */
 	Color getColorkey() {
 		uint key;
-		SDL_GetColorKey(this._target, &key);
+		SDL_GetColorKey(this._target.ptr, &key);
 		
 		ubyte r, g, b, a;
-		SDL_GetRGBA(key, this._target.format, &r, &g, &b, &a);
+		SDL_GetRGBA(key, this._target.ptr.format, &r, &g, &b, &a);
 		
 		return Color(r, g, b, a);
 	}
@@ -475,7 +437,7 @@ public:
 	 * Set the Alpha mod.
 	 */
 	void setAlphaMod(ubyte alpha) {
-		SDL_SetSurfaceAlphaMod(this._target, alpha);
+		SDL_SetSurfaceAlphaMod(this._target.ptr, alpha);
 	}
 	
 	/**
@@ -483,7 +445,7 @@ public:
 	 */
 	ubyte getAlphaMod() {
 		ubyte alpha;
-		SDL_GetSurfaceAlphaMod(this._target, &alpha);
+		SDL_GetSurfaceAlphaMod(this._target.ptr, &alpha);
 		
 		return alpha;
 	}
@@ -492,7 +454,7 @@ public:
 	 * Set the Blendmode.
 	 */
 	void setBlendMode(BlendMode mode) {
-		SDL_SetSurfaceBlendMode(this._target, mode);
+		SDL_SetSurfaceBlendMode(this._target.ptr, mode);
 	}
 	
 	/**
@@ -500,7 +462,7 @@ public:
 	 */
 	BlendMode getBlendMode() {
 		SDL_BlendMode mode;
-		SDL_GetSurfaceBlendMode(this._target, &mode);
+		SDL_GetSurfaceBlendMode(this._target.ptr, &mode);
 		
 		return cast(BlendMode) mode;
 	}
@@ -511,7 +473,7 @@ public:
 	 */
 	ShortRect getClipRect() {
 		ShortRect rect;
-		SDL_GetClipRect(this._target, rect.ptr);
+		SDL_GetClipRect(this._target.ptr, rect.ptr);
 		
 		return rect;
 	}
@@ -520,7 +482,7 @@ public:
 	 * Set the clip rect.
 	 */
 	void setClipRect(ref const ShortRect clip) {
-		SDL_SetClipRect(this._target, clip.ptr);
+		SDL_SetClipRect(this._target.ptr, clip.ptr);
 	}
 	
 	/**
@@ -534,7 +496,7 @@ public:
 	 * Returns the pixel data of this surface.
 	 */
 	inout(void*) getPixels() inout {
-		return this._target !is null ? this._target.pixels : null;
+		return this._target.ptr !is null ? this._target.ptr.pixels : null;
 	}
 	
 	/**
@@ -542,7 +504,7 @@ public:
 	 * Could be 32, 24, 16, 8, 0.
 	 */
 	ubyte countBits() const pure nothrow {
-		return this._target !is null ? this._target.format.BitsPerPixel : 0;
+		return this._target.ptr !is null ? this._target.ptr.format.BitsPerPixel : 0;
 	}
 	
 	/**
@@ -550,21 +512,21 @@ public:
 	 * Could be 4, 3, 2, 1, 0. (countBits / 8)
 	 */
 	ubyte countBytes() const pure nothrow {
-		return this._target !is null ? this._target.format.BytesPerPixel : 0;
+		return this._target.ptr !is null ? this._target.ptr.format.BytesPerPixel : 0;
 	}
 	
 	/**
 	 * Returns the Surface pitch or 0.
 	 */
 	int getPitch() const pure nothrow {
-		return this._target !is null ? this._target.pitch : 0;
+		return this._target.ptr !is null ? this._target.ptr.pitch : 0;
 	}
 	
 	/**
 	 * Returns the PixelFormat
 	 */
 	const(SDL_PixelFormat*) getPixelFormat() const pure nothrow {
-		return this._target.format;
+		return this._target.ptr.format;
 	}
 	
 	/**
@@ -573,7 +535,7 @@ public:
 	 * See: Surface.Mask enum.
 	 */
 	bool isMask(Mask mask, ref const Color col) const {
-		uint map = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
+		uint map = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
 		
 		return this.isMask(mask, map);
 	}
@@ -590,17 +552,17 @@ public:
 	 *
 	 * See: Surface.Mask enum.
 	 */
-	bool isMask(Mask mask, uint col) const /*pure nothrow */{
+	bool isMask(Mask mask, uint col) const pure nothrow {
 		bool result = false;
 		
 		if (mask & Mask.Red)
-			result = this._target.format.Rmask == col;
+			result = this._target.ptr.format.Rmask == col;
 		if (mask & Mask.Green)
-			result = result && this._target.format.Gmask == col;
+			result = result && this._target.ptr.format.Gmask == col;
 		if (mask & Mask.Blue)
-			result = result && this._target.format.Bmask == col;
+			result = result && this._target.ptr.format.Bmask == col;
 		if (mask & Mask.Alpha)
-			result = result && this._target.format.Amask == col;
+			result = result && this._target.ptr.format.Amask == col;
 		
 		return result;
 	}
@@ -657,7 +619,7 @@ public:
 			
 			ubyte r, g, b, a;
 			//cast(uint*)
-			SDL_GetRGBA(*p, this._target.format, &r, &g, &b, &a);
+			SDL_GetRGBA(*p, this._target.ptr.format, &r, &g, &b, &a);
 			
 			return Color(r, g, b, a);
 		}
@@ -666,7 +628,7 @@ public:
 	}
 	
 	/**
-	 * Returns a pointer of the SDL_Surface
+	 * Returns a pointer to the SDL_Surface
 	 */
 	@property
 	inout(SDL_Surface)* ptr() inout pure nothrow {
@@ -681,39 +643,20 @@ public:
 	 * dst is a pointer to a Rect structure which represents the rectangle that is copied into.
 	 * null means, that the whole srfc is copied to (0|0).
 	 */
-	bool softStretch(ref Surface srfc, const ShortRect* src = null, const ShortRect* dst = null) {
-		return this.softStretch(srfc.ptr, src, dst);
+	bool blitScaled(ref Surface srfc, const ShortRect* src = null, ShortRect* dst = null) {
+		return this.blitScaled(srfc.ptr, src, dst);
 	}
 	
 	/**
 	 * Same as above, but with a SDL_Surface* instead of a Surface.
 	 */
-	bool softStretch(SDL_Surface* srfc, const ShortRect* src = null, const ShortRect* dst = null) in {
-		assert(srfc !is null, "Null surface cannot be blit.");
-	} body {
-		const SDL_Rect* src_ptr = src ? src.ptr : null;
-		const SDL_Rect* dst_ptr = dst ? dst.ptr : null;
-		
-		return SDL_SoftStretch(srfc, src_ptr, this._target, dst_ptr) == 0;
-	}
-	
-	/**
-	 * Use this function to perform a fast blit from the source surface to the this surface
-	 */
-	bool upperBlit(ref Surface srfc, const ShortRect* src = null, ShortRect* dst = null) {
-		return this.upperBlit(srfc.ptr, src, dst);
-	}
-	
-	/**
-	 * Same as above, but with a SDL_Surface* instead of a Surface.
-	 */
-	bool upperBlit(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
+	bool blitScaled(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
 		assert(srfc !is null, "Null surface cannot be blit.");
 	} body {
 		const SDL_Rect* src_ptr = src ? src.ptr : null;
 		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
 		
-		return SDL_UpperBlit(srfc, src_ptr, this._target, dst_ptr) == 0;
+		return SDL_BlitScaled(srfc, src_ptr, this._target.ptr, dst_ptr) == 0;
 	}
 	
 	/**
@@ -732,7 +675,7 @@ public:
 		SDL_Rect* src_ptr = src ? src.ptr : null;
 		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
 		
-		return SDL_LowerBlit(srfc, src_ptr, this._target, dst_ptr) == 0;
+		return SDL_LowerBlit(srfc, src_ptr, this._target.ptr, dst_ptr) == 0;
 	}
 	
 	/**
@@ -755,7 +698,7 @@ public:
 		const SDL_Rect* src_ptr = src ? src.ptr : null;
 		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
 		
-		return SDL_BlitSurface(srfc, src_ptr, this._target, dst_ptr) == 0;
+		return SDL_BlitSurface(srfc, src_ptr, this._target.ptr, dst_ptr) == 0;
 	}
 	
 	/**
@@ -766,10 +709,10 @@ public:
 		SDL_Surface* sub = this.create(rect.width, rect.height);
 		assert(sub !is null, "Failed to construct a sub surface.");
 		
-		if (SDL_BlitSurface(this._target, rect.ptr, sub, null) != 0)
+		if (SDL_BlitSurface(this._target.ptr, rect.ptr, sub, null) != 0)
 			throw new Exception("An error occured by blitting the subsurface.");
 		
-		return Surface(sub, true);
+		return Surface(sub);
 	}
 	
 	/**
@@ -834,4 +777,31 @@ public:
 		
 		return Surface.make(hptr, this.width, this.height, this.countBits());
 	}
+} unittest {
+	Surface s1 = Surface.make(64, 64, 32);
+	
+	assert(s1.useCount() == 1);
+	{
+		Surface s2 = s1;
+		
+		assert(s1.useCount() == 2);
+		assert(s2.useCount() == 2);
+		
+		s2 = s1;
+		
+		assert(s1.useCount() == 2);
+		assert(s2.useCount() == 2);
+		
+		{
+			Surface s3 = s2;
+			
+			assert(s1.useCount() == 3);
+			assert(s2.useCount() == 3);
+			assert(s3.useCount() == 3);
+		}
+		
+		assert(s1.useCount() == 2);
+		assert(s2.useCount() == 2);
+	}
+	assert(s1.useCount() == 1);
 }

@@ -123,7 +123,7 @@ public:
 	 * Supported Texture Format
 	 */
 	enum Format {
-		None = 0, /** Take this if you want to declare that you give no Format. */
+		None  = 0, /** Take this if you want to declare that you give no Format. */
 		RGB   = GL_RGB,		/** Alias for GL_RGB */
 		RGBA  = GL_RGBA,	/** Alias for GL_RGBA */
 		BGR   = GL_BGR,		/** Alias for GL_BGR */
@@ -141,7 +141,6 @@ private:
 	
 	bool _isSmooth;
 	bool _isRepeat;
-	bool _hasMemory;
 	
 	Format _format;
 	
@@ -153,9 +152,9 @@ private:
 		Reverse
 	}
 	
-	static void _reBind(GLuint previousTexId) {
-		glBindTexture(GL_TEXTURE_2D, previousTexId);
-	}
+	//	static void _reBind(GLuint previousTexId) {
+	//		glBindTexture(GL_TEXTURE_2D, previousTexId);
+	//	}
 	
 package:
 	void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
@@ -463,7 +462,7 @@ final:
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
 		/// Possible speedup because 'glTexSubImage2D' is often faster than 'glTexImage2D'.
-		if (this._hasMemory && width == this.width && height == this.height) {
+		if (width == this.width && height == this.height) {
 			if (!fmt || fmt == this._format) {
 				this.updateMemory(memory, null);
 				
@@ -490,8 +489,6 @@ final:
 		this._width  = width;
 		this._height = height;
 		this._depth  = depth;
-		
-		this._hasMemory = true;
 	}
 	
 	/**

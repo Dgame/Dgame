@@ -34,15 +34,7 @@ public:
 		return --this._usage;
 	}
 }
-/*
- private SharedData!(T)* make_SharedData(T)(T* ptr, int usage) {
- alias SDT = SharedData!T;
- 
- SDT* mem = cast(SDT*) .malloc(SDT.sizeof);
- 
- return .emplace!(SDT)(mem, ptr, usage);
- }
- */
+
 struct shared_ptr(T, alias _deleter = dummyDeleter)
 	if (is(T == struct))
 {
@@ -56,6 +48,9 @@ private:
 			              __traits(identifier, _deleter));
 			
 			_deleter(this._shared._ptr);
+			this._shared._ptr = null;
+			
+			debug writeln("Destructed");
 		}
 	}
 	
@@ -68,13 +63,12 @@ public:
 	
 	this(T* ptr) {
 		this._shared = new SharedData!T(ptr, 1);
-		//		this._shared = make_SharedData!T(ptr, 1);
 		
 		shared_counter++;
 	}
 	
 	this(this) {
-		this._shared._usage++;
+		this._shared.inc();
 		this._isCopy = true;
 		
 		shared_counter++;
@@ -96,14 +90,14 @@ public:
 	}
 	
 	~this() {
-		shared_counter--;
-		
 		debug writeln("DTor smart_ptr: ",
 		              shared_counter, " => ",
 		              (this._shared ? this._shared._usage : -1),
 		              " :: ", __traits(identifier, _deleter), " :: ",
 		              __traits(identifier, T), " :: ",
 		              (this._shared ? this._shared._ptr : null), " :: ", this._isCopy);
+		
+		shared_counter--;
 		
 		if (this._shared && this._shared.dec() <= 0)
 			this.release();

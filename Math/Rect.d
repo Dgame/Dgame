@@ -175,6 +175,15 @@ public:
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
+	bool opBinaryRight(string op, U)(ref Vector2!U vec) const pure nothrow
+		if (op == "in")
+	{
+		return this.contains(vec);
+	}
+	
+	/**
+	 * Checks whether this Rect contains the given coordinates.
+	 */
 	bool contains(U)(ref const Vector2!U vec) const pure nothrow {
 		return this.contains(vec.x, vec.y);
 	}
@@ -303,7 +312,7 @@ public:
 	}
 	
 	/**
-	 * Returns the current position as Vector2!T.
+	 * Creates a Vector2!T and returns thereby the current position.
 	 */
 	Vector2!T getPositionAsVector() const pure nothrow {
 		return Vector2!T(this.x, this.y);

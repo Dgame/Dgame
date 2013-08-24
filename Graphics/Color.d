@@ -51,7 +51,12 @@ public:
 	 * CTor
 	 * Expect that every component is in range 0.0 .. 1.0
 	 */
-	this(float red, float green, float blue, float alpha = 1f) pure nothrow {
+	this(float red, float green, float blue, float alpha = 1f) pure nothrow in {
+		assert(red   >= 0f && red   <= 1f);
+		assert(green >= 0f && green <= 1f);
+		assert(blue  >= 0f && blue  <= 1f);
+		assert(alpha >= 0f && alpha <= 1f);
+	} body {
 		this.red   = cast(ubyte)(ubyte.max * red);
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);
@@ -119,8 +124,14 @@ public:
 	
 	/**
 	 * Set all color components to new values
+	 * Expect that every component is in range 0.0 .. 1.0
 	 */
-	void set(float red, float green, float blue, float alpha = 1f) pure nothrow {
+	void set(float red, float green, float blue, float alpha = 1f) pure nothrow in {
+		assert(red   >= 0f && red   <= 1f);
+		assert(green >= 0f && green <= 1f);
+		assert(blue  >= 0f && blue  <= 1f);
+		assert(alpha >= 0f && alpha <= 1f);
+	} body {
 		this.red   = cast(ubyte)(ubyte.max * red);
 		this.green = cast(ubyte)(ubyte.max * green);
 		this.blue  = cast(ubyte)(ubyte.max * blue);
@@ -141,9 +152,9 @@ public:
 	 * Means every component is in range 0.0 .. 1.0
 	 */
 	float[4] asGLColor() const pure nothrow {
-		return [this.red > 1 ? this.red / 255f : this.red,
+		return [this.red   > 1 ? this.red   / 255f : this.red,
 		        this.green > 1 ? this.green / 255f : this.green,
-		        this.blue > 1 ? this.blue / 255f : this.blue,
+		        this.blue  > 1 ? this.blue  / 255f : this.blue,
 		        this.alpha > 1 ? this.alpha / 255f : this.alpha];
 	}
 	
