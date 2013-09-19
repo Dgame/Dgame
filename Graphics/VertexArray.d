@@ -68,7 +68,7 @@ final:
 		this._indices = indices;
 	}
 	
-	inout(uint*) getIndices() inout {
+	inout(uint*) fetchIndices() inout {
 		return this._indices.ptr;
 	}
 	

@@ -279,7 +279,7 @@ void main() {
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
 					writeln("Oh! Key press: ", event.keyboard.code);
 					
-					uint* va_indices = va.getIndices();
+					uint* va_indices = va.fetchIndices();
 					if (va_indices[0] == 1) {
 						foreach (i; 0 .. 4) {
 							va_indices[i] -= 1;
