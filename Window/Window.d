@@ -8,7 +8,7 @@ private {
 	import derelict.opengl3.gl;
 	
 	import Dgame.Core.Memory.Finalizer;
-	import Dgame.Core.Memory.Allocator;
+	import Dgame.Core.Memory.Allocator : alloc;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -251,20 +251,23 @@ public:
 		glReadPixels(0, 0, this.width, this.height,
 		             fmt, GL_UNSIGNED_BYTE, pixels);
 		
-		const ubyte bytesPerPixel = _capture.countBytes();
+		const uint lineWidth = this.width * 4;
+		const uint hlw = this.height * lineWidth;
 		
-		for (uint y = 0; y < this.height / 2; y++) {
-			const int swapY = height - y - 1;
+		ubyte[] tmpLine = .alloc!(ubyte, lineWidth);
+		
+		for (uint i = 0; i < this.height / 2; ++i) {
+			const uint tmpIdx1 = i * lineWidth;
+			const uint tmpIdx2 = (i + 1) * lineWidth;
 			
-			for (uint x = 0; x < this.width; x++) {
-				const uint offset = bytesPerPixel * (x + y * width);
-				const uint swapOffset = bytesPerPixel * (x + swapY * width);
-				
-				/// Swap R, G and B of the 2 pixels
-				.swap(pixels[offset + 0], pixels[swapOffset + 0]);
-				.swap(pixels[offset + 1], pixels[swapOffset + 1]);
-				.swap(pixels[offset + 2], pixels[swapOffset + 2]);
-			}
+			const uint switchIdx1 = hlw - tmpIdx2;
+			const uint switchIdx2 = hlw - tmpIdx1;
+			
+			tmpLine[] = pixels[tmpIdx1 .. tmpIdx2];
+			ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
+			
+			pixels[tmpIdx1 .. tmpIdx2][] = switchLine[];
+			pixels[switchIdx1 .. switchIdx2][] = tmpLine[];
 		}
 		
 		return _capture;

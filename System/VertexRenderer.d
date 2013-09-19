@@ -147,7 +147,7 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawElements(Primitive.Type ptype, size_t count, int[] indices) {
+	static void drawElements(Primitive.Type ptype, size_t count, uint[] indices) {
 		if (indices.length == 0)
 			return;
 		
@@ -163,7 +163,7 @@ public:
 	 * See: pointTo
 	 */
 	static void drawRangeElements(Primitive.Type ptype, size_t count,
-	                              int[] indices, uint start = 0, uint end = 0)
+	                              uint[] indices, uint start = 0, uint end = 0)
 	{
 		if (indices.length == 0)
 			return;

@@ -1,6 +1,6 @@
 module Dgame.Core.Memory.Allocator;
 
-private import core.stdc.stdlib : malloc, realloc, free;
+private import core.stdc.stdlib : malloc, realloc, free, alloca;
 
 final abstract class Memory {
 public:
@@ -25,4 +25,9 @@ public:
 		
 		ptr = null;
 	}
+}
+
+@trusted
+T[] alloc(T, alias N)(void* mem = .alloca(N * T.sizeof)) {
+	return (cast(T*) mem)[0 .. N];
 }

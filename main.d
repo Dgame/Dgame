@@ -232,6 +232,8 @@ void main() {
 	
 	tm.setTransform(tf);
 	
+	va.setIndices([0, 1, 2, 3]);
+	
 	while (wnd.isOpen()) {
 		wnd.clear();
 		
@@ -258,7 +260,7 @@ void main() {
 		
 		sp2.slideTextureRect();
 		
-		//		wnd.draw(va);
+		wnd.draw(va);
 		
 		tof.slide();
 		wnd.draw(tof);
@@ -276,6 +278,17 @@ void main() {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
 					writeln("Oh! Key press: ", event.keyboard.code);
+					
+					uint* va_indices = va.getIndices();
+					if (va_indices[0] == 1) {
+						foreach (i; 0 .. 4) {
+							va_indices[i] -= 1;
+						}
+					} else {
+						foreach (i; 0 .. 4) {
+							va_indices[i] += 1;
+						}
+					}
 					
 					sp.slideTextureRect();
 					

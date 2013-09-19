@@ -342,7 +342,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(Primitive.Type ptype, size_t count, int[] indices) const {
+	void drawElements(Primitive.Type ptype, size_t count, uint[] indices) const {
 		VertexRenderer.drawElements(ptype, count, indices);
 	}
 	
@@ -352,7 +352,7 @@ public:
 	 *
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(Primitive.Type ptype, size_t count, int[] indices, int start = -1, int end = -1) const {
+	void drawRangeElements(Primitive.Type ptype, size_t count, uint[] indices, int start = -1, int end = -1) const {
 		VertexRenderer.drawRangeElements(ptype, count, indices, start, end);
 	}
 	

@@ -38,11 +38,16 @@ protected:
 			VertexRenderer.disableAllStates();
 		}
 		
-		VertexRenderer.drawArrays(this._type, this._vertices.length);
+		if (this._indices.length == 0)
+			VertexRenderer.drawArrays(this._type, this._vertices.length);
+		else
+			VertexRenderer.drawElements(this._type, this._vertices.length, this._indices);	
 	}
 	
 private:
 	Vertex[] _vertices;
+	uint[] _indices;
+	
 	Texture _tex;
 	Primitive.Type _type = Primitive.Type.Quad;
 	
@@ -57,6 +62,14 @@ final:
 	this(Texture tex, Primitive.Type type) {
 		this._tex  = tex;
 		this._type = type;
+	}
+	
+	void setIndices(uint[] indices) {
+		this._indices = indices;
+	}
+	
+	inout(uint*) getIndices() inout {
+		return this._indices.ptr;
 	}
 	
 	void bindTexture(Texture tex) {
