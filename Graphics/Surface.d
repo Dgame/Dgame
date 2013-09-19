@@ -12,7 +12,6 @@ private {
 	import derelict.sdl2.image;
 	
 	import Dgame.Core.Memory.SmartPointer.Shared;
-	import Dgame.Core.Memory.Allocator;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
@@ -31,28 +30,26 @@ public:
 	/**
 	 * Supported BlendModes
 	 */
-	enum BlendMode {
+	enum BlendMode : ubyte {
 		None   = SDL_BLENDMODE_NONE,	/** no blending */
 		Blend  = SDL_BLENDMODE_BLEND,	/** dst = (src * A) + (dst * (1-A)) */
 		Add    = SDL_BLENDMODE_ADD,		/** dst = (src * A) + dst */
-		Mod    = SDL_BLENDMODE_MOD,		/** dst = src * dst */
+		Mod    = SDL_BLENDMODE_MOD		/** dst = src * dst */
 	}
 	
 	/**
 	 * Supported Color Masks
 	 */
-	enum Mask {
+	enum Mask : ubyte {
 		Red   = 1,	/** Red Mask */
 		Green = 2,	/** Green Mask */
 		Blue  = 4,	/** Blue Mask */
 		Alpha = 8	/** Alpha Mask */
 	}
 	
-	enum {
-		RMask = 0, /** Default Red Mask. */
-		GMask = 0, /** Default Green Mask. */
-		BMask = 0, /** Default Blue Mask. */
-	}
+	enum RMask = 0; /** Default Red Mask. */
+	enum GMask = 0; /** Default Green Mask. */
+	enum BMask = 0; /** Default Blue Mask. */
 	
 	version (LittleEndian) {
 		enum AMask = 0xff000000;
@@ -63,7 +60,7 @@ public:
 	/**
 	 * Flip mode
 	 */
-	enum Flip {
+	enum Flip : ubyte {
 		Vertical   = 1, /** Vertical Flip */
 		Horizontal = 2  /** Horizontal Flip */
 	}
@@ -71,22 +68,9 @@ public:
 private:
 	shared_ptr!(SDL_Surface, SDL_FreeSurface) _target;
 	
-	string _filename;
-	bool _isLocked;
+	debug string _filename;
 	
-private:
-	/**
-	 * CTor
-	 */
-	this(SDL_Surface* srfc) in {
-		assert(srfc !is null, "Invalid SDL_Surface.");
-		assert(srfc.pixels !is null, "Invalid pixel data.");
-	} body {
-		debug writeln("CTor Surface with SDL_Surface");
-		
-		this._target = make_shared(srfc);
-	}
-	
+package:
 	/**
 	 * Create a new SDL_Surface* of the given width, height and depth.
 	 */
@@ -108,6 +92,18 @@ private:
 		                                RMask, GMask, BMask, AMask);
 	}
 	
+	/**
+	 * CTor
+	 */
+	this(SDL_Surface* srfc) in {
+		assert(srfc !is null, "Invalid SDL_Surface.");
+		assert(srfc.pixels !is null, "Invalid pixel data.");
+	} body {
+		debug writeln("CTor Surface with SDL_Surface");
+		
+		this._target.reset(srfc);
+	}
+	
 public:
 	/**
 	 * CTor
@@ -120,7 +116,7 @@ public:
 	version(Develop)
 	this(this) {
 		debug writeln("Postblit Surface: ",
-		              this._target.refcount, ':',
+		              this._target.usage, ':',
 		              this.filename, ", ",
 		              this.filename.ptr);
 	}
@@ -131,8 +127,7 @@ public:
 	void opAssign(ref Surface rhs) {
 		debug writeln("opAssign lvalue");
 		
-		this._filename = rhs.filename;
-		this._isLocked = rhs.isLocked();
+		debug this._filename = rhs.filename;
 		
 		this._target = rhs._target;
 	}
@@ -155,14 +150,14 @@ public:
 	 * This method is called from the DTor.
 	 */
 	void free() {
-		this._target.reset(null);
+		this._target.release();
 	}
 	
 	/**
 	 * Returns the current use count
 	 */
 	uint useCount() const pure nothrow {
-		return this._target.refcount;
+		return this._target.usage;
 	}
 	
 	/**
@@ -197,14 +192,14 @@ public:
 	 * Returns if the Surface is valid. Which means that the Surface has valid data.
 	 */
 	bool isValid() const pure nothrow {
-		return this._target.valid && this._target.pixels !is null;
+		return this._target.isValid() && this._target.pixels !is null;
 	}
 	
 	/**
 	 * Returns the filename, if any
 	 */
 	@property
-	string filename() const pure nothrow {
+	debug string filename() const pure nothrow {
 		return this._filename;
 	}
 	
@@ -226,10 +221,11 @@ public:
 			
 			this._target.reset(srfc);
 		} catch (Throwable e) {
-			throw new Exception(format("Die Datei (%s) konnte nicht geladen werden: %s", filename, e.msg));
+			throw new Exception(format("Die Datei (%s) konnte nicht geladen werden: %s",
+			                           filename, e.msg));
 		}
 		
-		this._filename = filename;
+		debug this._filename = filename;
 	}
 	
 	/**
@@ -259,12 +255,11 @@ public:
 		if (filename.length < 3)
 			throw new Exception("File name is not allowed.");
 		
-		debug writeln("RefCount: ", this._target.ptr.refcount);
-		
 		try {
 			SDL_SaveBMP(this.ptr, toStringz(filename));
 		} catch (Throwable e) {
-			const string msg = format("The file (%s) could not be saved: %s", filename, e.msg);
+			const string msg = format("The file (%s) could not be saved: %s",
+			                          filename, e.msg);
 			throw new Exception(msg);
 		}
 	}
@@ -292,7 +287,8 @@ public:
 	 */
 	void fill(ref const Color col, const ShortRect* rect = null) {
 		const SDL_Rect* ptr = rect ? rect.ptr : null;
-		uint key = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
+		uint key = SDL_MapRGBA(this._target.ptr.format,
+		                       col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRect(this._target.ptr, ptr, key);
 	}
@@ -309,9 +305,11 @@ public:
 	 */
 	void fillAreas(ref const Color col, const ShortRect[] rects) {
 		const SDL_Rect* ptr = (rects.length > 0) ? rects[0].ptr : null;
-		uint key = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
+		uint key = SDL_MapRGBA(this._target.ptr.format,
+		                       col.red, col.green, col.blue, col.alpha);
 		
-		SDL_FillRects(this._target.ptr, ptr, rects.length, key);
+		SDL_FillRects(this._target.ptr, ptr,
+		              cast(int) rects.length, key);
 	}
 	
 	/**
@@ -340,17 +338,15 @@ public:
 	 */
 	bool lock() {
 		if (SDL_LockSurface(this._target.ptr) == 0)
-			this._isLocked = true;
+			return true;
 		
-		return this._isLocked;
+		return false;
 	}
 	
 	/**
 	 * Use this function to release a surface after directly accessing the pixels.
 	 */
 	void unlock() {
-		this._isLocked = false;
-		
 		SDL_UnlockSurface(this._target.ptr);
 	}
 	
@@ -358,7 +354,7 @@ public:
 	 * Returns whether this Surface is locked or not.
 	 */
 	bool isLocked() const pure nothrow {
-		return this._isLocked;
+		return this._target.locked != 0;
 	}
 	
 	/**
@@ -410,12 +406,18 @@ public:
 	/**
 	 * Set the colorkey.
 	 */
-	void setColorkey(ubyte red, ubyte green, ubyte blue, short alpha = -1) {
-		uint key;
-		if (alpha >= 0)
-			key = SDL_MapRGBA(this._target.ptr.format, red, green, blue, cast(ubyte) alpha);
-		else
-			key = SDL_MapRGB(this._target.ptr.format, red, green, blue);
+	void setColorkey(ubyte red, ubyte green, ubyte blue) {
+		const uint key = SDL_MapRGB(this._target.ptr.format, red, green, blue);
+		
+		SDL_SetColorKey(this._target.ptr, SDL_TRUE, key);
+	}
+	
+	/**
+	 * Set the colorkey.
+	 */
+	void setColorkey(ubyte red, ubyte green, ubyte blue, ubyte alpha) {
+		const uint key = SDL_MapRGBA(this._target.ptr.format,
+		                             red, green, blue, alpha);
 		
 		SDL_SetColorKey(this._target.ptr, SDL_TRUE, key);
 	}
@@ -734,9 +736,8 @@ public:
 		const ubyte bytes = this.countBytes();
 		const uint memSize = this.width * this.height * bytes;
 		
-		ubyte[] newPixels = Memory.allocate!ubyte(memSize)[0 .. memSize];
-		ubyte* hptr = newPixels.ptr;
-		scope(exit) Memory.deallocate(hptr);
+		Surface flipped = Surface.make(this.width, this.height);
+		ubyte* newPixels = cast(ubyte*) flipped.getPixels();
 		
 		final switch (flip) {
 			case Flip.Vertical:
@@ -746,7 +747,7 @@ public:
 				ubyte* dest = &newPixels[0];
 				
 				for (ushort y = 0; y < this.height; ++y) {
-					memcpy(dest, source, rowSize);
+					.memcpy(dest, source, rowSize);
 					//std.algorithm.reverse(dest[0 .. rowSize]);
 					source -= rowSize;
 					dest += rowSize;
@@ -770,38 +771,38 @@ public:
 				}
 				break;
 			case Flip.Vertical | Flip.Horizontal:
-				newPixels = pixels[0 .. memSize];
-				.reverse(newPixels);
+				newPixels[0 .. memSize] = pixels[0 .. memSize];
+				.reverse(newPixels[0 .. memSize]);
 				break;
 		}
 		
-		return Surface.make(hptr, this.width, this.height, this.countBits());
+		return flipped;
 	}
 } unittest {
 	Surface s1 = Surface.make(64, 64, 32);
 	
-	assert(s1.useCount() == 1);
+	assert(s1.useCount() == 1, to!string(s1.useCount()));
 	{
 		Surface s2 = s1;
 		
-		assert(s1.useCount() == 2);
-		assert(s2.useCount() == 2);
+		assert(s1.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s1.useCount()));
 		
 		s2 = s1;
 		
-		assert(s1.useCount() == 2);
-		assert(s2.useCount() == 2);
+		assert(s1.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s1.useCount()));
 		
 		{
 			Surface s3 = s2;
 			
-			assert(s1.useCount() == 3);
-			assert(s2.useCount() == 3);
-			assert(s3.useCount() == 3);
+			assert(s1.useCount() == 3, to!string(s1.useCount()));
+			assert(s2.useCount() == 3, to!string(s1.useCount()));
+			assert(s3.useCount() == 3, to!string(s1.useCount()));
 		}
 		
-		assert(s1.useCount() == 2);
-		assert(s2.useCount() == 2);
+		assert(s1.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s1.useCount()));
 	}
-	assert(s1.useCount() == 1);
+	assert(s1.useCount() == 1, to!string(s1.useCount()));
 }

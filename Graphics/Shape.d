@@ -7,18 +7,17 @@ private {
 	import core.stdc.string : memcpy;
 	
 	import derelict.opengl3.gl;
-	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Math : fpEqual;
 	import Dgame.Core.Memory.Allocator;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
-	import Dgame.Graphics.Interface.Transformable;
-	import Dgame.Graphics.Interface.Blendable;
+	import Dgame.Graphics.Transformable;
+	
 	import Dgame.Math.Pixel;
-	import Dgame.System.Buffer;
-	import Dgame.System.VertexArray;
+	
+	import Dgame.System.VertexBufferObject;
+	import Dgame.System.VertexArrayObject;
 }
 
 /**
@@ -29,7 +28,7 @@ public:
 	/**
 	 * Supported smooth targets.
 	 */
-	enum Target {
+	enum Target : ushort {
 		None,					 /** No smooth (default). */
 		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
 		Line  = GL_LINE_SMOOTH,   /** Enable smooth for lines. */
@@ -40,7 +39,7 @@ public:
 	 * Smooth Hints to determine
 	 * which kind of smoothing is made.
 	 */
-	enum Hint {
+	enum Hint : ushort {
 		DontCare = GL_DONT_CARE, /** The OpenGL implementation decide on their own. */
 		Fastest = GL_FASTEST,    /** Fastest kind of smooth (default). */
 		Nicest  = GL_NICEST	     /** Nicest but lowest kind of smooth. */
@@ -142,7 +141,7 @@ Primitive.Type shapeToPrimitive(Shape.Type stype) pure nothrow {
  *
  * Author: rschuett
  */
-class Shape : Drawable, Transformable, Blendable {
+class Shape : Transformable, Drawable {
 public:
 	/**
 	 * Supported shape types.
@@ -170,62 +169,54 @@ protected:
 	
 	Pixel[] _pixels;
 	
-	Buffer _buf;
-	VertexArray _vab;
+	VertexBufferObject _vbo;
+	VertexArrayObject _vao;
 	
 private:
+	enum DefaultType = Type.LineLoop;
+	enum V_Count  = 3;
+	enum C_Count  = 4;
+	enum VC_Count = V_Count + C_Count;
 	
-	enum {
-		DefaultType = Type.LineLoop,
-		VCount  = 3,
-		CCount  = 4,
-		VCCount = VCount + CCount
-	}
-	
+private:
 	void _updateVertexCache() {
-		this._buf.bind(Primitive.Target.Vertex);
-		scope(exit) this._buf.unbind();
+		this._vbo.bind(Primitive.Target.Vertex);
+		scope(exit) this._vbo.unbind();
 		
-		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&this._pixels[0], this._pixels.length * Pixel.sizeof);
+		if (!this._vbo.isCurrentEmpty())
+			this._vbo.modify(&this._pixels[0], this._pixels.length * Pixel.sizeof);
 		else
-			this._buf.cache(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Static.Draw);
+			this._vbo.cache(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Static.Draw);
 	}
 	
 	void _checkForUpdate() {
-		if (this._update) {
-			scope(exit) {
-				this._buf.unbind();
-				this._vab.unbind();
-			}
-			
-			this._vab.bind();
-			
-			this._updateVertexCache();
-			
-			this._buf.pointTo(Primitive.Target.Vertex, VCCount * float.sizeof);
-			this._buf.pointTo(Primitive.Target.Color, VCCount * float.sizeof, VCount * float.sizeof);
-			
-			this._update = false;
+		if (!this._update)
+			return;
+		
+		scope(exit) {
+			this._vbo.unbind();
+			this._vao.unbind();
 		}
+		
+		this._vao.bind();
+		
+		this._updateVertexCache();
+		
+		this._vbo.pointTo(Primitive.Target.Vertex, Pixel.sizeof);
+		this._vbo.pointTo(Primitive.Target.Color,  Pixel.sizeof, V_Count * float.sizeof);
+		
+		this._update = false;
 	}
 	
 protected:
-	override void _render() in {
-		assert(this._buf !is null);
+	void _render(const Window wnd) in {
+		assert(this._vbo !is null);
 	} body {
-		/// Update caches
-		this._checkForUpdate();
-		
-		glPushMatrix();
-		scope(exit) glPopMatrix();
-		glPushAttrib(GL_CURRENT_BIT 
-		             | GL_COLOR_BUFFER_BIT
-		             | GL_ENABLE_BIT
-		             | GL_HINT_BIT
-		             | GL_LINE_BIT
-		             | GL_POINT_BIT);
+		glPushAttrib(GL_ENABLE_BIT);
 		scope(exit) glPopAttrib();
+		
+		/// Update cache
+		this._checkForUpdate();
 		
 		if (this._smooth.target != Smooth.Target.None) {
 			if (!glIsEnabled(this._smooth.target))
@@ -234,43 +225,31 @@ protected:
 			glHint(this._smooth.target, this._smooth.hint);
 		}
 		
-		if (this._rotAngle != 0)
-			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1f);
-		
-		glTranslatef(super._position.x, super._position.y, 0f);
-		
-		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
-			glScalef(this._scale.x, this._scale.y, 0f);
-		
 		if (glIsEnabled(GL_TEXTURE_2D))
 			glDisable(GL_TEXTURE_2D);
 		
 		glLineWidth(this._lineWidth);
 		
-		/// use blending
-		this._processBlendMode();
+		this._vao.bind();
+		scope(exit) this._vao.unbind();
 		
-		this._vab.bind();
-		scope(exit) this._vab.unbind();
+		glPushMatrix();
+		scope(exit) glPopMatrix();
+		
+		super._applyTranslation();
 		
 		Type type = !this.shouldFill() ? DefaultType : this._type;
-		this._buf.drawArrays(shapeToPrimitive(type), this._pixels.length);
+		this._vbo.drawArrays(shapeToPrimitive(type), this._pixels.length);
 	}
 	
 public:
-	/// mixin blendable functionality
-	mixin TBlendable;
-	/// mixin transformable functionality
-	mixin TTransformable;
-	
 final:
-	
 	/**
 	 * CTor
 	 */
 	this(Type type) {
-		this._buf = new Buffer(Primitive.Target.Vertex);
-		this._vab = new VertexArray();
+		this._vbo = new VertexBufferObject(Primitive.Target.Vertex);
+		this._vao = new VertexArrayObject();
 		
 		this._update = true;
 		this._lineWidth = 2;
@@ -427,7 +406,7 @@ final:
 			return;
 		
 		if (vp)
-			memcpy(vp, &this._pixels[index], Pixel.sizeof);
+			.memcpy(vp, &this._pixels[index], Pixel.sizeof);
 		
 		this._pixels = .remove(this._pixels, index);
 	}
@@ -490,7 +469,8 @@ final:
 	static Shape makeCircle(ubyte radius, ref const Vector2f center, ubyte vecNum = 30) in {
 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
 	} body {
-		const float Deg2Rad = (PI * 2) / vecNum;
+		enum PIx2 = PI * 2;
+		const float Deg2Rad = PIx2 / vecNum;
 		
 		Shape qs = new Shape(Type.LineLoop);
 		

@@ -10,16 +10,16 @@ public {
 /**
  * Specific Window Events.
  */
-enum WindowEventId {
-	None,           /** Never used */
+enum WindowEventId : ubyte {
+	None,           /** Nothing happens */
 	Shown,          /** Window has been shown */
 	Hidden,         /** Window has been hidden */
 	Exposed,        /** Window has been exposed and should be redrawn */
 	Moved,          /** Window has been moved to data1, data2  */
-	Resized,        /** Window has been resized to data1xdata2 */
+	Resized,        /** Window has been resized to data1Xdata2 */
 	SizeChanged,    /** The window size has changed, 
-	                 either as a result of an API call or through 
-	                 the system or user changing the window size. */
+	                 * either as a result of an API call or through 
+	                 * the system or user changing the window size. */
 	Minimized,      /** Window has been minimized. */
 	Maximized,      /** Window has been maximized. */
 	Restored,       /** Window has been restored to normal size and position. */

@@ -1,11 +1,9 @@
-module Dgame.System.StaticBuffer;
+module Dgame.System.VertexRenderer;
 
 private {
 	debug import std.stdio;
 	
 	import derelict.opengl3.gl;
-	
-	import Dgame.Graphics.Texture;
 }
 
 /**
@@ -44,7 +42,7 @@ final abstract class Primitive {
  *
  * Author: rschuett
  */
-final abstract class StaticBuffer {
+final abstract class VertexRenderer {
 public:
 	/**
 	 * Points to a specific Primitive.Target.
@@ -54,12 +52,14 @@ public:
 	 * See: glTexCoordPointer
 	 * See: Primitive.Target enum.
 	 */
-	static void pointTo(Primitive.Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
-		StaticBuffer.enableState(trg);
+	static void pointTo(Primitive.Target trg, void* ptr = null,
+	                    ubyte stride = 0, ubyte offset = 0)
+	{
+		VertexRenderer.enableState(trg);
 		
-		if (offset != 0 && ptr)
+		if (ptr)
 			ptr += offset;
-		else if (!ptr && offset != 0)
+		else if (offset != 0)
 			ptr = cast(void*)(offset);
 		
 		final switch (trg) {
@@ -100,14 +100,18 @@ public:
 	 * Enable all client states
 	 */
 	static void enableAllStates() {
-		StaticBuffer.enableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
+		VertexRenderer.enableState(Primitive.Target.Vertex
+		                           | Primitive.Target.Color
+		                           | Primitive.Target.TexCoords);
 	}
 	
 	/**
 	 * Disable all client states
 	 */
 	static void disableAllStates() {
-		StaticBuffer.disableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
+		VertexRenderer.disableState(Primitive.Target.Vertex
+		                            | Primitive.Target.Color
+		                            | Primitive.Target.TexCoords);
 	}
 	
 	/**
@@ -134,7 +138,7 @@ public:
 	 * See: pointTo
 	 */
 	static void drawArrays(Primitive.Type ptype, size_t count, uint start = 0) {
-		glDrawArrays(ptype, start, count);
+		glDrawArrays(ptype, start, cast(int) count);
 	}
 	
 	/**
@@ -147,7 +151,7 @@ public:
 		if (indices.length == 0)
 			return;
 		
-		glDrawElements(ptype, count, GL_UNSIGNED_INT, &indices[0]); 
+		glDrawElements(ptype, cast(int) count, GL_UNSIGNED_INT, &indices[0]); 
 	}
 	
 	/**
@@ -158,39 +162,18 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawRangeElements(Primitive.Type ptype, size_t count, int[] indices, int start = -1, int end = -1) {
+	static void drawRangeElements(Primitive.Type ptype, size_t count,
+	                              int[] indices, uint start = 0, uint end = 0)
+	{
 		if (indices.length == 0)
 			return;
 		
 		glDrawRangeElements(
 			ptype,
-			start ? start : 0,
-			end ? end : indices.length,
-			count,
+			start,
+			end != 0 ? end : cast(int) indices.length,
+			cast(int) count,
 			GL_UNSIGNED_INT,
 			&indices[0]);
-	}
-	
-	/**
-	 * Bind a texture with at least his texture coordinates and his vertices.
-	 * It's a shortcut for:
-	 * ----
-	 * StaticBuffer.pointTo(Primitive.Target.TexCoords, texelPtr);
-	 * StaticBuffer.pointTo(Primitive.Target.Vertex, verticesPtr);
-	 * 
-	 * tex.bind();
-	 * ----
-	 * 
-	 * Note: You should clean up with:
-	 * tex.unbind(); and StaticBuffer.disableAllStates();
-	 */
-	static void bindTexture(const Texture tex, float* texelPtr, float* verticesPtr, float* colorPtr = null) {
-		StaticBuffer.pointTo(Primitive.Target.TexCoords, texelPtr);
-		StaticBuffer.pointTo(Primitive.Target.Vertex, verticesPtr);
-		
-		if (colorPtr !is null)
-			StaticBuffer.pointTo(Primitive.Target.Color, colorPtr);
-		
-		tex.bind();
 	}
 }

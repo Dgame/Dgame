@@ -37,10 +37,14 @@ final:
 	 * CTor
 	 */
 	this(ref Surface srfc, Texture.Format t_fmt = Texture.Format.None) {
-		if (t_fmt == Texture.Format.None && !srfc.isMask(Surface.Mask.Red, 0x000000ff))
+		if (t_fmt == Texture.Format.None
+		    && !srfc.isMask(Surface.Mask.Red, 0x000000ff))
+		{
 			t_fmt = srfc.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+		}
 		
-		super.loadFromMemory(srfc.getPixels(), srfc.width, srfc.height, srfc.countBits(), t_fmt);
+		super.loadFromMemory(srfc.getPixels(), srfc.width, srfc.height,
+		                     srfc.countBits(), t_fmt);
 	}
 	
 	/**
@@ -53,7 +57,9 @@ final:
 	/**
 	 * Load the image from filename with a colorkey.
 	 */
-	void loadFromFile(string filename, ref const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
+	void loadFromFile(string filename, ref const Color colorkey,
+	                  Texture.Format t_fmt = Texture.Format.None)
+	{
 		Surface img = Surface(filename);
 		img.setColorkey(colorkey);
 		
@@ -63,15 +69,20 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void loadFromFile(string filename, const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
+	void loadFromFile(string filename, const Color colorkey,
+	                  Texture.Format t_fmt = Texture.Format.None)
+	{
 		this.loadFromFile(filename, colorkey, t_fmt);
 	}
 	
 	/**
 	 * Load the image from filename.
 	 */
-	void loadFromFile(string filename, Texture.Format t_fmt = Texture.Format.None) {
+	void loadFromFile(string filename,
+	                  Texture.Format t_fmt = Texture.Format.None)
+	{
 		Surface img = Surface(filename);
+		
 		super.loadFromMemory(img.getPixels(), img.width, img.height, 32, t_fmt);
 	}
 	
@@ -86,15 +97,4 @@ final:
 	 * Alias for subTexture.
 	 */
 	alias subImage = subTexture;
-	
-	/**
-	 * Copy the pixel data of a Surface to this Image.
-	 * The second parameter is a pointer to the destination rect.
-	 * Is it is null this means the whole img is copied.
-	 */
-	void copy(ref const Surface img, ShortRect* rect = null) in {
-		assert(super.width != 0 && super.height != 0, "width or height is 0.");
-	} body {
-		super.updateMemory(img.getPixels(), rect);
-	}
 }

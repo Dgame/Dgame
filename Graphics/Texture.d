@@ -7,10 +7,11 @@ private {
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
-	import Dgame.System.StaticBuffer;
+	import Dgame.Graphics.Template.Blendable;
+	import Dgame.System.VertexRenderer;
 }
 
-public import Dgame.Graphics.Interface.Blendable;
+public import Dgame.Graphics.Template.Blendable : BlendMode;
 
 /**
  * Format a Texture.Format into the related bit count.
@@ -133,6 +134,11 @@ public:
 		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */
 	}
 	
+	enum RenderMode {
+		Normal,
+		Reverse
+	}
+	
 private:
 	GLuint _texId;
 	
@@ -144,84 +150,98 @@ private:
 	
 	Format _format;
 	
-	FloatRect _viewport;
-	
-private:
-	enum RenderMode {
-		Normal,
-		Reverse
-	}
-	
-	//	static void _reBind(GLuint previousTexId) {
-	//		glBindTexture(GL_TEXTURE_2D, previousTexId);
-	//	}
-	
 package:
-	void _render(ref const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
-		if (!glIsEnabled(GL_TEXTURE_2D))
-			glEnable(GL_TEXTURE_2D);
-		
+	const void _render(const ShortRect* dst,
+	                   const ShortRect* viewport = null,
+	                   RenderMode mode = RenderMode.Normal)
+	{
+		//		if (!glIsEnabled(GL_TEXTURE_2D))
+		//			glEnable(GL_TEXTURE_2D);
+		//		
 		float tx = 0f;
 		float ty = 0f;
 		float tw = 1f;
 		float th = 1f;
 		
-		if (this.hasViewport()) {
-			tx = this._viewport.x / this._width;
-			ty = this._viewport.y / this._height;
-			tw = this._viewport.width / this._width;
-			th = this._viewport.height / this._height;
+		if (viewport !is null) {
+			tx = (0f + viewport.x) / this._width;
+			ty = (0f + viewport.y) / this._height;
+			tw = (0f + viewport.width) / this._width;
+			th = (0f + viewport.height) / this._height;
 		}
 		
-		this.bind();
+		/// |GL_CURRENT_BIT
+		/// -> if we use glColor4f instead of glBlendColor in Blendable
+		//		glPushAttrib(GL_COLOR_BUFFER_BIT);
+		//		scope(exit) glPopAttrib();
 		
-		// |GL_CURRENT_BIT -> if we use glColor4f instead of glBlendColor in Blendable
-		glPushAttrib(GL_COLOR_BUFFER_BIT);
-		scope(exit) glPopAttrib();
-		
-		// use blending
-		this._processBlendMode();
+		// apply blending
+		this._applyBlending();
 		
 		float[8] texCoords = void;
 		final switch (mode) {
 			case RenderMode.Normal:
-				texCoords = [tx, ty,
-				             tx + tw, ty,
-				             tx + tw, ty + th,
-				             tx, ty + th];
+				texCoords = [tx,      ty,
+					tx + tw, ty,
+					tx + tw, ty + th,
+					tx,      ty + th];
 				break;
 			case RenderMode.Reverse:
-				texCoords = [tx, ty + th,
-				             tx + tw, ty + th,
-				             tx + tw, ty,
-				             tx, ty];
+				texCoords = [tx,      ty + th,
+					tx + tw, ty + th,
+					tx + tw, ty,
+					tx,      ty];
 				break;
 		}
 		
-		float[12] vertices = [dst.x, dst.y, 0f,
-		                      dst.x + dst.width, dst.y, 0f,
-		                      dst.x + dst.width, dst.y + dst.height, 0f,
-		                      dst.x, dst.y + dst.height, 0f];
+		float dx = 0f;
+		float dy = 0f;
+		float dw = this._width;
+		float dh = this._height;
 		
-		StaticBuffer.bindTexture(this, &texCoords[0], &vertices[0]);
-		StaticBuffer.drawArrays(Primitive.Type.Quad, vertices.length);
+		if (dst !is null) {
+			dx = dst.x;
+			dy = dst.y;
+			dw = dst.width;
+			dh = dst.height;
+		}
 		
-		StaticBuffer.disableAllStates();
+		float[12] vertices = [dx,	   dy,      0f,
+			dx + dw, dy,      0f,
+			dx + dw, dy + dh, 0f,
+			dx,      dy + dh, 0f];
+		
+		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
+		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
+		
+		scope(exit) {
+			VertexRenderer.disableAllStates();
+			
+			this.unbind();
+		}
+		
+		this.bind();
+		
+		VertexRenderer.drawArrays(Primitive.Type.Quad, vertices.length);
 	}
 	
-	/**
-	 * Rvalue version
-	 */
-	void _render(const ShortRect dst, RenderMode mode = RenderMode.Normal) const {
-		this._render(dst, mode);
+	const void _render(ref const ShortRect dst,
+	                   const ShortRect* viewport = null,
+	                   RenderMode mode = RenderMode.Normal)
+	{
+		this._render(&dst, viewport, mode);
+	}
+	
+	const void _render(const ShortRect dst,
+	                   const ShortRect* viewport,
+	                   RenderMode mode = RenderMode.Normal)
+	{
+		this._render(dst, viewport, mode);
 	}
 	
 public:
 	/// mixin blendable functionality
-	mixin TBlendable;
+	mixin TplBlendable;
 	
 final:
 	
@@ -240,7 +260,9 @@ final:
 	 * Postblit
 	 */
 	this(ref const Texture tex, Format t_fmt = Format.None) {
-		this.loadFromMemory(tex.getMemory(), tex.width, tex.height, tex.depth, t_fmt ? t_fmt : tex.getFormat());
+		this.loadFromMemory(tex.getMemory(),
+		                    tex.width, tex.height, tex.depth,
+		                    t_fmt ? t_fmt : tex.getFormat());
 	}
 	
 	/**
@@ -366,50 +388,6 @@ final:
 	}
 	
 	/**
-	 * Check if this Texture has a Viewport.
-	 */
-	bool hasViewport() const {
-		return !this._viewport.isEmpty();
-	}
-	
-	/**
-	 * Set a Viewport to this Texture.
-	 * A Viewport is a ClipRect that is shorter as the whole Texture.
-	 * If this Texture is drawn only the specific Viewport will be drawn.
-	 */
-	void setViewport(ref const FloatRect viewport) {
-		this._viewport = viewport;
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setViewport(const FloatRect viewport) {
-		this.setViewport(viewport);
-	}
-	
-	/**
-	 * Remove/Collapse the current Viewport.
-	 */
-	void unsetViewport() {
-		this._viewport.collapse();
-	}
-	
-	/**
-	 * Returns the current Viewport.
-	 */
-	ref const(FloatRect) getViewport() const pure nothrow {
-		return this._viewport;
-	}
-	
-	/**
-	 * Get mutable access to the current Viewport.
-	 */
-	inout(FloatRect)* fetchViewport() inout {
-		return &this._viewport;
-	}
-	
-	/**
 	 * Link this Texture to another.
 	 * This Texture points now to the other Texture and his data.
 	 */
@@ -424,44 +402,15 @@ final:
 	}
 	
 	/**
-	 * Returns a new Texture object which rested partial of these Texture.
-	 * If you pass as second parameter true, the whole Texture will be copied
-	 * with the postblit CTor and then a viewport is set.
-	 * If you pass false (default), nothing is copied, but the new Object points (link)
-	 * to these. Then a viewport is set also.
-	 *
-	 * See: postblit CTor
-	 * See: link
-	 */
-	Texture partial(ref const FloatRect viewport, bool copy = false) const {
-		if (!copy) {
-			Texture tex = new Texture();
-			tex.link(this);
-			tex.setViewport(viewport);
-			
-			return tex;
-		}
-		
-		Texture tex = new Texture(this);
-		tex.setViewport(viewport);
-		
-		return tex;
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	Texture partial(const FloatRect viewport, bool copy = false) const {
-		return this.partial(viewport, copy);
-	}
-	
-	/**
 	 * Load from memory.
 	 */
-	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, Format fmt = Format.None) in {
+	void loadFromMemory(void* memory, ushort width, ushort height,
+	                    ubyte depth = 32, Format fmt = Format.None)
+	in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
-		/// Possible speedup because 'glTexSubImage2D' is often faster than 'glTexImage2D'.
+		/// Possible speedup because 'glTexSubImage2D'
+		/// is often faster than 'glTexImage2D'.
 		if (width == this.width && height == this.height) {
 			if (!fmt || fmt == this._format) {
 				this.updateMemory(memory, null);
@@ -478,13 +427,18 @@ final:
 		
 		this.bind();
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
+		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0,
+		             this._format, GL_UNSIGNED_BYTE, memory);
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this._isSmooth ? GL_LINEAR : GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this._isSmooth ? GL_LINEAR : GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+		                this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+		                this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
 		
 		this._width  = width;
 		this._height = height;
@@ -497,7 +451,6 @@ final:
 	void setColorkey(ref const Color colorkey) {
 		// Go through pixels
 		void* memory = this.getMemory();
-		scope(exit) delete memory;
 		
 		uint size = this._width * this._height;
 		for (uint i = 0; i < size; ++i) {
@@ -506,9 +459,9 @@ final:
 			
 			// Color matches
 			if (colors[0] == colorkey.red
-			    && colors[1] == colorkey.green
-			    && colors[2] == colorkey.blue
-			    && (0 == colorkey.alpha || colors[3] == colorkey.alpha))
+			&& colors[1] == colorkey.green
+			&& colors[2] == colorkey.blue
+			&& (0 == colorkey.alpha || colors[3] == colorkey.alpha))
 			{
 				// Make transparent
 				colors[0] = 255;
@@ -567,7 +520,9 @@ final:
 		
 		Texture tex = new Texture();
 		debug writeln("Format switch: ", .switchFormat(this._format, true));
-		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
+		tex.loadFromMemory(null,
+		                   rect.width, rect.height,
+		                   this._depth, this._format.switchFormat(true));
 		
 		int[4] vport;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
@@ -575,17 +530,13 @@ final:
 		glPushAttrib(GL_VIEWPORT_BIT);
 		scope(exit) glPopAttrib();
 		
-		FloatRect tex_viewport = this._viewport;
-		this.setViewport(cast(FloatRect) rect);
-		scope(exit) this.setViewport(tex_viewport);
-		
 		glViewport(0, 0, rect.width, rect.height);
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
 		this._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]),
-		             RenderMode.Reverse);
+		             &rect, RenderMode.Reverse);
 		
 		tex.bind();
 		
@@ -606,7 +557,7 @@ final:
 	 * The second parameter is a pointer to the destination rect.
 	 * Is it is null this means the whole tex is copied.
 	 */
-	void copy(const Texture tex, ShortRect* rect = null) in {
+	void copy(const Texture tex, const ShortRect* rect = null) in {
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
@@ -635,7 +586,9 @@ final:
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
-		tex._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]), RenderMode.Reverse);
+		tex._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]),
+		            rect,
+		            RenderMode.Reverse);
 		
 		this.bind();
 		
@@ -648,7 +601,9 @@ final:
 	 * If it is null (default) the whole Texture will be updated.
 	 * The third parameter is the format of the pixels.
 	 */
-	void updateMemory(const void* memory, ShortRect* rect = null, Format fmt = Format.None) in {
+	void updateMemory(const void* memory, const ShortRect* rect = null,
+	                  Format fmt = Format.None)
+	in {
 		assert(memory !is null, "Pixels is null.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {

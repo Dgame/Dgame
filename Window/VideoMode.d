@@ -14,38 +14,14 @@ private {
  */
 struct VideoMode {
 public:
-	/**
-	 * The specific video modes
-	 */
-	enum {
-		Fullscreen	= SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
-		Desktop     = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
-		OpenGL		= SDL_WINDOW_OPENGL,	 /** OpenGL support */
-		Shown		= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
-		Borderless	= SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
-		Resizeable	= SDL_WINDOW_RESIZABLE,  /** Window is resizeable */
-		Maximized	= SDL_WINDOW_MAXIMIZED,  /** Maximize the Window immediately */
-		Minimized	= SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
-		InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /* Grab the input inside the window */
-		
-		Default = Shown | OpenGL /** Default mode is Shown|OpenGL */
-	}
-	
-	/**
-	 * The real video mode
-	 * 
-	 * See: video mode enum
-	 */
-	const uint flag;
-	const ushort width;			/** The width of this video mode */
-	const ushort height;		/** The height of this video mode */
-	const ubyte refreshRate; 	/** The refresh rate of this video mode */
+	ushort width;	/** The width of this video mode */
+	ushort height;	/** The height of this video mode */
+	ubyte refreshRate;	/** The refresh rate of this video mode */
 	
 private:
-	this(int width, int height, uint flag, int hz) {
+	this(int width, int height, int hz) {
 		this.width  = cast(ushort) width;
 		this.height = cast(ushort) height;
-		this.flag   = flag;
 		this.refreshRate = cast(ubyte) hz;
 	}
 	
@@ -53,8 +29,8 @@ public:
 	/**
 	 * CTor
 	 */
-	this(ushort width, ushort height, uint flag) {
-		this(width, height, flag, 0);
+	this(ushort width, ushort height) {
+		this(width, height, 0);
 	}
 	
 	/**
@@ -67,13 +43,6 @@ public:
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * Checks whether the current VideoMode has the given Flag
-	 */
-	bool hasFlag(uint flag) const pure nothrow {
-		return cast(bool) this.flag & flag;
 	}
 	
 	/**
@@ -90,7 +59,7 @@ public:
 		SDL_DisplayMode mode;
 		int result = SDL_GetDesktopDisplayMode(display, &mode);
 		
-		return VideoMode(mode.w, mode.h, VideoMode.Default, mode.refresh_rate);
+		return VideoMode(mode.w, mode.h, mode.refresh_rate);
 	}
 	
 	/**
@@ -100,7 +69,7 @@ public:
 		SDL_DisplayMode mode;
 		int result = SDL_GetDisplayMode(display, index, &mode);
 		
-		return VideoMode(mode.w, mode.h, VideoMode.Default, mode.refresh_rate);
+		return VideoMode(mode.w, mode.h, mode.refresh_rate);
 	}
 	
 	/**

@@ -33,16 +33,25 @@ public:
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2f position, ref const Color col) {
+	this(float x, float y) {
 		debug writeln("CTor Pixel");
-		this.set(position, col);
+		this.setPosition(x, y);
 	}
+	
 	/**
 	 * CTor
 	 */
 	this(ref const Vector2f position) {
 		debug writeln("CTor Pixel");
 		this.setPosition(position);
+	}
+	
+	/**
+	 * CTor
+	 */
+	this(ref const Vector2f position, ref const Color col) {
+		debug writeln("CTor Pixel");
+		this.set(position, col);
 	}
 	
 	/**
@@ -57,9 +66,16 @@ public:
 	 * Set a (new) position
 	 */
 	void setPosition(ref const Vector2f position) pure nothrow {
-		this.x = position.x;
-		this.y = position.y;
-		this.z = 0f;
+		this.setPosition(position.x, position.y);
+	}
+	
+	/**
+	 * Set a (new) position
+	 */
+	void setPosition(float px, float py, float pz = 0f) pure nothrow {
+		this.x = px;
+		this.y = py;
+		this.z = pz;
 	}
 	
 	/**
@@ -77,7 +93,7 @@ public:
 	/**
 	 * Create a Color from the color data
 	 */
-	Color getAsColor() const pure nothrow {
+	Color getAsColor() const {
 		return Color(this.r, this.g, this.b, this.a);
 	}
 	

@@ -13,17 +13,57 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Pixel.this"></a> this();
+<dl><dt><big><a name="Pixel.x"></a>float <u>x</u>;
+</big></dt>
+<dd>The coordinates<br><br>
+
+</dd>
+<dt><big><a name="Pixel.y"></a>float <u>y</u>;
+</big></dt>
+<dd>The coordinates<br><br>
+
+</dd>
+<dt><big><a name="Pixel.z"></a>float <u>z</u>;
+</big></dt>
+<dd>The coordinates<br><br>
+
+</dd>
+<dt><big><a name="Pixel.r"></a>float <u>r</u>;
+</big></dt>
+<dd>The color components<br><br>
+
+</dd>
+<dt><big><a name="Pixel.g"></a>float <u>g</u>;
+</big></dt>
+<dd>The color components<br><br>
+
+</dd>
+<dt><big><a name="Pixel.b"></a>float <u>b</u>;
+</big></dt>
+<dd>The color components<br><br>
+
+</dd>
+<dt><big><a name="Pixel.a"></a>float <u>a</u>;
+</big></dt>
+<dd>The color components<br><br>
+
+</dd>
+<dt><big><a name="Pixel.this"></a> this();
 </big></dt>
 <dd>Disable default CTor<br><br>
 
 </dd>
-<dt><big><a name="Pixel.this"></a> this(ref const Vector2f <i>position</i>, ref const Color <i>col</i>);
+<dt><big><a name="Pixel.this"></a> this(float <i>x</i>, float <i>y</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
 <dt><big><a name="Pixel.this"></a> this(ref const Vector2f <i>position</i>);
+</big></dt>
+<dd>CTor<br><br>
+
+</dd>
+<dt><big><a name="Pixel.this"></a> this(ref const Vector2f <i>position</i>, ref const Color <i>col</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -38,12 +78,17 @@ rschuett<br><br>
 <dd>Set a (new) <i>position</i><br><br>
 
 </dd>
+<dt><big><a name="Pixel.setPosition"></a>pure nothrow void <u>setPosition</u>(float <i>px</i>, float <i>py</i>, float <i>pz</i> = 0.000000F);
+</big></dt>
+<dd>Set a (new) position<br><br>
+
+</dd>
 <dt><big><a name="Pixel.setColor"></a>pure nothrow void <u>setColor</u>(ref const Color <i>col</i>);
 </big></dt>
 <dd>Set a (new) color<br><br>
 
 </dd>
-<dt><big><a name="Pixel.getAsColor"></a>const pure nothrow Color <u>getAsColor</u>();
+<dt><big><a name="Pixel.getAsColor"></a>const Color <u>getAsColor</u>();
 </big></dt>
 <dd>Create a Color from the color data<br><br>
 

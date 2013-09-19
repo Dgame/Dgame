@@ -99,6 +99,16 @@ rschuett<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
+<dt><big><a name="Color.withTransparency"></a>const Color <u>withTransparency</u>(ubyte <i>alpha</i> = 0);
+</big></dt>
+<dd>Returns a copy of the current Color with a given transpareny.
+<br><br>
+<b>Example:</b><br>
+<pre class="d_code">Color(current.red, current.green, current.blue, <i>alpha</i>);
+</pre>
+<br><br>
+
+</dd>
 <dt><big><a name="Color.ptr"></a>const @property SDL_Color* <u>ptr</u>();
 </big></dt>
 <dd>Returns a SDL_Color pointer.<br><br>
@@ -111,7 +121,8 @@ rschuett<br><br>
 </dd>
 <dt><big><a name="Color.set"></a>pure nothrow void <u>set</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 1.00000F);
 </big></dt>
-<dd>Set all color components to new values<br><br>
+<dd>Set all color components to new values
+ Expect that every component is in range 0.0 .. 1.0<br><br>
 
 </dd>
 <dt><big><a name="Color.opEquals"></a>const pure nothrow bool <u>opEquals</u>(ref const Color <i>col</i>);

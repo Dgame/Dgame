@@ -2,6 +2,7 @@ module Dgame.Window.Window;
 
 private {
 	debug import std.stdio;
+	import std.algorithm : swap;
 	
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
@@ -13,13 +14,12 @@ private {
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.RenderTarget;
+	import Dgame.Graphics.Renderer;
 	import Dgame.Graphics.TileMap;
 	import Dgame.Math.Vector2;
 	import Dgame.Window.VideoMode;
+	import Dgame.System.Clock;
 }
-
-public import Dgame.System.Clock;
 
 /**
  * Window is a rendering window where all drawable objects are drawn.
@@ -29,7 +29,7 @@ public import Dgame.System.Clock;
  *
  * Author: rschuett
  */
-class Window {
+final class Window {
 public:
 	/**
 	 * The Window syncronisation mode.
@@ -42,66 +42,64 @@ public:
 	}
 	
 	/**
-	 * Window VideoMode's
+	 * The specific window styles
 	 */
-	const VideoMode vMode;/// = void;
+	enum Style {
+		Fullscreen	= SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
+		Desktop     = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
+		OpenGL		= SDL_WINDOW_OPENGL,	 /** OpenGL support */
+		Shown		= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
+		Borderless	= SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
+		Resizeable	= SDL_WINDOW_RESIZABLE,  /** Window is resizeable */
+		Maximized	= SDL_WINDOW_MAXIMIZED,  /** Maximize the Window immediately */
+		Minimized	= SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
+		InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /** Grab the input inside the window */
+		InputFocus  = SDL_WINDOW_INPUT_FOCUS, /** The Window has input (keyboard) focus */
+		MouseFocus  = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
+		
+		Default = Shown | OpenGL /** Default mode is Shown | OpenGL */
+	}
 	
 private:
 	/// Defaults
-	enum {
-		DefaultTitle = "App",
-		DefaultXPos  = 25,
-		DefaultYPos  = 50
-	}
+	enum DefaultTitle = "App";
+	enum DefaultXPos = 25;
+	enum DefaultYPos = 50;
 	
-protected:
+private:
 	SDL_Window* _window;
-	SDL_GLContext _glContext = void;
+	SDL_GLContext _glContext;
 	
-	Color _clearColor = Color.White;
+	Window.Style _style;
+	VideoMode _videoMode = void;
 	
 	string _title;
-	bool _open;
-	bool _fullscreen;
 	ubyte _fpsLimit;
-	
-	static int _winCount;
 	
 	Clock _clock;
 	
+	static int _winCount;
+	
 public:
-final:
-	
 	/**
 	 * CTor
 	 */
-	this(VideoMode vMode) {
-		this(vMode, DefaultXPos, DefaultYPos);
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(VideoMode vMode, string title) {
-		this(vMode, DefaultXPos, DefaultYPos, title);
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(VideoMode vMode, short x, short y, string title = DefaultTitle) {
+	this(VideoMode videoMode, string title = DefaultTitle,
+	     Style style = Window.Style.Default,
+	     short x = DefaultXPos, short y = DefaultYPos)
+	{
 		/// Create an application window with the following settings:
-		this._window = SDL_CreateWindow(title.ptr,		///    const char* title
-		                                x,				///    int x: initial x position
-		                                y,				///    int y: initial y position
-		                                vMode.width,	///    int w: width, in pixels
-		                                vMode.height,	///    int h: height, in pixels
-		                                vMode.flag);    ///    Uint32 flags: window options
+		this._window = SDL_CreateWindow(title.ptr,	///    const char* title
+		                                x,	///    int x: initial x position
+		                                y,	///    int y: initial y position
+		                                videoMode.width,	///    int w: width, in pixels
+		                                videoMode.height,	///    int h: height, in pixels
+		                                style);	///    Uint32 flags: window options
 		
 		if (this._window is null)
 			throw new Exception("Error by creating a SDL2 window.");
 		
-		if (vMode.flag & VideoMode.OpenGL) {
+		if (style & Style.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
@@ -140,20 +138,18 @@ final:
 			glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
 			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_FASTEST);
 			
-			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
+			glOrtho(0, videoMode.width, videoMode.height, 0, 1, -1);
 			
 			this.setVerticalSync(Sync.Enable);
+			this.setClearColor(Color.White);
 			
 			SDL_GL_MakeCurrent(this._window, this._glContext);
-			
-			this.initClearColor();
 		}
 		
 		this._title = title;
-		this.vMode = vMode;
 		
-		this._open = true;
-		this._fullscreen = vMode.flag & VideoMode.Fullscreen;
+		this._videoMode = videoMode;
+		this._style = style;
 		
 		_winCount += 1;
 	}
@@ -167,7 +163,7 @@ final:
 		/// Close and destroy the window
 		SDL_DestroyWindow(this._window);
 		
-		this._open = false;
+		this._window = null;
 		
 		_winCount--;
 		if (!_winCount)
@@ -209,10 +205,19 @@ final:
 	 *
 	 * See: Sync enum
 	 */
-	Sync getVerticalSync() const {
+	Sync getVerticalSync() {
 		int result = SDL_GL_GetSwapInterval();
 		
 		return cast(Sync) result;
+	}
+	
+	/**
+	 * Returns the Window Style.
+	 * 
+	 * See: Style enum
+	 */
+	Style getStyle() const pure nothrow {
+		return this._style;
 	}
 	
 	/**
@@ -240,25 +245,29 @@ final:
 	 * ----
 	 */
 	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
-		Surface temp = Surface.make(this.vMode.width, this.vMode.height);
+		Surface _capture = Surface.make(this.width, this.height);
 		
-		const uint pSize = 4 * this.vMode.width * this.vMode.height;
+		ubyte* pixels = cast(ubyte*) _capture.getPixels();
+		glReadPixels(0, 0, this.width, this.height,
+		             fmt, GL_UNSIGNED_BYTE, pixels);
 		
-		ubyte[] pixels = Memory.allocate!ubyte(pSize)[0 .. pSize];
-		ubyte* hptr = pixels.ptr;
-		scope(exit) Memory.deallocate(hptr);
+		const ubyte bytesPerPixel = _capture.countBytes();
 		
-		glReadPixels(0, 0, this.vMode.width, this.vMode.height, fmt, GL_UNSIGNED_BYTE, hptr);
-		
-		void* temp_pixels = temp.getPixels();
-		
-		for (ushort i = 0 ; i < this.vMode.height ; i++) {
-			memcpy(temp_pixels + temp.getPitch() * i, 
-			       hptr + 4 * this.vMode.width * (this.vMode.height - i - 1), 
-			       this.vMode.width * 4);
+		for (uint y = 0; y < this.height / 2; y++) {
+			const int swapY = height - y - 1;
+			
+			for (uint x = 0; x < this.width; x++) {
+				const uint offset = bytesPerPixel * (x + y * width);
+				const uint swapOffset = bytesPerPixel * (x + swapY * width);
+				
+				/// Swap R, G and B of the 2 pixels
+				.swap(pixels[offset + 0], pixels[swapOffset + 0]);
+				.swap(pixels[offset + 1], pixels[swapOffset + 1]);
+				.swap(pixels[offset + 2], pixels[swapOffset + 2]);
+			}
 		}
 		
-		return temp;
+		return _capture;
 	}
 	
 	/**
@@ -280,7 +289,7 @@ final:
 	 * 
 	 * See: Dgame.System.Clock
 	 */
-	ref Clock getClock() {
+	Clock getClock() {
 		if (this._clock !is null)
 			return this._clock;
 		
@@ -292,7 +301,7 @@ final:
 	/**
 	 * Set the framerate limit for this window.
 	 */
-	void setFpsLimit(ubyte fps) {
+	void setFpsLimit(ubyte fps) pure nothrow {
 		this._fpsLimit = fps;
 	}
 	
@@ -308,15 +317,7 @@ final:
 	 */
 	@property
 	bool isOpen() const pure nothrow {
-		return this._open;
-	}
-	
-	/**
-	 * Init the current clear color.
-	 */
-	void initClearColor() const {
-		glClearColor(this._clearColor.red, this._clearColor.green, 
-		             this._clearColor.blue, this._clearColor.alpha);
+		return this._window !is null;
 	}
 	
 	/**
@@ -324,12 +325,8 @@ final:
 	 * This is also the background color of the window.
 	 */
 	void setClearColor(ref const Color col) {
-		if (this._clearColor != col) {
-			this._clearColor = col;
-			
-			const float[4] rgba = col.asGLColor();
-			glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-		}
+		const float[4] rgba = col.asGLColor();
+		glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
 	
 	/**
@@ -344,16 +341,7 @@ final:
 	 * This is also the background color of the window.
 	 */
 	void setClearColor(float red, float green, float blue, float alpha = 0.0) {
-		this._clearColor.set(red, green, blue, alpha);
-		
 		glClearColor(red, green, blue, alpha);
-	}
-	
-	/**
-	 * Returns the current clear color.
-	 */
-	ref const(Color) getClearColor() const pure nothrow {
-		return this._clearColor;
 	}
 	
 	/**
@@ -369,13 +357,13 @@ final:
 	void draw(Drawable draw) in {
 		assert(draw !is null, "Drawable object is null.");
 	} body {
-		draw.render();
+		draw.render(this);
 	}
 	
 	/**
-	 * Draw a Render Target on screen.
+	 * Draw a Renderer on the screen.
 	 */
-	void draw(ref RenderTarget rtarget) {
+	void draw(Renderer rtarget) {
 		rtarget.present();
 	}
 	
@@ -384,13 +372,13 @@ final:
 	 * If the framerate limit is not 0, it waits for (1000 / framerate limit) milliseconds.
 	 */
 	void display() {
-		if (!this._open)
+		if (!this.isOpen())
 			return;
 		
-		if (this._fpsLimit)
+		if (this._fpsLimit != 0 && this._clock !is null)
 			this.getClock().wait(1000 / this._fpsLimit);
 		
-		if (this.vMode.flag & VideoMode.OpenGL) {
+		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
 				SDL_GL_MakeCurrent(this._window, this._glContext);
 			
@@ -446,8 +434,8 @@ final:
 	 *
 	 * Returns: the old title
 	 */
-	string setTitle(string title) {
-		string old_title = this.getTitle();
+	const(string) setTitle(const string title) {
+		const string old_title = this.getTitle();
 		
 		SDL_SetWindowTitle(this._window, title.ptr);
 		
@@ -455,26 +443,36 @@ final:
 	}
 	
 	/**
-	 * Returns the width.
-	 */
-	@property
-	ushort width() const pure nothrow {
-		return this.vMode.width;
-	}
-	
-	/**
-	 * Returns the height.
-	 */
-	@property
-	ushort height() const pure nothrow {
-		return this.vMode.height;
-	}
-	
-	/**
 	 * Set a new size to this window
 	 */
 	void setSize(ushort width, ushort height) {
 		SDL_SetWindowSize(this._window, width, height);
+		
+		this._videoMode.width  = width;
+		this._videoMode.height = height;
+	}
+	
+	void fetchSize(int* w, int* h) in {
+		assert(w !is null && h !is null, "w or h pointer is null.");
+	} body {
+		SDL_GetWindowSize(this._window, w, h);
+	}
+	
+	int[2] getSize() {
+		int[2] size;
+		this.fetchSize(&size[0], &size[1]);
+		
+		return size;
+	}
+	
+	@property
+	ushort width() const pure nothrow {
+		return this._videoMode.width;
+	}
+	
+	@property
+	ushort height() const pure nothrow {
+		return this._videoMode.height;
 	}
 	
 	/**
@@ -550,28 +548,22 @@ final:
 	}
 	
 	/**
-	 * Returns the Flags of this Window
-	 */
-	uint getFlags() {
-		return SDL_GetWindowFlags(this._window);
-	}
-	
-	/**
-	 * Enable or disable Fullscreen mode.
+	 * Enable or Disable Fullscreen mode.
 	 */
 	void setFullscreen(bool enable) {
-		if (enable == this._fullscreen)
-			return;
-		
-		if (SDL_SetWindowFullscreen(this._window, enable) == 0)
-			this._fullscreen = enable;
+		if (SDL_SetWindowFullscreen(this._window, enable) == 0) {
+			if (enable)
+				this._style |= Style.Fullscreen;
+			else
+				this._style &= ~Style.Fullscreen;
+		}
 	}
 	
 	/**
-	 * Check whether this Window is currently windowed, or not.
+	 * Returns, if this Window is in Fullscreen mode.
 	 */
 	bool isFullscreen() const pure nothrow {
-		return this._fullscreen;
+		return this._style & Style.Fullscreen;
 	}
 	
 	/**
@@ -579,5 +571,12 @@ final:
 	 */
 	void setIcon(ref Surface icon) {
 		SDL_SetWindowIcon(this._window, icon.ptr);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	void setIcon(Surface icon) {
+		this.setIcon(icon);
 	}
 }

@@ -2,231 +2,281 @@ module Dgame.Core.Memory.SmartPointer.Shared;
 
 private {
 	debug import std.stdio;
-	/*
-	 import std.conv : emplace;
-	 
-	 import core.stdc.stdlib : malloc, free;
-	 */
+	import core.stdc.stdlib : malloc, free;
+	import std.conv : emplace;
 }
 
-shared_ptr!T make_shared(T)(T* ptr)
-	if (is(T == struct))
-{
-	return shared_ptr!T(ptr);
-}
+void dummy_deleter(void*) { }
 
-private static int shared_counter = 0;
-
-void dummyDeleter(void* ptr) pure nothrow {
+private mixin template Make(T) {
+	static T* make(Args...)(Args args) {
+		T* mem = cast(T*) .malloc(T.sizeof);
+		
+		return .emplace(mem, args);
+	}
 	
+	static void free(ref T* ptr) {
+		.destroy(*ptr); /// for DTor call
+		.free(ptr);
+		
+		ptr = null;
+	}
 }
 
-private struct SharedData(T) {
+private struct Counter {
 public:
-	T* _ptr;
-	int _usage;
+	int count = 1;
 	
 	int inc() pure nothrow {
-		return ++this._usage;
+		return ++this.count;
 	}
 	
 	int dec() pure nothrow {
-		return --this._usage;
+		return --this.count;
 	}
+	
+	mixin Make!(typeof(this));
+} unittest {
+	writeln("unittest for Counter");
+	
+	Counter* c1;
+	assert(c1 is null);
+	{
+		scope(exit) Counter.free(c1);
+		
+		c1 = Counter.make();
+		
+		assert(c1 !is null);
+		assert(c1.count == 1);
+		c1.inc();
+		assert(c1.count == 2);
+		c1.dec();
+		assert(c1.count == 1);
+	}
+	assert(c1 is null);
 }
 
-struct shared_ptr(T, alias _deleter = dummyDeleter)
-	if (is(T == struct))
+private struct Payload(T) {
+public:
+	T* ptr;
+	Counter* counter;
+	
+	this(T* ptr) in {
+		assert(ptr !is null);
+	} body {
+		this.ptr = ptr;
+		this.counter = Counter.make();
+	}
+	
+	~this() {
+		debug writeln("Delete Payload and Counter");
+		
+		Counter.free(this.counter);
+	}
+	
+	mixin Make!(typeof(this));
+} unittest {
+	writeln("unittest for Payload");
+	
+	int i = 42;
+	
+	Payload!(int)* p1;
+	assert(p1 is null);
+	{
+		scope(exit) Payload!(int).free(p1);
+		
+		p1 = Payload!(int).make(&i);
+		
+		assert(p1 !is null);
+		assert(p1.ptr !is null);
+		assert(*p1.ptr == i);
+	}
+	assert(p1 is null);
+}
+
+struct shared_ptr(T, alias _deleter = dummy_deleter)
+	if (!is(T == class) && !is(T : U*, U))
 {
 private:
-	SharedData!(T)* _shared;
-	bool _isCopy;
+	Payload!(T)* _payload;
+	
+	static int _id;
 	
 	void _destruct() {
-		if (this._shared && this._shared._ptr) {
-			debug writeln("delete SM (", this._shared._ptr, ") with: ",
-			              __traits(identifier, _deleter));
-			
-			_deleter(this._shared._ptr);
-			this._shared._ptr = null;
-			
-			debug writeln("Destructed");
-		}
+		_deleter(this._payload.ptr);
+		
+		this._payload.ptr = null;
+		typeof(this._payload).free(this._payload);
 	}
 	
 public:
 	@disable
 	this(typeof(null));
 	
-	@disable
-	this(ref shared_ptr!T);
-	
 	this(T* ptr) {
-		this._shared = new SharedData!T(ptr, 1);
+		this._payload = Payload!T.make(ptr);
 		
-		shared_counter++;
+		_id++;
 	}
 	
 	this(this) {
-		this._shared.inc();
-		this._isCopy = true;
+		if (this._payload !is null)
+			this._payload.counter.inc();
 		
-		shared_counter++;
+		_id++;
 	}
 	
-	@disable
-	void opAssign(ref shared_ptr!T);
+	void opAssign(ref shared_ptr!T sptr) in {
+		assert(sptr.isValid());
+	} body {
+		if (!this.isValid())
+			_id++;
+		
+		this.release();
+		
+		this._payload = sptr._payload;
+		this._payload.counter.inc();
+	}
 	
-	void opAssign(shared_ptr!T rhs) {
-		if (this._shared && this._shared.dec() <= 0)
-			this.release();
-		
-		this._shared = rhs._shared;
-		
-		if (!is(typeof(this) == typeof(rhs)))
-			rhs._shared = null; /// to avoid destruction of ptr
-		else
-			this._shared.inc();
+	void opAssign(shared_ptr!T sptr) {
+		this.opAssign(sptr);
 	}
 	
 	~this() {
-		debug writeln("DTor smart_ptr: ",
-		              shared_counter, " => ",
-		              (this._shared ? this._shared._usage : -1),
-		              " :: ", __traits(identifier, _deleter), " :: ",
-		              __traits(identifier, T), " :: ",
-		              (this._shared ? this._shared._ptr : null), " :: ", this._isCopy);
+		this.release();
 		
-		shared_counter--;
-		
-		if (this._shared && this._shared.dec() <= 0)
-			this.release();
+		_id--;
 	}
 	
 	void release() {
-		this._destruct();
-		
-		if (this._shared) {
-			.destroy(*this._shared);
-			//			.free(this._shared);
-		}
-	}
-	
-	@property
-	bool valid() const pure nothrow {
-		return this._shared !is null && this._shared._ptr !is null;
-	}
-	
-	@property
-	bool isCopy() const pure nothrow {
-		return this._isCopy;
-	}
-	
-	@property
-	int refcount() const pure nothrow {
-		return this._shared ? this._shared._usage : 0;
-	}
-	
-	void swap(ref shared_ptr!T rhs) pure nothrow {
-		T* ptr = this._shared._ptr;
-		
-		this._shared._ptr = rhs._shared._ptr;
-		rhs._shared._ptr = ptr;
-	}
-	
-	void reset(T* ptr, bool destruct = true) {
-		if (this._shared) {
-			if (destruct)
-				this._destruct();
+		if (!this.isValid()) {
+			debug writeln("Delete invalid shared_ptr :: ",
+			              __traits(identifier, _deleter),
+			              " :: ", _id,
+			              " :: ", this._payload ? this._payload.ptr : null);
 			
-			this._shared._ptr = ptr;
-		} else if (ptr !is null) {
-			this._shared = new SharedData!T(ptr, 1);
-			//			this._shared = make_SharedData!T(ptr, 1);
+			return;
+		}
+		
+		if (!this._payload.counter.dec()) {
+			debug writeln("Destruct with ",
+			              __traits(identifier, _deleter),
+			              " :: ", _id,
+			              " :: ", this._payload ? this._payload.ptr : null);
+			
+			this._destruct();
+		} else {
+			debug writeln("One out with ",
+			              __traits(identifier, _deleter),
+			              " :: ", _id,
+			              " :: ", this._payload ? this._payload.ptr : null);
 		}
 	}
 	
-	@property
+	void reset(T* ptr) in {
+		assert(ptr !is null);
+	} body {
+		this.release();
+		
+		this._payload = Payload!T.make(ptr);
+	}
+	
 	inout(T*) ptr() inout pure nothrow {
-		return this._shared ? this._shared._ptr : null;
+		if (this._payload !is null)
+			return this._payload.ptr;
+		
+		return null;
 	}
 	
 	alias ptr this;
 	
-	bool opEquals(ref const shared_ptr!T rhs) const pure nothrow {
-		if (!this._shared || !rhs._shared)
-			return false;
-		
-		return this._shared._ptr == rhs._shared._ptr;
+	int usage() const pure nothrow {
+		return this._payload !is null ? this._payload.counter.count : -1;
 	}
-} unittest {
+	
+	bool isValid() const pure nothrow {
+		return this._payload !is null ? this._payload.ptr !is null : false;
+	}
+	
+	static int ID() {
+		return _id;
+	}
+}
+
+unittest {
+	import std.conv : to;
+	
 	struct A {
 	public:
 		int id;
 	}
 	
 	void test(shared_ptr!A rhs) {
-		assert(rhs.isCopy);
+		//assert(rhs.isCopy);
 		assert(rhs.id == 42);
-		assert(rhs.valid);
-		assert(rhs.refcount == 2);
+		assert(rhs.isValid);
+		assert(rhs.usage == 2);
 	}
 	
-	shared_ptr!A as = make_shared(new A(42));
+	shared_ptr!A as = new A(42);
 	
 	assert(as.id == 42);
-	assert(as.refcount == 1);
-	assert(as.valid);
-	assert(!as.isCopy);
+	assert(as.usage == 1);
+	assert(as.isValid);
+	//assert(!as.isCopy);
 	
 	test(as);
 	
 	assert(as.id == 42);
-	assert(as.refcount == 1);
-	assert(as.valid);
-	assert(!as.isCopy);
+	assert(as.usage == 1);
+	assert(as.isValid);
+	//assert(!as.isCopy);
 	
-	shared_ptr!A s1 = make_shared(new A(111));
+	shared_ptr!A s1 = new A(111);
 	shared_ptr!A s2 = s1;
 	
-	assert(s1.refcount == 2);
-	assert(s2.refcount == 2);
-	assert(s2.isCopy());
+	assert(s1.usage == 2);
+	assert(s2.usage == 2);
+	//assert(s2.isCopy());
 	assert(s1 == s2);
 	
-	s1 = make_shared(new A(222));
+	s1.reset(new A(222));
 	
-	assert(s2.valid);
-	assert(s1.refcount == 1);
-	assert(s2.refcount == 1);
-	assert(s2.isCopy());
+	debug writeln("\t\t", s1.usage, "::", s2.usage);
+	
+	assert(s1.isValid);
+	assert(s2.isValid);
+	assert(s1.usage == 1, to!string(s1.usage));
+	assert(s2.usage == 1, to!string(s2.usage));
+	//assert(s2.isCopy());
 	assert(s1 != s2);
 	
-	void testDeleter(A* ptr) { }
-	
-	void test2(shared_ptr!(A, testDeleter) rhs, int id) {
-		assert(rhs.isCopy);
-		assert(rhs.id == id);
-		assert(rhs.valid);
-		assert(rhs.refcount == 2);
+	void testDeleter(A* ptr) {
+		
 	}
 	
-	shared_ptr!(A, testDeleter) s3 = make_shared(new A(23));
+	void test2(shared_ptr!(A, testDeleter) rhs, int id) {
+		//assert(rhs.isCopy);
+		assert(rhs.id == id);
+		assert(rhs.isValid);
+		assert(rhs.usage == 2);
+	}
 	
-	assert(s3.valid);
+	shared_ptr!(A, testDeleter) s3 = new A(23);
+	
+	assert(s3.isValid);
 	assert(s3.id == 23);
-	assert(s3.refcount == 1);
+	assert(s3.usage == 1);
 	
 	test2(s3, 23);
 	
-	assert(s3.valid);
+	assert(s3.isValid);
 	assert(s3.id == 23);
-	assert(s3.refcount == 1);
+	assert(s3.usage == 1);
 	
-	s3 = make_shared(new A(42));
+	s3.reset(new A(42));
 	
-	assert(s3.valid);
+	assert(s3.isValid);
 	assert(s3.id == 42);
-	assert(s3.refcount == 1);
+	assert(s3.usage == 1);
 }
-

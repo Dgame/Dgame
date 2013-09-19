@@ -37,39 +37,39 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="opAssign"></a>void <u>opAssign</u>(U)(ref const Vector2!(U) <i>rhs</i>);
+<dt><big><a name="opAssign"></a>void <u>opAssign</u>(ref const Vector2!(T) <i>rhs</i>);
 </big></dt>
 <dd><u>opAssign</u><br><br>
 
 </dd>
-<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op)(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op, U)(U <i>number</i>);
+<dt><big><a name="opOpAssign"></a>Vector2!(T) <u>opOpAssign</u>(string op)(T <i>number</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op)(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
 </dd>
-<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op, U)(U <i>number</i>);
+<dt><big><a name="opBinary"></a>Vector2!(T) <u>opBinary</u>(string op)(T <i>number</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
 </dd>
 <dt><big><a name="opNeg"></a>const Vector2!(T) <u>opNeg</u>();
 </big></dt>
-<dd>Negation<br><br>
+<dd>Returns a negated copy of this Vector.<br><br>
 
 </dd>
 <dt><big><a name="negate"></a>pure nothrow void <u>negate</u>();
 </big></dt>
-<dd>Negation<br><br>
+<dd>Negate this Vector<br><br>
 
 </dd>
 <dt><big><a name="opEquals"></a>const pure nothrow bool <u>opEquals</u>(ref const Vector2!(T) <i>vec</i>);
@@ -93,12 +93,12 @@ cast this vector to another type.<br><br>
 <dd>Check if this vector is a unit vector. That means that his length is 1.<br><br>
 
 </dd>
-<dt><big><a name="isOrtho"></a>const pure nothrow bool <u>isOrtho</u>(U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="isOrtho"></a>const pure nothrow bool <u>isOrtho</u>(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Check if another vector is orthogonal to this.<br><br>
 
 </dd>
-<dt><big><a name="scalar"></a>const pure nothrow float <u>scalar</u>(U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="scalar"></a>const pure nothrow float <u>scalar</u>(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>scalar</u> product.<br><br>
 
@@ -113,14 +113,14 @@ cast this vector to another type.<br><br>
 <dd>Calculate the <u>length</u>.<br><br>
 
 </dd>
-<dt><big><a name="angle"></a>const pure nothrow float <u>angle</u>(U)(ref const Vector2!(U) <i>vec</i>, bool <i>degrees</i> = true);
+<dt><big><a name="angle"></a>const pure nothrow float <u>angle</u>(ref const Vector2!(T) <i>vec</i>, bool <i>degrees</i> = true);
 </big></dt>
 <dd>Calculate the <u>angle</u> between two vectors.
- If the second paramter is <b>true</b>, the return value is converted to degrees.
+ If the second paramter is <b>true</b>, the return value is converted to <i>degrees</i>.
  Otherwise, radiant is used.<br><br>
 
 </dd>
-<dt><big><a name="diff"></a>const pure nothrow float <u>diff</u>(U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="diff"></a>const pure nothrow float <u>diff</u>(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>diff</u> between two vectors.<br><br>
 
@@ -130,12 +130,12 @@ cast this vector to another type.<br><br>
 <dd>Normalize the vector in which the coordinates are divided by the length.<br><br>
 
 </dd>
-<dt><big><a name="set"></a>pure nothrow void <u>set</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="set"></a>pure nothrow void <u>set</u>(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>Set new coordinates.<br><br>
 
 </dd>
-<dt><big><a name="move"></a>pure nothrow void <u>move</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="move"></a>pure nothrow void <u>move</u>(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>Move the current coordinates.<br><br>
 
@@ -157,19 +157,9 @@ cast this vector to another type.<br><br>
 <dd>Alias for float Vector<br><br>
 
 </dd>
-<dt><big><a name="Vector2us"></a>alias <u>Vector2us</u> = Vector2!(ushort).Vector2;
-</big></dt>
-<dd>Alias for unsigned short Vector<br><br>
-
-</dd>
 <dt><big><a name="Vector2b"></a>alias <u>Vector2b</u> = Vector2!(byte).Vector2;
 </big></dt>
 <dd>Alias for byte Vector<br><br>
-
-</dd>
-<dt><big><a name="Vector2ub"></a>alias <u>Vector2ub</u> = Vector2!(ubyte).Vector2;
-</big></dt>
-<dd>Alias for ubyte Vector<br><br>
 
 </dd>
 </dl>

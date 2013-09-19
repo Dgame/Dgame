@@ -11,17 +11,15 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Math : fpEqual;
-	
-	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
+	import Dgame.Math.Rect;
 	import Dgame.Math.VecN;
-	//	import Dgame.Graphics.Color;
+	
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.Interface.Transformable;
-	import Dgame.System.Buffer;
+	import Dgame.Graphics.Transform;
+	import Dgame.System.VertexBufferObject;
 }
 
 /**
@@ -42,9 +40,10 @@ public:
 	 */
 	ushort height;
 	/**
-	 * The map size
+	 * The map size.
+	 * index 0 is width / tileWidth and index 1 is height / tileHeight
 	 */
-	ushort[2] mapSize = void;
+	ushort[2] mapSize;
 	/**
 	 * The tile width in pixel (for example: 16, 32, 64)
 	 */
@@ -84,14 +83,16 @@ public:
 	 */
 	const ushort[2] tileCoords;
 	
-	void opAssign(ref const Tile rhs) {
-		debug writeln("opAssign Tile");
-		
-		memcpy(&this, &rhs, Tile.sizeof);
+	void opAssign(ref const Tile t) nothrow {
+		.memcpy(&this, &t, Tile.sizeof);
+	}
+	
+	void opAssign(const Tile t) nothrow {
+		this.opAssign(t);
 	}
 }
 
-struct SubSurface {
+private struct SubSurface {
 public:
 	Surface clip = void;
 	ushort gid;
@@ -106,7 +107,7 @@ ushort roundToNext2Pot(ushort dim) {
 	assert(roundToNext2Pot(832) == 1024);
 }
 
-ushort calcDim(uint tileNum, ubyte tileDim) {
+ushort calcDim(size_t tileNum, ubyte tileDim) {
 	if (tileDim == 0)
 		return 0;
 	if (tileNum == 0)
@@ -166,16 +167,13 @@ ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  *
  * author: rschuett
  */
-class TileMap : Drawable, Transformable {
+class TileMap : Drawable {
 private:
 	void _readTileMap() {
-		Document doc = new Document(cast(string) read(this._filename));
+		Document doc = new Document(cast(string) .read(this._filename));
 		
 		vec3f[] vertices;
-		const size_t cap = vertices.reserve(400);
-		scope(exit) .destroy(vertices);
-		
-		debug writefln("TileMap: Reserve %d vertices.", cap);
+		scope(exit) delete vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -189,6 +187,12 @@ private:
 				if (!this._tmi.width) {
 					this._tmi.width  = to!ushort(elem.tag.attr["width"]);
 					this._tmi.height = to!ushort(elem.tag.attr["height"]);
+					
+					if (vertices.length != 0)
+						throw new Exception("Wrong format.");
+					
+					const size_t cap = vertices.reserve(this._tmi.width * this._tmi.height * 4);
+					debug writefln("TileMap: Reserve %d vertices.", cap);
 				}
 				
 				ushort row, col;
@@ -199,8 +203,8 @@ private:
 					float vy = row * this._tmi.tileHeight;
 					
 					this._tiles ~= Tile(gid, elem.tag.attr["name"],
-					                    [cast(ushort) vx, cast(ushort) vy],
-					                    [col, row]);
+					[cast(ushort) vx, cast(ushort) vy],
+					[col, row]);
 					
 					float vw = this._tmi.tileWidth;
 					float vh = this._tmi.tileHeight;
@@ -229,24 +233,21 @@ private:
 		this._tmi.width *= this._tmi.tileWidth;
 		this._tmi.height *= this._tmi.tileHeight;
 		
-		this._buf.bind(Primitive.Target.Vertex);
+		this._vbo.bind(Primitive.Target.Vertex);
 		
-		this._vCount = vertices.length;
-		
-		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&vertices[0], this._vCount * vec3f.sizeof);
+		if (!this._vbo.isCurrentEmpty())
+			this._vbo.modify(&vertices[0], vertices.length * vec3f.sizeof);
 		else
-			this._buf.cache(&vertices[0], this._vCount * vec3f.sizeof);
+			this._vbo.cache(&vertices[0], vertices.length * vec3f.sizeof);
 		
-		this._buf.unbind();
-		
-		vertices = null;
+		this._vbo.unbind();
 		
 		this._loadTileset();
 	}
 	
 	void _loadTileset() in {
-		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
+		assert(this._tmi.tileWidth == this._tmi.tileHeight,
+		       "Tile dimensions must be equal.");
 	} body {
 		SubSurface[] subs;
 		
@@ -261,12 +262,12 @@ private:
 		/// Sammeln der Tiles, die wirklich benötigt werden
 		foreach (ref const Tile t; this._tiles) {
 			if (t.gid !in used) {
-				used[t.gid] = calcPos(t.gid, tileset.width, this._tmi.tileWidth, this._tmi.tileHeight);
-				
-				src.setPosition(used[t.gid]);
-				
-				if (this._doCompress)
+				used[t.gid] = calcPos(t.gid, tileset.width,
+				                      this._tmi.tileWidth, this._tmi.tileHeight);
+				if (this._doCompress) {
+					src.setPosition(used[t.gid][0], used[t.gid][1]); /// TODO: May Fixed in 2.064?
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
+				}
 			} else
 				doubly++;
 			
@@ -277,13 +278,11 @@ private:
 		
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
-		
-		subs = null;
-		used = null;
-		coordinates = null;
 	}
 	
-	void _compress(ref Surface tileset, ref ushort[2][ushort] used, ref SubSurface[] subs) {
+	void _compress(ref Surface tileset,
+	               ref ushort[2][ushort] used, ref SubSurface[] subs)
+	{
 		if (this._doCompress) {
 			ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
@@ -322,8 +321,8 @@ private:
 			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height, 
-			                         newTileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width,
+			                         newTileset.height, newTileset.countBits(), t_fmt);
 		} else {
 			//tileset.saveToFile("new_tilset.png");
 			
@@ -331,8 +330,8 @@ private:
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(tileset.getPixels(), tileset.width, tileset.height,
-			                         tileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(tileset.getPixels(), tileset.width,
+			                         tileset.height, tileset.countBits(), t_fmt);
 		}
 	}
 	
@@ -340,7 +339,7 @@ private:
 		/// Sammeln der Textur Koordinaten
 		vec2f[] texCoords;
 		const size_t cap = texCoords.reserve(coordinates.length * 4);
-		scope(exit) .destroy(texCoords);
+		scope(exit) delete texCoords;
 		
 		debug writefln("TileMap: Reserve %d texCoords (%d).", cap, coordinates.length * 4);
 		
@@ -362,66 +361,53 @@ private:
 		
 		debug writefln("TileMap: Needed %d texCoords.", texCoords.length);
 		
-		this._buf.bind(Primitive.Target.TexCoords);
+		this._vbo.bind(Primitive.Target.TexCoords);
 		
-		this._tCount = texCoords.length;
-		
-		if (!this._buf.isCurrentEmpty())
-			this._buf.modify(&texCoords[0], this._tCount * vec2f.sizeof);
+		if (!this._vbo.isCurrentEmpty())
+			this._vbo.modify(&texCoords[0], texCoords.length * vec2f.sizeof);
 		else
-			this._buf.cache(&texCoords[0], this._tCount * vec2f.sizeof);
+			this._vbo.cache(&texCoords[0], texCoords.length * vec2f.sizeof);
 		
-		this._buf.unbind();
-		
-		texCoords = null;
+		this._vbo.unbind();
 	}
 	
 protected:
-	
-	override void _render() {
+	void _render(const Window wnd) in {
+		assert(this._transform !is null, "Transform is null.");
+	} body {
+		glPushAttrib(GL_ENABLE_BIT);
+		scope(exit) glPopAttrib();
+		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT);
-		scope(exit) glPopAttrib();
-		
 		glDisable(GL_BLEND);
 		
-		if (this._rotAngle != 0)
-			glRotatef(this._rotAngle, this._rotation.x, this._rotation.y, 1f);
+		this._transform.applyViewport();
+		this._transform.applyTranslation();
 		
-		glTranslatef(super._position.x, super._position.y, 0f);
+		this._vbo.bindTexture(this._tex);
+		this._vbo.drawArrays(Primitive.Type.TriangleStrip,
+		                     this._tiles.length * 4);
 		
-		if (!fpEqual(this._scale.x, 1f) && !fpEqual(this._scale.y, 1f))
-			glScalef(this._scale.x, this._scale.y, 0f);
-		
-		this._buf.bindTexture(this._tex);
-		this._buf.drawArrays(Primitive.Type.TriangleStrip, this._vCount);
-		
-		this._buf.disableAllStates();
-		this._buf.unbind();
+		this._vbo.disableAllStates();
+		this._vbo.unbind();
 	}
 	
 private:
 	TileMapInfo _tmi;
 	Texture _tex;
+	Transform _transform;
 	
 	Tile[] _tiles;
 	
 	string _filename;
-	
-	size_t _vCount;
-	size_t _tCount;
 	bool _doCompress;
 	
-	Buffer _buf;
+	VertexBufferObject _vbo;
 	
 public:
-	/// mixin transformable functionality
-	mixin TTransformable;
-	
 final:
-	
 	/**
 	 * CTor
 	 * 
@@ -431,9 +417,25 @@ final:
 	 */
 	this(string filename, bool compress = true) {
 		this._tex = new Texture();
-		this._buf = new Buffer(Primitive.Target.Vertex | Primitive.Target.TexCoords);
+		this._vbo = new VertexBufferObject(Primitive.Target.Vertex | Primitive.Target.TexCoords);
 		
 		this.load(filename, compress);
+		
+		this._transform = new Transform();
+	}
+	
+	/**
+	 * Returns the Transformation for this TileMap
+	 */
+	inout(Transform) getTransform() inout pure nothrow {
+		return this._transform;
+	}
+	
+	/**
+	 * Set a (new) Trandformation.
+	 */
+	void setTransform(ref Transform tf) {
+		this._transform = tf;
 	}
 	
 	/**
@@ -443,7 +445,7 @@ final:
 		this._filename = filename;
 		this._doCompress = compress;
 		
-		this._buf.depleteAll();
+		this._vbo.depleteAll();
 		
 		if (this._tiles.length != 0) {
 			.destroy(this._tmi);
@@ -467,8 +469,8 @@ final:
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
 	short[2] convertCoords(T)(T cx, T cy) const {
-		short x = cx >= this._tmi.tileWidth  ? cast(short) round(cx / this._tmi.tileWidth)  : 0;
-		short y = cy >= this._tmi.tileHeight ? cast(short) floor(cy / this._tmi.tileHeight) : 0;
+		short x = cx >= this._tmi.tileWidth  ? cast(short) .round(cx / this._tmi.tileWidth)  : 0;
+		short y = cy >= this._tmi.tileHeight ? cast(short) .floor(cy / this._tmi.tileHeight) : 0;
 		
 		return [x, y];
 	}
@@ -512,7 +514,8 @@ final:
 	}
 	
 	/**
-	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
+	 * Adjusted pixel coordinates so that they lie on valid pixel
+	 * coordinates based on tile coordinates.
 	 */
 	short[2] adjustCoords(T)(T cx, T cy) const {
 		short[2] convCoords = this.convertCoords(cx, cy);
@@ -521,14 +524,16 @@ final:
 	}
 	
 	/**
-	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
+	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates
+	 * based on tile coordinates.
 	 */
 	short[2] adjustCoords(T)(ref const Vector2!T vec) const {
 		return this.adjustCoords(vec.x, vec.y);
 	}
 	
 	/**
-	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.
+	 * Adjusted pixel coordinates so that they lie 
+	 * on valid pixel coordinates based on tile coordinates.
 	 */
 	short[2] adjustCoords(T)(T[2] coords) const {
 		return this.adjustCoords(coords[0], coords[1]);
@@ -543,11 +548,11 @@ final:
 	void reload(const Vector2s[] coords, const Vector2s[] newCoords) in {
 		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
 	} body {
-		this._buf.bind(Primitive.Target.TexCoords);
-		scope(exit) this._buf.unbind();
+		this._vbo.bind(Primitive.Target.TexCoords);
+		scope(exit) this._vbo.unbind();
 		
-		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];
-		this._buf.unmap();
+		float* buffer = cast(float*) this._vbo.map(VertexBufferObject.Access.Read);
+		this._vbo.unmap();
 		
 		foreach (uint index, ref const Vector2s coord; coords) {
 			uint srcGid = coord.x * (coord.y + 1) + coord.y;
@@ -585,11 +590,11 @@ final:
 	 * is replaced with the tile (and the tile surface) on the coordinates newCoord
 	 */
 	void reload(ref const Vector2s coord, ref const Vector2s newCoord) {
-		this._buf.bind(Primitive.Target.TexCoords);
-		scope(exit) this._buf.unbind();
+		this._vbo.bind(Primitive.Target.TexCoords);
+		scope(exit) this._vbo.unbind();
 		
-		float[] buffer = (cast(float*) this._buf.map(Buffer.Access.Read))[0 .. this._tCount];
-		this._buf.unmap();
+		float* buffer = cast(float*) this._vbo.map(VertexBufferObject.Access.Read);
+		this._vbo.unmap();
 		
 		uint srcGid = coord.x * (coord.y + 1) + coord.y;
 		srcGid *= 8;
@@ -691,7 +696,7 @@ final:
 		
 		if (this.isTileAt(x, y, &index)) {
 			if (oldTile)
-				memcpy(oldTile, &this._tiles[index], Tile.sizeof);
+				.memcpy(oldTile, &this._tiles[index], Tile.sizeof);
 			
 			this._tiles[index] = newTile;
 		}

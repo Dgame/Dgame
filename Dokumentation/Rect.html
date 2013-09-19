@@ -37,7 +37,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="opAssign"></a>void <u>opAssign</u>(U)(ref const Rect!(U) <i>rhs</i>);
+<dt><big><a name="opAssign"></a>void <u>opAssign</u>(ref const Rect!(T) <i>rhs</i>);
 </big></dt>
 <dd><u>opAssign</u><br><br>
 
@@ -47,7 +47,7 @@ rschuett<br><br>
 <dd>Returns a pointer to the inner SDL_Rect.<br><br>
 
 </dd>
-<dt><big><a name="opBinary"></a>const pure nothrow Rect!(T) <u>opBinary</u>(string op, U)(ref const Rect!(U) <i>rect</i>);
+<dt><big><a name="opBinary"></a>const pure nothrow Rect!(T) <u>opBinary</u>(string op)(ref const Rect!(T) <i>rect</i>);
 </big></dt>
 <dd>Supported operations: +=, -=, *=, /=, %=<br><br>
 
@@ -67,12 +67,17 @@ rschuett<br><br>
 <dd>Returns an union of the given and this Rect.<br><br>
 
 </dd>
-<dt><big><a name="contains"></a>const pure nothrow bool <u>contains</u>(U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="opBinaryRight"></a>const pure nothrow bool <u>opBinaryRight</u>(string op)(ref Vector2!(T) <i>vec</i>);
+</big></dt>
+<dd>Checks whether this Rect contains the given coordinates.<br><br>
+
+</dd>
+<dt><big><a name="contains"></a>const pure nothrow bool <u>contains</u>(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Checks whether this Rect <u>contains</u> the given coordinates.<br><br>
 
 </dd>
-<dt><big><a name="contains"></a>const pure nothrow bool <u>contains</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="contains"></a>const pure nothrow bool <u>contains</u>(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>Checks whether this Rect <u>contains</u> the given coordinates.<br><br>
 
@@ -100,7 +105,7 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Use this function to calculate a minimal rectangle enclosing a set of <i>points</i>.<br><br>
 
 </dd>
-<dt><big><a name="setSize"></a>pure nothrow void <u>setSize</u>(U)(U <i>width</i>, U <i>height</i>);
+<dt><big><a name="setSize"></a>pure nothrow void <u>setSize</u>(T <i>width</i>, T <i>height</i>);
 </big></dt>
 <dd>Replace current size.<br><br>
 
@@ -110,22 +115,22 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Returns the size (width and height) as static array.<br><br>
 
 </dd>
-<dt><big><a name="increase"></a>pure nothrow void <u>increase</u>(int <i>width</i>, int <i>height</i>);
+<dt><big><a name="increase"></a>pure nothrow void <u>increase</u>(T <i>width</i>, T <i>height</i>);
 </big></dt>
 <dd>Increase current size.<br><br>
 
 </dd>
-<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(U)(ref const Vector2!(U) <i>position</i>);
+<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(ref const Vector2!(T) <i>position</i>);
 </big></dt>
-<dd>Set a new position with a vector.<br><br>
+<dd>Set a new <i>position</i> with a vector.<br><br>
 
 </dd>
-<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(U)(U[2] <i>pos</i>);
+<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(T[2] <i>pos</i>);
 </big></dt>
 <dd>Set a new position with an array.<br><br>
 
 </dd>
-<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>Set a new position with coordinates.<br><br>
 
@@ -137,20 +142,20 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 </dd>
 <dt><big><a name="getPositionAsVector"></a>const pure nothrow Vector2!(T) <u>getPositionAsVector</u>();
 </big></dt>
-<dd>Returns the current position as Vector2!T.<br><br>
+<dd>Creates a Vector2!T and returns thereby the current position.<br><br>
 
 </dd>
-<dt><big><a name="move"></a>pure nothrow void <u>move</u>(U)(ref const Vector2!(U) <i>vec</i>);
+<dt><big><a name="move"></a>pure nothrow void <u>move</u>(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
 <dd>Move the object.<br><br>
 
 </dd>
-<dt><big><a name="move"></a>pure nothrow void <u>move</u>(U)(U <i>x</i>, U <i>y</i>);
+<dt><big><a name="move"></a>pure nothrow void <u>move</u>(T <i>x</i>, T <i>y</i>);
 </big></dt>
 <dd>Move the object.<br><br>
 
 </dd>
-<dt><big><a name="set"></a>pure nothrow void <u>set</u>(U, V)(U <i>x</i>, U <i>y</i>, V <i>w</i>, V <i>h</i>);
+<dt><big><a name="set"></a>pure nothrow void <u>set</u>(T <i>x</i>, T <i>y</i>, T <i>w</i>, T <i>h</i>);
 </big></dt>
 <dd>The new coordinates <b>and</b> a new size.<br><br>
 

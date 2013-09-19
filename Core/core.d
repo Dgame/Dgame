@@ -9,7 +9,7 @@ private {
 /**
  * Current Version
  */
-enum DgVersion {
+enum DgVersion : ubyte {
 	Major = 0,
 	Minor = 9,
 	PatchLevel = 9

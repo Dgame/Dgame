@@ -42,7 +42,7 @@ public:
 	/**
 	 * Font styles
 	 */
-	enum Style {
+	enum Style : ubyte {
 		Bold      = TTF_STYLE_BOLD,			/** Makes the text bold */
 		Italic    = TTF_STYLE_ITALIC,		/** Makes the text italic */
 		Underline = TTF_STYLE_UNDERLINE,	/** Underline the text */
@@ -53,7 +53,7 @@ public:
 	/**
 	 * Font Hints
 	 */
-	enum Hint {
+	enum Hint : ubyte {
 		Normal = TTF_HINTING_NORMAL, /** Normal (default) Hint */
 		Light  = TTF_HINTING_LIGHT,  /** */
 		Mono   = TTF_HINTING_MONO,   /** */
@@ -63,7 +63,7 @@ public:
 	/**
 	 * Font mode
 	 */
-	enum Mode {
+	enum Mode : ubyte {
 		Solid,  /** Solid mode is dirty but fast. */
 		Shaded, /** Blended is optimized but still fast. */
 		Blended /** Nicest but slowest mode. */
@@ -72,7 +72,6 @@ public:
 private:
 	shared_ptr!(TTF_Font, TTF_CloseFont) _target;
 	
-	string _fontFile;
 	ubyte _fontSize;
 	
 	Mode _mode;
@@ -83,7 +82,9 @@ public:
 	/**
 	 * CTor
 	 */
-	this(string filename, ubyte size, Mode mode = Mode.Solid, Style style = Style.Normal) {
+	this(string filename, ubyte size,
+	     Mode mode = Mode.Solid, Style style = Style.Normal)
+	{
 		this._mode  = mode;
 		this._style = style;
 		
@@ -102,13 +103,24 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(ref const Font fnt) {
+	void opAssign(ref Font fnt) {
 		debug writeln("Font opAssign");
+		
+		this._fontSize = fnt._fontSize;
 		
 		this._mode = fnt._mode;
 		this._style = fnt._style;
+		this._hint = fnt._hint;
 		
-		this.loadFromFile(fnt._fontFile, fnt._fontSize); /// freed
+		this.free();
+		this._target = fnt._target;
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	void opAssign(Font fnt) {
+		this.opAssign(fnt);
 	}
 	
 	/**
@@ -125,7 +137,7 @@ public:
 	 * This function is called from the DTor
 	 */
 	void free() {
-		this._target.reset(null);
+		this._target.release();
 	}
 	
 	/**
@@ -134,39 +146,30 @@ public:
 	 * If both are 0, an exception is thrown.
 	 */
 	void loadFromFile(string fontFile, ubyte fontSize = 0) {
-		///this.free(); /// Free old data
+		this.free(); /// Free old data
 		
 		_finalizer ~= &this;
 		
-		assert(this._fontSize != 0 || fontSize != 0, "No size for this font.");
+		fontSize = fontSize == 0 ? this._fontSize : fontSize;
+		debug assert(fontSize != 0, "No size for this font.");
 		
-		if (!exists(fontFile))
+		if (!.exists(fontFile))
 			throw new Exception("Font File does not exists.");
 		
 		try {
-			TTF_Font* font = TTF_OpenFont(fontFile.ptr, fontSize == 0 ? this._fontSize : fontSize);
-			debug writefln("#1 -> Error: %s", to!(string)(TTF_GetError()));
+			TTF_Font* font = TTF_OpenFont(fontFile.ptr, fontSize);
 			
 			if (font is null) {
-				debug writefln("#2 -> Error: %s", to!(string)(TTF_GetError()));
+				debug writefln("TTF Error: %s", to!(string)(TTF_GetError()));
 				throw new Exception("Could not load font " ~ fontFile);
 			}
 			
 			this._target.reset(font);
 		} catch (Throwable t) {
-			debug writefln(" -> Font Size: %d", fontSize == 0 ? this._fontSize : fontSize);
 			throw new Exception(.format("Error by opening font file %s: %s.", fontFile, t.msg));
 		}
 		
-		this._fontFile = fontFile;
 		this._fontSize = fontSize;
-	}
-	
-	/**
-	 * Returns the current filename of the font.
-	 */
-	string getFontFile() const pure nothrow {
-		return this._fontFile;
 	}
 	
 	/**
@@ -175,7 +178,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	void setStyle(Style style) {
-		TTF_SetFontStyle(this._target, style);
+		TTF_SetFontStyle(this._target.ptr, style);
 	}
 	
 	/**
@@ -184,7 +187,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	Style getStyle() const {
-		return cast(Style) TTF_GetFontStyle(this._target);
+		return cast(Style) TTF_GetFontStyle(this._target.ptr);
 	}
 	
 	/**
@@ -213,7 +216,7 @@ public:
 	void setHint(Hint hint) {
 		this._hint = hint;
 		
-		TTF_SetFontHinting(this._target, hint);
+		TTF_SetFontHinting(this._target.ptr, hint);
 	}
 	
 	/**
@@ -221,13 +224,6 @@ public:
 	 */
 	Hint getHint() const pure nothrow {
 		return this._hint;
-	}
-	
-	/**
-	 * Replace or set the font size.
-	 */
-	void setSize(ubyte size) {
-		this._fontSize = size;
 	}
 	
 	/**

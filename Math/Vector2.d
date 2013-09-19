@@ -68,7 +68,7 @@ public:
 	/**
 	 * opAssign
 	 */
-	void opAssign(U)(ref const Vector2!U rhs) {
+	void opAssign(ref const Vector2!T rhs) {
 		debug writeln("opAssign Vector2");
 		this.set(rhs.x, rhs.y);
 	}
@@ -81,7 +81,7 @@ public:
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op, U)(ref const Vector2!U vec) {
+	ref Vector2!T opOpAssign(string op)(ref const Vector2!T vec) {
 		switch (op) {
 			case "+":
 				this.x += vec.x;
@@ -112,9 +112,7 @@ public:
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op, U)(U number)
-		if (isNumeric!U)
-	{
+	ref Vector2!T opOpAssign(string op)(T number) {
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -145,7 +143,7 @@ public:
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op, U)(ref const Vector2!U vec) {
+	Vector2!T opBinary(string op)(ref const Vector2!T vec) {
 		switch (op) {
 			case "+": return Vector2!T(vec.x + this.x, vec.y + this.y);
 			case "-": return Vector2!T(vec.x - this.x, vec.y - this.y);
@@ -159,9 +157,7 @@ public:
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op, U)(U number)
-		if (isNumeric!U)
-	{
+	Vector2!T opBinary(string op)(T number) {
 		switch (op) {
 			case "+": return Vector2!T(this.x + number, this.y + number);
 			case "-": return Vector2!T(this.x - number, this.y - number);
@@ -173,14 +169,14 @@ public:
 	}
 	
 	/**
-	 * Negation
+	 * Returns a negated copy of this Vector.
 	 */
 	Vector2!T opNeg() const {
 		return Vector2!T(-this.x, -this.y);
 	}
 	
 	/**
-	 * Negation
+	 * Negate this Vector
 	 */
 	void negate() pure nothrow {
 		this.x = -this.x;
@@ -218,14 +214,14 @@ public:
 	/**
 	 * Check if another vector is orthogonal to this.
 	 */
-	bool isOrtho(U)(ref const Vector2!U vec) const pure nothrow {
+	bool isOrtho(ref const Vector2!T vec) const pure nothrow {
 		return equals(this.scalar(vec), 0);
 	}
 	
 	/**
 	 * Calculate the scalar product.
 	 */
-	float scalar(U)(ref const Vector2!U vec) const pure nothrow {
+	float scalar(ref const Vector2!T vec) const pure nothrow {
 		return this.x * vec.x + this.y * vec.y;
 	}
 	
@@ -250,7 +246,7 @@ public:
 	 * If the second paramter is true, the return value is converted to degrees.
 	 * Otherwise, radiant is used.
 	 */
-	float angle(U)(ref const Vector2!U vec, bool degrees = true) const pure nothrow {
+	float angle(ref const Vector2!T vec, bool degrees = true) const pure nothrow {
 		float angle = acos(this.scalar(vec) / (this.length * vec.length));
 		
 		if (degrees)
@@ -262,7 +258,7 @@ public:
 	/**
 	 * Calculate the diff between two vectors.
 	 */
-	float diff(U)(ref const Vector2!U vec) const pure nothrow {
+	float diff(ref const Vector2!T vec) const pure nothrow {
 		return sqrt(pow((this.x - vec.x), 2f) + pow((this.y - vec.y), 2f));
 	}
 	
@@ -283,19 +279,15 @@ public:
 	/**
 	 * Set new coordinates.
 	 */
-	void set(U)(U x, U y) pure nothrow
-		if (isNumeric!U)
-	{
-		this.x = cast(T) x;
-		this.y = cast(T) y;
+	void set(T x, T y) pure nothrow {
+		this.x = x;
+		this.y = y;
 	}
 	
 	/**
 	 * Move the current coordinates.
 	 */
-	void move(U)(U x, U y) pure nothrow
-		if (isNumeric!U)
-	{
+	void move(T x, T y) pure nothrow {
 		this.x += x;
 		this.y += y;
 	}
@@ -323,14 +315,6 @@ alias Vector2s = Vector2!short;
  */
 alias Vector2f = Vector2!float;
 /**
- * Alias for unsigned short Vector
- */
-alias Vector2us = Vector2!ushort;
-/**
  * Alias for byte Vector
  */
 alias Vector2b = Vector2!byte;
-/**
- * Alias for ubyte Vector
- */
-alias Vector2ub = Vector2!ubyte;

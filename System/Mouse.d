@@ -32,7 +32,7 @@ public:
 	/**
 	 * Supported mouse states
 	 */
-	enum State {
+	enum State : ubyte {
 		Released, /** */
 		Pressed /** */
 	}
@@ -40,7 +40,7 @@ public:
 	/**
 	 * Supported mouse motion states
 	 */
-	enum MotionStates {
+	enum MotionStates : ubyte {
 		LMask  = 0x1, /** */
 		MMask  = 0x2, /** */
 		RMask  = 0x4, /** */

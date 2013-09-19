@@ -24,8 +24,6 @@ public:
 	}
 	
 protected:
-	FloatRect _viewport;
-	
 	ubyte _row;
 	
 public:
@@ -41,10 +39,10 @@ final:
 	/**
 	 * CTor
 	 */
-	this(Texture tex, ref const FloatRect viewport) {
+	this(Texture tex, ref const ShortRect texView) {
 		this(tex);
 		
-		this.setViewport(viewport);
+		super.setTextureRect(texView);
 	}
 	
 	/**
@@ -52,51 +50,8 @@ final:
 	 * 
 	 * Rvalue version
 	 */
-	this(Texture tex, const FloatRect viewport) {
-		this(tex, viewport);
-	}
-	
-	/**
-	 * Set or replace the current viewport.
-	 * This Viewport is also set for the Texture.
-	 */
-	void setViewport(ref const FloatRect viewport) in {
-		assert(this._tex !is null, "No Texture.");
-	} body {
-		super._tex.setViewport(viewport);
-		this._viewport = viewport;
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setViewport(const FloatRect viewport) {
-		this.setViewport(viewport);
-	}
-	
-	/**
-	 * Get access to the current Viewport.
-	 */
-	ref const(FloatRect) getViewport() const {
-		return this._viewport;
-	}
-	
-	/**
-	 * Get mutable access to the current Viewport.
-	 */
-	inout(FloatRect)* fetchViewport() inout {
-		return &this._viewport;
-	}
-	
-	/**
-	 * Reset the Viewport.
-	 */
-	void resetViewport() {
-		float x = this._viewport.x;
-		float y = this._viewport.y;// + (this._viewport.height * this._row);
-		
-		FloatRect* rect = super._tex.fetchViewport();
-		rect.setPosition(x, y);
+	this(Texture tex, const ShortRect texView) {
+		this(tex, texView);
 	}
 	
 	/**
@@ -121,26 +76,26 @@ final:
 	 * 
 	 * See: Grid
 	 */
-	void slideViewport(Grid grid = Grid.Both) in {
+	void slideTextureRect(Grid grid = Grid.Both) in {
 		assert(this._tex !is null, "No Texture.");
 	} body {
-		float w = this._viewport.width;
-		float h = this._viewport.height;
+		const short w = super._texView.width;
+		const short h = super._texView.height;
 		
-		FloatRect* rect = super._tex.fetchViewport();
-		//		assert(rect !is null);
+		ShortRect* rect = &super._texView;
 		
 		if (grid & Grid.Column) {
-			rect.y = this._row * h;
+			rect.y = cast(short)(this._row * h);
+			
 			if (rect.y >= super._tex.height)
-				rect.y = 0f;
+				rect.y = 0;
 		}
 		
 		if (grid & Grid.Row) {
 			if ((rect.x + w) < super._tex.width)
-				rect.move(w, 0f);
+				rect.x += w;
 			else
-				rect.x = 0f;
+				rect.x = 0;
 		}
 	}
 }

@@ -18,7 +18,6 @@ public:
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */
 	
-	// ushort/ubyte?
 	ushort channels;	/** Number of channels */
 	ushort bits;		/** Number of bits */
 	ushort bytes;		/** Number of bytes */
@@ -30,7 +29,7 @@ public:
 /**
  * All supported music types.
  */
-enum MusicType {
+enum MusicType : ubyte {
 	None,	/** For invalid types */
 	Wave,	/** Wave files */
 	Mod,	/** Mod  -> TODO */
@@ -65,9 +64,7 @@ public:
 	/**
 	 * Free/delete the memory buffer.
 	 */
-	final void freeBuffer() in {
-		assert(_sFile.buffer !is null);
-	} body {
+	final void freeBuffer() {
 		.destroy(_sFile.buffer);
 	}
 	

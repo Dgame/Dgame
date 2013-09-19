@@ -35,29 +35,66 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Window.vMode"></a>const VideoMode <u>vMode</u>;
+<dt><big><a name="Window.Style"></a>enum <u>Style</u>;
 </big></dt>
-<dd>= void;
-<br><br>
-Window VideoMode's<br><br>
+<dd>The specific window styles<br><br>
+
+<dl><dt><big><a name="Window.Style.Fullscreen"></a><u>Fullscreen</u></big></dt>
+<dd>Window is fullscreened <br><br>
 
 </dd>
-<dt><big><a name="Window.this"></a>final  this(VideoMode <i>vMode</i>);
+<dt><big><a name="Window.Style.Desktop"></a><u>Desktop</u></big></dt>
+<dd><u>Desktop</u> Fullscreen <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.OpenGL"></a><u>OpenGL</u></big></dt>
+<dd><u>OpenGL</u> support <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Shown"></a><u>Shown</u></big></dt>
+<dd>Show the Window immediately <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Borderless"></a><u>Borderless</u></big></dt>
+<dd>Hide the Window immediately <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Resizeable"></a><u>Resizeable</u></big></dt>
+<dd>Window is resizeable <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Maximized"></a><u>Maximized</u></big></dt>
+<dd>Maximize the Window immediately <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Minimized"></a><u>Minimized</u></big></dt>
+<dd>Minimize the Window immediately <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.InputGrabbed"></a><u>InputGrabbed</u></big></dt>
+<dd>Grab the input inside the window <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.InputFocus"></a><u>InputFocus</u></big></dt>
+<dd>The Window has input (keyboard) focus <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.MouseFocus"></a><u>MouseFocus</u></big></dt>
+<dd>The Window has mouse focus <br><br>
+
+</dd>
+<dt><big><a name="Window.Style.Default"></a><u>Default</u></big></dt>
+<dd><u>Default</u> mode is Shown | OpenGL <br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Window.this"></a> this(VideoMode <i>videoMode</i>, string <i>title</i> = DefaultTitle, Style <i>style</i> = Window.Style.Default, short <i>x</i> = DefaultXPos, short <i>y</i> = DefaultYPos);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Window.this"></a>final  this(VideoMode <i>vMode</i>, string <i>title</i>);
-</big></dt>
-<dd>CTor<br><br>
-
-</dd>
-<dt><big><a name="Window.this"></a>final  this(VideoMode <i>vMode</i>, short <i>x</i>, short <i>y</i>, string <i>title</i> = DefaultTitle);
-</big></dt>
-<dd>CTor<br><br>
-
-</dd>
-<dt><big><a name="Window.close"></a>final void <u>close</u>();
+<dt><big><a name="Window.close"></a>void <u>close</u>();
 </big></dt>
 <dd>Close and destroy this window.<br><br>
 
@@ -67,13 +104,13 @@ Window VideoMode's<br><br>
 <dd>Returns how many windows exist<br><br>
 
 </dd>
-<dt><big><a name="Window.id"></a>final @property uint <u>id</u>();
+<dt><big><a name="Window.id"></a>@property uint <u>id</u>();
 </big></dt>
 <dd>Every window has an unique Id.
  This method returns this Id.<br><br>
 
 </dd>
-<dt><big><a name="Window.setVerticalSync"></a>final const void <u>setVerticalSync</u>(Sync <i>sync</i>);
+<dt><big><a name="Window.setVerticalSync"></a>const void <u>setVerticalSync</u>(Sync <i>sync</i>);
 </big></dt>
 <dd>Set the Syncronisation mode of this window.
  Default Syncronisation is <code>Sync.Enable</code>.
@@ -82,7 +119,7 @@ Window VideoMode's<br><br>
 Sync enum<br><br>
 
 </dd>
-<dt><big><a name="Window.getVerticalSync"></a>final const Sync <u>getVerticalSync</u>();
+<dt><big><a name="Window.getVerticalSync"></a>Sync <u>getVerticalSync</u>();
 </big></dt>
 <dd>Returns the current syncronisation mode.
 <br><br>
@@ -90,7 +127,15 @@ Sync enum<br><br>
 Sync enum<br><br>
 
 </dd>
-<dt><big><a name="Window.capture"></a>final const Surface <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
+<dt><big><a name="Window.getStyle"></a>const pure nothrow Style <u>getStyle</u>();
+</big></dt>
+<dd>Returns the Window Style.
+<br><br>
+<b>See:</b><br>
+Style enum<br><br>
+
+</dd>
+<dt><big><a name="Window.capture"></a>const Surface <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);
 </big></dt>
 <dd>Capture the pixel data of the current window and
  returns a Surface with this pixel data.
@@ -117,17 +162,17 @@ Image screen = <font color=blue>new</font> Image(wnd.<u>capture</u>());
 <br><br>
 
 </dd>
-<dt><big><a name="Window.hasKeyboardFocus"></a>final const bool <u>hasKeyboardFocus</u>();
+<dt><big><a name="Window.hasKeyboardFocus"></a>const bool <u>hasKeyboardFocus</u>();
 </big></dt>
 <dd>Returns if the keyboard focus is on this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.hasMouseFocus"></a>final const bool <u>hasMouseFocus</u>();
+<dt><big><a name="Window.hasMouseFocus"></a>const bool <u>hasMouseFocus</u>();
 </big></dt>
 <dd>Returns if the mouse focus is on this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.getClock"></a>final ref Clock <u>getClock</u>();
+<dt><big><a name="Window.getClock"></a>Clock <u>getClock</u>();
 </big></dt>
 <dd>Returns the window clock. You can freeze the application or get the current framerate.
 <br><br>
@@ -135,97 +180,87 @@ Image screen = <font color=blue>new</font> Image(wnd.<u>capture</u>());
 Dgame.System.Clock<br><br>
 
 </dd>
-<dt><big><a name="Window.setFpsLimit"></a>final void <u>setFpsLimit</u>(ubyte <i>fps</i>);
+<dt><big><a name="Window.setFpsLimit"></a>pure nothrow void <u>setFpsLimit</u>(ubyte <i>fps</i>);
 </big></dt>
 <dd>Set the framerate limit for this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.getFpsLimit"></a>final const pure nothrow ubyte <u>getFpsLimit</u>();
+<dt><big><a name="Window.getFpsLimit"></a>const pure nothrow ubyte <u>getFpsLimit</u>();
 </big></dt>
 <dd>Returns the framerate limit for this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.isOpen"></a>final const pure nothrow @property bool <u>isOpen</u>();
+<dt><big><a name="Window.isOpen"></a>const pure nothrow @property bool <u>isOpen</u>();
 </big></dt>
 <dd>Check if this window is still opened.<br><br>
 
 </dd>
-<dt><big><a name="Window.initClearColor"></a>final const void <u>initClearColor</u>();
-</big></dt>
-<dd>Init the current clear color.<br><br>
-
-</dd>
-<dt><big><a name="Window.setClearColor"></a>final void <u>setClearColor</u>(ref const Color <i>col</i>);
+<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(ref const Color <i>col</i>);
 </big></dt>
 <dd>Set the color with which this windows clear his buffer.
  This is also the background color of the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.setClearColor"></a>final void <u>setClearColor</u>(const Color <i>col</i>);
+<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(const Color <i>col</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Window.setClearColor"></a>final void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0.000000);
+<dt><big><a name="Window.setClearColor"></a>void <u>setClearColor</u>(float <i>red</i>, float <i>green</i>, float <i>blue</i>, float <i>alpha</i> = 0.000000);
 </big></dt>
 <dd>Set the color with which this windows clear his buffer.
  This is also the background color of the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.getClearColor"></a>final const pure nothrow ref const(Color) <u>getClearColor</u>();
-</big></dt>
-<dd>Returns the current clear color.<br><br>
-
-</dd>
-<dt><big><a name="Window.clear"></a>final const void <u>clear</u>();
+<dt><big><a name="Window.clear"></a>const void <u>clear</u>();
 </big></dt>
 <dd>Clears the buffer.<br><br>
 
 </dd>
-<dt><big><a name="Window.draw"></a>final void <u>draw</u>(Drawable <u>draw</u>);
+<dt><big><a name="Window.draw"></a>void <u>draw</u>(Drawable <u>draw</u>);
 </big></dt>
 <dd>Draw a drawable object on screen.<br><br>
 
 </dd>
-<dt><big><a name="Window.draw"></a>final void <u>draw</u>(ref RenderTarget <i>rtarget</i>);
+<dt><big><a name="Window.draw"></a>void <u>draw</u>(Renderer <i>rtarget</i>);
 </big></dt>
-<dd>Draw a Render Target on screen.<br><br>
+<dd>Draw a Renderer on the screen.<br><br>
 
 </dd>
-<dt><big><a name="Window.display"></a>final void <u>display</u>();
+<dt><big><a name="Window.display"></a>void <u>display</u>();
 </big></dt>
 <dd>Make all changes visible on screen.
  If the framerate limit is not 0, it waits for (1000 / framerate limit) milliseconds.<br><br>
 
 </dd>
-<dt><big><a name="Window.setPosition"></a>final void <u>setPosition</u>(short <i>x</i>, short <i>y</i>);
+<dt><big><a name="Window.setPosition"></a>void <u>setPosition</u>(short <i>x</i>, short <i>y</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
 
 </dd>
-<dt><big><a name="Window.setPosition"></a>final void <u>setPosition</u>(ref const Vector2s <i>vec</i>);
+<dt><big><a name="Window.setPosition"></a>void <u>setPosition</u>(ref const Vector2s <i>vec</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
 
 </dd>
-<dt><big><a name="Window.getPosition"></a>final Vector2s <u>getPosition</u>();
+<dt><big><a name="Window.getPosition"></a>Vector2s <u>getPosition</u>();
 </big></dt>
 <dd>Returns the current position of the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.fetchPosition"></a>final void <u>fetchPosition</u>(int* <i>x</i>, int* <i>y</i>);
+<dt><big><a name="Window.fetchPosition"></a>void <u>fetchPosition</u>(int* <i>x</i>, int* <i>y</i>);
 </big></dt>
 <dd>Fetch the current position if this window.
  The position is stored inside of the pointer.
  The pointer don't have to be <b>null</b>.<br><br>
 
 </dd>
-<dt><big><a name="Window.getTitle"></a>final const pure nothrow string <u>getTitle</u>();
+<dt><big><a name="Window.getTitle"></a>const pure nothrow string <u>getTitle</u>();
 </big></dt>
 <dd>Returns the current title of the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.setTitle"></a>final string <u>setTitle</u>(string <i>title</i>);
+<dt><big><a name="Window.setTitle"></a>const(string) <u>setTitle</u>(const string <i>title</i>);
 </big></dt>
 <dd>Set a new <i>title</i> to this window
 <br><br>
@@ -233,87 +268,77 @@ Dgame.System.Clock<br><br>
 the old <i>title</i><br><br>
 
 </dd>
-<dt><big><a name="Window.width"></a>final const pure nothrow @property ushort <u>width</u>();
-</big></dt>
-<dd>Returns the <u>width</u>.<br><br>
-
-</dd>
-<dt><big><a name="Window.height"></a>final const pure nothrow @property ushort <u>height</u>();
-</big></dt>
-<dd>Returns the <u>height</u>.<br><br>
-
-</dd>
-<dt><big><a name="Window.setSize"></a>final void <u>setSize</u>(ushort <i>width</i>, ushort <i>height</i>);
+<dt><big><a name="Window.setSize"></a>void <u>setSize</u>(ushort <i>width</i>, ushort <i>height</i>);
 </big></dt>
 <dd>Set a new size to this window<br><br>
 
 </dd>
-<dt><big><a name="Window.raise"></a>final void <u>raise</u>();
+<dt><big><a name="Window.raise"></a>void <u>raise</u>();
 </big></dt>
 <dd>Raise the window.
  The window has after this call focus.<br><br>
 
 </dd>
-<dt><big><a name="Window.restore"></a>final void <u>restore</u>();
+<dt><big><a name="Window.restore"></a>void <u>restore</u>();
 </big></dt>
 <dd>Restore the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.setScreenSaver"></a>final void <u>setScreenSaver</u>(bool <i>enable</i>);
+<dt><big><a name="Window.setScreenSaver"></a>void <u>setScreenSaver</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Enable or Disable the screen saver.<br><br>
 
 </dd>
-<dt><big><a name="Window.isScreenSaverEnabled"></a>final const bool <u>isScreenSaverEnabled</u>();
+<dt><big><a name="Window.isScreenSaverEnabled"></a>const bool <u>isScreenSaverEnabled</u>();
 </big></dt>
 <dd>Returns if the screen saver is currently enabled, or not.<br><br>
 
 </dd>
-<dt><big><a name="Window.show"></a>final void <u>show</u>(bool <u>show</u>);
+<dt><big><a name="Window.show"></a>void <u>show</u>(bool <u>show</u>);
 </big></dt>
 <dd>Show or hide the window.
  <b>true</b> shows, <b>false</b> hides.<br><br>
 
 </dd>
-<dt><big><a name="Window.setGrabbed"></a>final void <u>setGrabbed</u>(bool <i>enable</i>);
+<dt><big><a name="Window.setGrabbed"></a>void <u>setGrabbed</u>(bool <i>enable</i>);
 </big></dt>
 <dd>When input is grabbed the mouse is confined to the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.isGrabbed"></a>final bool <u>isGrabbed</u>();
+<dt><big><a name="Window.isGrabbed"></a>bool <u>isGrabbed</u>();
 </big></dt>
 <dd>Returns <b>true</b>, if input is grabbed.<br><br>
 
 </dd>
-<dt><big><a name="Window.getBrightness"></a>final float <u>getBrightness</u>();
+<dt><big><a name="Window.getBrightness"></a>float <u>getBrightness</u>();
 </big></dt>
 <dd>Returns the brightness (gamma correction) for the window
  where 0.0 is completely dark and 1.0 is normal brightness.<br><br>
 
 </dd>
-<dt><big><a name="Window.setBrightness"></a>final bool <u>setBrightness</u>(float <i>bright</i>);
+<dt><big><a name="Window.setBrightness"></a>bool <u>setBrightness</u>(float <i>bright</i>);
 </big></dt>
 <dd>Set the brightness (gamma correction) for the window.<br><br>
 
 </dd>
-<dt><big><a name="Window.getFlags"></a>final uint <u>getFlags</u>();
+<dt><big><a name="Window.setFullscreen"></a>void <u>setFullscreen</u>(bool <i>enable</i>);
 </big></dt>
-<dd>Returns the Flags of this Window<br><br>
+<dd>Enable or Disable Fullscreen mode.<br><br>
 
 </dd>
-<dt><big><a name="Window.setFullscreen"></a>final void <u>setFullscreen</u>(bool <i>enable</i>);
+<dt><big><a name="Window.isFullscreen"></a>const pure nothrow bool <u>isFullscreen</u>();
 </big></dt>
-<dd>Enable or disable Fullscreen mode.<br><br>
+<dd>Returns, if this Window is in Fullscreen mode.<br><br>
 
 </dd>
-<dt><big><a name="Window.isFullscreen"></a>final const pure nothrow bool <u>isFullscreen</u>();
-</big></dt>
-<dd>Check whether this Window is currently windowed, or not.<br><br>
-
-</dd>
-<dt><big><a name="Window.setIcon"></a>final void <u>setIcon</u>(ref Surface <i>icon</i>);
+<dt><big><a name="Window.setIcon"></a>void <u>setIcon</u>(ref Surface <i>icon</i>);
 </big></dt>
 <dd>Set an <i>icon</i> for this window.<br><br>
+
+</dd>
+<dt><big><a name="Window.setIcon"></a>void <u>setIcon</u>(Surface <i>icon</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
 
 </dd>
 </dl>

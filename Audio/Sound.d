@@ -18,7 +18,7 @@ private {
 /**
  * Represents the current status.
  */
-enum Status {
+enum Status : ubyte {
 	Stopped, /** Sound is stopped */
 	Paused,	 /** Sound is paused */
 	Playing, /** Sound is playing */
@@ -28,7 +28,7 @@ enum Status {
 /**
  * The channel type. Mono or Stereo.
  */
-enum ChannelType {
+enum ChannelType : ubyte {
 	Mono,	/** Channel type is Mono */
 	Stereo	/** Channel type is Stereo */
 }

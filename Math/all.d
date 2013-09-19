@@ -5,4 +5,5 @@ public {
 	import Dgame.Math.Vector2;
 	import Dgame.Math.VecN;
 	import Dgame.Math.Pixel;
+	import Dgame.Math.Vertex;
 }

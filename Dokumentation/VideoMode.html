@@ -13,66 +13,22 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="VideoMode.Fullscreen"></a><u>Fullscreen</u></big></dt>
-<dd>Window is fullscreened <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Desktop"></a><u>Desktop</u></big></dt>
-<dd><u>Desktop</u> Fullscreen <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.OpenGL"></a><u>OpenGL</u></big></dt>
-<dd><u>OpenGL</u> support <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Shown"></a><u>Shown</u></big></dt>
-<dd>Show the Window immediately <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Borderless"></a><u>Borderless</u></big></dt>
-<dd>Hide the Window immediately <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Resizeable"></a><u>Resizeable</u></big></dt>
-<dd>Window is resizeable <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Maximized"></a><u>Maximized</u></big></dt>
-<dd>Maximize the Window immediately <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Minimized"></a><u>Minimized</u></big></dt>
-<dd>Minimize the Window immediately <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.Default"></a><u>Default</u></big></dt>
-<dd><u>Default</u> mode is Shown|OpenGL <br><br>
-
-</dd>
-<dt><big><a name="VideoMode.flag"></a>const uint <u>flag</u>;
-</big></dt>
-<dd>The real video mode
-<br><br>
-<b>See:</b><br>
-video mode enum<br><br>
-
-</dd>
-<dt><big><a name="VideoMode.width"></a>const ushort <u>width</u>;
+<dl><dt><big><a name="VideoMode.width"></a>ushort <u>width</u>;
 </big></dt>
 <dd>The <u>width</u> of this video mode <br><br>
 
 </dd>
-<dt><big><a name="VideoMode.height"></a>const ushort <u>height</u>;
+<dt><big><a name="VideoMode.height"></a>ushort <u>height</u>;
 </big></dt>
 <dd>The <u>height</u> of this video mode <br><br>
 
 </dd>
-<dt><big><a name="VideoMode.refreshRate"></a>const ubyte <u>refreshRate</u>;
+<dt><big><a name="VideoMode.refreshRate"></a>ubyte <u>refreshRate</u>;
 </big></dt>
 <dd>The refresh rate of this video mode <br><br>
 
 </dd>
-<dt><big><a name="VideoMode.this"></a> this(ushort <i>width</i>, ushort <i>height</i>, uint <i>flag</i>);
+<dt><big><a name="VideoMode.this"></a> this(ushort <i>width</i>, ushort <i>height</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -81,11 +37,6 @@ video mode enum<br><br>
 </big></dt>
 <dd><b>Returns:</b><br>
 if the this video mode is valid which means, if it is listed from the OS<br><br>
-
-</dd>
-<dt><big><a name="VideoMode.hasFlag"></a>const pure nothrow bool <u>hasFlag</u>(uint <i>flag</i>);
-</big></dt>
-<dd>Checks whether the current VideoMode has the given Flag<br><br>
 
 </dd>
 <dt><big><a name="VideoMode.opEquals"></a>const pure nothrow bool <u>opEquals</u>(ref const VideoMode <i>vm</i>);

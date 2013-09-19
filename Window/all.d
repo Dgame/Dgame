@@ -27,10 +27,10 @@ static this() {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		throw new Exception("SDL Error: " ~ to!string(SDL_GetError()));
 	
-	const uint flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
+	enum flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
 	const int initted = IMG_Init(flags);
 	if ((initted & flags) != flags) {
-		const string err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";
+		enum err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";
 		
 		throw new Exception(.format(err, to!string(IMG_GetError())));
 	}

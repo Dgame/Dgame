@@ -26,7 +26,10 @@ static ~this() {
 struct Rect(T) if (isNumeric!T) {
 private:
 	void _adaptToPtr() {
-		this.set(this.ptr.x, this.ptr.y, this.ptr.w, this.ptr.h);
+		this.set(cast(T) this.ptr.x,
+		         cast(T) this.ptr.y,
+		         cast(T) this.ptr.w,
+		         cast(T) this.ptr.h);
 	}
 	
 public:
@@ -70,20 +73,21 @@ public:
 	
 	version(Develop)
 	this(this) {
-		writeln("Postblit Rect");
+		debug writeln("Postblit Rect");
 	}
 	
 	/**
 	 * opAssign
 	 */
-	void opAssign(U)(ref const Rect!U rhs) {
+	void opAssign(ref const Rect!T rhs) {
 		debug writeln("opAssign Rect");
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}
 	
-	version(Develop)
 	~this() {
-		writeln("DTor Rect");
+		debug writeln("DTor Rect");
+		
+		_RectStore.remove(&this);
 	}
 	
 	/**
@@ -93,10 +97,11 @@ public:
 	SDL_Rect* ptr() const {
 		const void* key = &this;
 		
-		int x = cast(int) this.x;
-		int y = cast(int) this.y;
-		int w = cast(int) this.width;
-		int h = cast(int) this.height;
+		/// TODO: Issue 11064
+		const int x = cast(int) this.x;
+		const int y = cast(int) this.y;
+		const int w = cast(int) this.width;
+		const int h = cast(int) this.height;
 		
 		if (SDL_Rect* _ptr = key in _RectStore) {
 			_ptr.x = x;
@@ -114,33 +119,33 @@ public:
 	/**
 	 * Supported operations: +=, -=, *=, /=, %=
 	 */
-	Rect!T opBinary(string op, U)(ref const Rect!U rect) const pure nothrow {
+	Rect!T opBinary(string op)(ref const Rect!T rect) const pure nothrow {
 		switch (op) {
 			case "+":
-				return Rect!T(cast(T)(this.x + rect.x),
-				              cast(T)(this.y + rect.y),
-				              cast(T)(this.width + rect.width),
-				              cast(T)(this.height + rect.height));
+				return Rect!T(this.x + rect.x,
+				              this.y + rect.y,
+				              this.width + rect.width,
+				              this.height + rect.height);
 			case "-":
-				return Rect!T(cast(T)(this.x - rect.x),
-				              cast(T)(this.y - rect.y),
-				              cast(T)(this.width - rect.width),
-				              cast(T)(this.height - rect.height));
+				return Rect!T(this.x - rect.x,
+				              this.y - rect.y,
+				              this.width - rect.width,
+				              this.height - rect.height);
 			case "*":
-				return Rect!T(cast(T)(this.x * rect.x),
-				              cast(T)(this.y * rect.y),
-				              cast(T)(this.width * rect.width),
-				              cast(T)(this.height * rect.height));
+				return Rect!T(this.x * rect.x,
+				              this.y * rect.y,
+				              this.width * rect.width,
+				              this.height * rect.height);
 			case "/":
-				return Rect!T(cast(T)(this.x / rect.x),
-				              cast(T)(this.y / rect.y),
-				              cast(T)(this.width / rect.width),
-				              cast(T)(this.height / rect.height));
+				return Rect!T(this.x / rect.x,
+				              this.y / rect.y,
+				              this.width / rect.width,
+				              this.height / rect.height);
 			case "%":
-				return Rect!T(cast(T)(this.x % rect.x),
-				              cast(T)(this.y % rect.y),
-				              cast(T)(this.width % rect.width),
-				              cast(T)(this.height % rect.height));
+				return Rect!T(this.x % rect.x,
+				              this.y % rect.y,
+				              this.width % rect.width,
+				              this.height % rect.height);
 			default: throw new Exception("Unsupported Operation: " ~ op);
 		}
 	}
@@ -175,7 +180,7 @@ public:
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool opBinaryRight(string op, U)(ref Vector2!U vec) const pure nothrow
+	bool opBinaryRight(string op)(ref Vector2!T vec) const pure nothrow
 		if (op == "in")
 	{
 		return this.contains(vec);
@@ -184,16 +189,14 @@ public:
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(U)(ref const Vector2!U vec) const pure nothrow {
+	bool contains(ref const Vector2!T vec) const pure nothrow {
 		return this.contains(vec.x, vec.y);
 	}
 	
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(U)(U x, U y) const pure nothrow
-		if (isNumeric!U)
-	{
+	bool contains(T x, T y) const pure nothrow {
 		return (x >= this.x) && (x < this.x + this.width)
 			&& (y >= this.y) && (y < this.y + this.height);
 	}
@@ -209,10 +212,8 @@ public:
 	 * opCast to another Rect type.
 	 */
 	Rect!U opCast(V : Rect!U, U)() const pure nothrow {
-		return Rect!U(cast(U) this.x,
-		              cast(U) this.y,
-		              cast(U) this.width,
-		              cast(U) this.height);
+		return Rect!U(cast(U) this.x, cast(U) this.y,
+		              cast(U) this.width, cast(U) this.height);
 	}
 	
 	/**
@@ -238,15 +239,15 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		SDL_Point* sdl_points = Memory.allocate!SDL_Point(points.length);
-		scope(exit) Memory.deallocate(sdl_points);
+		SDL_Point[] sdl_points = new SDL_Point[points.length];
+		scope(exit) delete sdl_points;
 		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 		
 		Rect!T rect = void;
-		SDL_EnclosePoints(sdl_points, points.length, null, rect.ptr);
+		SDL_EnclosePoints(sdl_points.ptr, cast(int)(points.length), null, rect.ptr);
 		
 		rect._adaptToPtr();
 		
@@ -256,11 +257,9 @@ public:
 	/**
 	 * Replace current size.
 	 */
-	void setSize(U)(U width, U height) pure nothrow
-		if (isNumeric!U)
-	{
-		this.width  = cast(T) width;
-		this.height = cast(T) height;
+	void setSize(T width, T height) pure nothrow {
+		this.width  = width;
+		this.height = height;
 	}
 	
 	/**
@@ -273,7 +272,7 @@ public:
 	/**
 	 * Increase current size.
 	 */
-	void increase(int width, int height) pure nothrow {
+	void increase(T width, T height) pure nothrow {
 		this.width  += width;
 		this.height += height;
 	}
@@ -281,27 +280,23 @@ public:
 	/**
 	 * Set a new position with a vector.
 	 */
-	void setPosition(U)(ref const Vector2!U position) pure nothrow {
+	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
 	
 	/**
 	 * Set a new position with an array.
 	 */
-	void setPosition(U)(U[2] pos) pure nothrow
-		if (isNumeric!U)
-	{
+	void setPosition(T[2] pos) pure nothrow {
 		this.setPosition(pos[0], pos[1]);
 	}
 	
 	/**
 	 * Set a new position with coordinates.
 	 */
-	void setPosition(U)(U x, U y) pure nothrow
-		if (isNumeric!U)
-	{
-		this.x = cast(T) x;
-		this.y = cast(T) y;
+	void setPosition(T x, T y) pure nothrow {
+		this.x = x;
+		this.y = y;
 	}
 	
 	/**
@@ -321,16 +316,14 @@ public:
 	/**
 	 * Move the object.
 	 */
-	void move(U)(ref const Vector2!U vec) pure nothrow {
+	void move(ref const Vector2!T vec) pure nothrow {
 		this.move(vec.x, vec.y);
 	}
 	
 	/**
 	 * Move the object.
 	 */
-	void move(U)(U x, U y) pure nothrow
-		if (isNumeric!U)
-	{
+	void move(T x, T y) pure nothrow {
 		this.x += x;
 		this.y += y;
 	}
@@ -338,9 +331,7 @@ public:
 	/**
 	 * The new coordinates <b>and</b> a new size.
 	 */
-	void set(U, V)(U x, U y, V w, V h) pure nothrow
-		if (isNumeric!U && isNumeric!V)
-	{
+	void set(T x, T y, T w, T h) pure nothrow {
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}

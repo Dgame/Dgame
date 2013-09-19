@@ -3,7 +3,10 @@ module Dgame.Graphics.Sprite;
 private {
 	debug import std.stdio;
 	
+	import derelict.opengl3.gl;
+	
 	import Dgame.Graphics.Drawable;
+	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Texture;
 	import Dgame.Math.Rect;
 }
@@ -13,33 +16,45 @@ private {
  *
  * Author: rschuett
  */
-class Sprite : Drawable {
+class Sprite : Transformable, Drawable {
 protected:
 	Texture _tex;
-	ShortRect _clip;
+	
+	FloatRect _boundingBox;
+	ShortRect _clipRect;
+	ShortRect _texView;
 	
 protected:
-	override void _positionChanged(float dx, float dy) {
-		this._clip.move(dx, dy);
+	/**
+	 * Possible observer method if a new position is set.
+	 */
+	override void _positionMoved(float nx, float ny) {
+		this._boundingBox.setPosition(nx, ny);
 	}
 	
-	override void _render() {
-		if (this._tex is null) {
-			debug writeln("Texture couldn't rendered, because it's null.");
-			
-			return;
-		}
+	/**
+	 * Possible observer method if the position change.
+	 */
+	override void _positionReset(float dx, float dy) {
+		this._boundingBox.move(dx, dy);
+	}
+	
+protected:
+	void _render(const Window wnd) in {
+		assert(this._tex !is null,
+		       "Sprite couldn't rendered, because the Texture is null.");
+	} body {
+		glPushMatrix();
+		scope(exit) glPopMatrix();
 		
-		float w = this._tex.hasViewport() ? this._tex.getViewport().width : this._tex.width;
-		float h = this._tex.hasViewport() ? this._tex.getViewport().height : this._tex.height;
+		this._applyTranslation();
 		
-		this._clip.setPosition(super._position);
-		this._clip.setSize(w, h);
-		
-		this._tex._render(this._clip);
+		this._tex._render(this._clipRect,
+		                  this._texView.isEmpty() ? null : &this._texView);
 	}
 	
 public:
+	
 	/**
 	 * CTor
 	 */
@@ -55,10 +70,67 @@ public:
 	}
 	
 	/**
+	 * Check whether the bounding box of this Sprite collide
+	 * with the bounding box of another Sprite
+	 */
+	bool collideWith(const Sprite rhs) const {
+		return this.collideWith(this.getBoundingBox());
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	bool collideWith(const FloatRect rect) const {
+		return this.collideWith(rect);
+	}
+	
+	/**
+	 * Check whether the bounding box of this Sprite collide
+	 * with the given Rect
+	 */
+	bool collideWith(ref const FloatRect rect) const {
+		return this.getBoundingBox().intersects(rect);
+	}
+	
+final:
+	
+	void setTextureRect(ref const ShortRect texView) {
+		this._texView = texView;
+		
+		this._boundingBox.setSize(texView.width, texView.height);
+		this._clipRect.setSize(texView.width, texView.height);
+	}
+	
+	void setTextureRect(const ShortRect texView) {
+		this.setTextureRect(texView);
+	}
+	
+	bool hasTextureRect() const {
+		return !this._texView.isEmpty();
+	}
+	
+	void resetTextureRect() in {
+		assert(this._tex !is null);
+	} body {
+		this._texView.collapse();
+		
+		this._boundingBox.setSize(this._tex.width, this._tex.height);
+		this._clipRect.setSize(this._tex.width, this._tex.height);
+	}
+	
+	ref const(ShortRect) getTextureRect() const pure nothrow {
+		return this._texView;
+	}
+	
+	/**
 	 * Returns the clip rect, the area which will be drawn on the screen.
 	 */
-	final ref const(ShortRect) getClipRect() const pure nothrow {
-		return this._clip;
+	ref const(FloatRect) getBoundingBox() const pure nothrow {
+		return this._boundingBox;
+	}
+	
+	ref const(ShortRect) getClipRect() const pure nothrow {
+		return this._clipRect;
 	}
 	
 	/**
@@ -66,39 +138,26 @@ public:
 	 * If not, nothing can be drawn.
 	 * But it does not check if the current Texture is valid.
 	 */
-	final bool hasTexture() const pure nothrow {
+	bool hasTexture() const pure nothrow {
 		return this._tex !is null;
 	}
 	
 	/**
 	 * Set or replace the current Texture.
 	 */
-	final void setTexture(Texture tex) in {
+	void setTexture(Texture tex) in {
 		assert(tex !is null, "Cannot set a null Texture.");
 	} body {
 		this._tex = tex;
+		
+		this._boundingBox.setSize(tex.width, tex.height);
+		this._clipRect.setSize(tex.width, tex.height);
 	}
 	
 	/**
 	 * Returns the current Texture or null if there is none.
 	 */
-	final ref const(Texture) getTexture() const {
+	ref const(Texture) getTexture() const {
 		return this._tex;
-	}
-	
-	/**
-	 * Check whether the bounding box of this Sprite collide
-	 * with the bounding box of another Sprite
-	 */
-	bool collideWith(const Sprite rhs) const {
-		return this.collideWith(rhs.getClipRect());
-	}
-	
-	/**
-	 * Check whether the bounding box of this Sprite collide
-	 * with the given Rect
-	 */
-	bool collideWith(ref const ShortRect rect) const {
-		return this._clip.intersects(rect);
 	}
 }

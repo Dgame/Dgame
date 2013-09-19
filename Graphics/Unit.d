@@ -40,7 +40,7 @@ final:
 	/**
 	 * CTor
 	 */
-	this(Texture tex, ref const FloatRect viewport) {
+	this(Texture tex, ref const ShortRect viewport) {
 		super(tex, viewport);
 	}
 	
@@ -49,7 +49,7 @@ final:
 	 * 
 	 * Rvalue version
 	 */
-	this(Texture tex, const FloatRect viewport) {
+	this(Texture tex, const ShortRect viewport) {
 		this(tex, viewport);
 	}
 	
@@ -66,7 +66,8 @@ final:
 	 * Reset the viewport and the direction
 	 */
 	void stop() {
-		super.resetViewport();
+		super.resetTextureRect();
+		
 		this.resetDirection();
 	}
 	
@@ -192,7 +193,7 @@ final:
 		
 		this._update -= Update;
 		
-		super.slideViewport();
+		super.slideTextureRect();
 		
 		if (fpEqual(this._speed, 1f))
 			super.move(this._direction);

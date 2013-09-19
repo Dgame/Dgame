@@ -4,14 +4,17 @@ private {
 	debug import std.stdio;
 	import std.string : format, toStringz;
 	
+	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
 	import derelict.sdl2.ttf;
 	
 	import Dgame.Graphics.Drawable;
+	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Color;
-	import Dgame.Math.Rect;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
+	import Dgame.Graphics.Template.Blendable;
+	import Dgame.Math.Rect;
 }
 
 /**
@@ -21,15 +24,13 @@ private {
  *
  * Author: rschuett
  */
-class Text : Drawable, Blendable {
+class Text : Transformable, Blendable, Drawable {
 protected:
 	string _text;
 	bool _shouldUpdate;
 	
 	Color _fg = Color.Black;
 	Color _bg = Color.White;
-	
-	ShortRect _clip;
 	
 	Font _font = void;
 	Texture _tex;
@@ -39,13 +40,12 @@ private:
 		assert(this._tex !is null, "No Texture!");
 		assert(rhs !is null, "No Surface!");
 	} body {
-		ushort width  = cast(ushort) rhs.w;
-		ushort height = cast(ushort) rhs.h;
-		
-		this._tex.loadFromMemory(rhs.pixels, width, height, rhs.format.BitsPerPixel, fmt);
+		this._tex.loadFromMemory(rhs.pixels,
+		                         cast(ushort) rhs.w,
+		                         cast(ushort) rhs.h,
+		                         rhs.format.BitsPerPixel, fmt);
 	}
 	
-	/// TODO: Improve
 	void _update() in {
 		assert(this._tex !is null, "No Texture!");
 	} body {
@@ -96,33 +96,28 @@ private:
 			
 			this._storePixel(srfc, t_fmt);
 		}
-		
-		this._clip.setPosition(super._position);
-		this._clip.setSize(this._tex.width, this._tex.height);
 	}
 	
 protected:
-	override void _positionChanged(float dx, float dy) {
-		if (!this._shouldUpdate)
-			this._clip.move(dx, dy);
-	}
-	
-	override void _render() in {
+	void _render(const Window wnd) in {
 		assert(this._tex !is null, "No valid Texture.");
 	} body {
+		glPushMatrix();
+		scope(exit) glPopMatrix();
+		
+		super._applyTranslation();
+		
 		if (this._shouldUpdate)
 			this._update();
 		
-		this._tex._render(this._clip);
+		this._tex._render(null);
 	}
 	
 public:
-final:
-	
 	/**
 	 * CTor
 	 */
-	this(ref const Font font, string text = "") {
+	this(ref Font font, string text = "") {
 		this._font = font;
 		
 		this._text = text;
@@ -134,15 +129,58 @@ final:
 	/**
 	 * CTor: Rvalue version
 	 */
-	this(const Font font, string text = "") {
+	this(Font font, string text = "") {
 		this(font, text);
+	}
+	
+	/**
+	 * Check whether the bounding box of this Text collide
+	 * with the bounding box of another Text
+	 */
+	bool collideWith(const Text rhs) const {
+		return this.collideWith(rhs.getBoundingBox());
+	}
+	
+	/**
+	 * Check whether the bounding box of this Sprite collide
+	 * with the given Rect
+	 */
+	bool collideWith(ref const FloatRect rect) const {
+		return this.getBoundingBox().intersects(rect);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	bool collideWith(const FloatRect rect) const {
+		return this.collideWith(rect);
+	}
+	
+final:
+	/**
+	 * Returns the bounding box, the area which will be drawn on the screen.
+	 */
+	FloatRect getBoundingBox() const in {
+		assert(this._tex !is null);
+	} body {
+		return FloatRect(super._position, this._tex.width, this._tex.height);
+	}
+	
+	@property
+	ushort width() const pure nothrow {
+		return this._tex.width;
+	}
+	
+	@property
+	ushort height() const pure nothrow {
+		return this._tex.height;
 	}
 	
 	/**
 	 * Enable or Disable blending
 	 */
-	void useBlending(bool enable) {
-		this._tex.useBlending(enable);
+	void enableBlending(bool enable) {
+		this._tex.enableBlending(enable);
 	}
 	
 	/**
@@ -151,7 +189,6 @@ final:
 	bool isBlendingEnabled() const pure nothrow {
 		return this._tex.isBlendingEnabled();
 	}
-	
 	
 	/**
 	 * Set the Blendmode.
@@ -191,21 +228,21 @@ final:
 	/**
 	 * Activate or deactivate the using of the Blend color.
 	 */
-	void useBlendColor(bool use) {
-		this._tex.useBlendColor(use);
+	void enableBlendColor(bool use) {
+		this._tex.enableBlendColor(use);
 	}
 	
 	/**
 	 * Returns, if using blend color is activated, or not.
 	 */
-	bool usingBlendColor() const pure nothrow {
-		return this._tex.usingBlendColor();
+	bool isBlendColorEnabled() const pure nothrow {
+		return this._tex.isBlendColorEnabled();
 	}
 	
 	/**
 	 * Replace the current Font.
 	 */
-	void replaceFont(ref const Font font) {
+	void replaceFont(ref Font font) {
 		this._font = font;
 		this._shouldUpdate = true;
 	}
@@ -213,7 +250,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void replaceFont(const Font font) {
+	void replaceFont(Font font) {
 		this.replaceFont(font);
 	}
 	

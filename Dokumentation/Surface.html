@@ -7,10 +7,7 @@
 <br><br>
 <dl><dt><big><a name="Surface"></a>struct <u>Surface</u>;
 </big></dt>
-<dd>version = Develop;
-<br><br>
-<u>Surface</u> is a wrapper for a SDL_Surface.
-
+<dd><u>Surface</u> is a wrapper for a SDL_Surface.
 <br><br>
 <b>Author:</b><br>
 rschuett<br><br>
@@ -71,11 +68,6 @@ rschuett<br><br>
 <dd>Default Blue Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.AMask"></a>uint <u>AMask</u>;
-</big></dt>
-<dd>wenn auf all -&gt; blit funktioniert nicht<br><br>
-
-</dd>
 <dt><big><a name="Surface.Flip"></a>enum <u>Flip</u>;
 </big></dt>
 <dd><u>Flip</u> mode<br><br>
@@ -90,16 +82,24 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Surface.this"></a> this(string <i>filename</i>);
+<dt><big><a name="Surface.create"></a>package static SDL_Surface* <u>create</u>(ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32);
+</big></dt>
+<dd>Create a new SDL_Surface* of the given <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
+
+</dd>
+<dt><big><a name="Surface.create"></a>package static SDL_Surface* <u>create</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32);
+</big></dt>
+<dd>Create a new SDL_Surface* of the given <i>memory</i>, <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
+
+</dd>
+<dt><big><a name="Surface.this"></a>package  this(SDL_Surface* <i>srfc</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Surface.this"></a> this(SDL_Surface* <i>srfc</i>, bool <i>link</i>);
+<dt><big><a name="Surface.this"></a> this(string <i>filename</i>);
 </big></dt>
-<dd>CTor
- If <i>link</i> is <b>true</b>, <i>srfc</i> is linked to this.
- Otherwise a copy is created.<br><br>
+<dd>CTor<br><br>
 
 </dd>
 <dt><big><a name="Surface.opAssign"></a>void <u>opAssign</u>(ref Surface <i>rhs</i>);
@@ -128,19 +128,9 @@ rschuett<br><br>
 <dd>Make a new Surface of the given <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.create"></a>static SDL_Surface* <u>create</u>(ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32);
-</big></dt>
-<dd>Create a new SDL_Surface* of the given <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
-
-</dd>
 <dt><big><a name="Surface.make"></a>static Surface <u>make</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32);
 </big></dt>
 <dd>Make an new Surface of the given <i>memory</i>, <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
-
-</dd>
-<dt><big><a name="Surface.create"></a>static SDL_Surface* <u>create</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32);
-</big></dt>
-<dd>Create a new SDL_Surface* of the given <i>memory</i>, <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 
 </dd>
 <dt><big><a name="Surface.isValid"></a>const pure nothrow bool <u>isValid</u>();
@@ -342,7 +332,7 @@ Surface.Mask enum.<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Surface.isMask"></a>const bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
+<dt><big><a name="Surface.isMask"></a>const pure nothrow bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
 </big></dt>
 <dd>Returns if the given converted color match the color of the given <i>mask</i> of the surface.
 <br><br>
@@ -382,10 +372,10 @@ Surface.Mask enum.<br><br>
 </dd>
 <dt><big><a name="Surface.ptr"></a>inout pure nothrow @property inout(SDL_Surface)* <u>ptr</u>();
 </big></dt>
-<dd>Returns a pointer of the SDL_Surface<br><br>
+<dd>Returns a pointer to the SDL_Surface<br><br>
 
 </dd>
-<dt><big><a name="Surface.softStretch"></a>bool <u>softStretch</u>(ref Surface <i>srfc</i>, const ShortRect* <i>src</i> = null, const ShortRect* <i>dst</i> = null);
+<dt><big><a name="Surface.blitScaled"></a>bool <u>blitScaled</u>(ref Surface <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
 </big></dt>
 <dd>Use this function to perform a fast, low quality,
  stretch blit between two surfaces of the same pixel format.
@@ -395,17 +385,7 @@ Surface.Mask enum.<br><br>
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
 
 </dd>
-<dt><big><a name="Surface.softStretch"></a>bool <u>softStretch</u>(SDL_Surface* <i>srfc</i>, const ShortRect* <i>src</i> = null, const ShortRect* <i>dst</i> = null);
-</big></dt>
-<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
-
-</dd>
-<dt><big><a name="Surface.upperBlit"></a>bool <u>upperBlit</u>(ref Surface <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
-</big></dt>
-<dd>Use this function to perform a fast blit from the source surface to the this surface<br><br>
-
-</dd>
-<dt><big><a name="Surface.upperBlit"></a>bool <u>upperBlit</u>(SDL_Surface* <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
+<dt><big><a name="Surface.blitScaled"></a>bool <u>blitScaled</u>(SDL_Surface* <i>srfc</i>, const ShortRect* <i>src</i> = null, ShortRect* <i>dst</i> = null);
 </big></dt>
 <dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
 

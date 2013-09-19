@@ -20,42 +20,16 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>, ref const FloatRect <i>viewport</i>);
+<dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>, ref const ShortRect <i>texView</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>, const FloatRect <i>viewport</i>);
+<dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>, const ShortRect <i>texView</i>);
 </big></dt>
 <dd>CTor
 <br><br>
 Rvalue version<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.setViewport"></a>final void <u>setViewport</u>(ref const FloatRect <i>viewport</i>);
-</big></dt>
-<dd>Set or replace the current <i>viewport</i>.
- This Viewport is also set for the Texture.<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.setViewport"></a>final void <u>setViewport</u>(const FloatRect <i>viewport</i>);
-</big></dt>
-<dd>Rvalue version<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.getViewport"></a>final const ref const(FloatRect) <u>getViewport</u>();
-</big></dt>
-<dd>Get access to the current Viewport.<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.fetchViewport"></a>final inout inout(FloatRect)* <u>fetchViewport</u>();
-</big></dt>
-<dd>Get mutable access to the current Viewport.<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.resetViewport"></a>final void <u>resetViewport</u>();
-</big></dt>
-<dd>Reset the Viewport.<br><br>
 
 </dd>
 <dt><big><a name="Spritesheet.getRow"></a>final const pure nothrow ubyte <u>getRow</u>();
@@ -68,7 +42,7 @@ Rvalue version<br><br>
 <dd>Set a new <i>row</i><br><br>
 
 </dd>
-<dt><big><a name="Spritesheet.slideViewport"></a>final void <u>slideViewport</u>(Grid <i>grid</i> = Grid.Both);
+<dt><big><a name="Spritesheet.slideTextureRect"></a>final void <u>slideTextureRect</u>(Grid <i>grid</i> = Grid.Both);
 </big></dt>
 <dd>Slide/move the current Viewport of the Texture.
  So the next area of the Texture atlas will be drawn.

@@ -20,7 +20,7 @@ public:
 		return ptr;
 	}
 	
-	static void deallocate(T)(T* ptr) {
+	static void deallocate(T)(ref T* ptr) {
 		.free(ptr);
 		
 		ptr = null;

@@ -26,7 +26,8 @@
 </dd>
 <dt><big><a name="TileMapInfo.mapSize"></a>ushort[2] <u>mapSize</u>;
 </big></dt>
-<dd>The map size<br><br>
+<dd>The map size.
+ index 0 is width / tileWidth and index 1 is height / tileHeight<br><br>
 
 </dd>
 <dt><big><a name="TileMapInfo.tileWidth"></a>ubyte <u>tileWidth</u>;
@@ -74,7 +75,7 @@
 </dd>
 </dl>
 </dd>
-<dt><big><a name="TileMap"></a>class <u>TileMap</u>: Dgame.Graphics.Drawable.Drawable, Dgame.Graphics.Interface.Transformable.Transformable;
+<dt><big><a name="TileMap"></a>class <u>TileMap</u>: Dgame.Graphics.Drawable.Drawable;
 </big></dt>
 <dd>The Tile map consist of tiles which are stored in a XML file (preferably build with tiled)
 <br><br>
@@ -88,6 +89,16 @@ rschuett<br><br>
 If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
  (which means that are new tileset is created which contains only the needed tiles)
  otherwise the whole tileset is taken.<br><br>
+
+</dd>
+<dt><big><a name="TileMap.getTransform"></a>final inout pure nothrow inout(Transform) <u>getTransform</u>();
+</big></dt>
+<dd>Returns the Transformation for this TileMap<br><br>
+
+</dd>
+<dt><big><a name="TileMap.setTransform"></a>final void <u>setTransform</u>(ref Transform <i>tf</i>);
+</big></dt>
+<dd>Set a (new) Trandformation.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.load"></a>final void <u>load</u>(string <i>filename</i>, bool <i>compress</i> = true);
@@ -134,17 +145,20 @@ If <i>compress</i> is <b>true</b>, only the needed Tiles are stored
 </dd>
 <dt><big><a name="TileMap.adjustCoords"></a>const short[2] <u>adjustCoords</u>(T)(T <i>cx</i>, T <i>cy</i>);
 </big></dt>
-<dd>Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.<br><br>
+<dd>Adjusted pixel coordinates so that they lie on valid pixel
+ coordinates based on tile coordinates.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.adjustCoords"></a>const short[2] <u>adjustCoords</u>(T)(ref const Vector2!(T) <i>vec</i>);
 </big></dt>
-<dd>Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.<br><br>
+<dd>Adjusted pixel coordinates so that they lie on valid pixel coordinates
+ based on tile coordinates.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.adjustCoords"></a>const short[2] <u>adjustCoords</u>(T)(T[2] <i>coords</i>);
 </big></dt>
-<dd>Adjusted pixel coordinates so that they lie on valid pixel coordinates based on tile coordinates.<br><br>
+<dd>Adjusted pixel coordinates so that they lie
+ on valid pixel coordinates based on tile coordinates.<br><br>
 
 </dd>
 <dt><big><a name="TileMap.reload"></a>final void <u>reload</u>(const Vector2s[] <i>coords</i>, const Vector2s[] <i>newCoords</i>);

@@ -3,8 +3,8 @@ module Dgame.Core.Math;
 private import std.math : fabs;
 
 @safe
-bool fpEqual(T : float)(T a, T b) pure nothrow {
-	return fabs(a - b) < T.epsilon;
+bool fpEqual(T : float)(const T a, const T b) pure nothrow {
+	return .fabs(a - b) < T.epsilon;
 } unittest {
 	float f = 5f;
 	
@@ -17,4 +17,14 @@ bool fpEqual(T : float)(T a, T b) pure nothrow {
 	
 	assert(fTotal != 2.468f);
 	assert(fpEqual(fTotal, 2.468f));
+}
+
+@safe
+bool fpEqual(T : float, size_t n)(const T[n] values, const T b) pure nothrow {
+	foreach (ref const T val; values) {
+		if (!fpEqual(val, b))
+			return false;
+	}
+	
+	return true;
 }

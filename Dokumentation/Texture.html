@@ -46,7 +46,7 @@
 <br><br>
 
 </dd>
-<dt><big><a name="Texture"></a>class <u>Texture</u>: Dgame.Graphics.Interface.Blendable.Blendable;
+<dt><big><a name="Texture"></a>class <u>Texture</u>: Dgame.Graphics.Template.Blendable.Blendable;
 </big></dt>
 <dd>A <u>Texture</u> is a 2 dimensional pixel reprasentation.
  It is a wrapper of an OpenGL <u>Texture</u>.
@@ -91,11 +91,6 @@ rschuett<br><br>
 
 </dd>
 </dl>
-</dd>
-<dt><big><a name="Texture._render"></a>package const void <u>_render</u>(const ShortRect <i>dst</i>, RenderMode <i>mode</i> = RenderMode.Normal);
-</big></dt>
-<dd>Rvalue version<br><br>
-
 </dd>
 <dt><big><a name="Texture.this"></a>final  this();
 </big></dt>
@@ -183,62 +178,10 @@ Format enum.<br><br>
 <dd>Returns if repeating is enabled.<br><br>
 
 </dd>
-<dt><big><a name="Texture.hasViewport"></a>final const bool <u>hasViewport</u>();
-</big></dt>
-<dd>Check if this Texture has a Viewport.<br><br>
-
-</dd>
-<dt><big><a name="Texture.setViewport"></a>final void <u>setViewport</u>(ref const FloatRect <i>viewport</i>);
-</big></dt>
-<dd>Set a Viewport to this Texture.
- A Viewport is a ClipRect that is shorter as the whole Texture.
- If this Texture is drawn only the specific Viewport will be drawn.<br><br>
-
-</dd>
-<dt><big><a name="Texture.setViewport"></a>final void <u>setViewport</u>(const FloatRect <i>viewport</i>);
-</big></dt>
-<dd>Rvalue version<br><br>
-
-</dd>
-<dt><big><a name="Texture.unsetViewport"></a>final void <u>unsetViewport</u>();
-</big></dt>
-<dd>Remove/Collapse the current Viewport.<br><br>
-
-</dd>
-<dt><big><a name="Texture.getViewport"></a>final const pure nothrow ref const(FloatRect) <u>getViewport</u>();
-</big></dt>
-<dd>Returns the current Viewport.<br><br>
-
-</dd>
-<dt><big><a name="Texture.fetchViewport"></a>final inout inout(FloatRect)* <u>fetchViewport</u>();
-</big></dt>
-<dd>Get mutable access to the current Viewport.<br><br>
-
-</dd>
 <dt><big><a name="Texture.link"></a>final void <u>link</u>(const Texture <i>tex</i>);
 </big></dt>
 <dd>Link this Texture to another.
  This Texture points now to the other Texture and his data.<br><br>
-
-</dd>
-<dt><big><a name="Texture.partial"></a>final const Texture <u>partial</u>(ref const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
-</big></dt>
-<dd>Returns a new Texture object which rested <u>partial</u> of these Texture.
- If you pass as second parameter <b>true</b>, the whole Texture will be copied
- with the postblit CTor and then a <i>viewport</i> is set.
- If you pass <b>false</b> (default), nothing is copied, but the new Object points (link)
- to these. Then a <i>viewport</i> is set also.
-<br><br>
-<b>See:</b><br>
-postblit CTor
-<br><br>
-<b>See:</b><br>
-link<br><br>
-
-</dd>
-<dt><big><a name="Texture.partial"></a>final const Texture <u>partial</u>(const FloatRect <i>viewport</i>, bool <i>copy</i> = false);
-</big></dt>
-<dd>Rvalue version<br><br>
 
 </dd>
 <dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i> = 32, Format <i>fmt</i> = Format.None);
@@ -275,14 +218,14 @@ This method <b>allocates</b> memory.<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Texture.copy"></a>final void <u>copy</u>(const Texture <i>tex</i>, ShortRect* <i>rect</i> = null);
+<dt><big><a name="Texture.copy"></a>final void <u>copy</u>(const Texture <i>tex</i>, const ShortRect* <i>rect</i> = null);
 </big></dt>
 <dd>Copy another Texture to this.
  The second parameter is a pointer to the destination <i>rect</i>.
  Is it is <b>null</b> this means the whole <i>tex</i> is copied.<br><br>
 
 </dd>
-<dt><big><a name="Texture.updateMemory"></a>final void <u>updateMemory</u>(const void* <i>memory</i>, ShortRect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.updateMemory"></a>final void <u>updateMemory</u>(const void* <i>memory</i>, const ShortRect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Update the pixel data of this Texture.
  The second parameter is a pointer to the area which is updated.

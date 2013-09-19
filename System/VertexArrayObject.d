@@ -1,4 +1,4 @@
-module Dgame.System.VertexArray;
+module Dgame.System.VertexArrayObject;
 
 private import derelict.opengl3.gl;
 
@@ -8,7 +8,7 @@ private import derelict.opengl3.gl;
  *
  * Author: rschuett
  */
-final class VertexArray {
+final class VertexArrayObject {
 private:
 	GLuint _vid;
 	

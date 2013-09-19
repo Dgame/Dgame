@@ -65,7 +65,13 @@ public:
 	
 	version(Develop)
 	this(this) {
-		writeln("Postblit Color");
+		debug writeln("Postblit Color");
+	}
+	
+	~this() {
+		debug writeln("DTor Color");
+		
+		_ColorStore.remove(&this);
 	}
 	
 	/**
@@ -87,9 +93,16 @@ public:
 		this.opAssign(rhs);
 	}
 	
-	version(Develop)
-	~this() {
-		writeln("DTor Color");
+	/**
+	 * Returns a copy of the current Color with a given transpareny.
+	 * 
+	 * Example:
+	 * ----
+	 * Color(current.red, current.green, current.blue, alpha);
+	 * ----
+	 */
+	Color withTransparency(ubyte alpha = 0) const {
+		return Color(this.red, this.green, this.blue, alpha);
 	}
 	
 	/**
@@ -153,9 +166,9 @@ public:
 	 */
 	float[4] asGLColor() const pure nothrow {
 		return [this.red   > 1 ? this.red   / 255f : this.red,
-		        this.green > 1 ? this.green / 255f : this.green,
-		        this.blue  > 1 ? this.blue  / 255f : this.blue,
-		        this.alpha > 1 ? this.alpha / 255f : this.alpha];
+			this.green > 1 ? this.green / 255f : this.green,
+			this.blue  > 1 ? this.blue  / 255f : this.blue,
+			this.alpha > 1 ? this.alpha / 255f : this.alpha];
 	}
 	
 	/**
