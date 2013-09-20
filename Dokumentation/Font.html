@@ -82,9 +82,14 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Font.opAssign"></a>void <u>opAssign</u>(ref const Font <i>fnt</i>);
+<dt><big><a name="Font.opAssign"></a>void <u>opAssign</u>(ref Font <i>fnt</i>);
 </big></dt>
 <dd><u>opAssign</u><br><br>
+
+</dd>
+<dt><big><a name="Font.opAssign"></a>void <u>opAssign</u>(Font <i>fnt</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
 
 </dd>
 <dt><big><a name="Font.free"></a>void <u>free</u>();
@@ -98,11 +103,6 @@ rschuett<br><br>
 <dd>Load the font from a file.
  If the second parameter isn't 0, the current font size will be replaced with that.
  If both are 0, an exception is thrown.<br><br>
-
-</dd>
-<dt><big><a name="Font.getFontFile"></a>const pure nothrow string <u>getFontFile</u>();
-</big></dt>
-<dd>Returns the current filename of the font.<br><br>
 
 </dd>
 <dt><big><a name="Font.setStyle"></a>void <u>setStyle</u>(Style <i>style</i>);
@@ -148,11 +148,6 @@ Hint enum<br><br>
 <dt><big><a name="Font.getHint"></a>const pure nothrow Hint <u>getHint</u>();
 </big></dt>
 <dd>Returns the current hint<br><br>
-
-</dd>
-<dt><big><a name="Font.setSize"></a>void <u>setSize</u>(ubyte <i>size</i>);
-</big></dt>
-<dd>Replace or set the font <i>size</i>.<br><br>
 
 </dd>
 <dt><big><a name="Font.getSize"></a>const pure nothrow ubyte <u>getSize</u>();

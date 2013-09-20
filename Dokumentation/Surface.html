@@ -56,15 +56,18 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Surface.RMask"></a><u>RMask</u></big></dt>
+<dt><big><a name="Surface.RMask"></a>int <u>RMask</u>;
+</big></dt>
 <dd>Default Red Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.GMask"></a><u>GMask</u></big></dt>
+<dt><big><a name="Surface.GMask"></a>int <u>GMask</u>;
+</big></dt>
 <dd>Default Green Mask. <br><br>
 
 </dd>
-<dt><big><a name="Surface.BMask"></a><u>BMask</u></big></dt>
+<dt><big><a name="Surface.BMask"></a>int <u>BMask</u>;
+</big></dt>
 <dd>Default Blue Mask. <br><br>
 
 </dd>
@@ -246,7 +249,12 @@ whether the call succeeded or not<br><br>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Surface.setColorkey"></a>void <u>setColorkey</u>(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, short <i>alpha</i> = -1);
+<dt><big><a name="Surface.setColorkey"></a>void <u>setColorkey</u>(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>);
+</big></dt>
+<dd>Set the colorkey.<br><br>
+
+</dd>
+<dt><big><a name="Surface.setColorkey"></a>void <u>setColorkey</u>(ubyte <i>red</i>, ubyte <i>green</i>, ubyte <i>blue</i>, ubyte <i>alpha</i>);
 </big></dt>
 <dd>Set the colorkey.<br><br>
 

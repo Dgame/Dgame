@@ -16,29 +16,7 @@ This is a wrapper for the hardware acceleration of SDL_Surfaces, called SDL_Text
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="RendererTexture.BlendMode"></a>enum <u>BlendMode</u>;
-</big></dt>
-<dd>Supported BlendModes<br><br>
-
-<dl><dt><big><a name="RendererTexture.BlendMode.None"></a><u>None</u></big></dt>
-<dd>no blending <br><br>
-
-</dd>
-<dt><big><a name="RendererTexture.BlendMode.Blend"></a><u>Blend</u></big></dt>
-<dd>dst = (src * A) + (dst * (1-A)) <br><br>
-
-</dd>
-<dt><big><a name="RendererTexture.BlendMode.Add"></a><u>Add</u></big></dt>
-<dd>dst = (src * A) + dst <br><br>
-
-</dd>
-<dt><big><a name="RendererTexture.BlendMode.Mod"></a><u>Mod</u></big></dt>
-<dd>dst = src * dst <br><br>
-
-</dd>
-</dl>
-</dd>
-<dt><big><a name="RendererTexture.Access"></a>enum <u>Access</u>;
+<dl><dt><big><a name="RendererTexture.Access"></a>enum <u>Access</u>;
 </big></dt>
 <dd>Supported <u>Access</u> modes<br><br>
 
@@ -119,12 +97,12 @@ rschuett<br><br>
 <dd>Copy <i>srfc</i> onto this RendererTexture. <i>rect</i> is the position and size.<br><br>
 
 </dd>
-<dt><big><a name="RendererTexture.setBlendMode"></a>void <u>setBlendMode</u>(BlendMode <i>bmode</i>);
+<dt><big><a name="RendererTexture.setBlendMode"></a>void <u>setBlendMode</u>(Renderer.BlendMode <i>bmode</i>);
 </big></dt>
 <dd>Use this function to set the blend mode for a texture, used by 'copy'.<br><br>
 
 </dd>
-<dt><big><a name="RendererTexture.getBlendMode"></a>BlendMode <u>getBlendMode</u>();
+<dt><big><a name="RendererTexture.getBlendMode"></a>Renderer.BlendMode <u>getBlendMode</u>();
 </big></dt>
 <dd>Use this function to get the blend mode used for texture copy operations.<br><br>
 

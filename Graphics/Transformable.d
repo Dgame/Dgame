@@ -10,12 +10,20 @@ private {
 	import Dgame.Graphics.Moveable;
 }
 
+/**
+ * Basic implementation for transformable objects.
+ * 
+ * Author: rschuett
+ */
 abstract class Transformable : Moveable {
 protected:
 	short _rotAngle;
 	float _zoom;
 	
 protected:
+	/**
+	 * Apply translation to the object.
+	 */
 	override void _applyTranslation() const {
 		super._applyTranslation();
 		
@@ -27,6 +35,9 @@ protected:
 	}
 	
 public:
+	/**
+	 * Reset the translation.
+	 */
 	override void resetTranslation() {
 		super.resetTranslation();
 		
@@ -35,6 +46,9 @@ public:
 	}
 	
 final:
+	/**
+	 * Set a (new) rotation.
+	 */
 	void setRotation(short rotAngle) {
 		this._rotAngle = rotAngle;
 		
@@ -42,18 +56,30 @@ final:
 			this._rotAngle = 0;
 	}
 	
+	/**
+	 * Increase/Decrease the rotation.
+	 */
 	void rotate(short rotAngle) {
 		this._rotAngle += rotAngle;
 	}
 	
+	/**
+	 * Returns the current rotation.
+	 */
 	short getRotation() const pure nothrow {
 		return this._rotAngle;
 	}
 	
+	/**
+	 * Set a new scale.
+	 */
 	void setScale(float zoom) {
 		this._zoom = zoom;
 	}
 	
+	/**
+	 * Increase/Decrease the scale/zoom.
+	 */
 	void scale(float zoom) {
 		if (isNaN(this._zoom))
 			return this.setScale(zoom);
@@ -61,6 +87,9 @@ final:
 		this._zoom += zoom;
 	}
 	
+	/**
+	 * Returns the current scale/zoom.
+	 */
 	float getScale() const pure nothrow {
 		return this._zoom;
 	}

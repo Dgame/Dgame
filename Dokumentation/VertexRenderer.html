@@ -131,7 +131,7 @@ Primitive.Target enum.<br><br>
 pointTo<br><br>
 
 </dd>
-<dt><big><a name="VertexRenderer.drawElements"></a>static void <u>drawElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, int[] <i>indices</i>);
+<dt><big><a name="VertexRenderer.drawElements"></a>static void <u>drawElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, uint[] <i>indices</i>);
 </big></dt>
 <dd>Draw Shapes of a specific type from the data which is addressed through 'pointTo'.
  It will use <i>count</i> vertices and <i>indices</i> for the correct index per vertex.
@@ -140,7 +140,7 @@ pointTo<br><br>
 pointTo<br><br>
 
 </dd>
-<dt><big><a name="VertexRenderer.drawRangeElements"></a>static void <u>drawRangeElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, int[] <i>indices</i>, int <i>start</i> = -1, int <i>end</i> = -1);
+<dt><big><a name="VertexRenderer.drawRangeElements"></a>static void <u>drawRangeElements</u>(Primitive.Type <i>ptype</i>, size_t <i>count</i>, uint[] <i>indices</i>, uint <i>start</i> = 0, uint <i>end</i> = 0);
 </big></dt>
 <dd>Draw Shapes of a specific type from the data which is addressed through 'pointTo'.
  It will use <i>count</i> vertices and <i>indices</i> for the correct index per vertex.
