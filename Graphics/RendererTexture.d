@@ -133,7 +133,7 @@ public:
 	 * Checks whether the RendererTexture is valid.
 	 */
 	bool isValid() const pure nothrow {
-		return this._target !is null;
+		return this._target.isValid();
 	}
 	
 	/**

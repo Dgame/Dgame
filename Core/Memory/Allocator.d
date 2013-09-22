@@ -27,7 +27,7 @@ public:
 	}
 }
 
-@trusted
+@property @trusted
 T[] alloc(T, alias N)(void* mem = .alloca(N * T.sizeof)) {
 	return (cast(T*) mem)[0 .. N];
 }

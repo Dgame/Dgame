@@ -1,7 +1,7 @@
 module build;
 
-import std.path : dirName, buildNormalizedPath;
-import std.stdio : writefln, writeln;
+import std.stdio;
+import std.path : dirName, buildNormalizedPath, absolutePath;
 import std.process : system, ErrnoException;
 import std.file : mkdir, exists, read, dirEntries, SpanMode;
 import std.array : endsWith;
@@ -51,7 +51,7 @@ enum {
 version(DigitalMars) {
 	pragma(msg, "Using the Digital Mars DMD compiler.");
 
-	enum CompilerOptions = "-lib -O -release -inline -property -wi";
+	enum CompilerOptions = "-lib -O -release -inline -wi";
 
 	string buildCompileString(string files, string libName) {
 		return format("dmd %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -67,7 +67,7 @@ version(DigitalMars) {
 } else version(LDC) {
 	pragma(msg, "Using the LDC compiler.");
 
-	enum CompilerOptions = "-lib -O -release -enable-inlining -property -w -wi";
+	enum CompilerOptions = "-lib -O -release -enable-inlining -w -wi";
 
 	string buildCompileString(string files, string libName) {
 		return format("ldc2 %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -107,7 +107,7 @@ public:
 Package[string] pathMap;
 
 string buildPath;
-immutable string derelictImportDir;
+string derelictImportDir;
 
 debug {
 	string outdir = LibDir ~ "/Debug";
@@ -116,8 +116,6 @@ debug {
 }
 
 static this() {
-	derelictImportDir = cast(string) read("external.txt");
-	
 	if (!LibDir.exists())
 		mkdir(LibDir);
 		
@@ -135,10 +133,44 @@ static this() {
 	];
 }
 
+enum DerelictDirname = "\\derelict";
+
 void main(string[] args) {
 	// Determine the path to this executable so that imports and source files can be found
 	// no matter what the working directory.
 	buildPath = args[0].dirName();
+
+	string derelictPath = args[0].absolutePath().dirName() ~ "\\..\\.." ~ DerelictDirname;
+	derelictPath = derelictPath.buildNormalizedPath();
+
+	writeln("Assume '", derelictPath, "' as derelict path.");
+	writeln("Verify...\n");
+
+	if (.exists(derelictPath))
+		derelictImportDir = derelictPath;
+	else {
+		writeln("Assume, that the derelict path is in 'external.txt'.");
+		writeln("Verify...\n");
+
+		if (.exists(buildPath ~ "/external.txt"))
+			derelictImportDir = cast(string) .read(buildPath ~ "/external.txt");
+
+		if (derelictImportDir.length == 0 || !.exists(derelictImportDir)) {
+			do {
+				writeln("Derelict import path not found.");
+				writeln("You can enter the full path in 'external.txt'.");
+				writeln("But for now, please enter the full path here or press q for quit:");
+
+				derelictImportDir = readln();
+			} while (derelictImportDir.length == 0 || derelictImportDir[0] != 'q');
+
+			if (derelictImportDir[0] == 'q')
+				return;
+		}
+	}
+
+	if (derelictImportDir.endsWith(DerelictDirname))
+		derelictImportDir = derelictImportDir.dirName();
 
 	if (buildPath != "./") {
 		outdir = buildNormalizedPath(buildPath, outdir);

@@ -181,6 +181,7 @@ public:
 		this._payload = Payload!T.make(ptr);
 	}
 	
+	@property
 	inout(T*) ptr() inout pure nothrow {
 		if (this._payload !is null)
 			return this._payload.ptr;
@@ -190,6 +191,7 @@ public:
 	
 	alias ptr this;
 	
+	@property
 	int usage() const pure nothrow {
 		return this._payload !is null ? this._payload.counter.count : -1;
 	}
