@@ -146,9 +146,9 @@ void main(string[] args) {
 	writeln("Assume '", derelictPath, "' as derelict path.");
 	writeln("Verify...\n");
 
-	/*if (.exists(derelictPath))
+	if (.exists(derelictPath))
 		derelictImportDir = derelictPath;
-	else */{
+	else {
 		writeln("Assume, that the derelict path is in 'external.txt'.");
 		writeln("Verify...\n");
 
