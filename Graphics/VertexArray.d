@@ -24,7 +24,7 @@ public import Dgame.System.VertexRenderer : Primitive;
  */
 class VertexArray : Drawable {
 protected:
-	override void _render(const Window wnd) in {
+	override void _render() in {
 		assert(this._tex !is null);
 	} body {
 		if (this._vertices.length == 0)

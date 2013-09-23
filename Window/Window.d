@@ -8,7 +8,7 @@ private {
 	import derelict.opengl3.gl;
 	
 	import Dgame.Core.Memory.Finalizer;
-	import Dgame.Core.Memory.Allocator : alloc;
+	import Dgame.Core.Memory.Allocator : stack_alloc;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -254,7 +254,7 @@ public:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		ubyte[] tmpLine = .alloc!(ubyte, lineWidth);
+		ubyte[] tmpLine = .stack_alloc!(ubyte, lineWidth);
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
 		for (uint i = 0; i < this.height / 2; ++i) {
@@ -361,7 +361,7 @@ public:
 	void draw(Drawable draw) in {
 		assert(draw !is null, "Drawable object is null.");
 	} body {
-		draw.render(this);
+		draw.render();
 	}
 	
 	/**

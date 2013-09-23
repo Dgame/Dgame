@@ -1,7 +1,5 @@
 module Dgame.Graphics.Drawable;
 
-package import Dgame.Window.Window;
-
 /**
  * Drawable is the base class for objects which can be drawn.
  * 
@@ -12,10 +10,10 @@ protected:
 	/**
 	 * Render method
 	 */
-	void _render(const Window);
+	void _render();
 	
 public: // TODO: package?
-	final void render(const Window wnd) {
-		this._render(wnd);
+	final void render() {
+		this._render();
 	}
 }

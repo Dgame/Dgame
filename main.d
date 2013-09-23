@@ -219,12 +219,6 @@ void main() {
 	va.append(pos, texels);
 	va.setColor(Color.Green.withTransparency(125));
 	
-	{
-		writeln("<>");
-		Surface typ = Surface("../../samples/img/typ.png");
-		writeln(typ.countBytes());
-		writeln("</>");
-	}
 	writeln("====");
 	
 	Transform tf = tm.getTransform();

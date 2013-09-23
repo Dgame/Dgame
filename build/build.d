@@ -5,7 +5,7 @@ import std.path : dirName, buildNormalizedPath, absolutePath;
 import std.process : system, ErrnoException;
 import std.file : mkdir, exists, read, dirEntries, SpanMode;
 import std.array : endsWith;
-import std.string : format, toUpper;
+import std.string : format, toUpper, chop;
 import std.exception : enforce;
 
 version(DigitalMars) {
@@ -146,9 +146,9 @@ void main(string[] args) {
 	writeln("Assume '", derelictPath, "' as derelict path.");
 	writeln("Verify...\n");
 
-	if (.exists(derelictPath))
+	/*if (.exists(derelictPath))
 		derelictImportDir = derelictPath;
-	else {
+	else */{
 		writeln("Assume, that the derelict path is in 'external.txt'.");
 		writeln("Verify...\n");
 
@@ -161,11 +161,20 @@ void main(string[] args) {
 				writeln("You can enter the full path in 'external.txt'.");
 				writeln("But for now, please enter the full path here or press q for quit:");
 
-				derelictImportDir = readln();
-			} while (derelictImportDir.length == 0 || derelictImportDir[0] != 'q');
+				derelictImportDir = readln().chop();
 
-			if (derelictImportDir[0] == 'q')
-				return;
+				if (derelictImportDir[0] == 'q')
+					return;
+
+				if (.exists(derelictImportDir)) {
+					if (derelictImportDir.endsWith(DerelictDirname))
+						break;
+
+					derelictImportDir ~= DerelictDirname;
+					if (.exists(derelictImportDir))
+						break;
+				}
+			} while (true);
 		}
 	}
 

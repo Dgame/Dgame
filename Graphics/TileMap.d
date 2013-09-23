@@ -11,6 +11,8 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
+	import Dgame.Core.Memory.Allocator : gc_free, heap_alloc, heap_free;
+	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
 	import Dgame.Math.VecN;
@@ -203,8 +205,8 @@ private:
 					float vy = row * this._tmi.tileHeight;
 					
 					this._tiles ~= Tile(gid, elem.tag.attr["name"],
-					[cast(ushort) vx, cast(ushort) vy],
-					[col, row]);
+					                    [cast(ushort) vx, cast(ushort) vy],
+					                    [col, row]);
 					
 					float vw = this._tmi.tileWidth;
 					float vh = this._tmi.tileHeight;
@@ -338,10 +340,11 @@ private:
 	void _loadTexCoords(ref ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
 		vec2f[] texCoords;
-		const size_t cap = texCoords.reserve(coordinates.length * 4);
+		texCoords.reserve(coordinates.length * 4);
 		scope(exit) delete texCoords;
 		
-		debug writefln("TileMap: Reserve %d texCoords (%d).", cap, coordinates.length * 4);
+		debug writefln("TileMap: Reserve %d texCoords (%d).",
+		               texCoords.length, coordinates.length * 4);
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -372,7 +375,7 @@ private:
 	}
 	
 protected:
-	void _render(const Window wnd) in {
+	void _render() in {
 		assert(this._transform !is null, "Transform is null.");
 	} body {
 		glPushAttrib(GL_ENABLE_BIT);

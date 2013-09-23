@@ -209,7 +209,7 @@ private:
 	}
 	
 protected:
-	void _render(const Window wnd) in {
+	void _render() in {
 		assert(this._vbo !is null);
 	} body {
 		glPushAttrib(GL_ENABLE_BIT);

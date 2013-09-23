@@ -182,15 +182,15 @@ package:
 		final switch (mode) {
 			case RenderMode.Normal:
 				texCoords = [tx,      ty,
-					tx + tw, ty,
-					tx + tw, ty + th,
-					tx,      ty + th];
+				             tx + tw, ty,
+				             tx + tw, ty + th,
+				             tx,      ty + th];
 				break;
 			case RenderMode.Reverse:
 				texCoords = [tx,      ty + th,
-					tx + tw, ty + th,
-					tx + tw, ty,
-					tx,      ty];
+				             tx + tw, ty + th,
+				             tx + tw, ty,
+				             tx,      ty];
 				break;
 		}
 		
@@ -207,9 +207,9 @@ package:
 		}
 		
 		float[12] vertices = [dx,	   dy,      0f,
-			dx + dw, dy,      0f,
-			dx + dw, dy + dh, 0f,
-			dx,      dy + dh, 0f];
+		                      dx + dw, dy,      0f,
+		                      dx + dw, dy + dh, 0f,
+		                      dx,      dy + dh, 0f];
 		
 		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
@@ -459,9 +459,9 @@ final:
 			
 			// Color matches
 			if (colors[0] == colorkey.red
-			&& colors[1] == colorkey.green
-			&& colors[2] == colorkey.blue
-			&& (0 == colorkey.alpha || colors[3] == colorkey.alpha))
+			    && colors[1] == colorkey.green
+			    && colors[2] == colorkey.blue
+			    && (0 == colorkey.alpha || colors[3] == colorkey.alpha))
 			{
 				// Make transparent
 				colors[0] = 255;
@@ -484,7 +484,7 @@ final:
 	/**
 	 * Returns the pixel of this Texture or null if this Texture isn't valid.
 	 *
-	 * Note: This method <b>allocates</b> memory.
+	 * Note: This method <b>allocates</b> GC memory.
 	 */
 	void* getMemory() const {
 		if (this._format == Format.None

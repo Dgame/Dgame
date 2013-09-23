@@ -1,33 +1,50 @@
 module Dgame.Core.Memory.Allocator;
 
-private import core.stdc.stdlib : malloc, realloc, free, alloca;
-
-final abstract class Memory {
-public:
-	static T* allocate(T)(size_t capacity) {
-		return cast(T*) Memory.rawAllocate!T(capacity);
-	}
-	
-	static void* rawAllocate(T)(size_t capacity) {
-		return .malloc(capacity * T.sizeof);
-	}
-	
-	static T* reallocate(T)(T* ptr, size_t capacity) {
-		ptr = cast(T*) .realloc(ptr, capacity * T.sizeof);
-		if (!ptr)
-			assert(0, "Out of memory");
-		
-		return ptr;
-	}
-	
-	static void deallocate(T)(ref T* ptr) {
-		.free(ptr);
-		
-		ptr = null;
-	}
+private {
+	import core.memory : GC;
+	import core.stdc.stdlib : alloca, malloc, free;
 }
 
 @property @trusted
-T[] alloc(T, alias N)(void* mem = .alloca(N * T.sizeof)) {
-	return (cast(T*) mem)[0 .. N];
+T[] stack_alloc(T, alias N)(void* ptr = .alloca(N * T.sizeof)) {
+	return (cast(T*) ptr)[0 .. N];
+}
+
+@trusted
+T[] heap_alloc(T)(size_t N) {
+	return (cast(T*) .malloc(T.sizeof * N))[0 .. N];
+}
+
+@trusted
+void heap_free(T)(ref T[] arr) {
+	static if (is(T == struct)) {
+		foreach (ref T val; arr) {
+			.destroy!T(val);
+		}
+	}
+	
+	.free(arr.ptr);
+	arr = null;
+}
+
+enum {
+	GC_Collect = 1,
+	GC_Minimize = 2
+}
+
+void gc_free(T)(ref T[] arr, uint mode = 0) {
+	static if (is(T == struct)) {
+		foreach (ref T val; arr) {
+			.destroy!T(val);
+		}
+	}
+	
+	GC.free(arr.ptr);
+	arr = null;
+	
+	if (mode & GC_Collect)
+		GC.collect();
+	
+	if (mode & GC_Minimize)
+		GC.minimize();
 }

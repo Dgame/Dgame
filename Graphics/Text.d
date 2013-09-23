@@ -99,7 +99,7 @@ private:
 	}
 	
 protected:
-	void _render(const Window wnd) in {
+	void _render() in {
 		assert(this._tex !is null, "No valid Texture.");
 	} body {
 		glPushMatrix();
