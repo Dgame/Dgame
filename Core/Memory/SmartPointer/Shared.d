@@ -216,7 +216,7 @@ unittest {
 	void test(shared_ptr!A rhs) {
 		//assert(rhs.isCopy);
 		assert(rhs.id == 42);
-		assert(rhs.isValid);
+		assert(rhs.isValid());
 		assert(rhs.usage == 2);
 	}
 	
@@ -224,14 +224,14 @@ unittest {
 	
 	assert(as.id == 42);
 	assert(as.usage == 1);
-	assert(as.isValid);
+	assert(as.isValid());
 	//assert(!as.isCopy);
 	
 	test(as);
 	
 	assert(as.id == 42);
 	assert(as.usage == 1);
-	assert(as.isValid);
+	assert(as.isValid());
 	//assert(!as.isCopy);
 	
 	shared_ptr!A s1 = new A(111);
@@ -246,8 +246,8 @@ unittest {
 	
 	debug writeln("\t\t", s1.usage, "::", s2.usage);
 	
-	assert(s1.isValid);
-	assert(s2.isValid);
+	assert(s1.isValid());
+	assert(s2.isValid());
 	assert(s1.usage == 1, to!string(s1.usage));
 	assert(s2.usage == 1, to!string(s2.usage));
 	//assert(s2.isCopy());
@@ -260,25 +260,25 @@ unittest {
 	void test2(shared_ptr!(A, testDeleter) rhs, int id) {
 		//assert(rhs.isCopy);
 		assert(rhs.id == id);
-		assert(rhs.isValid);
+		assert(rhs.isValid());
 		assert(rhs.usage == 2);
 	}
 	
 	shared_ptr!(A, testDeleter) s3 = new A(23);
 	
-	assert(s3.isValid);
+	assert(s3.isValid());
 	assert(s3.id == 23);
 	assert(s3.usage == 1);
 	
 	test2(s3, 23);
 	
-	assert(s3.isValid);
+	assert(s3.isValid());
 	assert(s3.id == 23);
 	assert(s3.usage == 1);
 	
 	s3.reset(new A(42));
 	
-	assert(s3.isValid);
+	assert(s3.isValid());
 	assert(s3.id == 42);
 	assert(s3.usage == 1);
 }
