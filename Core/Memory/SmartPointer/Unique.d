@@ -1,10 +1,10 @@
 module Dgame.Core.Memory.SmartPointer.Unique;
 
-void dummyDeleter(void* ptr) pure nothrow {
+void dummy_deleter(void* ptr) pure nothrow {
 	
 }
 
-struct unique_ptr(T, alias _deleter = dummyDeleter)
+struct unique_ptr(T, alias _deleter = dummy_deleter)
 	if (!is(T == class) && !is(T : U*, U))
 {
 private:
@@ -14,18 +14,27 @@ public:
 	@disable
 	this(typeof(null));
 	
-	this(T* ptr) {
-		this._ptr = ptr;
-	}
-	
 	@disable
 	this(this);
 	
 	@disable
-	void opAssign(ref unique_ptr!T);
+	void opAssign(T*);
+	
+	this(T* ptr) {
+		this._ptr = ptr;
+	}
 	
 	~this() {
 		this.release();
+	}
+	
+	void release() {
+		if (this.isValid()) {
+			static if (is(T == struct) && is(typeof(T)))
+				destroy!T(*this._ptr);
+			
+			_deleter(this._ptr);
+		}
 	}
 	
 	void reset(T* ptr) in {
@@ -36,31 +45,22 @@ public:
 		this._ptr = ptr;
 	}
 	
-	void release() {
-		if (this._ptr !is null) {
-			_deleter(this._ptr);
-			
-			this._ptr = null;
-		}
-	}
-	
 	bool isValid() const pure nothrow {
 		return this._ptr !is null;
 	}
+	
+	@property
+	inout(T*) ptr() inout {
+		return this._ptr;
+	}
+	
+	alias ptr this;
 	
 	typeof(this) move() {
 		scope(exit) this._ptr = null;
 		
 		return typeof(this)(this._ptr);
 	}
-	
-	@property
-	inout(T*) ptr() inout pure nothrow {
-		return this._ptr;
-	}
-	
-	alias ptr this;
-	
 } unittest {
 	struct A {
 	public:

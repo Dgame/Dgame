@@ -103,6 +103,9 @@ private:
 	static int _id;
 	
 	void _destruct() {
+		static if (is(T == struct) && is(typeof(T)))
+			destroy!T(*(this._payload.ptr));
+		
 		_deleter(this._payload.ptr);
 		
 		this._payload.ptr = null;

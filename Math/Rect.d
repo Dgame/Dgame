@@ -6,7 +6,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.Allocator : stack_alloc;
+	import Dgame.Core.Memory.Allocator : dync_alloc, dync_free;
 	
 	import Dgame.Math.Vector2;
 }
@@ -239,12 +239,9 @@ public:
 	/**
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
-	static Rect!T enclosePoints(const Vector2!T[] points) in {
-		assert(points.length < 4100);
-	} body {
-		const size_t length = points.length;
-		SDL_Point[] sdl_points = stack_alloc!(SDL_Point, length);
-		//delete sdl_points;
+	static Rect!T enclosePoints(const Vector2!T[] points) {
+		SDL_Point[] sdl_points = dync_alloc!SDL_Point(points.length);
+		scope(exit) dync_free(sdl_points);
 		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);

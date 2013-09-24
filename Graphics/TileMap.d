@@ -11,8 +11,6 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.Allocator : gc_free, heap_alloc, heap_free;
-	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
 	import Dgame.Math.VecN;
@@ -175,7 +173,6 @@ private:
 		Document doc = new Document(cast(string) .read(this._filename));
 		
 		vec3f[] vertices;
-		scope(exit) delete vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -341,7 +338,6 @@ private:
 		/// Sammeln der Textur Koordinaten
 		vec2f[] texCoords;
 		texCoords.reserve(coordinates.length * 4);
-		scope(exit) delete texCoords;
 		
 		debug writefln("TileMap: Reserve %d texCoords (%d).",
 		               texCoords.length, coordinates.length * 4);
