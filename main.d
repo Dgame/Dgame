@@ -2,10 +2,7 @@ import std.stdio;
 
 import Dgame.Window.all;
 import Dgame.Graphics.all;
-
 import Dgame.Audio.all;
-
-import Dgame.Graphics.TileMap;
 import Dgame.System.all;
 
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictGL.lib");
@@ -41,7 +38,7 @@ void main() {
 	
 	{
 		writeln("<>");
-		Surface test = Surface("../../samples/img/wiki.png");
+		Surface test = Surface("samples/img/wiki.png");
 		Surface test2 = test;
 		test2 = test;
 		writeln("</>");
@@ -51,10 +48,10 @@ void main() {
 	Sound[2] sound;
 	//sound[0] = new Sound(new VorbisFile("samples/audio/orchestral.ogg"));
 	//sound[1] = new Sound(new WaveFile("samples/audio/step.wav"));
-	//sound[0] = new Sound("../../samples/audio/orchestral.ogg");
-	//sound[1] = new Sound("../../samples/audio/step.wav");
-	sound[0] = Sound.loadOnce("../../samples/audio/orchestral.ogg");
-	sound[1] = Sound.loadOnce("../../samples/audio/step.wav");
+	//sound[0] = new Sound("samples/audio/orchestral.ogg");
+	//sound[1] = new Sound("samples/audio/step.wav");
+	sound[0] = Sound.loadOnce("samples/audio/orchestral.ogg");
+	sound[1] = Sound.loadOnce("samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
 	writefln("Green Color: %d,%d,%d,%d", Color.Green.red, Color.Green.green, Color.Green.blue, Color.Green.alpha);
@@ -96,22 +93,22 @@ void main() {
 	many.enableFill(true);
 	many.setPixelColor(Color.Red);
 	
-	Surface wiki = Surface("../../samples/img/wiki.png"); // <
+	Surface wiki = Surface("samples/img/wiki.png"); // <
 	
 	Color col = wiki.getColorAt(82, 33);
 	writefln("color: at (%d:%d) is %d, %d, %d", 82, 33, col.red, col.green, col.blue);
 	
 	Surface copy = wiki.subSurface(ShortRect(0, 0, 50, 50)); // <
-	copy.saveToFile("../../samples/img/wiki_sub.png");
+	copy.saveToFile("samples/img/wiki_sub.png");
 	copy.setColorkey(Color(254, 200, 88));
 	copy.setBlendMode(Surface.BlendMode.Add);
 	copy.setAlphaMod(150);
 	
 	ShortRect dst = ShortRect(5, 5, 0, 0);
 	wiki.blit(copy, null, &dst);
-	wiki.saveToFile("../../samples/img/wiki_copy.png");
+	wiki.saveToFile("samples/img/wiki_copy.png");
 	
-	Surface wiki2 = Surface("../../samples/img/wiki.png");
+	Surface wiki2 = Surface("samples/img/wiki.png");
 	///
 	writefln("Bits: %d, Bytes: %d", wiki2.countBits(), wiki2.countBytes());
 	
@@ -125,7 +122,7 @@ void main() {
 	Texture tex3 = tex.subTexture(dst_copy);
 	writefln("\ttex3 -> w: %d, h: %d", tex3.width, tex3.height);
 	Surface texToSrfc2 = Surface.make(tex3.getMemory(), tex3.width, tex3.height, tex3.getFormat().formatToBits());
-	texToSrfc2.saveToFile("../../samples/img/wiki_sub.png");
+	texToSrfc2.saveToFile("samples/img/wiki_sub.png");
 	
 	tex.copy(copy_tex, &dst_copy);
 	writeln(" => ", tex);
@@ -133,7 +130,7 @@ void main() {
 	writeln(" => ", mem);
 	//
 	Surface texToSrfc = Surface.make(tex.getMemory(), tex.width, tex.height, tex.getFormat().formatToBits());
-	texToSrfc.saveToFile("../../samples/img/wiki_copy_tex.png");
+	texToSrfc.saveToFile("samples/img/wiki_copy_tex.png");
 	
 	//	tex.setViewport(FloatRect(15, 15, 25, 25));
 	
@@ -178,13 +175,13 @@ void main() {
 		wnd.setIcon(icon);
 	}
 	
-	Spritesheet sp = new Spritesheet(new Image("../../samples/img/tileset.png"), ShortRect(119, 0, 16, 16));
+	Spritesheet sp = new Spritesheet(new Image("samples/img/tileset.png"), ShortRect(119, 0, 16, 16));
 	sp.setPosition(50, 200);
 	
-	Spritesheet sp2 = new Spritesheet(new Image("../../samples/img/tofte.png"), ShortRect(0, 0, 16, 16));
+	Spritesheet sp2 = new Spritesheet(new Image("samples/img/tofte.png"), ShortRect(0, 0, 16, 16));
 	sp2.setPosition(200, 50);
 	
-	Font font = Font("../../samples/font/arial.ttf", 14, Font.Mode.Blended);
+	Font font = Font("samples/font/arial.ttf", 14, Font.Mode.Blended);
 	font.setHint(Font.Hint.Mono);
 	Text text = new Text(font);
 	text.setColor(Color.Blue);
@@ -201,9 +198,9 @@ void main() {
 	
 	Event event;
 	
-	TileMap tm = new TileMap("../../map2.tmx");
+	TileMap tm = new TileMap("map2.tmx");
 	
-	Unit tof = new Unit(new Image("../../samples/img/sheet/toefte_sprite1.png"),
+	Unit tof = new Unit(new Image("samples/img/tofte.png"),
 	                    ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
 	
@@ -213,7 +210,7 @@ void main() {
 	                 170, 310, 0];
 	float[8] texels = [0, 0, 1, 0, 1, 1, 0, 1];
 	
-	Image img = new Image("../../samples/img/wiki.png", Texture.Format.RGB);
+	Image img = new Image("samples/img/wiki.png", Texture.Format.RGB);
 	
 	VertexArray va = new VertexArray(img, Primitive.Type.Polygon);
 	va.append(pos, texels);
@@ -307,7 +304,7 @@ void main() {
 						//    qs.getVertexAt(3).color = Color.Magenta;
 						//    qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Space) {
-						tm.load("../../level_1.tmx");
+						tm.load("../level_1.tmx");
 						//Keyboard.startTextInput();
 					} else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
 						//Keyboard.stopTextInput();
@@ -361,7 +358,7 @@ void main() {
 					
 					/*
 					 if (event.keyboard.key == Keyboard.Code.Space) {
-					 Image img = new Image("../../new_tilset.png");
+					 Image img = new Image("../new_tilset.png");
 					 tm.exchangeTileset(img);
 					 } else {
 					 tm.reload(Vector2s(1, 0), Vector2s(9, 4));

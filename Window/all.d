@@ -2,7 +2,6 @@ module Dgame.Window.all;
 
 private {
 	debug import std.stdio;
-	import std.string : format;
 	import std.conv : to;
 	
 	import derelict.sdl2.sdl;
@@ -17,6 +16,8 @@ public {
 	import Dgame.Window.Window;
 }
 
+private enum ImgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+
 static this() {
 	DerelictSDL2.load();
 	DerelictSDL2Image.load();
@@ -26,14 +27,10 @@ static this() {
 	// Initialize SDL2
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		throw new Exception("SDL Error: " ~ to!string(SDL_GetError()));
-	
-	enum flags = /*IMG_INIT_JPG | */IMG_INIT_PNG;
-	const int initted = IMG_Init(flags);
-	if ((initted & flags) != flags) {
-		enum err = "IMG_Init: Failed to init required jpg and png support!\nIMG_Init: %s";
-		
-		throw new Exception(.format(err, to!string(IMG_GetError())));
-	}
+
+	const int initted = IMG_Init(ImgFlags);
+	if ((initted & ImgFlags) != ImgFlags)
+		throw new Exception("IMG_Init: Failed to init required jpg and png support!\nIMG_Init: " ~ to!string(IMG_GetError()));
 	
 	if (TTF_Init() < 0)
 		throw new Exception("TTF konnte nicht gestartet werden.");

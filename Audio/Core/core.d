@@ -8,11 +8,42 @@ package {
 	import derelict.ogg.vorbisfile;
 }
 
+private struct AL {
+private:
+	ALCdevice* device;
+	ALCcontext* context;
+}
+
 private {
 	debug import std.stdio;
 	
-	ALCdevice*  my_aldevice;
-	ALCcontext* my_alcontext;
+	AL _myAl;
+
+	void _alError(string msg) {
+		debug switch (alcGetError(_myAl.device)) {
+			case ALC_INVALID_DEVICE:
+				writeln("Invalid device");
+				break;
+			case ALC_INVALID_CONTEXT:
+				writeln("Invalid context");
+				break;
+			case ALC_INVALID_ENUM:
+				writeln("Invalid enum");
+				break;
+			case ALC_INVALID_VALUE:
+				writeln("Invalid value");
+				break;
+			case ALC_OUT_OF_MEMORY:
+				writeln("Out of memory");
+				break;
+			case ALC_NO_ERROR:
+				writeln("No error");
+				break;
+			default: break;
+		}
+
+		throw new Exception(msg);
+	}
 }
 
 static this() {
@@ -24,21 +55,21 @@ static this() {
 	DerelictVorbis.load();
 	DerelictVorbisFile.load();
 	
-	my_aldevice = alcOpenDevice(null);
-	if (!my_aldevice)
-		throw new Exception("Device is null.");
+	_myAl.device = alcOpenDevice(null);
+	if (_myAl.device is null)
+		_alError("Device is null");
 	
-	my_alcontext = alcCreateContext(my_aldevice, null);
-	if (!my_alcontext)
-		throw new Exception("Context is null.");
+	_myAl.context = alcCreateContext(_myAl.device, null);
+	if (_myAl.context is null)
+		_alError("Context is null.");
 	
-	alcMakeContextCurrent(my_alcontext);
+	alcMakeContextCurrent(_myAl.context);
 }
 
 static ~this() {
 	alcMakeContextCurrent(null);
-	alcDestroyContext(my_alcontext);
-	alcCloseDevice(my_aldevice);
+	alcDestroyContext(_myAl.context);
+	alcCloseDevice(_myAl.device);
 	
 	DerelictVorbis.unload();
 	DerelictVorbisFile.unload();

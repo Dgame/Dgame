@@ -18,19 +18,15 @@ public:
 	ushort height;	/** The height of this video mode */
 	ubyte refreshRate;	/** The refresh rate of this video mode */
 	
-private:
-	this(int width, int height, int hz) {
-		this.width  = cast(ushort) width;
-		this.height = cast(ushort) height;
-		this.refreshRate = cast(ubyte) hz;
-	}
-	
 public:
 	/**
 	 * CTor
 	 */
-	this(ushort width, ushort height) {
-		this(width, height, 0);
+	this(uint width, uint height, uint hz = 0) {
+		this.width  = cast(ushort) width;
+		this.height = cast(ushort) height;
+
+		this.refreshRate = cast(ubyte) hz;
 	}
 	
 	/**

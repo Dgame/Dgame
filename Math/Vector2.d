@@ -11,7 +11,7 @@ private {
 //version = Develop;
 
 @safe
-private bool equals(T, U)(T a, U b) pure nothrow 
+private bool equals(T, U)(const T a, const U b) pure nothrow 
 	if (isNumeric!T && isNumeric!U)
 {
 	static if (is(T == float) || is(T == double) || is(T == real))

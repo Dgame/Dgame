@@ -30,7 +30,7 @@ protected:
 		if (this._vertices.length == 0)
 			return;
 		
-		if (!glIsEnabled(GL_TEXTURE_2D))
+		if (this._tex !is null && !glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
 		Vertex* ptr = &this._vertices[0];
@@ -39,10 +39,12 @@ protected:
 		VertexRenderer.pointTo(Primitive.Target.Color,     ptr, Vertex.sizeof, 12);
 		VertexRenderer.pointTo(Primitive.Target.TexCoords, ptr, Vertex.sizeof, 28);
 		
-		this._tex.bind();
+		if (this._tex !is null)
+			this._tex.bind();
 		
 		scope(exit) {
-			this._tex.unbind();
+			if (this._tex !is null)
+				this._tex.unbind();
 			
 			VertexRenderer.disableAllStates();
 		}

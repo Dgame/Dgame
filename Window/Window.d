@@ -62,7 +62,7 @@ public:
 	
 private:
 	/// Defaults
-	enum DefaultTitle = "App";
+	static immutable string DefaultTitle = "App";
 	enum DefaultXPos = 25;
 	enum DefaultYPos = 50;
 	
@@ -97,7 +97,7 @@ public:
 		                                style);	///    Uint32 flags: window options
 		
 		if (this._window is null)
-			throw new Exception("Error by creating a SDL2 window.");
+			throw new Exception("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
 		
 		if (style & Style.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
@@ -110,7 +110,7 @@ public:
 			
 			this._glContext = SDL_GL_CreateContext(this._window);
 			if (this._glContext is null)
-				throw new Exception("Error while creating gl context.");
+				throw new Exception("Error while creating gl context: " ~ to!string(SDL_GetError()));
 			
 			const GLVersion glver = DerelictGL.reload();
 			debug writefln("Derelict loaded GL version: %s (%s), available GL version: %s",
@@ -147,7 +147,6 @@ public:
 		}
 		
 		this._title = title;
-		
 		this._videoMode = videoMode;
 		this._style = style;
 		
@@ -163,6 +162,7 @@ public:
 		/// Close and destroy the window
 		SDL_DestroyWindow(this._window);
 		
+		this._glContext = null;
 		this._window = null;
 		
 		_winCount--;
@@ -206,9 +206,7 @@ public:
 	 * See: Sync enum
 	 */
 	Sync getVerticalSync() {
-		int result = SDL_GL_GetSwapInterval();
-		
-		return cast(Sync) result;
+		return cast(Sync) SDL_GL_GetSwapInterval();
 	}
 	
 	/**

@@ -2,96 +2,36 @@ module Dgame.Core.Memory.SmartPointer.Shared;
 
 private {
 	debug import std.stdio;
-	import core.stdc.stdlib : malloc, free;
-	import std.conv : emplace;
 }
 
 void dummy_deleter(void*) { }
 
-private mixin template Make(T) {
-	static T* make(Args...)(Args args) {
-		T* mem = cast(T*) .malloc(T.sizeof);
-		
-		return .emplace(mem, args);
-	}
-	
-	static void free(ref T* ptr) {
-		.destroy(*ptr); /// for DTor call
-		.free(ptr);
-		
-		ptr = null;
-	}
-}
-
-private struct Counter {
-public:
-	int count = 1;
-	
-	int inc() pure nothrow {
-		return ++this.count;
-	}
-	
-	int dec() pure nothrow {
-		return --this.count;
-	}
-	
-	mixin Make!(typeof(this));
-} unittest {
-	writeln("unittest for Counter");
-	
-	Counter* c1;
-	assert(c1 is null);
-	{
-		scope(exit) Counter.free(c1);
-		
-		c1 = Counter.make();
-		
-		assert(c1 !is null);
-		assert(c1.count == 1);
-		c1.inc();
-		assert(c1.count == 2);
-		c1.dec();
-		assert(c1.count == 1);
-	}
-	assert(c1 is null);
-}
-
 private struct Payload(T) {
 public:
 	T* ptr;
-	Counter* counter;
+	int* counter;
 	
 	this(T* ptr) in {
 		assert(ptr !is null);
 	} body {
 		this.ptr = ptr;
-		this.counter = Counter.make();
+
+		this.counter = new int;//(1);
+		*this.counter = 1;
 	}
-	
-	~this() {
-		debug writeln("Delete Payload and Counter");
-		
-		Counter.free(this.counter);
+
+	int inc() pure nothrow {
+		return ++(*this.counter);
 	}
-	
-	mixin Make!(typeof(this));
-} unittest {
-	writeln("unittest for Payload");
-	
-	int i = 42;
-	
-	Payload!(int)* p1;
-	assert(p1 is null);
-	{
-		scope(exit) Payload!(int).free(p1);
-		
-		p1 = Payload!(int).make(&i);
-		
-		assert(p1 !is null);
-		assert(p1.ptr !is null);
-		assert(*p1.ptr == i);
+
+	int dec() pure nothrow {
+		return --(*this.counter);
 	}
-	assert(p1 is null);
+
+	@property
+	int usage() const pure nothrow {
+		return *this.counter;
+	}
 }
 
 struct shared_ptr(T, alias _deleter = dummy_deleter)
@@ -103,13 +43,9 @@ private:
 	static int _id;
 	
 	void _destruct() {
-		static if (is(T == struct) && is(typeof(T)))
-			destroy!T(*(this._payload.ptr));
-		
 		_deleter(this._payload.ptr);
 		
 		this._payload.ptr = null;
-		typeof(this._payload).free(this._payload);
 	}
 	
 public:
@@ -117,14 +53,14 @@ public:
 	this(typeof(null));
 	
 	this(T* ptr) {
-		this._payload = Payload!T.make(ptr);
+		this._payload = new Payload!T(ptr);
 		
 		_id++;
 	}
 	
 	this(this) {
 		if (this._payload !is null)
-			this._payload.counter.inc();
+			this._payload.inc();
 		
 		_id++;
 	}
@@ -138,7 +74,7 @@ public:
 		this.release();
 		
 		this._payload = sptr._payload;
-		this._payload.counter.inc();
+		this._payload.inc();
 	}
 	
 	void opAssign(shared_ptr!T sptr) {
@@ -161,7 +97,7 @@ public:
 			return;
 		}
 		
-		if (!this._payload.counter.dec()) {
+		if (!this._payload.dec()) {
 			debug writeln("Destruct with ",
 			              __traits(identifier, _deleter),
 			              " :: ", _id,
@@ -181,7 +117,7 @@ public:
 	} body {
 		this.release();
 		
-		this._payload = Payload!T.make(ptr);
+		this._payload = new Payload!T(ptr);
 	}
 	
 	@property
@@ -196,7 +132,7 @@ public:
 	
 	@property
 	int usage() const pure nothrow {
-		return this._payload !is null ? this._payload.counter.count : -1;
+		return this._payload !is null ? this._payload.usage : -1;
 	}
 	
 	bool isValid() const pure nothrow {

@@ -68,7 +68,7 @@ public:
 private:
 	shared_ptr!(SDL_Surface, SDL_FreeSurface) _target;
 	
-	debug string _filename;
+	string _filename;
 	
 package:
 	/**
@@ -127,8 +127,7 @@ public:
 	void opAssign(ref Surface rhs) {
 		debug writeln("opAssign lvalue");
 		
-		debug this._filename = rhs.filename;
-		
+		this._filename = rhs.filename;
 		this._target = rhs._target;
 	}
 	
@@ -166,10 +165,8 @@ public:
 	static Surface make(ushort width, ushort height, ubyte depth = 32) {
 		SDL_Surface* srfc = Surface.create(width, height, depth);
 		
-		if (srfc is null) {
-			const string err = to!string(SDL_GetError());
-			throw new Exception(format("Surface konnte nicht erstellt werden: %s", err));
-		}
+		if (srfc is null)
+			throw new Exception("Surface konnte nicht erstellt werden: " ~ to!string(SDL_GetError()));
 		
 		return Surface(srfc);
 	}
@@ -180,10 +177,8 @@ public:
 	static Surface make(void* memory, ushort width, ushort height, ubyte depth = 32) {
 		SDL_Surface* srfc = Surface.create(memory, width, height, depth);
 		
-		if (srfc is null) {
-			const string err = to!string(SDL_GetError());
-			throw new Exception(format("Surface konnte nicht erstellt werden: %s", err));
-		}
+		if (srfc is null)
+			throw new Exception("Surface konnte nicht erstellt werden: " ~ to!string(SDL_GetError()));
 		
 		return Surface(srfc);
 	}
@@ -199,7 +194,7 @@ public:
 	 * Returns the filename, if any
 	 */
 	@property
-	debug string filename() const pure nothrow {
+	string filename() const pure nothrow {
 		return this._filename;
 	}
 	
@@ -214,10 +209,8 @@ public:
 		
 		try {
 			SDL_Surface* srfc = IMG_Load(toStringz(filename));
-			if (srfc is null) {
-				const string err = to!string(SDL_GetError());
-				throw new Exception(format("Something fails by loading the image: %s", err));
-			}
+			if (srfc is null)
+				throw new Exception("Something fails by loading the image: ", to!string(SDL_GetError()));
 			
 			this._target.reset(srfc);
 		} catch (Throwable e) {
@@ -225,7 +218,7 @@ public:
 			                           filename, e.msg));
 		}
 		
-		debug this._filename = filename;
+		this._filename = filename;
 	}
 	
 	/**
@@ -308,8 +301,7 @@ public:
 		uint key = SDL_MapRGBA(this._target.ptr.format,
 		                       col.red, col.green, col.blue, col.alpha);
 		
-		SDL_FillRects(this._target.ptr, ptr,
-		              cast(int) rects.length, key);
+		SDL_FillRects(this._target.ptr, ptr, cast(int) rects.length, key);
 	}
 	
 	/**
@@ -537,7 +529,7 @@ public:
 	 * See: Surface.Mask enum.
 	 */
 	bool isMask(Mask mask, ref const Color col) const {
-		uint map = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
+		const uint map = SDL_MapRGBA(this._target.ptr.format, col.red, col.green, col.blue, col.alpha);
 		
 		return this.isMask(mask, map);
 	}
