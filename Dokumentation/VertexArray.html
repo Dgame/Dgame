@@ -26,6 +26,11 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
+<dt><big><a name="VertexArray.this"></a>final  this(Primitive.Type <i>type</i>);
+</big></dt>
+<dd>CTor<br><br>
+
+</dd>
 <dt><big><a name="VertexArray.this"></a>final  this(Texture <i>tex</i>, Primitive.Type <i>type</i>);
 </big></dt>
 <dd>CTor<br><br>
@@ -33,12 +38,27 @@ rschuett<br><br>
 </dd>
 <dt><big><a name="VertexArray.setIndices"></a>final void <u>setIndices</u>(uint[] <i>indices</i>);
 </big></dt>
-<dd>Set new <i>indices</i><br><br>
+<dd>Set new <i>indices</i>. This state the order in which the vertices are drawn.
+ Per default this should be 0, 1, 2, 3, ...<br><br>
 
 </dd>
-<dt><big><a name="VertexArray.fetchIndices"></a>final inout inout(uint*) <u>fetchIndices</u>();
+<dt><big><a name="VertexArray.fetchIndices"></a>final inout inout(uint)[] <u>fetchIndices</u>();
 </big></dt>
-<dd>Fetch the existing indices to mutate them.<br><br>
+<dd>Fetch the existing indices to mutate them.
+ If no indices are there you can set new indices with 'setIndices'
+ or auto generate them in the natural order with 'generateIndices'.<br><br>
+
+</dd>
+<dt><big><a name="VertexArray.generateIndices"></a>final uint[] <u>generateIndices</u>(bool <i>complete</i> = true);
+</big></dt>
+<dd>Auto generate the indices. If '<i>complete</i>' is set to <b>false</b>, the existing indices are expanded.
+ Otherwise they are <i>complete</i> generated.
+<br><br>
+<b>Note:</b><br>
+This must of course be used <b>after</b> adding the vertices.
+<br><br>
+
+ Returns the indices.<br><br>
 
 </dd>
 <dt><big><a name="VertexArray.bindTexture"></a>final void <u>bindTexture</u>(Texture <i>tex</i>);

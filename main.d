@@ -269,8 +269,11 @@ void main() {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
 					writeln("Oh! Key press: ", event.keyboard.code);
+					Time time = wnd.getClock().getTime();
+					writefln("Game Loop runs now for %d ms, %d secs, %d min",
+							 time.msecs, time.seconds, time.minutes);
 					
-					uint* va_indices = va.fetchIndices();
+					uint[] va_indices = va.fetchIndices();
 					if (va_indices[0] == 1) {
 						foreach (i; 0 .. 4) {
 							va_indices[i] -= 1;

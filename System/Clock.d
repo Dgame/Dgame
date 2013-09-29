@@ -7,6 +7,49 @@ private {
 }
 
 /**
+* To convert the Clock milliseconds to seconds
+*/
+uint asSeconds(uint n) pure nothrow {
+	return n / 1000;
+}
+
+/**
+* To convert the Clock milliseconds to minutes
+*/
+uint asMinutes(uint n) pure nothrow {
+	return asSeconds(n) / 60;
+}
+
+/**
+* To convert the Clock milliseconds to hours
+*/
+uint asHours(uint n) pure nothrow {
+	return asMinutes(n) / 60;
+}
+
+/**
+* The time struct converts ticks to msecs, seconds, minutes and hours.
+*/
+struct Time {
+public:
+	/// Milliseconds = Ticks
+	const uint msecs;
+	/// Seconds = Milliseconds / 1000
+	const uint seconds;
+	//// Minutes = Seconds / 60
+	const uint minutes;
+	/// Hours = Minutes / 60
+	const uint hours;
+
+	this(uint msecs) {
+		this.msecs = msecs;
+		this.seconds = asSeconds(msecs);
+		this.minutes = asMinutes(msecs);
+		this.hours = asHours(msecs);
+	}
+}
+
+/**
  * This class handles timer functions and 
  * the window class use these class to calculate the current fps.
  *
@@ -36,9 +79,16 @@ public:
 	}
 	
 	/**
-	 * Returns the milliseconds since reset or the CTor was called.
+	 * Returns the elapsed Time since the last reset or the CTor was called.
 	 */
-	uint getElapsedTime() const {
+	Time getElapsedTime() const {
+		return Time(this.getElapsedTicks());
+	}
+
+	/**
+	* Returns only the milliseconds since the last reset.
+	*/
+	uint getElapsedTicks() const {
 		return SDL_GetTicks() - this._startTime;
 	}
 	
@@ -47,6 +97,13 @@ public:
 	 */
 	static uint getTicks() {
 		return SDL_GetTicks();
+	}
+
+	/**
+	* Returns the Time since the application was started.
+	*/
+	static Time getTime() {
+		return Time(Clock.getTicks());
 	}
 	
 	/**
@@ -76,7 +133,7 @@ public:
 	 * Returns the current framerate per seconds.
 	 */
 	uint getCurrentFps() {
-		if (this.getElapsedTime() >= 1000) {
+		if (this.getElapsedTicks() >= 1000) {
 			this._currentFps = this._numFrames;
 			
 			this._numFrames = 0;

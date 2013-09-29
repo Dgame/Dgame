@@ -207,16 +207,11 @@ public:
 		
 		debug writefln("Load Image: %s, %s", filename, filename.ptr);
 		
-		try {
-			SDL_Surface* srfc = IMG_Load(toStringz(filename));
-			if (srfc is null)
-				throw new Exception("Something fails by loading the image: ", to!string(SDL_GetError()));
+		SDL_Surface* srfc = IMG_Load(toStringz(filename));
+		if (srfc is null)
+			throw new Exception("Could not load image " ~ filename ~ ". Error: " ~ to!string(SDL_GetError()));
 			
-			this._target.reset(srfc);
-		} catch (Throwable e) {
-			throw new Exception(format("Die Datei (%s) konnte nicht geladen werden: %s",
-			                           filename, e.msg));
-		}
+		this._target.reset(srfc);
 		
 		this._filename = filename;
 	}
@@ -233,10 +228,8 @@ public:
 			(depth / 8) * width,
 			RMask, GMask, BMask, AMask);
 		
-		if (srfc is null) {
-			const string err = to!string(SDL_GetError());
-			throw new Exception(format("Something fails by loading the image: %s", err));
-		}
+		if (srfc is null)
+			throw new Exception("Could not load image. Error: " ~ to!string(SDL_GetError()));
 		
 		this._target.reset(srfc);
 	}
@@ -248,12 +241,8 @@ public:
 		if (filename.length < 3)
 			throw new Exception("File name is not allowed.");
 		
-		try {
-			SDL_SaveBMP(this.ptr, toStringz(filename));
-		} catch (Throwable e) {
-			const string msg = format("The file (%s) could not be saved: %s",
-			                          filename, e.msg);
-			throw new Exception(msg);
+		if (SDL_SaveBMP(this.ptr, toStringz(filename)) != 0) {
+			throw new Exception("Could not load image " ~ filename ~ ". Error: "~ to!string(SDL_GetError()));
 		}
 	}
 	
@@ -280,7 +269,7 @@ public:
 	 */
 	void fill(ref const Color col, const ShortRect* rect = null) {
 		const SDL_Rect* ptr = rect ? rect.ptr : null;
-		uint key = SDL_MapRGBA(this._target.ptr.format,
+		const uint key = SDL_MapRGBA(this._target.ptr.format,
 		                       col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRect(this._target.ptr, ptr, key);
@@ -298,7 +287,7 @@ public:
 	 */
 	void fillAreas(ref const Color col, const ShortRect[] rects) {
 		const SDL_Rect* ptr = (rects.length > 0) ? rects[0].ptr : null;
-		uint key = SDL_MapRGBA(this._target.ptr.format,
+		const uint key = SDL_MapRGBA(this._target.ptr.format,
 		                       col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRects(this._target.ptr, ptr, cast(int) rects.length, key);

@@ -184,9 +184,9 @@ private:
 		scope(exit) this._vbo.unbind();
 		
 		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&this._pixels[0], this._pixels.length * Pixel.sizeof);
+			this._vbo.modify(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Dynamic.Draw);
 		else
-			this._vbo.cache(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Static.Draw);
+			this._vbo.cache(&this._pixels[0], this._pixels.length * Pixel.sizeof, Usage.Dynamic.Draw);
 	}
 	
 	void _checkForUpdate() {

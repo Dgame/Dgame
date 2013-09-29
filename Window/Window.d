@@ -356,7 +356,7 @@ public:
 	/**
 	 * Draw a drawable object on screen.
 	 */
-	void draw(Drawable draw) in {
+	void draw(Drawable draw) const in {
 		assert(draw !is null, "Drawable object is null.");
 	} body {
 		draw.render();
@@ -365,7 +365,7 @@ public:
 	/**
 	 * Draw a Renderer on the screen.
 	 */
-	void draw(Renderer rtarget) {
+	void draw(Renderer rtarget) const {
 		rtarget.present();
 	}
 	
@@ -379,11 +379,11 @@ public:
 		
 		if (this._fpsLimit != 0 && this._clock !is null)
 			this.getClock().wait(1000 / this._fpsLimit);
-		
+
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
 				SDL_GL_MakeCurrent(this._window, this._glContext);
-			
+
 			SDL_GL_SwapWindow(this._window);
 		} else
 			SDL_UpdateWindowSurface(this._window);

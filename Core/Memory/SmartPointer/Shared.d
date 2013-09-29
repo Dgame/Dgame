@@ -9,28 +9,21 @@ void dummy_deleter(void*) { }
 private struct Payload(T) {
 public:
 	T* ptr;
-	int* counter;
+	int usage;
 	
 	this(T* ptr) in {
 		assert(ptr !is null);
 	} body {
 		this.ptr = ptr;
-
-		this.counter = new int;//(1);
-		*this.counter = 1;
+		this.usage = 1;
 	}
 
 	int inc() pure nothrow {
-		return ++(*this.counter);
+		return ++this.usage;
 	}
 
 	int dec() pure nothrow {
-		return --(*this.counter);
-	}
-
-	@property
-	int usage() const pure nothrow {
-		return *this.counter;
+		return --this.usage;
 	}
 }
 
@@ -46,6 +39,8 @@ private:
 		_deleter(this._payload.ptr);
 		
 		this._payload.ptr = null;
+
+		delete this._payload;
 	}
 	
 public:

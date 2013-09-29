@@ -92,15 +92,15 @@ public:
 	void opAssign(const Color rhs) {
 		this.opAssign(rhs);
 	}
-	
+
 	/**
-	 * Returns a copy of the current Color with a given transpareny.
-	 * 
-	 * Example:
-	 * ----
-	 * Color(current.red, current.green, current.blue, alpha);
-	 * ----
-	 */
+	* Returns a copy of the current Color with a given transpareny.
+	* 
+	* Example:
+	* ----
+	* Color(current.red, current.green, current.blue, alpha);
+	* ----
+	*/
 	Color withTransparency(ubyte alpha = 0) const {
 		return Color(this.red, this.green, this.blue, alpha);
 	}

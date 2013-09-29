@@ -1,6 +1,9 @@
 module Dgame.Core.Math;
 
-private import std.math : fabs;
+private {
+	import std.math : fabs;
+	import std.conv : to;
+}
 
 @safe
 bool fpEqual(T : float)(const T a, const T b) pure nothrow {
@@ -15,7 +18,7 @@ bool fpEqual(T : float)(const T a, const T b) pure nothrow {
 	float fValue2 = 1.123f;
 	float fTotal = fValue1 + fValue2; // should be 2.468f
 	
-	assert(fTotal != 2.468f);
+	//assert(fTotal == 2.468f, to!string(fTotal));
 	assert(fpEqual(fTotal, 2.468f));
 }
 

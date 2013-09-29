@@ -4,7 +4,7 @@ private {
 	debug import std.stdio;
 	import std.file : exists;
 	import std.conv : to;
-	import std.string : format;
+	import std.string : format, toStringz;
 	
 	import derelict.sdl2.ttf;
 	
@@ -83,7 +83,7 @@ public:
 	 * CTor
 	 */
 	this(string filename, ubyte size,
-	     Mode mode = Mode.Solid, Style style = Style.Normal)
+	    Mode mode = Mode.Solid, Style style = Style.Normal)
 	{
 		this._mode  = mode;
 		this._style = style;
@@ -156,18 +156,12 @@ public:
 		if (!.exists(fontFile))
 			throw new Exception("Font File does not exists.");
 		
-		try {
-			TTF_Font* font = TTF_OpenFont(fontFile.ptr, fontSize);
-			
-			if (font is null) {
-				debug writefln("TTF Error: %s", to!(string)(TTF_GetError()));
-				throw new Exception("Could not load font " ~ fontFile);
-			}
-			
-			this._target.reset(font);
-		} catch (Throwable t) {
-			throw new Exception(.format("Error by opening font file %s: %s.", fontFile, t.msg));
+		TTF_Font* font = TTF_OpenFont(toStringz(fontFile), fontSize);
+		if (font is null) {
+			throw new Exception("Could not load font " ~ fontFile ~ ". TTF Error: " ~ to!(string)(TTF_GetError()));
 		}
+			
+		this._target.reset(font);
 		
 		this._fontSize = fontSize;
 	}
