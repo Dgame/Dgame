@@ -2,7 +2,6 @@ module Dgame.Core.Math;
 
 private {
 	import std.math : fabs;
-	import std.conv : to;
 }
 
 @safe

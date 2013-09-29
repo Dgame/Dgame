@@ -4,7 +4,7 @@ private {
 	debug import std.stdio;
 	import std.file : exists;
 	import std.conv : to;
-	import std.string : format, toStringz;
+	import std.string : toStringz;
 	
 	import derelict.sdl2.ttf;
 	

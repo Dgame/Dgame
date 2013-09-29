@@ -2,7 +2,6 @@ module Dgame.Window.Window;
 
 private {
 	debug import std.stdio;
-	import std.algorithm : swap;
 	
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
