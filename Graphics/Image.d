@@ -63,7 +63,7 @@ final:
 		Surface img = Surface(filename);
 		img.setColorkey(colorkey);
 		
-		super.loadFromMemory(img.getPixels(), img.width, img.height, 32, t_fmt);
+		super.loadFromMemory(img.getPixels(), img.width, img.height, img.countBits(), t_fmt);
 	}
 	
 	/**
@@ -83,7 +83,7 @@ final:
 	{
 		Surface img = Surface(filename);
 		
-		super.loadFromMemory(img.getPixels(), img.width, img.height, 32, t_fmt);
+		super.loadFromMemory(img.getPixels(), img.width, img.height, img.countBits(), t_fmt);
 	}
 	
 	/**

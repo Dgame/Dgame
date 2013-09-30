@@ -204,13 +204,13 @@ public:
 	void loadFromFile(string filename) {
 		if (filename.length < 4 || !exists(filename))
 			throw new Exception("Die Datei " ~ filename ~ " existiert nicht.");
-		
-		debug writefln("Load Image: %s, %s", filename, filename.ptr);
-		
+
+		debug writefln("Load Image: %s", filename);
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
+		debug writefln("Image %s loaded :: %X", filename, srfc);
 		if (srfc is null)
 			throw new Exception("Could not load image " ~ filename ~ ". Error: " ~ to!string(SDL_GetError()));
-			
+		
 		this._target.reset(srfc);
 		
 		this._filename = filename;

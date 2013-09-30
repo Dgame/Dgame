@@ -102,8 +102,6 @@ static ~this() {
 			debug writefln(" -> Texture finalized: %d", i);
 			
 			glDeleteTextures(1, _TexFinalizer[i]);
-			
-			*_TexFinalizer[i] = 0;
 		}
 	}
 	
@@ -205,21 +203,21 @@ package:
 			dw = dst.width;
 			dh = dst.height;
 		}
-		
+
 		float[12] vertices = [dx,	   dy,      0f,
-		                      dx + dw, dy,      0f,
-		                      dx + dw, dy + dh, 0f,
-		                      dx,      dy + dh, 0f];
-		
+							  dx + dw, dy,      0f,
+							  dx + dw, dy + dh, 0f,
+							  dx,      dy + dh, 0f];
+
 		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
-		
+
 		scope(exit) {
 			VertexRenderer.disableAllStates();
-			
+
 			this.unbind();
 		}
-		
+
 		this.bind();
 		
 		VertexRenderer.drawArrays(Primitive.Type.Quad, vertices.length);
@@ -405,7 +403,7 @@ final:
 	 * Load from memory.
 	 */
 	void loadFromMemory(void* memory, ushort width, ushort height,
-	                    ubyte depth = 32, Format fmt = Format.None)
+						ubyte depth, Format fmt = Format.None)
 	in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 	} body {
@@ -421,15 +419,10 @@ final:
 		
 		this._format = !fmt ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
-		
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
+
 		this.bind();
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0,
-		             this._format, GL_UNSIGNED_BYTE, memory);
-		
+		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 		                this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);

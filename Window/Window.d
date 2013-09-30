@@ -207,12 +207,13 @@ public:
 	 * Default Syncronisation is <code>Sync.Enable</code>.
 	 *
 	 * See: Sync enum
+	 *
+	 * Returns if the sync mode is supported.
 	 */
-	void setVerticalSync(Sync sync) const {
-		if (sync == Sync.Enable || sync == Sync.Disable) {
-			int supported = SDL_GL_SetSwapInterval(sync);
-			debug if (supported != 0) writeln("Sync mode is not supported.");
-		} else
+	bool setVerticalSync(Sync sync) const {
+		if (sync == Sync.Enable || sync == Sync.Disable)
+			return SDL_GL_SetSwapInterval(sync) == 0;
+		else
 			throw new Exception("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
 	}
 	
@@ -393,7 +394,7 @@ public:
 		if (!this.isOpen())
 			return;
 		
-		if (this._fpsLimit != 0 && this._clock !is null)
+		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
 			this.getClock().wait(1000 / this._fpsLimit);
 
 		if (this._style & Style.OpenGL) {

@@ -1,8 +1,9 @@
 module Dgame.Core.core;
 
 private {
+	import std.stdio : writeln;
 	import std.string : format;
-	
+
 	import derelict.opengl3.gl;
 }
 
@@ -25,11 +26,13 @@ string getDgVersion() {
 /**
  *
  */
-void glCheck(lazy void Func, string filename = __FILE__, uint line_number = __LINE__) {
+void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __LINE__) {
 	try {
 		Func();
 	} catch (Throwable e) {
+		writeln("GL Error for ", filename, " @ line ", line_number, ':');
 		GLCheckError(filename, line_number);
+
 		throw e;
 	}
 }
@@ -37,7 +40,7 @@ void glCheck(lazy void Func, string filename = __FILE__, uint line_number = __LI
 /**
  *
  */
-void GLCheckError(string filename, uint line_number) {
+void GLCheckError(string filename, size_t line_number) {
 	// Get the last error
 	GLenum ErrorCode = glGetError();
 	
@@ -88,5 +91,6 @@ void GLCheckError(string filename, uint line_number) {
 		
 		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
 		                            Error, Desc, filename, line_number));
-	}
+	} else
+		writeln("No GL Error");
 }

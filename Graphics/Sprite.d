@@ -48,7 +48,7 @@ protected:
 		scope(exit) glPopMatrix();
 		
 		this._applyTranslation();
-		
+
 		this._tex._render(this._clipRect,
 		                  this._texView.isEmpty() ? null : &this._texView);
 	}
