@@ -19,6 +19,21 @@ private {
 	import Dgame.System.Clock;
 }
 
+private Window[] _WndFinalizer;
+
+static ~this() {
+	debug writeln("Close open Windows.");
+
+	for (size_t i = 0; i < _WndFinalizer.length; ++i) {
+		if (_WndFinalizer[i])
+			_WndFinalizer[i].close();
+	}
+
+	debug writeln("Open Windows closed.");
+
+	_WndFinalizer = null;
+}
+
 /**
  * Window is a rendering window where all drawable objects are drawn.
  *
@@ -147,6 +162,8 @@ public:
 		this._title = title;
 		this._videoMode = videoMode;
 		this._style = style;
+
+		_WndFinalizer ~= this;
 		
 		_winCount += 1;
 	}
@@ -155,6 +172,9 @@ public:
 	 * Close and destroy this window.
 	 */
 	void close() {
+		if (this._window is null && this._glContext is null)
+			return;
+
 		/// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
 		SDL_GL_DeleteContext(this._glContext);  
 		/// Close and destroy the window
