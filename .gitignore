@@ -2,6 +2,8 @@
 ## Eclipse
 #################
 
+main.d
+
 *.pydevproject
 .project
 .metadata

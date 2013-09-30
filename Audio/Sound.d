@@ -69,8 +69,6 @@ public:
 	ALuint source;
 	ALuint buffer;
 	
-	bool _finalized = false;
-	
 	/**
 	 * Create and initialize the buffers
 	 */
@@ -83,9 +81,7 @@ public:
 	 * Free / Release the source and buffer of the Sound
 	 */
 	void free() {
-		if (!this._finalized) {
-			this._finalized = true;
-			
+		if (this.source && this.buffer) {
 			alDeleteSources(1, &this.source);
 			alDeleteBuffers(1, &this.buffer);
 		}
@@ -95,20 +91,19 @@ public:
 	this(this);
 }
 
-private ALChunk*[] _finalizer;
+private ALChunk*[] _ALFinalizer;
 
 static ~this() {
-	debug writefln("Finalize Sound (%d)", _finalizer.length);
+	debug writefln("Finalize Sound (%d)", _ALFinalizer.length);
 	
-	for (size_t i = 0; i < _finalizer.length; i++) {
-		if (_finalizer[i]) {
+	for (size_t i = 0; i < _ALFinalizer.length; i++) {
+		if (_ALFinalizer[i]) {
 			debug writefln(" -> Sound finalized: %d", i);
-			
-			_finalizer[i].free();
+			_ALFinalizer[i].free();
 		}
 	}
 	
-	_finalizer = null;
+	_ALFinalizer = null;
 	
 	debug writeln(" >> Sound Finalized");
 }
@@ -141,6 +136,7 @@ private:
 	static Sound[string] _soundInstances;
 	
 public:
+final:
 	/**
 	 * CTor
 	 */
@@ -149,7 +145,7 @@ public:
 		
 		this._status = Status.None;
 		
-		_finalizer ~= &this._alChunk;
+		_ALFinalizer ~= &this._alChunk;
 	}
 	
 	/**
@@ -171,16 +167,9 @@ public:
 	}
 	
 	/**
-	 * DTor
-	 */
-	~this() {
-		this.free();
-	}
-	
-	/**
 	 * Free / Release the source and buffer of the Sound
 	 */
-	final void free() {
+	void free() {
 		this._alChunk.free();
 	}
 	

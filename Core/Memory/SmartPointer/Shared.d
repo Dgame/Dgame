@@ -37,10 +37,8 @@ private:
 	
 	void _destruct() {
 		_deleter(this._payload.ptr);
-		
 		this._payload.ptr = null;
-
-		delete this._payload;
+		this._payload = null;
 	}
 	
 public:
@@ -87,6 +85,7 @@ public:
 			debug writeln("Delete invalid shared_ptr :: ",
 			              __traits(identifier, _deleter),
 			              " :: ", _id,
+						  " Usage: ", this._payload ? this._payload.usage : -1,
 			              " :: ", this._payload ? this._payload.ptr : null);
 			
 			return;
@@ -96,13 +95,15 @@ public:
 			debug writeln("Destruct with ",
 			              __traits(identifier, _deleter),
 			              " :: ", _id,
+						  " Usage: ", this._payload ? this._payload.usage : -1,
 			              " :: ", this._payload ? this._payload.ptr : null);
-			
+
 			this._destruct();
 		} else {
 			debug writeln("One out with ",
 			              __traits(identifier, _deleter),
 			              " :: ", _id,
+						  " Usage: ", this._payload ? this._payload.usage : -1,
 			              " :: ", this._payload ? this._payload.ptr : null);
 		}
 	}
@@ -127,11 +128,11 @@ public:
 	
 	@property
 	int usage() const pure nothrow {
-		return this._payload !is null ? this._payload.usage : -1;
+		return this._payload ? this._payload.usage : -1;
 	}
 	
 	bool isValid() const pure nothrow {
-		return this._payload !is null ? this._payload.ptr !is null : false;
+		return this._payload ? this._payload.ptr !is null : false;
 	}
 	
 	static int ID() {

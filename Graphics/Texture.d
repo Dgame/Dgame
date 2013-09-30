@@ -92,22 +92,22 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
 	}
 }
 
-private GLuint*[] _finalizer;
+private GLuint*[] _TexFinalizer;
 
-void _finalizeTexture() {
-	debug writefln("Finalize Texture (%d)", _finalizer.length);
+static ~this() {
+	debug writefln("Finalize Texture (%d)", _TexFinalizer.length);
 	
-	for (size_t i = 0; i < _finalizer.length; i++) {
-		if (_finalizer[i] && *_finalizer[i] != 0) {
+	for (size_t i = 0; i < _TexFinalizer.length; i++) {
+		if (_TexFinalizer[i] && *_TexFinalizer[i] != 0) {
 			debug writefln(" -> Texture finalized: %d", i);
 			
-			glDeleteTextures(1, _finalizer[i]);
+			glDeleteTextures(1, _TexFinalizer[i]);
 			
-			*_finalizer[i] = 0;
+			*_TexFinalizer[i] = 0;
 		}
 	}
 	
-	_finalizer = null;
+	_TexFinalizer = null;
 	
 	debug writeln(" >> Texture Finalized");
 }
@@ -251,7 +251,7 @@ final:
 	this() {
 		glGenTextures(1, &this._texId);
 		
-		_finalizer ~= &this._texId;
+		_TexFinalizer ~= &this._texId;
 		
 		this.bind();
 	}

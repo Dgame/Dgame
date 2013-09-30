@@ -191,7 +191,7 @@ public:
 	}
 	
 	/**
-	 * Returns the filename, if any
+	 * Returns the current filename, if any
 	 */
 	@property
 	string filename() const pure nothrow {
@@ -767,23 +767,23 @@ public:
 		Surface s2 = s1;
 		
 		assert(s1.useCount() == 2, to!string(s1.useCount()));
-		assert(s2.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s2.useCount()));
 		
 		s2 = s1;
 		
 		assert(s1.useCount() == 2, to!string(s1.useCount()));
-		assert(s2.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s2.useCount()));
 		
 		{
 			Surface s3 = s2;
 			
 			assert(s1.useCount() == 3, to!string(s1.useCount()));
-			assert(s2.useCount() == 3, to!string(s1.useCount()));
-			assert(s3.useCount() == 3, to!string(s1.useCount()));
+			assert(s2.useCount() == 3, to!string(s2.useCount()));
+			assert(s3.useCount() == 3, to!string(s3.useCount()));
 		}
 		
 		assert(s1.useCount() == 2, to!string(s1.useCount()));
-		assert(s2.useCount() == 2, to!string(s1.useCount()));
+		assert(s2.useCount() == 2, to!string(s2.useCount()));
 	}
 	assert(s1.useCount() == 1, to!string(s1.useCount()));
 }

@@ -43,8 +43,8 @@ version(Windows) {
 
 enum {
 	Project = "Dgame",
-	LibDir  = "lib",
-	srcDgame = "../"
+	SrcDgame = "../",
+	LibDir  = SrcDgame ~ "lib",
 }
 
 // Compiler configuration
@@ -95,12 +95,12 @@ struct Package {
 
 final abstract class Pack {
 public:
-	static const Core	= Package("Core",	srcDgame ~ "Core/");
-	static const Audio	= Package("Audio",	srcDgame ~ "Audio/");
-	static const Graphics = Package("Graphics", srcDgame ~ "Graphics/");
-	static const Math 	= Package("Math",	srcDgame ~ "Math/");
-	static const System = Package("System",	srcDgame ~ "System/");
-	static const Window = Package("Window", srcDgame ~ "Window/");
+	static const Core	= Package("Core",	SrcDgame ~ "Core/");
+	static const Audio	= Package("Audio",	SrcDgame ~ "Audio/");
+	static const Graphics = Package("Graphics", SrcDgame ~ "Graphics/");
+	static const Math 	= Package("Math",	SrcDgame ~ "Math/");
+	static const System = Package("System",	SrcDgame ~ "System/");
+	static const Window = Package("Window", SrcDgame ~ "Window/");
 }
 
 // Map package names to source paths.

@@ -6,7 +6,6 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Memory.Finalizer;
 	import Dgame.Core.Memory.Allocator : stack_alloc;
 	
 	import Dgame.Graphics.Color;
@@ -165,8 +164,6 @@ public:
 		this._window = null;
 		
 		_winCount--;
-		if (!_winCount)
-			terminate(); /// finalize all remaining sensible SDL memory
 	}
 	
 	/**

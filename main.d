@@ -224,6 +224,12 @@ void main() {
 	tm.setTransform(tf);
 	
 	va.setIndices([0, 1, 2, 3]);
+
+	//wnd.clear();
+	//wnd.display();
+	//wnd.getClock().wait(1000);
+	//
+	//return;
 	
 	while (wnd.isOpen()) {
 		wnd.clear();

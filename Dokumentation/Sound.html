@@ -82,17 +82,17 @@ ch(8, ChannelType.Stereo); <font color=green>// set bits and type for this chann
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Sound.this"></a> this();
+<dl><dt><big><a name="Sound.this"></a>final  this();
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Sound.this"></a> this(BaseSoundFile <i>soundfile</i>);
+<dt><big><a name="Sound.this"></a>final  this(BaseSoundFile <i>soundfile</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Sound.this"></a> this(string <i>filename</i>);
+<dt><big><a name="Sound.this"></a>final  this(string <i>filename</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -116,7 +116,7 @@ rschuett<br><br>
  If you try to load the same file on more time, you get the same sound object as before.<br><br>
 
 </dd>
-<dt><big><a name="Sound.loadFromFile"></a>void <u>loadFromFile</u>(BaseSoundFile <i>soundfile</i>);
+<dt><big><a name="Sound.loadFromFile"></a>final void <u>loadFromFile</u>(BaseSoundFile <i>soundfile</i>);
 </big></dt>
 <dd>Load from a <i>soundfile</i>.
 <br><br>
@@ -136,7 +136,7 @@ VorbisFile
 WaveFile<br><br>
 
 </dd>
-<dt><big><a name="Sound.loadFromFile"></a>BaseSoundFile <u>loadFromFile</u>(string <i>filename</i>);
+<dt><big><a name="Sound.loadFromFile"></a>final BaseSoundFile <u>loadFromFile</u>(string <i>filename</i>);
 </big></dt>
 <dd>Load a soundfile from his path.
 <br><br>
@@ -157,7 +157,7 @@ VorbisFile
 WaveFile<br><br>
 
 </dd>
-<dt><big><a name="Sound.loadFromMemory"></a>void <u>loadFromMemory</u>(const void* <i>buffer</i>, uint <i>dataSize</i>, uint <i>frequency</i>, ref const Channel <i>ch</i>);
+<dt><big><a name="Sound.loadFromMemory"></a>final void <u>loadFromMemory</u>(const void* <i>buffer</i>, uint <i>dataSize</i>, uint <i>frequency</i>, ref const Channel <i>ch</i>);
 </big></dt>
 <dd>Load from memory.<br><br>
 
@@ -193,12 +193,12 @@ Channel struct<br><br>
 <dd>Returns the current frequency.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setVolume"></a>void <u>setVolume</u>(float <i>volume</i>);
+<dt><big><a name="Sound.setVolume"></a>final void <u>setVolume</u>(float <i>volume</i>);
 </big></dt>
 <dd>Set the <i>volume</i>.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setVolume"></a>void <u>setVolume</u>(ubyte <i>volume</i>);
+<dt><big><a name="Sound.setVolume"></a>final void <u>setVolume</u>(ubyte <i>volume</i>);
 </big></dt>
 <dd>Set the <i>volume</i>.<br><br>
 
@@ -244,12 +244,12 @@ Channel struct<br><br>
 <dd>Pause playing.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setPosition"></a>void <u>setPosition</u>(const vec3f <i>pos</i>);
+<dt><big><a name="Sound.setPosition"></a>final void <u>setPosition</u>(const vec3f <i>pos</i>);
 </big></dt>
 <dd>Set the position.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setPosition"></a>void <u>setPosition</u>(float <i>x</i>, float <i>y</i>, float <i>z</i> = 0);
+<dt><big><a name="Sound.setPosition"></a>final void <u>setPosition</u>(float <i>x</i>, float <i>y</i>, float <i>z</i> = 0);
 </big></dt>
 <dd>Set the position.<br><br>
 
@@ -259,12 +259,12 @@ Channel struct<br><br>
 <dd>Returns the current position.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setVelocity"></a>void <u>setVelocity</u>(const vec3f <i>vel</i>);
+<dt><big><a name="Sound.setVelocity"></a>final void <u>setVelocity</u>(const vec3f <i>vel</i>);
 </big></dt>
 <dd>Set the velocity.<br><br>
 
 </dd>
-<dt><big><a name="Sound.setVelocity"></a>void <u>setVelocity</u>(float <i>x</i>, float <i>y</i>, float <i>z</i> = 0);
+<dt><big><a name="Sound.setVelocity"></a>final void <u>setVelocity</u>(float <i>x</i>, float <i>y</i>, float <i>z</i> = 0);
 </big></dt>
 <dd>Set the velocity.<br><br>
 

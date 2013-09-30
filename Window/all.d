@@ -18,7 +18,7 @@ public {
 
 private enum ImgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
 
-static this() {
+shared static this() {
 	DerelictSDL2.load();
 	DerelictSDL2Image.load();
 	DerelictSDL2ttf.load();
@@ -30,7 +30,8 @@ static this() {
 
 	const int initted = IMG_Init(ImgFlags);
 	if ((initted & ImgFlags) != ImgFlags)
-		throw new Exception("IMG_Init: Failed to init required jpg and png support!\nIMG_Init: " ~ to!string(IMG_GetError()));
+		throw new Exception("IMG_Init: Failed to init required jpg and png support!\nIMG_Init: "
+							~ to!string(IMG_GetError()));
 	
 	if (TTF_Init() < 0)
 		throw new Exception("TTF konnte nicht gestartet werden.");
@@ -38,7 +39,7 @@ static this() {
 	assert(TTF_WasInit() == 1, "SDL TTF wurde nicht korrekt initialisiert.");
 }
 
-static ~this() {
+shared static ~this() {
 	debug writeln("quit sdl");
 	
 	// unload the dynamically loaded image libraries

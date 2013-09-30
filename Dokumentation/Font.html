@@ -7,8 +7,11 @@
 <br><br>
 <dl><dt><big><a name="Font"></a>struct <u>Font</u>;
 </big></dt>
-<dd><u>Font</u> is the low-level class for loading and manipulating character fonts.
+<dd>version = Develop;
+<br><br>
+<u>Font</u> is the low-level class for loading and manipulating character fonts.
  This class is meant to be used by Dgame.Graphics.Text.
+
 <br><br>
 <b>Author:</b><br>
 rschuett<br><br>
@@ -105,6 +108,11 @@ rschuett<br><br>
  If both are 0, an exception is thrown.<br><br>
 
 </dd>
+<dt><big><a name="Font.filename"></a>const pure nothrow @property string <u>filename</u>();
+</big></dt>
+<dd>Returns the current <u>filename</u>, if any<br><br>
+
+</dd>
 <dt><big><a name="Font.setStyle"></a>void <u>setStyle</u>(Style <i>style</i>);
 </big></dt>
 <dd>Set the font <i>style</i>.
@@ -158,6 +166,11 @@ Hint enum<br><br>
 <dt><big><a name="Font.ptr"></a>inout @property inout(TTF_Font)* <u>ptr</u>();
 </big></dt>
 <dd>Returns a TTFthis.target pointer.<br><br>
+
+</dd>
+<dt><big><a name="Font.useCount"></a>const pure nothrow uint <u>useCount</u>();
+</big></dt>
+<dd>Returns the current use count<br><br>
 
 </dd>
 </dl>

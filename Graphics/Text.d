@@ -17,6 +17,23 @@ private {
 	import Dgame.Math.Rect;
 }
 
+private Font*[] _FontFinalizer;
+
+static ~this() {
+	debug writeln("Finalize Font");
+
+	for (size_t i = 0; i < _FontFinalizer.length; ++i) {
+		if (_FontFinalizer[i]) {
+			debug writeln("Finalize font ", i);
+			_FontFinalizer[i].free();
+		}
+	}
+
+	_FontFinalizer = null;
+
+	debug writeln("Font finalized");
+}
+
 /**
  * Text defines a graphical 2D text, that can be drawn on screen.
  *	- The default foreground color is <code>Color.Black</code>
@@ -118,7 +135,7 @@ public:
 	 * CTor
 	 */
 	this(ref Font font, string text = "") {
-		this._font = font;
+		this.replaceFont(font);
 		
 		this._text = text;
 		this._shouldUpdate = true;
@@ -244,6 +261,8 @@ final:
 	 */
 	void replaceFont(ref Font font) {
 		this._font = font;
+		_FontFinalizer ~= &this._font;
+
 		this._shouldUpdate = true;
 	}
 	
