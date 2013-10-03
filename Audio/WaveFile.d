@@ -1,6 +1,12 @@
 module Dgame.Audio.WaveFile;
 
-private import Dgame.Audio.SoundFile;
+private {
+	import std.conv : to;
+
+	import derelict.openal.al;
+
+	import Dgame.Audio.SoundFile;
+}
 
 /**
  * A Wave implementation of BaseSoundFile
@@ -11,7 +17,7 @@ private import Dgame.Audio.SoundFile;
 class WaveFile : BaseSoundFile {
 protected:
 	override void _read(string filename) {
-		scope(failure) throw new Exception("It seems that is not a valid wave file.");
+		//scope(failure) throw new Exception("It seems that is not a valid wave file: " ~ to!string(alGetError()));
 		
 		_sFile.filename = filename;
 		

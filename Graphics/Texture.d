@@ -153,9 +153,9 @@ package:
 	                   const ShortRect* viewport = null,
 	                   RenderMode mode = RenderMode.Normal)
 	{
-		//		if (!glIsEnabled(GL_TEXTURE_2D))
-		//			glEnable(GL_TEXTURE_2D);
-		//		
+		if (!glIsEnabled(GL_TEXTURE_2D))
+			glEnable(GL_TEXTURE_2D);
+
 		float tx = 0f;
 		float ty = 0f;
 		float tw = 1f;
@@ -554,9 +554,6 @@ final:
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
 		short rx = 0, ry = 0;
 		ushort rw = tex.width, rh = tex.height;
 		

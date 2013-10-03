@@ -33,7 +33,7 @@ void main() {
 	
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
 	wnd.setVerticalSync(Window.Sync.Disable);
-	//	wnd.setFpsLimit(15);
+	//wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	
 	{
@@ -62,9 +62,7 @@ void main() {
 	                                        Vector2f(275, 275),
 	                                        Vector2f(75, 275)]);
 	//qs.setSmooth(Shape.SmoothTarget.Line, Shape.SmoothHint.Nicest);
-	
 	qs.enableFill(true);
-	
 	qs.setPixelColor(Color.Blue);
 	//qs.setType(Shape.Type.Triangle);
 	//	qs.rotate(-25);
@@ -196,8 +194,6 @@ void main() {
 	Color[4] colors = [Color.Red, Color.Magenta, Color.White, Color.Blue];
 	ubyte cidx = 0;
 	
-	Event event;
-	
 	TileMap tm = new TileMap("map2.tmx");
 	
 	Unit tof = new Unit(new Image("samples/img/tofte.png"),
@@ -210,11 +206,14 @@ void main() {
 	                 170, 310, 0];
 	float[8] texels = [0, 0, 1, 0, 1, 1, 0, 1];
 	
-	Image img = new Image("samples/img/wiki.png", Texture.Format.RGB);
+	Image img = new Image("samples/img/wiki.png");//, Texture.Format.RGB);
 	
 	VertexArray va = new VertexArray(img, Primitive.Type.Polygon);
 	va.append(pos, texels);
 	va.setColor(Color.Green.withTransparency(125));
+
+	Image exploImg = new Image("samples/img/explosion.png");
+	Spritesheet explosion = new Spritesheet(exploImg, ShortRect(0, 0, 256, 256));
 	
 	writeln("====");
 	
@@ -230,6 +229,8 @@ void main() {
 	//wnd.getClock().wait(1000);
 	//
 	//return;
+
+	Event event;
 	
 	while (wnd.isOpen()) {
 		wnd.clear();
@@ -254,8 +255,10 @@ void main() {
 		wnd.draw(wiki_sprite);
 		wnd.draw(sp);
 		wnd.draw(sp2);
+		//wnd.draw(explosion);
 		
 		sp2.slideTextureRect();
+		//explosion.slideTextureRect();
 		
 		wnd.draw(va);
 		

@@ -5,7 +5,7 @@ private import derelict.sdl2.sdl;
 /**
  * This structure provide support for battery lifetime if you are on a laptop etc.
  * 
- * author: rschuett
+ * Author: rschuett
  */
 struct Power {
 public:

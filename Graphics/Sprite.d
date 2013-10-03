@@ -41,8 +41,7 @@ protected:
 	
 protected:
 	void _render() in {
-		assert(this._tex !is null,
-		       "Sprite couldn't rendered, because the Texture is null.");
+		assert(this._tex !is null, "Sprite couldn't rendered, because the Texture is null.");
 	} body {
 		glPushMatrix();
 		scope(exit) glPopMatrix();

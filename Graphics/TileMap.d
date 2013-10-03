@@ -165,7 +165,7 @@ ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
 /**
  * The Tile map consist of tiles which are stored in a XML file (preferably build with tiled)
  *
- * author: rschuett
+ * Author: rschuett
  */
 class TileMap : Drawable {
 private:

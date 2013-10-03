@@ -84,18 +84,18 @@ final:
 		
 		ShortRect* rect = &super._texView;
 		
-		if (grid & Grid.Column) {
-			rect.y = cast(short)(this._row * h);
-			
-			if (rect.y >= super._tex.height)
-				rect.y = 0;
-		}
-		
 		if (grid & Grid.Row) {
 			if ((rect.x + w) < super._tex.width)
 				rect.x += w;
 			else
 				rect.x = 0;
+		}
+
+		if (grid & Grid.Column && rect.x == 0) {
+			if ((rect.y + h) < super._tex.height)
+				rect.y += h;
+			else
+				rect.y = 0;
 		}
 	}
 }
