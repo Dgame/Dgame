@@ -145,7 +145,7 @@ void main(string[] args) {
 	// no matter what the working directory.
 	buildPath = args[0].dirName();
 
-	string derelictPath = args[0].absolutePath().dirName() ~ "/../../" ~ DerelictDirname;;
+	string derelictPath = args[0].absolutePath().dirName() ~ "/../../" ~ DerelictDirname;
 	derelictPath = derelictPath.buildNormalizedPath();
 
 	writeln("Assume '", derelictPath, "' as derelict path.");
