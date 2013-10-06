@@ -6,7 +6,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Memory.Allocator : stack_alloc;
+	import Dgame.Core.Memory.Allocator : dync_alloc, dync_free;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -269,7 +269,9 @@ public:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		ubyte[] tmpLine = .stack_alloc!(ubyte, lineWidth);
+		ubyte[] tmpLine = dync_alloc!ubyte(lineWidth);
+		scope(exit) dync_free(tmpLine);
+
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
 		for (uint i = 0; i < this.height / 2; ++i) {

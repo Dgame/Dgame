@@ -2,10 +2,12 @@ module Dgame.Core.Memory.Allocator;
 
 private import core.stdc.stdlib : alloca, malloc, free;
 
+/*
 @property @trusted
 T[] stack_alloc(T, alias N)(void* ptr = .alloca(N * T.sizeof)) {
 	return (cast(T*) ptr)[0 .. N];
 }
+*/
 
 /// dyn(amic) c alloc(ation)
 @trusted

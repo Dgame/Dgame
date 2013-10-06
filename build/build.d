@@ -51,7 +51,12 @@ enum {
 version(DigitalMars) {
 	pragma(msg, "Using the Digital Mars DMD compiler.");
 
-	enum CompilerOptions = "-lib -O -release -inline -wi";
+	debug {
+		enum Release = "-debug";
+	} else {
+		enum Release = "-release -inline";
+	}
+	enum CompilerOptions = "-lib -O " ~ Release ~ " -wi";
 
 	string buildCompileString(string files, string libName) {
 		return format("dmd %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -133,14 +138,14 @@ static this() {
 	];
 }
 
-enum DerelictDirname = "\\derelict";
+enum DerelictDirname = "derelict";
 
 void main(string[] args) {
 	// Determine the path to this executable so that imports and source files can be found
 	// no matter what the working directory.
 	buildPath = args[0].dirName();
 
-	string derelictPath = args[0].absolutePath().dirName() ~ "\\..\\.." ~ DerelictDirname;
+	string derelictPath = args[0].absolutePath().dirName() ~ "/../../" ~ DerelictDirname;;
 	derelictPath = derelictPath.buildNormalizedPath();
 
 	writeln("Assume '", derelictPath, "' as derelict path.");
