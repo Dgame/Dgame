@@ -283,10 +283,9 @@ private:
 	               ref ushort[2][ushort] used, ref SubSurface[] subs)
 	{
 		if (this._doCompress) {
-			ushort dim = calcDim(used.length, this._tmi.tileWidth);
+			const ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
 			Surface newTileset = Surface.make(dim, dim, 32);
-			//newTileset.fill(Color.Red); /// notwendig!
 			
 			ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
 			
@@ -294,7 +293,7 @@ private:
 			ushort col = 0;
 			
 			/// Anpassen der Tile Koordinaten
-			//char c = '0';
+			//int c = 0;
 			foreach (ref SubSurface sub; subs) {
 				if (!newTileset.blit(sub.clip, null, &src))
 					throw new Exception("An error occured by blitting the tile on the new tileset.");
@@ -308,7 +307,8 @@ private:
 					row += this._tmi.tileHeight;
 				}
 				
-				//sub.clip.saveToFile("tile_" ~ c++ ~ ".png");
+				//sub.clip.saveToFile("tile_" ~ to!string(c) ~ ".png");
+				//c++;
 				
 				sub.clip.free(); /// Free subsurface
 				src.setPosition(col, row);
@@ -340,7 +340,7 @@ private:
 		texCoords.reserve(coordinates.length * 4);
 		
 		debug writefln("TileMap: Reserve %d texCoords (%d).",
-		               texCoords.length, coordinates.length * 4);
+		               texCoords.capacity, coordinates.length * 4);
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -374,6 +374,9 @@ protected:
 	void _render() in {
 		assert(this._transform !is null, "Transform is null.");
 	} body {
+		if (!glIsEnabled(GL_TEXTURE_2D))
+			glEnable(GL_TEXTURE_2D);
+
 		glPushAttrib(GL_ENABLE_BIT);
 		scope(exit) glPopAttrib();
 		
@@ -381,6 +384,7 @@ protected:
 		scope(exit) glPopMatrix();
 		
 		glDisable(GL_BLEND);
+		scope(exit) glEnable(GL_BLEND);
 		
 		this._transform.applyViewport();
 		this._transform.applyTranslation();
@@ -418,9 +422,9 @@ final:
 		this._tex = new Texture();
 		this._vbo = new VertexBufferObject(Primitive.Target.Vertex | Primitive.Target.TexCoords);
 		
-		this.load(filename, compress);
-		
 		this._transform = new Transform();
+
+		this.load(filename, compress);
 	}
 	
 	/**
@@ -441,6 +445,9 @@ final:
 	 * Load a new TileMap
 	 */
 	void load(string filename, bool compress = true) {
+		if (!exists(filename))
+			throw new Exception("Could not find tilemap " ~ filename);
+
 		this._filename = filename;
 		this._doCompress = compress;
 		
@@ -452,6 +459,9 @@ final:
 		}
 		
 		this._readTileMap();
+
+		// Area Size
+		this._transform._setAreaSize(this._tmi.width, this._tmi.height);
 	}
 	
 	/**

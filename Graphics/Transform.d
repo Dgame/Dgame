@@ -20,16 +20,14 @@ private:
 	ShortRect _view;
 	
 	int[2] _winSize;
-	bool _isActive;
+	bool _viewActive = true;
 	
 public:
 	/**
 	 * CTor
 	 */
 	this() {
-		this.update();
-		
-		this._isActive = true;
+		this.updateWindowSize();
 	}
 	
 	/**
@@ -52,7 +50,7 @@ public:
 	 * Apply the viewport. The view is recalulcated by the given View Rectangle.
 	 */
 	void applyViewport() const {
-		const bool noView = !this._isActive || this._view.isEmpty();
+		const bool noView = !this._viewActive || this._view.isEmpty();
 		if (!noView) {
 			if (!glIsEnabled(GL_SCISSOR_TEST))
 				glEnable(GL_SCISSOR_TEST);
@@ -74,7 +72,7 @@ public:
 	/**
 	 * Update should be called if the window is resized.
 	 */
-	void update() {
+	void updateWindowSize() {
 		int[4] viewport;
 		glGetIntegerv(GL_VIEWPORT, &viewport[0]);
 		
@@ -84,15 +82,15 @@ public:
 	/**
 	 * Activate/Deactivate the usage of the viewport.
 	 */
-	void activate(bool active) {
-		this._isActive = active;
+	void activateView(bool vActive) {
+		this._viewActive = vActive;
 	}
 	
 	/**
 	 * Returns, if the viewport usage is activated or not.
 	 */
-	bool isActive() const pure nothrow {
-		return this._isActive;
+	bool isViewActive() const pure nothrow {
+		return this._viewActive;
 	}
 	
 	/**
@@ -128,5 +126,14 @@ public:
 	 */
 	void resetView() {
 		this._view.collapse();
+	}
+
+	/**
+	 * Adjust the viewport.
+	 * The position is shifted about <code>view.x * -1</code> and <code>view.y - 1</code>
+	 * so that the left upper corner of the current view is in the left upper corner of the Window.
+	 */
+	void adjustView() {
+		super.setPosition(this._view.x * -1, this._view.y * -1);
 	}
 }

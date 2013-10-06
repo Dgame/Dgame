@@ -18,7 +18,9 @@ private {
 abstract class Transformable : Moveable {
 protected:
 	short _rotAngle;
-	float _zoom;
+	float _zoom = 1f;
+
+	int[2] _areaSize;
 	
 protected:
 	/**
@@ -27,11 +29,29 @@ protected:
 	override void _applyTranslation() const {
 		super._applyTranslation();
 		
-		if (this._rotAngle != 0)
+		if (this._rotAngle != 0) {
+			bool area = false;
+
+			if (this._areaSize[0] != 0 && this._areaSize[1] != 0) {
+				area = true;
+
+				glTranslatef(this._areaSize[0] / 2, this._areaSize[1] / 2, 0);
+			}
+
 			glRotatef(this._rotAngle, 0f, 0f, 1f);
+
+			if (area)
+				glTranslatef(-(this._areaSize[0] / 2), -(this._areaSize[1] / 2), 0);
+		}
 		
 		if (!isNaN(this._zoom) && !fpEqual(this._zoom, 1f))
 			glScalef(this._zoom, this._zoom, 0f);
+	}
+
+package:
+	void _setAreaSize(ushort width, short height) pure nothrow {
+		this._areaSize[0] = width;
+		this._areaSize[1] = height;
 	}
 	
 public:

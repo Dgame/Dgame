@@ -20,23 +20,12 @@ class Sprite : Transformable, Drawable {
 protected:
 	Texture _tex;
 	
-	FloatRect _boundingBox;
 	ShortRect _clipRect;
 	ShortRect _texView;
-	
-protected:
-	/**
-	 * Possible observer method if a new position is set.
-	 */
-	override void _positionMoved(float nx, float ny) {
-		this._boundingBox.setPosition(nx, ny);
-	}
-	
-	/**
-	 * Possible observer method if the position change.
-	 */
-	override void _positionReset(float dx, float dy) {
-		this._boundingBox.move(dx, dy);
+
+private:
+	void _updateAreaSize() {
+		super._setAreaSize(this._clipRect.width, this._clipRect.height);
 	}
 	
 protected:
@@ -45,7 +34,7 @@ protected:
 	} body {
 		glPushMatrix();
 		scope(exit) glPopMatrix();
-		
+
 		this._applyTranslation();
 
 		this._tex._render(this._clipRect,
@@ -53,7 +42,6 @@ protected:
 	}
 	
 public:
-	
 	/**
 	 * CTor
 	 */
@@ -73,31 +61,30 @@ public:
 	 * with the bounding box of another Sprite
 	 */
 	bool collideWith(const Sprite rhs) const {
-		return this.collideWith(this.getBoundingBox());
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	bool collideWith(const FloatRect rect) const {
-		return this.collideWith(rect);
+		return this.collideWith(this._clipRect);
 	}
 	
 	/**
 	 * Check whether the bounding box of this Sprite collide
 	 * with the given Rect
 	 */
-	bool collideWith(ref const FloatRect rect) const {
-		return this.getBoundingBox().intersects(rect);
+	bool collideWith(ref const ShortRect rect) const {
+		return this._clipRect.intersects(rect);
+	}
+
+	/**
+	* Rvalue version
+	*/
+	bool collideWith(const ShortRect rect) const {
+		return this.collideWith(rect);
 	}
 	
 final:
-	
 	void setTextureRect(ref const ShortRect texView) {
 		this._texView = texView;
 		
-		this._boundingBox.setSize(texView.width, texView.height);
 		this._clipRect.setSize(texView.width, texView.height);
+		this._updateAreaSize();
 	}
 	
 	void setTextureRect(const ShortRect texView) {
@@ -113,21 +100,17 @@ final:
 	} body {
 		this._texView.collapse();
 		
-		this._boundingBox.setSize(this._tex.width, this._tex.height);
 		this._clipRect.setSize(this._tex.width, this._tex.height);
+		this._updateAreaSize();
 	}
 	
 	ref const(ShortRect) getTextureRect() const pure nothrow {
 		return this._texView;
 	}
-	
+
 	/**
-	 * Returns the clip rect, the area which will be drawn on the screen.
-	 */
-	ref const(FloatRect) getBoundingBox() const pure nothrow {
-		return this._boundingBox;
-	}
-	
+	* Returns the clip rect, the area which will be drawn on the screen.
+	*/
 	ref const(ShortRect) getClipRect() const pure nothrow {
 		return this._clipRect;
 	}
@@ -149,8 +132,8 @@ final:
 	} body {
 		this._tex = tex;
 		
-		this._boundingBox.setSize(tex.width, tex.height);
 		this._clipRect.setSize(tex.width, tex.height);
+		this._updateAreaSize();
 	}
 	
 	/**

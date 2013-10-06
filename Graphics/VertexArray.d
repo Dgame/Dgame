@@ -15,7 +15,7 @@ public import Dgame.System.VertexRenderer : Primitive;
 
 /**
 * A VertexArray is a user defined OpenGL primitive.
-* It's like Shape, but it is not transformable.
+* It's like Shape, but it is <b>not</b> transformable.
 * It use Vertices and not Pixels.
 * Also it does not use a VBO and is therefore not that performant as a Shape.
 * A VertexArray can use indices and, unlike shape, a texture can be bound.
@@ -123,7 +123,7 @@ final:
 			this._indices.reserve(this._vertices.length);
 		}
 
-		uint i = complete ? 0 : this._indices.length;
+		size_t i = complete ? 0 : this._indices.length;
 		for (; i < this._vertices.length; ++i) {
 			this._indices ~= i;
 		}

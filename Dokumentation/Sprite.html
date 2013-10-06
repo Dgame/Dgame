@@ -12,17 +12,7 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Sprite._positionMoved"></a>protected void <u>_positionMoved</u>(float <i>nx</i>, float <i>ny</i>);
-</big></dt>
-<dd>Possible observer method if a new position is set.<br><br>
-
-</dd>
-<dt><big><a name="Sprite._positionReset"></a>protected void <u>_positionReset</u>(float <i>dx</i>, float <i>dy</i>);
-</big></dt>
-<dd>Possible observer method if the position change.<br><br>
-
-</dd>
-<dt><big><a name="Sprite.this"></a> this();
+<dl><dt><big><a name="Sprite.this"></a> this();
 </big></dt>
 <dd>CTor<br><br>
 
@@ -38,18 +28,18 @@ rschuett<br><br>
  with the bounding box of another Sprite<br><br>
 
 </dd>
-<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(const FloatRect <i>rect</i>);
-</big></dt>
-<dd>Rvalue version<br><br>
-
-</dd>
-<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(ref const FloatRect <i>rect</i>);
+<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(ref const ShortRect <i>rect</i>);
 </big></dt>
 <dd>Check whether the bounding box of this Sprite collide
  with the given Rect<br><br>
 
 </dd>
-<dt><big><a name="Sprite.getBoundingBox"></a>final const pure nothrow ref const(FloatRect) <u>getBoundingBox</u>();
+<dt><big><a name="Sprite.collideWith"></a>const bool <u>collideWith</u>(const ShortRect <i>rect</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
+
+</dd>
+<dt><big><a name="Sprite.getClipRect"></a>final const pure nothrow ref const(ShortRect) <u>getClipRect</u>();
 </big></dt>
 <dd>Returns the clip rect, the area which will be drawn on the screen.<br><br>
 

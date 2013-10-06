@@ -10,42 +10,49 @@ private {
 * To convert the Clock milliseconds to seconds
 */
 uint asSeconds(uint n) pure nothrow {
-	return n / 1000;
+	return n >= 1000 ? (n / 1000) : 0;
 }
 
 /**
 * To convert the Clock milliseconds to minutes
 */
 uint asMinutes(uint n) pure nothrow {
-	return asSeconds(n) / 60;
+	immutable uint secs = asSeconds(n);
+
+	return secs >= 60 ? (secs / 60) : 0;
 }
 
 /**
 * To convert the Clock milliseconds to hours
 */
 uint asHours(uint n) pure nothrow {
-	return asMinutes(n) / 60;
+	immutable uint mins = asMinutes(n);
+
+	return mins >= 60 ? (mins / 60) : 0;
 }
 
 /**
-* The time struct converts ticks to msecs, seconds, minutes and hours.
+* The Time struct converts ticks to msecs, seconds, minutes and hours.
 */
-struct Time {
+const struct Time {
 public:
 	/// Milliseconds = Ticks
-	const uint msecs;
+	uint msecs;
 	/// Seconds = Milliseconds / 1000
-	const uint seconds;
+	uint seconds;
 	//// Minutes = Seconds / 60
-	const uint minutes;
+	uint minutes;
 	/// Hours = Minutes / 60
-	const uint hours;
+	uint hours;
 
-	this(uint msecs) {
-		this.msecs = msecs;
+	/**
+	* CTor
+	*/
+	this(uint msecs) pure {
+		this.msecs   = msecs;
 		this.seconds = asSeconds(msecs);
 		this.minutes = asMinutes(msecs);
-		this.hours = asHours(msecs);
+		this.hours   = asHours(msecs);
 	}
 }
 

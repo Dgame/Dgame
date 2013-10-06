@@ -160,6 +160,7 @@ public:
 	
 protected:
 	ubyte _lineWidth;
+	size_t _pixelCount;
 	
 	bool _shouldFill;
 	bool _update;
@@ -204,8 +205,18 @@ private:
 		
 		this._vbo.pointTo(Primitive.Target.Vertex, Pixel.sizeof);
 		this._vbo.pointTo(Primitive.Target.Color,  Pixel.sizeof, V_Count * float.sizeof);
+
+		//this._calculateAreaSize();
 		
 		this._update = false;
+	}
+
+	void _calculateAreaSize() {
+		if (this._pixelCount != this._pixels.length) {
+			this._pixelCount = this._pixels.length;
+
+			// TODO?
+		}
 	}
 	
 protected:

@@ -37,17 +37,17 @@ rschuett<br><br>
 <dd>Apply the translation.<br><br>
 
 </dd>
-<dt><big><a name="Transform.update"></a>void <u>update</u>();
+<dt><big><a name="Transform.updateWindowSize"></a>void <u>updateWindowSize</u>();
 </big></dt>
 <dd>Update should be called if the window is resized.<br><br>
 
 </dd>
-<dt><big><a name="Transform.activate"></a>void <u>activate</u>(bool <i>active</i>);
+<dt><big><a name="Transform.activateView"></a>void <u>activateView</u>(bool <i>vActive</i>);
 </big></dt>
 <dd>Activate/Deactivate the usage of the viewport.<br><br>
 
 </dd>
-<dt><big><a name="Transform.isActive"></a>const pure nothrow bool <u>isActive</u>();
+<dt><big><a name="Transform.isViewActive"></a>const pure nothrow bool <u>isViewActive</u>();
 </big></dt>
 <dd>Returns, if the viewport usage is activated or not.<br><br>
 
@@ -75,6 +75,13 @@ rschuett<br><br>
 <dt><big><a name="Transform.resetView"></a>void <u>resetView</u>();
 </big></dt>
 <dd>Reset the viewport.<br><br>
+
+</dd>
+<dt><big><a name="Transform.adjustView"></a>void <u>adjustView</u>();
+</big></dt>
+<dd>Adjust the viewport.
+ The position is shifted about <code>view.x * -1</code> and <code>view.y - 1</code>
+ so that the left upper corner of the current view is in the left upper corner of the Window.<br><br>
 
 </dd>
 </dl>

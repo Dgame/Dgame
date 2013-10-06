@@ -61,6 +61,8 @@ private:
 		                         cast(ushort) rhs.w,
 		                         cast(ushort) rhs.h,
 		                         rhs.format.BitsPerPixel, fmt);
+
+		super._setAreaSize(this._tex.width, this._tex.height);
 	}
 	
 	void _update() in {

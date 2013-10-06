@@ -229,7 +229,8 @@ public:
 			RMask, GMask, BMask, AMask);
 		
 		if (srfc is null)
-			throw new Exception("Could not load image. Error: " ~ to!string(SDL_GetError()));
+			throw new Exception("Could not load image. Error: "
+								~ to!string(SDL_GetError()));
 		
 		this._target.reset(srfc);
 	}
@@ -242,7 +243,8 @@ public:
 			throw new Exception("File name is not allowed.");
 		
 		if (SDL_SaveBMP(this.ptr, toStringz(filename)) != 0) {
-			throw new Exception("Could not load image " ~ filename ~ ". Error: "~ to!string(SDL_GetError()));
+			throw new Exception("Could not save image " ~ filename ~ ". Error: "
+								~ to!string(SDL_GetError()));
 		}
 	}
 	
