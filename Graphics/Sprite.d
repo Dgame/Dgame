@@ -80,6 +80,10 @@ public:
 	}
 	
 final:
+	/**
+	 * Set a Texture Rect.
+	 * This indicates which area of the Texture is drawn.
+	 */
 	void setTextureRect(ref const ShortRect texView) {
 		this._texView = texView;
 		
@@ -87,14 +91,23 @@ final:
 		this._updateAreaSize();
 	}
 	
+	/**
+	 * Rvalue version
+	 */
 	void setTextureRect(const ShortRect texView) {
 		this.setTextureRect(texView);
 	}
 	
+	/**
+	 * Returns if this Texture has a Texture Rect
+	 */
 	bool hasTextureRect() const {
 		return !this._texView.isEmpty();
 	}
 	
+	/**
+	 * Reset the current Texture Rect with a call to Rect.collapse
+	 */
 	void resetTextureRect() in {
 		assert(this._tex !is null);
 	} body {
@@ -104,6 +117,9 @@ final:
 		this._updateAreaSize();
 	}
 	
+	/**
+	 * Returns the current Texture Rect
+	 */
 	ref const(ShortRect) getTextureRect() const pure nothrow {
 		return this._texView;
 	}
