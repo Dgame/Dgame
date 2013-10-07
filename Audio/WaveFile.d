@@ -1,8 +1,6 @@
 module Dgame.Audio.WaveFile;
 
 private {
-	import std.conv : to;
-
 	import derelict.openal.al;
 
 	import Dgame.Audio.SoundFile;

@@ -1,6 +1,6 @@
 module Dgame.Core.Memory.Allocator;
 
-private import core.stdc.stdlib : alloca, malloc, free;
+private import core.stdc.stdlib : /*alloca, */malloc, free;
 
 /*
 @property @trusted
