@@ -113,9 +113,14 @@ rschuett<br><br>
 <dd>Returns the currently bound texture id.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getId"></a>final const pure nothrow GLuint <u>getId</u>();
+<dt><big><a name="Texture.Id"></a>final const pure nothrow @property GLuint <u>Id</u>();
 </big></dt>
-<dd>Returns the Texture Id.<br><br>
+<dd>Returns the Texture <u>Id</u>.<br><br>
+
+</dd>
+<dt><big><a name="Texture.isValid"></a>final const pure nothrow bool <u>isValid</u>();
+</big></dt>
+<dd>Returns if the texture is used.<br><br>
 
 </dd>
 <dt><big><a name="Texture.width"></a>final const pure nothrow @property ushort <u>width</u>();
@@ -163,25 +168,19 @@ Format enum.<br><br>
 <dd>Set smooth filter for the (next) load.<br><br>
 
 </dd>
-<dt><big><a name="Texture.hasSmooth"></a>final const pure nothrow bool <u>hasSmooth</u>();
+<dt><big><a name="Texture.isSmooth"></a>final const pure nothrow bool <u>isSmooth</u>();
 </big></dt>
 <dd>Returns if smooth filter are activated.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setRepeat"></a>final void <u>setRepeat</u>(bool <i>enable</i>);
+<dt><big><a name="Texture.setRepeat"></a>final void <u>setRepeat</u>(bool <i>repeat</i>);
 </big></dt>
-<dd>Set repeating for the (nexT) load.<br><br>
+<dd>Set repeating for the (next) load.<br><br>
 
 </dd>
-<dt><big><a name="Texture.hasRepeat"></a>final const pure nothrow bool <u>hasRepeat</u>();
+<dt><big><a name="Texture.isRepeated"></a>final const pure nothrow bool <u>isRepeated</u>();
 </big></dt>
 <dd>Returns if repeating is enabled.<br><br>
-
-</dd>
-<dt><big><a name="Texture.link"></a>final void <u>link</u>(const Texture <i>tex</i>);
-</big></dt>
-<dd>Link this Texture to another.
- This Texture points now to the other Texture and his data.<br><br>
 
 </dd>
 <dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);
@@ -191,7 +190,7 @@ Format enum.<br><br>
 </dd>
 <dt><big><a name="Texture.setColorkey"></a>final void <u>setColorkey</u>(ref const Color <i>colorkey</i>);
 </big></dt>
-<dd>Load from memory with a <i>colorkey</i>.<br><br>
+<dd>Set a <i>colorkey</i>.<br><br>
 
 </dd>
 <dt><big><a name="Texture.setColorkey"></a>final void <u>setColorkey</u>(const Color <i>colorkey</i>);

@@ -14,12 +14,12 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Text.this"></a> this(ref Font <i>font</i>, string <i>text</i> = "");
+<dl><dt><big><a name="Text.this"></a> this(ref Font <i>font</i>, string <i>text</i> = null);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Text.this"></a> this(Font <i>font</i>, string <i>text</i> = "");
+<dt><big><a name="Text.this"></a> this(Font <i>font</i>, string <i>text</i> = null);
 </big></dt>
 <dd><b>CTor:</b><br>
 Rvalue version<br><br>
@@ -45,6 +45,16 @@ Rvalue version<br><br>
 <dt><big><a name="Text.getBoundingBox"></a>final const FloatRect <u>getBoundingBox</u>();
 </big></dt>
 <dd>Returns the bounding box, the area which will be drawn on the screen.<br><br>
+
+</dd>
+<dt><big><a name="Text.width"></a>final const pure nothrow @property ushort <u>width</u>();
+</big></dt>
+<dd>Returns the <u>width</u> of the Text Texture<br><br>
+
+</dd>
+<dt><big><a name="Text.height"></a>final const pure nothrow @property ushort <u>height</u>();
+</big></dt>
+<dd>Returns the <u>height</u> of the Text Texture<br><br>
 
 </dd>
 <dt><big><a name="Text.enableBlending"></a>final void <u>enableBlending</u>(bool <i>enable</i>);
