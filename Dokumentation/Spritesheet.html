@@ -15,7 +15,29 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>);
+<dl><dt><big><a name="Spritesheet.Grid"></a>enum <u>Grid</u>;
+</big></dt>
+<dd>The <u>Grid</u><br><br>
+
+<dl><dt><big><a name="Spritesheet.Grid.None"></a><u>None</u></big></dt>
+<dd>No Grid is used<br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.Grid.Row"></a><u>Row</u></big></dt>
+<dd>Only Rows are used<br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.Grid.Column"></a><u>Column</u></big></dt>
+<dd>Only Columns are used<br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.Grid.Both"></a><u>Both</u></big></dt>
+<dd><u>Both</u>, Columns <b>and</b> Rows are used<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -39,7 +61,8 @@ Rvalue version<br><br>
 </dd>
 <dt><big><a name="Spritesheet.setRow"></a>final void <u>setRow</u>(ubyte <i>row</i>);
 </big></dt>
-<dd>Set a new <i>row</i><br><br>
+<dd>Set a new <i>row</i>.
+ This only matters, if you slide without Grid.Column.<br><br>
 
 </dd>
 <dt><big><a name="Spritesheet.slideTextureRect"></a>final void <u>slideTextureRect</u>(Grid <i>grid</i> = Grid.Both);

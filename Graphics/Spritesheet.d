@@ -16,11 +16,14 @@ private {
  */
 class Spritesheet : Sprite {
 public:
+	/**
+	 * The Grid
+	 */
 	enum Grid {
-		None = 0,
-		Row = 1,
-		Column = 2,
-		Both = Row | Column
+		None = 0, /// No Grid is used
+		Row = 1,  /// Only Rows are used
+		Column = 2, /// Only Columns are used
+		Both = Row | Column /// Both, Columns <b>and</b> Rows are used
 	}
 	
 protected:
@@ -28,7 +31,6 @@ protected:
 	
 public:
 final:
-	
 	/**
 	 * CTor
 	 */
@@ -62,7 +64,8 @@ final:
 	}
 	
 	/**
-	 * Set a new row
+	 * Set a new row.
+	 * This only matters, if you slide without Grid.Column.
 	 */
 	void setRow(ubyte row) {
 		this._row = row;
@@ -83,6 +86,11 @@ final:
 		const short h = super._texView.height;
 		
 		ShortRect* rect = &super._texView;
+
+		if (!(grid & Grid.Column)) {
+			// to avoid a cast...
+			rect.y = this._row; rect.y *= h;
+		}
 		
 		if (grid & Grid.Row) {
 			if ((rect.x + w) < super._tex.width)
