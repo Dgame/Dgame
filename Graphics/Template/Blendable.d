@@ -10,10 +10,15 @@ private {
  * Supported BlendModes
  */
 enum BlendMode {
+	None,      /** No blending. */
 	Alpha,    /** Pixel = Src * a + Dest * (1 - a) */
 	Add,      /** Pixel = Src + Dest */
-	Multiply, /** Pixel = Src * Dest */
-	None      /** No blending. */
+	Multiply /** Pixel = Src * Dest */
+}
+
+enum BlendColor {
+	Default,
+	Color4f
 }
 
 interface Blendable {
@@ -68,7 +73,19 @@ protected:
 	void _applyBlending() const {
 		if (!this._isBlending)
 			return;
-		
+
+		if (!glIsEnabled(GL_BLEND))
+			glEnable(GL_BLEND);
+
+		if (this._isBlendColor) {
+			const float[4] col = this._blendColor.asGLColor();
+
+			version(all)
+				glBlendColor(col[0], col[1], col[2], col[3]);
+			else
+				glColor4f(col[0], col[1], col[2], col[3]);
+		}
+
 		final switch (this._blendMode) {
 			// Alpha blending
 			case BlendMode.Alpha:
@@ -87,15 +104,6 @@ protected:
 				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 		}
-		
-		if (this._isBlendColor && this._blendMode != BlendMode.None) {
-			const float[4] col = this._blendColor.asGLColor();
-			
-			version(all)
-				glBlendColor(col[0], col[1], col[2], col[3]);
-			else
-				glColor4f(col[0], col[1], col[2], col[3]);
-		}
 	}
 	
 public:
@@ -113,12 +121,27 @@ final:
 	bool isBlendingEnabled() const pure nothrow {
 		return this._isBlending;
 	}
+
+	/**
+	* Activate or deactivate the using of the blend color.
+	*/
+	void enableBlendColor(bool enable) {
+		this._isBlendColor = enable;
+	}
+
+	/**
+	* Returns, if using blend color is activated, or not.
+	*/
+	bool isBlendColorEnabled() const pure nothrow {
+		return this._isBlendColor;
+	}
 	
 	/**
 	 * Set the Blendmode.
 	 */
 	void setBlendMode(BlendMode mode) {
 		this._blendMode = mode;
+		this._isBlending = true;
 	}
 	
 	/**
@@ -148,19 +171,5 @@ final:
 	 */
 	ref const(Color) getBlendColor() const pure nothrow {
 		return this._blendColor;
-	}
-	
-	/**
-	 * Activate or deactivate the using of the Blend color.
-	 */
-	void enableBlendColor(bool enable) {
-		this._isBlendColor = enable;
-	}
-	
-	/**
-	 * Returns, if using blend color is activated, or not.
-	 */
-	bool isBlendColorEnabled() const pure nothrow {
-		return this._isBlendColor;
 	}
 }

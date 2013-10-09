@@ -145,6 +145,8 @@ public:
 			
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glDisable(GL_DEPTH_TEST);
 			
 			// Hints
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
@@ -369,7 +371,7 @@ public:
 	 * Clears the buffer.
 	 */
 	void clear() const {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 	}
 	
 	/**
@@ -569,11 +571,18 @@ public:
 	}
 	
 	/**
-	 * Enable or Disable Fullscreen mode.
+	 * Use this function to set a window's fullscreen state.
+	 * style  may be Style.Fullscreen for "real" fullscreen with a videomode change
+	 * or Style.Desktop for "fake" fullscreen that takes the size of the desktop
+	 * 0 for windowed mode.
 	 */
-	void setFullscreen(bool enable) {
-		if (SDL_SetWindowFullscreen(this._window, enable) == 0) {
-			if (enable)
+	void setFullscreen(uint style) {
+		if (style != 0 && style & this._style)
+			return;
+
+		const uint flags = style == Style.Fullscreen || style == Style.Desktop ? style : 0;
+		if (SDL_SetWindowFullscreen(this._window, flags) == 0) {
+			if (flags != 0)
 				this._style |= Style.Fullscreen;
 			else
 				this._style &= ~Style.Fullscreen;
@@ -581,7 +590,7 @@ public:
 	}
 	
 	/**
-	 * Returns, if this Window is in Fullscreen mode.
+	 * Returns, if this Window is in fullscreen mode.
 	 */
 	bool isFullscreen() const pure nothrow {
 		return this._style & Style.Fullscreen;

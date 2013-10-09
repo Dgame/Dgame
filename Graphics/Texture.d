@@ -110,6 +110,28 @@ static ~this() {
 	debug writeln(" >> Texture Finalized");
 }
 
+package struct Render {
+public:
+	enum Mode {
+		Normal,
+		Reverse
+	}
+
+	const ShortRect* dest;
+	const ShortRect* viewport;
+
+	const Mode mode;
+
+	@disable
+	this();
+
+	this(const ShortRect* dest, const ShortRect* viewport, Mode mode = Mode.Normal) {
+		this.dest = dest;
+		this.viewport = viewport;
+		this.mode = mode;
+	}
+}
+
 /**
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
@@ -131,12 +153,7 @@ public:
 		Luminance = GL_LUMINANCE, /** Alias for GL_LUMINANCE */
 		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */
 	}
-	
-	enum RenderMode {
-		Normal,
-		Reverse
-	}
-	
+
 private:
 	GLuint _texId;
 	
@@ -144,15 +161,12 @@ private:
 	ubyte _depth;
 	
 	bool _isSmooth;
-	bool _isRepeat;
+	bool _isRepeated;
 	
 	Format _format;
 	
 package:
-	const void _render(const ShortRect* dst,
-	                   const ShortRect* viewport = null,
-	                   RenderMode mode = RenderMode.Normal)
-	{
+	void _render(const Render* render) const {
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 
@@ -160,48 +174,48 @@ package:
 		float ty = 0f;
 		float tw = 1f;
 		float th = 1f;
-		
-		if (viewport !is null) {
-			tx = (0f + viewport.x) / this._width;
-			ty = (0f + viewport.y) / this._height;
-			tw = (0f + viewport.width) / this._width;
-			th = (0f + viewport.height) / this._height;
+
+		if (render !is null && render.viewport !is null) {
+			tx = (0f + render.viewport.x) / this._width;
+			ty = (0f + render.viewport.y) / this._height;
+			tw = (0f + render.viewport.width) / this._width;
+			th = (0f + render.viewport.height) / this._height;
 		}
-		
-		/// |GL_CURRENT_BIT
-		/// -> if we use glColor4f instead of glBlendColor in Blendable
-		//		glPushAttrib(GL_COLOR_BUFFER_BIT);
-		//		scope(exit) glPopAttrib();
-		
+
+		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+		scope(exit) glPopAttrib();
+
 		// apply blending
 		this._applyBlending();
-		
+
+		const Render.Mode mode = render !is null ? render.mode : Render.Mode.Normal;
+
 		float[8] texCoords = void;
 		final switch (mode) {
-			case RenderMode.Normal:
+			case Render.Mode.Normal:
 				texCoords = [tx,      ty,
-				             tx + tw, ty,
-				             tx + tw, ty + th,
-				             tx,      ty + th];
+							 tx + tw, ty,
+							 tx + tw, ty + th,
+							 tx,      ty + th];
 				break;
-			case RenderMode.Reverse:
+			case Render.Mode.Reverse:
 				texCoords = [tx,      ty + th,
-				             tx + tw, ty + th,
-				             tx + tw, ty,
-				             tx,      ty];
+							 tx + tw, ty + th,
+							 tx + tw, ty,
+							 tx,      ty];
 				break;
 		}
-		
+
 		float dx = 0f;
 		float dy = 0f;
 		float dw = this._width;
 		float dh = this._height;
-		
-		if (dst !is null) {
-			dx = dst.x;
-			dy = dst.y;
-			dw = dst.width;
-			dh = dst.height;
+
+		if (render !is null && render.dest !is null) {
+			dx = render.dest.x;
+			dy = render.dest.y;
+			dw = render.dest.width;
+			dh = render.dest.height;
 		}
 
 		float[12] vertices = [dx,	   dy,      0f,
@@ -219,22 +233,16 @@ package:
 		}
 
 		this.bind();
-		
+
 		VertexRenderer.drawArrays(Primitive.Type.Quad, vertices.length);
 	}
-	
-	const void _render(ref const ShortRect dst,
-	                   const ShortRect* viewport = null,
-	                   RenderMode mode = RenderMode.Normal)
-	{
-		this._render(&dst, viewport, mode);
+
+	void _render(ref const Render render) const {
+		this._render(&render);
 	}
-	
-	const void _render(const ShortRect dst,
-	                   const ShortRect* viewport,
-	                   RenderMode mode = RenderMode.Normal)
-	{
-		this._render(dst, viewport, mode);
+
+	void _render(const Render render) const {
+		this._render(&render);
 	}
 	
 public:
@@ -242,7 +250,6 @@ public:
 	mixin TplBlendable;
 	
 final:
-	
 	/**
 	 * CTor
 	 */
@@ -252,6 +259,20 @@ final:
 		_TexFinalizer ~= &this._texId;
 		
 		this.bind();
+	}
+
+	this(GLuint t_id, ushort width, ushort height, ubyte depth, Format t_fmt = Format.None) {
+		assert(depth != 0 || t_fmt != Format.None);
+
+		this._texId = t_id;
+
+		this._width  = width;
+		this._height = height;
+		this._depth  = depth == 0 ? formatToBits(t_fmt) : depth;
+		this._format = t_fmt == Format.None ? bitsToFormat(depth) : t_fmt;
+
+		this._isSmooth = false;
+		this._isRepeated = false;
 	}
 	
 	/**
@@ -297,8 +318,16 @@ final:
 	/**
 	 * Returns the Texture Id.
 	 */
-	GLuint getId() const pure nothrow {
+	@property
+	GLuint Id() const pure nothrow {
 		return this._texId;
+	}
+
+	/**
+	 * Returns if the texture is used.
+	 */
+	bool isValid() const pure nothrow {
+		return this._texId != 0;
 	}
 	
 	/**
@@ -367,36 +396,33 @@ final:
 	/**
 	 * Returns if smooth filter are activated.
 	 */
-	bool hasSmooth() const pure nothrow {
+	bool isSmooth() const pure nothrow {
 		return this._isSmooth;
 	}
 	
 	/**
-	 * Set repeating for the (nexT) load.
+	 * Set repeating for the (next) load.
 	 **/
-	void setRepeat(bool enable) {
-		this._isRepeat = enable;
+	void setRepeat(bool repeat) {
+		if (repeat != this._isRepeated) {
+			this._isRepeated = repeat;
+
+			if (this._texId != 0) {
+				this.bind();
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+								this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+								this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+			}
+		}
 	}
 	
 	/**
 	 * Returns if repeating is enabled.
 	 */
-	bool hasRepeat() const pure nothrow {
-		return this._isRepeat;
-	}
-	
-	/**
-	 * Link this Texture to another.
-	 * This Texture points now to the other Texture and his data.
-	 */
-	void link(const Texture tex) {
-		this._texId = tex.getId();
-		
-		this._format = tex.getFormat();
-		this._width  = tex.width;
-		this._height = tex.height;
-		this._depth  = tex.depth;
-		//this.bind();
+	bool isRepeated() const pure nothrow {
+		return this._isRepeated;
 	}
 	
 	/**
@@ -425,9 +451,9 @@ final:
 		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-		                this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-		                this._isRepeat ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -439,13 +465,18 @@ final:
 	}
 	
 	/**
-	 * Load from memory with a colorkey.
+	 * Set a colorkey.
 	 */
 	void setColorkey(ref const Color colorkey) {
-		// Go through pixels
+		// Get the pixel memory
 		void* memory = this.getMemory();
-		
-		uint size = this._width * this._height;
+		assert(memory !is null);
+
+		if (this._depth < 8)
+			return;
+
+		const uint size = this._width * this._height * (this._depth / 8);
+		// Go through pixels
 		for (uint i = 0; i < size; ++i) {
 			// Get pixel colors
 			ubyte* colors = cast(ubyte*) &memory[i];
@@ -513,8 +544,7 @@ final:
 		
 		Texture tex = new Texture();
 		debug writeln("Format switch: ", .switchFormat(this._format, true));
-		tex.loadFromMemory(null,
-		                   rect.width, rect.height,
+		tex.loadFromMemory(null, rect.width, rect.height,
 		                   this._depth, this._format.switchFormat(true));
 		
 		int[4] vport;
@@ -528,8 +558,8 @@ final:
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
-		this._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]),
-		             &rect, RenderMode.Reverse);
+		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
+		this._render(Render(&dest, &rect, Render.Mode.Reverse));
 		
 		tex.bind();
 		
@@ -576,9 +606,8 @@ final:
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 		
-		tex._render(ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]),
-		            rect,
-		            RenderMode.Reverse);
+		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
+		tex._render(Render(&dest, rect, Render.Mode.Reverse));
 		
 		this.bind();
 		
