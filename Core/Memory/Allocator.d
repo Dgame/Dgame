@@ -5,8 +5,10 @@ private {
 	import core.stdc.stdlib : malloc, free;
 }
 
-struct LimitedAllocator(const ushort Limit) if (Limit > 0) {
+struct Allocator {
 private:
+	enum Limit = 8;
+
 	void*[Limit] _memory;
 
 	int _counter;
@@ -16,20 +18,7 @@ public:
 	this(this);
 
 	~this() {
-		/// TODO: if I call collect I get an linker error. I have no idea why...
-		version(none) {
-			this.collect();
-		} else {
-			for (size_t i = 0; i < this._memory.length; ++i) {
-				if (this._memory[i] is null)
-					continue;
-
-				free(this._memory[i]);
-				this._memory[i] = null;
-			}
-
-			this._counter = 0;
-		}
+		this.collect();
 	}
 
 	void collect() {
@@ -102,80 +91,5 @@ public:
 		max -= this._counter;
 
 		return max;
-	}
-}
-
-alias Mallocator = LimitedAllocator!(8);
-
-struct LimitlessAllocator {
-private:
-	void*[] _memory;
-
-public:
-	@disable
-	this(this);
-
-	~this() {
-		this.collect();
-	}
-
-	void collect() {
-		debug writefln("Collect all (%d objects)", this._memory.length);
-
-		for (size_t i = 0; i < this._memory.length; ++i) {
-			if (this._memory[i] is null)
-				continue;
-
-			free(this._memory[i]);
-			this._memory[i] = null;
-		}
-	}
-
-	T[] allocate(T = void)(size_t N) {
-		debug writefln("Allocate the %d object with N = %d.", this._memory.length, N);
-
-		if (this.remain() == 0)
-			throw new Exception("Reached MemoryPool limit.");
-
-		this._memory ~= malloc(N * T.sizeof);
-
-		return (cast(T*) this._memory[$ - 1])[0 .. N];
-	}
-
-	alias alloc = allocate;
-
-	bool deallocate(ref void* ptr) {
-		debug writefln("Deallocate an object (%d remain)", this._memory.length);
-
-		size_t i = 0;
-		for ( ; i < this._memory.length; ++i) {
-			if (this._memory[i] == ptr) {
-				free(this._memory[i]);
-
-				this._memory[i] = null;
-				ptr = null;
-
-				if (i != this._memory.length) {
-					void* tmp = this._memory[$ - 1];
-
-					this._memory[i] = tmp;
-					this._memory[$ - 1] = null;
-				}
-
-				break;
-			}
-		}
-
-		if (i < this._memory.length) {
-			debug writefln("\tDeallocated the %d object.", i);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	int count() const pure nothrow {
-		return this._memory.length;
 	}
 }

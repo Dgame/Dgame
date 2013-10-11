@@ -11,8 +11,6 @@ private {
 	import Dgame.Math.Vector2;
 }
 
-///version = Develop;
-
 private SDL_Rect[void*] _RectStore;
 
 static ~this() {
@@ -72,9 +70,8 @@ public:
 		     cast(T) rect.width, cast(T) rect.height);
 	}
 	
-	version(Develop)
-	this(this) {
-		debug writeln("Postblit Rect");
+	debug this(this) {
+		writeln("Postblit Rect");
 	}
 	
 	/**
@@ -240,7 +237,7 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		Mallocator m;
+		Allocator m;
 		SDL_Point[] sdl_points = m.alloc!SDL_Point(points.length);
 		
 		foreach (i, ref const Vector2!T p; points) {
