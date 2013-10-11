@@ -1,15 +1,12 @@
 module Dgame.Graphics.Shape;
 
 private {
-	debug import std.stdio;
 	import std.math : sin, cos, PI;
 	import std.algorithm : remove;
 	import core.stdc.string : memcpy;
 	
 	import derelict.opengl3.gl;
-	
-	import Dgame.Core.Memory.Allocator;
-	
+
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
@@ -166,7 +163,7 @@ protected:
 	bool _update;
 	
 	Type _type;
-	Smooth _smooth = void;
+	Smooth _smooth;
 	
 	Pixel[] _pixels;
 	

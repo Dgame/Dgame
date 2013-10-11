@@ -1,7 +1,7 @@
 module Dgame.Math.Vertex;
 
 public {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;
@@ -32,6 +32,15 @@ public:
 	 */
 	@disable
 	this();
+
+	/**
+	* CTor
+	*/
+	this(float x, float y, float z) {
+		this.setPosition(x, y, z);
+		this.setTexCoord(0, 0);
+		this.setColor(Color.White);
+	}
 	
 	/**
 	 * CTor
@@ -39,7 +48,6 @@ public:
 	this(float x, float y, float z, float tx, float ty) {
 		this.setPosition(x, y, z);
 		this.setTexCoord(tx, ty);
-		
 		this.setColor(Color.White);
 	}
 	
@@ -50,7 +58,6 @@ public:
 		debug writeln("CTor Pixel");
 		this.setPosition(position);
 		this.setTexCoord(texcoord);
-		
 		this.setColor(Color.White);
 	}
 	

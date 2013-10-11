@@ -1,7 +1,7 @@
 module Dgame.Window.all;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import std.conv : to;
 	
 	import derelict.sdl2.sdl;

@@ -1,10 +1,6 @@
 module Dgame.System.VertexRenderer;
 
-private {
-	debug import std.stdio;
-	
-	import derelict.opengl3.gl;
-}
+private import derelict.opengl3.gl;
 
 /**
  * Primitive Types and targets

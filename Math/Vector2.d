@@ -1,7 +1,7 @@
 module Dgame.Math.Vector2;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
 	

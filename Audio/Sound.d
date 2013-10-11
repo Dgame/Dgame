@@ -1,7 +1,7 @@
 module Dgame.Audio.Sound;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln, writefln;
 	import std.algorithm : endsWith;
 	import std.string : toLower;
 	
@@ -271,10 +271,10 @@ final:
 		
 		if (filename.endsWith(".ogg") || filename.endsWith(".vorbis"))
 			sFile = new VorbisFile(filename);
-		else if(filename.endsWith(".wav") || filename.endsWith(".wave"))
+		else if (filename.endsWith(".wav") || filename.endsWith(".wave"))
 			sFile = new WaveFile(filename);
 		else {
-			const string lower = toLower(filename);
+			const string lower = toLower(filename); // for e.g. *.WAVE
 			if (lower != filename)
 				this.loadFromFile(lower);
 		}

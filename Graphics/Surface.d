@@ -1,7 +1,7 @@
 module Dgame.Graphics.Surface;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writefln, writeln;
 	import std.string : format, toStringz;
 	import std.file : exists;
 	import std.conv : to;
@@ -66,7 +66,7 @@ public:
 	}
 	
 private:
-	shared_ptr!(SDL_Surface, SDL_FreeSurface) _target;
+	shared_ref!(SDL_Surface) _target;
 	
 	string _filename;
 	
@@ -99,9 +99,8 @@ package:
 		assert(srfc !is null, "Invalid SDL_Surface.");
 		assert(srfc.pixels !is null, "Invalid pixel data.");
 	} body {
-		debug writeln("CTor Surface with SDL_Surface");
-		
-		this._target.reset(srfc);
+		debug writeln("CTor Surface with SDL_Surface: ", srfc);
+		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 	}
 	
 public:
@@ -139,17 +138,16 @@ public:
 		this.opAssign(rhs);
 	}
 	
-	version(Develop)
-	~this() {
-		debug writeln("DTor Surface", ':', this.filename, ", ", this.filename.ptr);
+	debug ~this() {
+		writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
 	}
 	
 	/**
-	 * Destroy the current Surface <b>and all, which are linked to this Surface</b>.
-	 * This method is called from the DTor.
+	 * Destroy the current Surface <b>and all</b>, which are linked to this Surface</b>.
 	 */
 	void free() {
-		this._target.release();
+		debug writeln("Free Surface", ':', this.filename);
+		this._target.collect();
 	}
 	
 	/**
@@ -211,7 +209,7 @@ public:
 		if (srfc is null)
 			throw new Exception("Could not load image " ~ filename ~ ". Error: " ~ to!string(SDL_GetError()));
 		
-		this._target.reset(srfc);
+		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 		
 		this._filename = filename;
 	}
@@ -232,7 +230,7 @@ public:
 			throw new Exception("Could not load image. Error: "
 								~ to!string(SDL_GetError()));
 		
-		this._target.reset(srfc);
+		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 	}
 	
 	/**
@@ -253,7 +251,7 @@ public:
 	 */
 	@property
 	ushort width() const pure nothrow {
-		return this._target.ptr !is null ? cast(ushort) this._target.ptr.w : 0;
+		return this._target.isValid() ? cast(ushort) this._target.ptr.w : 0;
 	}
 	
 	/**
@@ -261,7 +259,7 @@ public:
 	 */
 	@property
 	ushort height() const pure nothrow {
-		return this._target.ptr !is null ? cast(ushort) this._target.ptr.h : 0;
+		return this._target.isValid() ? cast(ushort) this._target.ptr.h : 0;
 	}
 	
 	/**
@@ -369,7 +367,7 @@ public:
 		if (adapted is null)
 			throw new Exception("Could not adapt surface.");
 		
-		this._target.reset(adapted);
+		this._target = make_shared(adapted, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 	}
 	
 	/**
@@ -609,6 +607,9 @@ public:
 			return Color(r, g, b, a);
 		}
 		
+		if (len == 0)
+			throw new Exception("Invalid Surface for getColorAt.");
+
 		throw new Exception("No color at this position.");
 	}
 	

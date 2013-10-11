@@ -1,8 +1,6 @@
 module Dgame.Graphics.VertexArray;
 
 private {
-	debug import std.stdio;
-
 	import derelict.opengl3.gl;
 
 	import Dgame.Graphics.Texture;
@@ -195,6 +193,27 @@ final:
 	void appendVertices(const Vertex[] vertices) {
 		foreach (ref const Vertex vec; vertices) {
 			this.appendVertex(vec);
+		}
+	}
+
+	/**
+	 * Add an array of Vector2f
+	 */
+	void appendVectors(const Vector2f[] vecs) {
+		foreach (ref const Vector2f v; vecs) {
+			this.appendVertex(Vertex(v.x, v.y, 0f));
+		}
+	}
+
+	/**
+	 * Add an array of floats
+	 * Note that 3 dimensional coordinate components are expected.
+	 */
+	void appendArray(const float[] mat) {
+		const size_t size = mat.length % 3 == 0 ? mat.length : mat.length - (mat.length % 3);
+
+		for (size_t i = 0; i < size; i += 3) {
+			this.appendVertex(Vertex(mat[i], mat[i + 1], 0f));
 		}
 	}
 

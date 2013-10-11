@@ -12,8 +12,8 @@ private {
  */
 enum DgVersion : ubyte {
 	Major = 0,
-	Minor = 9,
-	PatchLevel = 9
+	Minor = 1,
+	PatchLevel = 1
 }
 
 /**
@@ -91,6 +91,5 @@ void GLCheckError(string filename, size_t line_number) {
 		
 		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
 		                            Error, Desc, filename, line_number));
-	} else
-		writeln("No GL Error");
+	}
 }

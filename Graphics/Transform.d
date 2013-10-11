@@ -1,8 +1,6 @@
 module Dgame.Graphics.Transform;
 
 private {
-	debug import std.stdio;
-	
 	import derelict.opengl3.gl;
 	
 	import Dgame.Graphics.Transformable;
@@ -18,9 +16,8 @@ private {
 final class Transform : Transformable {
 private:
 	ShortRect _view;
-	
-	int[2] _winSize;
 	bool _viewActive = true;
+	int[2] _winSize;
 	
 public:
 	/**
@@ -40,7 +37,7 @@ public:
 	}
 	
 	/**
-	 * CTor
+	 * Rvalue version
 	 */
 	this(const ShortRect view) {
 		this(view);
@@ -50,13 +47,12 @@ public:
 	 * Apply the viewport. The view is recalulcated by the given View Rectangle.
 	 */
 	void applyViewport() const {
-		const bool noView = !this._viewActive || this._view.isEmpty();
-		if (!noView) {
+		if (this._viewActive && !this._view.isEmpty()) {
 			if (!glIsEnabled(GL_SCISSOR_TEST))
 				glEnable(GL_SCISSOR_TEST);
 			
-			const int vx = this._view.x + cast(short)(super._position.x);
-			const int vy = this._view.y + this._view.height + cast(short)(super._position.y);
+			const int vx = this._view.x + cast(int) super.X;
+			const int vy = this._view.y + this._view.height + cast(int) super.Y;
 			
 			glScissor(vx, this._winSize[1] - vy, this._view.width, this._view.height);
 		}

@@ -1,10 +1,6 @@
 module Dgame.Graphics.Template.Blendable;
 
-private {
-	debug import std.stdio;
-	
-	import Dgame.Graphics.Color;
-}
+private import Dgame.Graphics.Color;
 
 /**
  * Supported BlendModes

@@ -1,7 +1,6 @@
 module Dgame.Graphics.TileMap;
 
 private {
-	debug import std.stdio;
 	import std.xml;
 	import std.file : read;
 	import std.conv : to;
@@ -92,9 +91,9 @@ public:
 	}
 }
 
-private struct SubSurface {
+struct SubSurface {
 public:
-	Surface clip = void;
+	Surface clip;
 	ushort gid;
 }
 
@@ -274,7 +273,7 @@ private:
 		}
 		
 		//writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
-		
+
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
 	}
@@ -286,7 +285,6 @@ private:
 			const ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
 			Surface newTileset = Surface.make(dim, dim, 32);
-			
 			ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
 			
 			ushort row = 0;
@@ -295,8 +293,10 @@ private:
 			/// Anpassen der Tile Koordinaten
 			//int c = 0;
 			foreach (ref SubSurface sub; subs) {
-				if (!newTileset.blit(sub.clip, null, &src))
-					throw new Exception("An error occured by blitting the tile on the new tileset.");
+				if (!newTileset.blit(sub.clip, null, &src)) {
+					throw new Exception("An error occured by blitting the tile on the new tileset: "
+										~ to!string(SDL_GetError()));
+				}
 				
 				used[sub.gid][0] = col;
 				used[sub.gid][1] = row;
@@ -309,8 +309,7 @@ private:
 				
 				//sub.clip.saveToFile("tile_" ~ to!string(c) ~ ".png");
 				//c++;
-				
-				sub.clip.free(); /// Free subsurface
+				sub.clip.free(); // Free subsurface
 				src.setPosition(col, row);
 			}
 			

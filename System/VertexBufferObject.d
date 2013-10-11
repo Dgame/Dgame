@@ -1,16 +1,16 @@
 module Dgame.System.VertexBufferObject;
 
 private {
-	debug import std.stdio;
 	import std.conv : to;
 	
 	import derelict.opengl3.gl;
 	
+	import Dgame.Core.core;
 	import Dgame.Graphics.Texture;
 }
 
-/// Public import of VertexRenderer
-public import Dgame.System.VertexRenderer;
+/// package import of VertexRenderer
+package import Dgame.System.VertexRenderer;
 
 /**
  * Usage methods

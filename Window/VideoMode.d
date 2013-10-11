@@ -1,10 +1,6 @@
 module Dgame.Window.VideoMode;
 
-private {
-	debug import std.stdio;
-	
-	import derelict.sdl2.sdl;
-}
+private import derelict.sdl2.sdl;
 
 /**
  * The VideoMode struct contains informations about the current window video mode.
@@ -75,17 +71,23 @@ public:
 		VideoMode[] displayModes;
 		
 		for (int i = 0; i < VideoMode.countModes(); ++i) {
-			VideoMode vm = VideoMode.getMode(i, display);
-			displayModes ~= vm;
+			displayModes ~= VideoMode.getMode(i, display);
 		}
 		
 		return displayModes;
 	}
 	
 	/**
-	 * Returns: how much valid video modes are supported
+	 * Returns how many valid video modes are supported
 	 */
 	static int countModes(ubyte display = 1) {
 		return SDL_GetNumDisplayModes(display);
+	}
+
+	/**
+	 * Returns how many display are available.
+	 */
+	static int countDisplays() {
+		return SDL_GetNumVideoDisplays();
 	}
 }

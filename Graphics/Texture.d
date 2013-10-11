@@ -1,7 +1,7 @@
 module Dgame.Graphics.Texture;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writefln, writeln;
 	
 	import derelict.opengl3.gl;
 	

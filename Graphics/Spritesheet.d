@@ -89,7 +89,8 @@ final:
 
 		if (!(grid & Grid.Column)) {
 			// to avoid a cast...
-			rect.y = this._row; rect.y *= h;
+			rect.y = this._row;
+			rect.y *= h;
 		}
 		
 		if (grid & Grid.Row) {

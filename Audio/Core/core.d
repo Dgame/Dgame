@@ -15,7 +15,7 @@ private:
 }
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	AL _myAl;
 

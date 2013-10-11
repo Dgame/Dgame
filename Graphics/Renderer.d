@@ -62,7 +62,7 @@ private:
 		this._width  = w;
 		this._height = h;
 		
-		SDL_RendererInfo renderInfo = void;
+		SDL_RendererInfo renderInfo;
 		if (SDL_GetRendererInfo(renderer, &renderInfo) == 0)
 			this.flags = cast(Flags) renderInfo.flags;
 		else
@@ -143,14 +143,14 @@ public:
 	 * Use this function to update the screen with rendering performed.
 	 */
 	void present() {
-		SDL_RenderPresent(this._target);
+		SDL_RenderPresent(this._target.ptr);
 	}
 	
 	/**
 	 * Use this function to set the blend mode for a texture, used by 'copy'.
 	 */
 	void setBlendMode(BlendMode bmode) {
-		SDL_SetRenderDrawBlendMode(this._target, bmode);
+		SDL_SetRenderDrawBlendMode(this._target.ptr, bmode);
 	}
 	
 	/**
@@ -158,7 +158,7 @@ public:
 	 */
 	BlendMode getBlendMode() {
 		SDL_BlendMode blendMode;
-		SDL_GetRenderDrawBlendMode(this._target, &blendMode);
+		SDL_GetRenderDrawBlendMode(this._target.ptr, &blendMode);
 		
 		return cast(BlendMode) blendMode;
 	}
@@ -181,14 +181,14 @@ public:
 	 * Use this function to set the color used for drawing operations (clear).
 	 */
 	void setDrawColor(ubyte r, ubyte g, ubyte b, ubyte a) {
-		SDL_SetRenderDrawColor(this._target, r, g, b, a);
+		SDL_SetRenderDrawColor(this._target.ptr, r, g, b, a);
 	}
 	
 	/**
 	 * Use this function to create a texture for a rendering context.
 	 */
 	RendererTexture createSoftTexture(ushort width, ushort height, RendererTexture.Access access) {
-		SDL_Texture* tex = SDL_CreateTexture(this._target, SDL_PIXELFORMAT_UNKNOWN, access, width, height);
+		SDL_Texture* tex = SDL_CreateTexture(this._target.ptr, SDL_PIXELFORMAT_UNKNOWN, access, width, height);
 		
 		return RendererTexture(tex, access);
 	}
@@ -205,7 +205,7 @@ public:
 		}
 		
 		if (access & RendererTexture.Access.Static) {
-			SDL_Texture* tex = SDL_CreateTextureFromSurface(this._target, srfc.ptr);
+			SDL_Texture* tex = SDL_CreateTextureFromSurface(this._target.ptr, srfc.ptr);
 			
 			return RendererTexture(tex, access);
 		}
@@ -248,21 +248,21 @@ public:
 		const SDL_Rect* _src = src ? src.ptr : null;
 		const SDL_Rect* _dst = dst ? dst.ptr : null;
 		
-		return SDL_RenderCopy(this._target, hw.ptr, _src, _dst) == 0;
+		return SDL_RenderCopy(this._target.ptr, hw.ptr, _src, _dst) == 0;
 	}
 	
 	/**
 	 * Use this function to clear the current rendering target with the drawing color.
 	 */
 	void clear() {
-		SDL_RenderClear(this._target);
+		SDL_RenderClear(this._target.ptr);
 	}
 	
 	/**
 	 * Use this function to set the drawing area for rendering on the current target.
 	 */
 	void setViewport(ref const ShortRect view) {
-		SDL_RenderSetViewport(this._target, view.ptr);
+		SDL_RenderSetViewport(this._target.ptr, view.ptr);
 	}
 	
 	/**
@@ -277,7 +277,7 @@ public:
 	 */
 	ShortRect getViewport() {
 		ShortRect rect;
-		SDL_RenderGetViewport(this._target, rect.ptr);
+		SDL_RenderGetViewport(this._target.ptr, rect.ptr);
 		
 		return rect;
 	}
@@ -291,7 +291,7 @@ public:
 	 */
 	void* readPixels(const ShortRect* rect) {
 		void[] pixels = new void[rect.width * rect.height * 4];
-		SDL_RenderReadPixels(this._target, rect ? rect.ptr : null, 0, &pixels[0], this._width * 4);
+		SDL_RenderReadPixels(this._target.ptr, rect ? rect.ptr : null, 0, &pixels[0], this._width * 4);
 		
 		return &pixels[0];
 	}

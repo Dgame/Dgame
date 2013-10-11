@@ -1,8 +1,6 @@
 module Dgame.Graphics.Sprite;
 
 private {
-	debug import std.stdio;
-	
 	import derelict.opengl3.gl;
 	
 	import Dgame.Graphics.Drawable;
@@ -29,7 +27,7 @@ private:
 	}
 	
 protected:
-	void _render() in {
+	void _render() const in {
 		assert(this._tex !is null, "Sprite couldn't rendered, because the Texture is null.");
 	} body {
 		glPushMatrix();
@@ -37,8 +35,8 @@ protected:
 
 		this._applyTranslation();
 
-		this._tex._render(this._clipRect,
-		                  this._texView.isEmpty() ? null : &this._texView);
+		this._tex._render(Render(&this._clipRect,
+								 this._texView.isEmpty() ? null : &this._texView));
 	}
 	
 public:

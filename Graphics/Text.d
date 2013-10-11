@@ -1,7 +1,7 @@
 module Dgame.Graphics.Text;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import std.string : format, toStringz;
 	
 	import derelict.opengl3.gl;
@@ -49,7 +49,7 @@ protected:
 	Color _fg = Color.Black;
 	Color _bg = Color.White;
 	
-	Font _font = void;
+	Font _font;
 	Texture _tex;
 	
 private:
@@ -129,6 +129,7 @@ protected:
 		if (this._shouldUpdate)
 			this._update();
 		
+		 // we need nothing for the text, so null is given
 		this._tex._render(null);
 	}
 	
@@ -136,7 +137,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this(ref Font font, string text = "") {
+	this(ref Font font, string text = null) {
 		this.replaceFont(font);
 		
 		this._text = text;
@@ -148,7 +149,7 @@ public:
 	/**
 	 * CTor: Rvalue version
 	 */
-	this(Font font, string text = "") {
+	this(Font font, string text = null) {
 		this(font, text);
 	}
 	
@@ -182,17 +183,23 @@ final:
 	FloatRect getBoundingBox() const in {
 		assert(this._tex !is null);
 	} body {
-		return FloatRect(super._position, this._tex.width, this._tex.height);
+		return FloatRect(super.getPosition(), this._tex.width, this._tex.height);
 	}
 	
+	/**
+	 * Returns the width of the Text Texture
+	 */
 	@property
 	ushort width() const pure nothrow {
-		return this._tex.width;
+		return this._tex !is null ? this._tex.width : 0;
 	}
 	
+	/**
+	 * Returns the height of the Text Texture
+	 */
 	@property
 	ushort height() const pure nothrow {
-		return this._tex.height;
+		return this._tex !is null ? this._tex.height : 0;
 	}
 	
 	/**

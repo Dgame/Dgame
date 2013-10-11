@@ -12,7 +12,7 @@ private {
  * Author: rschuett
  */
 abstract class Moveable {
-protected:
+private:
 	Vector2f _position;
 	
 protected:

@@ -1,13 +1,13 @@
 module Dgame.Math.Rect;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import std.traits : isNumeric;
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.Allocator : dync_alloc, dync_free;
-	
+	import Dgame.Core.Memory.Allocator;
+
 	import Dgame.Math.Vector2;
 }
 
@@ -170,7 +170,7 @@ public:
 	 * Returns an union of the given and this Rect.
 	 */
 	Rect!T getUnion(ref const Rect!T rect) const {
-		Rect!T union_rect = void;
+		Rect!T union_rect;
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
 		
 		union_rect._adaptToPtr();
@@ -240,8 +240,8 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		SDL_Point[] sdl_points = dync_alloc!SDL_Point(points.length);
-		scope(exit) dync_free(sdl_points);
+		Allocator m;
+		SDL_Point[] sdl_points = m.alloc!SDL_Point(points.length);
 		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);

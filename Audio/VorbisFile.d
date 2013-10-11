@@ -1,7 +1,7 @@
 module Dgame.Audio.VorbisFile;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writefln;
 	
 	import derelict.ogg.ogg;
 	import derelict.ogg.vorbis;
@@ -38,7 +38,7 @@ protected:
 		
 		fseek(fp, 0, SEEK_SET); // Set to the file beginning
 		
-		OggVorbis_File oggFile = void;
+		OggVorbis_File oggFile;
 		
 		if (ov_open(fp, &oggFile, null, 0) < 0)
 			throw new Exception(filename ~ " is no valid Vorbis file.");
@@ -50,7 +50,7 @@ protected:
 		_sFile.bits  = 16;
 		_sFile.bytes = 2;
 		_sFile.dataSize = cast(uint) ov_pcm_total(&oggFile, -1) * _sFile.bytes * pInfo.channels;
-		_sFile.channels = cast(ushort) pInfo.channels;
+		_sFile.channels = pInfo.channels;
 		debug writefln("Allocate %d memory for Vorbis.", _sFile.dataSize);
 		_sFile.buffer = new byte[_sFile.dataSize];
 		
@@ -59,7 +59,6 @@ protected:
 		int bitStream;
 		
 		long bytes;
-		
 		while (current < _sFile.dataSize) { // because it may take several requests to fill our buffer
 			bytes = ov_read(&oggFile,
 			                _sFile.buffer[current .. $].ptr,

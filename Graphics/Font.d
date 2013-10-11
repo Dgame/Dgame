@@ -1,7 +1,7 @@
 module Dgame.Graphics.Font;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import std.file : exists;
 	import std.conv : to;
 	import std.string : toStringz;
@@ -52,7 +52,7 @@ public:
 	}
 
 private:
-	shared_ptr!(TTF_Font, TTF_CloseFont) _target;
+	shared_ref!(TTF_Font) _target;
 
 	ubyte _fontSize;
 	string _filename;
@@ -113,11 +113,10 @@ public:
 	}
 
 	/**
-	* Close and release the current font.
-	* This function is called from the DTor
+	* Close and release the current font <b>and all</b> which are linked to this Font.
 	*/
  	void free() {
-		this._target.release();
+		this._target.collect();
 	}
 
 	/**
@@ -140,7 +139,7 @@ public:
 								~ to!(string)(TTF_GetError()));
 		}
 
-		this._target.reset(font);
+		this._target = make_shared(font, (TTF_Font* ttf) => (TTF_CloseFont(ttf)));
 	}
 
 	/**

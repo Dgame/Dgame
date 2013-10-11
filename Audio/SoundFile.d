@@ -1,10 +1,7 @@
 module Dgame.Audio.SoundFile;
 
-package {
-	debug import std.stdio;
-	import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
-}
 private import std.file : exists;
+package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 
 /**
  * A helper struct for reading from a sound file.
@@ -18,9 +15,9 @@ public:
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */
 	
-	ushort channels;	/** Number of channels */
-	ushort bits;		/** Number of bits */
-	ushort bytes;		/** Number of bytes */
+	int channels;	/** Number of channels */
+	ubyte bits;		/** Number of bits */
+	ubyte bytes;		/** Number of bytes */
 	
 	@disable
 	this(this);
@@ -45,7 +42,7 @@ enum MusicType : ubyte {
  */
 abstract class BaseSoundFile {
 protected:
-	SoundFile _sFile = void;
+	SoundFile _sFile;
 	
 	abstract void _read(string filename);
 	

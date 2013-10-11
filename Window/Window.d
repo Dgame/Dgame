@@ -1,13 +1,13 @@
 module Dgame.Window.Window;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Memory.Allocator : dync_alloc, dync_free;
-	
+	import Dgame.Core.Memory.Allocator;
+
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
@@ -84,7 +84,7 @@ private:
 	SDL_GLContext _glContext;
 	
 	Window.Style _style;
-	VideoMode _videoMode = void;
+	VideoMode _videoMode;
 	
 	string _title;
 	ubyte _fpsLimit;
@@ -271,8 +271,8 @@ public:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		ubyte[] tmpLine = dync_alloc!ubyte(lineWidth);
-		scope(exit) dync_free(tmpLine);
+		Allocator m;
+		ubyte[] tmpLine = m.alloc!ubyte(lineWidth);
 
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		

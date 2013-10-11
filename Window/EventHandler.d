@@ -1,8 +1,6 @@
 module Dgame.Window.EventHandler;
 
 private {
-	debug import std.stdio;
-	
 	import derelict.sdl2.types;
 	import derelict.sdl2.functions;
 }

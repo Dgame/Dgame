@@ -1,6 +1,8 @@
 module Dgame.Audio.WaveFile;
 
 private {
+	debug import std.stdio : writefln;
+
 	import derelict.openal.al;
 
 	import Dgame.Audio.SoundFile;

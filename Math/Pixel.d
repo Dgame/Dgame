@@ -1,7 +1,7 @@
 module Dgame.Math.Pixel;
 
 public {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Color;

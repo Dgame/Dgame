@@ -20,9 +20,9 @@ static this() {
  */
 final abstract class Listener {
 private:
-	static vec3f _listenerPos = void;
-	static vec3f _listenerVel = void;
-	static vec6f _listenerOri = void;
+	static vec3f _listenerPos;
+	static vec3f _listenerVel;
+	static vec6f _listenerOri;
 	
 public:
 	/**

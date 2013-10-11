@@ -1,12 +1,10 @@
 module Dgame.Graphics.Transformable;
 
 private {
-	debug import std.stdio;
 	import std.math : isNaN;
 	
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Math : fpEqual;
 	import Dgame.Graphics.Moveable;
 }
 
@@ -16,10 +14,9 @@ private {
  * Author: rschuett
  */
 abstract class Transformable : Moveable {
-protected:
+private:
 	short _rotAngle;
 	float _zoom = 1f;
-
 	int[2] _areaSize;
 	
 protected:
@@ -30,21 +27,16 @@ protected:
 		super._applyTranslation();
 		
 		if (this._rotAngle != 0) {
-			bool area = false;
-
-			if (this._areaSize[0] != 0 && this._areaSize[1] != 0) {
-				area = true;
-
+			if (this._areaSize[0] != 0 && this._areaSize[1] != 0)
 				glTranslatef(this._areaSize[0] / 2, this._areaSize[1] / 2, 0);
-			}
 
 			glRotatef(this._rotAngle, 0f, 0f, 1f);
 
-			if (area)
+			if (this._areaSize[0] != 0 && this._areaSize[1] != 0)
 				glTranslatef(-(this._areaSize[0] / 2), -(this._areaSize[1] / 2), 0);
 		}
 		
-		if (!isNaN(this._zoom) && !fpEqual(this._zoom, 1f))
+		if (!isNaN(this._zoom) && this._zoom != 1f)
 			glScalef(this._zoom, this._zoom, 0f);
 	}
 

@@ -1,34 +1,30 @@
 module Dgame.System.Clock;
 
-private {
-	debug import std.stdio;
-	
-	import derelict.sdl2.functions;
-}
+private import derelict.sdl2.functions;
 
 /**
 * To convert the Clock milliseconds to seconds
 */
-uint asSeconds(uint n) pure nothrow {
-	return n >= 1000 ? (n / 1000) : 0;
+float asSeconds(uint n) pure nothrow {
+	return n >= 1000 ? (n / 1000f) : 0f;
 }
 
 /**
 * To convert the Clock milliseconds to minutes
 */
-uint asMinutes(uint n) pure nothrow {
-	immutable uint secs = asSeconds(n);
+float asMinutes(uint n) pure nothrow {
+	immutable float secs = asSeconds(n);
 
-	return secs >= 60 ? (secs / 60) : 0;
+	return secs >= 60 ? (secs / 60f) : 0f;
 }
 
 /**
 * To convert the Clock milliseconds to hours
 */
-uint asHours(uint n) pure nothrow {
-	immutable uint mins = asMinutes(n);
+ushort asHours(uint n) pure nothrow {
+	immutable float mins = asMinutes(n);
 
-	return mins >= 60 ? (mins / 60) : 0;
+	return mins >= 60 ? cast(ushort)(mins / 60) : 0;
 }
 
 /**
@@ -39,11 +35,11 @@ public:
 	/// Milliseconds = Ticks
 	uint msecs;
 	/// Seconds = Milliseconds / 1000
-	uint seconds;
+	float seconds;
 	//// Minutes = Seconds / 60
-	uint minutes;
+	float minutes;
 	/// Hours = Minutes / 60
-	uint hours;
+	ushort hours;
 
 	/**
 	* CTor

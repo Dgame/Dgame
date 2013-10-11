@@ -1,7 +1,7 @@
 module Dgame.Graphics.Color;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	import derelict.sdl2.sdl;
 }

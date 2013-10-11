@@ -1,7 +1,7 @@
 module Dgame.Graphics.RendererTexture;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	
 	import derelict.sdl2.sdl;
 	
@@ -33,14 +33,14 @@ public:
 	const Access access;
 	
 private:
-	shared_ptr!(SDL_Texture, SDL_DestroyTexture) _target;
+	shared_ref!(SDL_Texture) _target;
 	
 public:
 	/**
 	 * CTor
 	 */
 	this(SDL_Texture* tex, Access access) {
-		this._target.reset(tex);
+		this._target = make_shared(tex, (SDL_Texture* tex) => SDL_DestroyTexture(tex));
 		
 		this.access = access;
 	}
@@ -51,10 +51,10 @@ public:
 	}
 	
 	/**
-	 * Destroy the RendererTexture
+	 * Destroy the RendererTexture <b>and all</b> which are linked to this.
 	 */
 	void free() {
-		this._target.release();
+		this._target.collect();
 	}
 	
 	/**
