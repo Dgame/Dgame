@@ -1,8 +1,6 @@
 module Dgame.Core.Math;
 
-private {
-	import std.math : fabs;
-}
+private import std.math : fabs;
 
 @safe
 bool fpEqual(T : float)(const T a, const T b) pure nothrow {

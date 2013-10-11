@@ -18,8 +18,6 @@ private {
 	import Dgame.Graphics.Color;
 }
 
-//version = Develop;
-
 /**
  * Surface is a wrapper for a SDL_Surface.
  *
@@ -112,9 +110,8 @@ public:
 		this.loadFromFile(filename);
 	}
 	
-	version(Develop)
-	this(this) {
-		debug writeln("Postblit Surface: ",
+	debug this(this) {
+		writeln("Postblit Surface: ",
 		              this._target.usage, ':',
 		              this.filename, ", ",
 		              this.filename.ptr);

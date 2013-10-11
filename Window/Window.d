@@ -271,7 +271,7 @@ public:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		Allocator m;
+		Mallocator m;
 		ubyte[] tmpLine = m.alloc!ubyte(lineWidth);
 
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);

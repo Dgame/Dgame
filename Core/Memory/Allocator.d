@@ -16,7 +16,20 @@ public:
 	this(this);
 
 	~this() {
-		this.collect();
+		/// TODO: if I call collect I get an linker error. I have no idea why...
+		version(none) {
+			this.collect();
+		} else {
+			for (size_t i = 0; i < this._memory.length; ++i) {
+				if (this._memory[i] is null)
+					continue;
+
+				free(this._memory[i]);
+				this._memory[i] = null;
+			}
+
+			this._counter = 0;
+		}
 	}
 
 	void collect() {
@@ -92,7 +105,7 @@ public:
 	}
 }
 
-alias Allocator = LimitedAllocator!(8);
+alias Mallocator = LimitedAllocator!(8);
 
 struct LimitlessAllocator {
 private:

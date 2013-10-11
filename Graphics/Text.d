@@ -44,7 +44,7 @@ static ~this() {
 class Text : Transformable, Blendable, Drawable {
 protected:
 	string _text;
-	bool _shouldUpdate;
+	bool _shouldUpdate = true;
 	
 	Color _fg = Color.Black;
 	Color _bg = Color.White;
@@ -139,10 +139,8 @@ public:
 	 */
 	this(ref Font font, string text = null) {
 		this.replaceFont(font);
-		
+
 		this._text = text;
-		this._shouldUpdate = true;
-		
 		this._tex = new Texture();
 	}
 	

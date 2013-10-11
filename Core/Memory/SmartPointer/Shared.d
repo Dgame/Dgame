@@ -1,8 +1,12 @@
 module Dgame.Core.Memory.SmartPointer.Shared;
 
-private debug import std.stdio;
+private debug import std.stdio : writeln, writefln;
 
 private static int _refCount = 0;
+
+debug static ~this() {
+	writefln("%d shared_ref's remain.", _refCount);
+}
 
 private struct Ref(T) {
 private:

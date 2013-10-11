@@ -1,7 +1,7 @@
 module Dgame.Graphics.TileMap;
 
 private {
-	import std.xml;
+	import std.xml : Document, Element;
 	import std.file : read;
 	import std.conv : to;
 	import std.string : format;

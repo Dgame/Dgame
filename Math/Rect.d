@@ -240,7 +240,7 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		Allocator m;
+		Mallocator m;
 		SDL_Point[] sdl_points = m.alloc!SDL_Point(points.length);
 		
 		foreach (i, ref const Vector2!T p; points) {
