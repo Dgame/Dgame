@@ -110,8 +110,8 @@ public:
 		this.loadFromFile(filename);
 	}
 	
-	debug this(this) {
-		writeln("Postblit Surface: ",
+	this(this) {
+		debug writeln("Postblit Surface: ",
 		              this._target.usage, ':',
 		              this.filename, ", ",
 		              this.filename.ptr);
@@ -135,8 +135,8 @@ public:
 		this.opAssign(rhs);
 	}
 	
-	debug ~this() {
-		writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
+	~this() {
+		debug writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
 	}
 	
 	/**

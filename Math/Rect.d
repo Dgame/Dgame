@@ -70,8 +70,8 @@ public:
 		     cast(T) rect.width, cast(T) rect.height);
 	}
 	
-	debug this(this) {
-		writeln("Postblit Rect");
+	this(this) {
+		debug writeln("Postblit Rect");
 	}
 	
 	/**
