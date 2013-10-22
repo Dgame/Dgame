@@ -5,7 +5,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.SmartPointer.Shared;
+	import Dgame.Internal.Shared;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Renderer;
@@ -54,7 +54,7 @@ public:
 	 * Destroy the RendererTexture <b>and all</b> which are linked to this.
 	 */
 	void free() {
-		this._target.collect();
+		this._target.dissolve();
 	}
 	
 	/**

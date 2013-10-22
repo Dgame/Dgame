@@ -6,7 +6,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.Memory.Allocator;
+	import Dgame.Internal.Allocator : ScopeAllocator;
 
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -49,9 +49,9 @@ public:
 	 * Default Syncronisation is <code>Sync.Enable</code>.
 	 */
 	enum Sync {
-		Enable  = 1,	/** Sync is enabled. */
-		Disable = 0,	/** Sync is disabled. */
-		None	= -1	/** Unknown State. */
+		Enable  = 1,	/** Sync is enabled */
+		Disable = 0,	/** Sync is disabled */
+		LateSwapTearing = -1	/** For late swap tearing */
 	}
 	
 	/**
@@ -88,8 +88,6 @@ private:
 	
 	string _title;
 	ubyte _fpsLimit;
-	
-	Clock _clock;
 	
 	static int _winCount;
 	
@@ -271,8 +269,8 @@ public:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		Allocator m;
-		ubyte[] tmpLine = m.alloc!ubyte(lineWidth);
+		ScopeAllocator m;
+		ubyte[] tmpLine = m.allocate!ubyte(lineWidth);
 
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
@@ -305,20 +303,6 @@ public:
 	 */
 	bool hasMouseFocus() const {
 		return SDL_GetMouseFocus() == this._window;
-	}
-	
-	/**
-	 * Returns the window clock. You can freeze the application or get the current framerate.
-	 * 
-	 * See: Dgame.System.Clock
-	 */
-	Clock getClock() {
-		if (this._clock !is null)
-			return this._clock;
-		
-		this._clock = new Clock();
-		
-		return this._clock;
 	}
 	
 	/**
@@ -399,7 +383,7 @@ public:
 			return;
 		
 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
-			this.getClock().wait(1000 / this._fpsLimit);
+			Clock.wait(1000 / this._fpsLimit);
 
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)

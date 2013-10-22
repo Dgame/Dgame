@@ -6,8 +6,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Core.Memory.Allocator;
-
+	import Dgame.Internal.Allocator : ScopeAllocator;
 	import Dgame.Math.Vector2;
 }
 
@@ -70,8 +69,9 @@ public:
 		     cast(T) rect.width, cast(T) rect.height);
 	}
 	
+	debug(Dgame)
 	this(this) {
-		debug writeln("Postblit Rect");
+		writeln("Postblit");
 	}
 	
 	/**
@@ -84,7 +84,6 @@ public:
 	
 	~this() {
 		debug writeln("DTor Rect");
-		
 		_RectStore.remove(&this);
 	}
 	
@@ -96,10 +95,10 @@ public:
 		const void* key = &this;
 		
 		/// TODO: Issue 11064
-		const int x = cast(int) this.x;
-		const int y = cast(int) this.y;
-		const int w = cast(int) this.width;
-		const int h = cast(int) this.height;
+		const int x = cast(int) this.x,
+			y = cast(int) this.y,
+			w = cast(int) this.width,
+			h = cast(int) this.height;
 		
 		if (SDL_Rect* _ptr = key in _RectStore) {
 			_ptr.x = x;
@@ -237,8 +236,8 @@ public:
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		Allocator m;
-		SDL_Point[] sdl_points = m.alloc!SDL_Point(points.length);
+		ScopeAllocator m;
+		SDL_Point[] sdl_points = m.allocate!SDL_Point(points.length);
 		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);

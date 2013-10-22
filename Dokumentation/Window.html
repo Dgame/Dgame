@@ -22,15 +22,15 @@ rschuett<br><br>
  Default Syncronisation is <code><u>Sync</u>.Enable</code>.<br><br>
 
 <dl><dt><big><a name="Window.Sync.Enable"></a><u>Enable</u></big></dt>
-<dd>Sync is enabled. <br><br>
+<dd>Sync is enabled <br><br>
 
 </dd>
 <dt><big><a name="Window.Sync.Disable"></a><u>Disable</u></big></dt>
-<dd>Sync is disabled. <br><br>
+<dd>Sync is disabled <br><br>
 
 </dd>
-<dt><big><a name="Window.Sync.None"></a><u>None</u></big></dt>
-<dd>Unknown State. <br><br>
+<dt><big><a name="Window.Sync.LateSwapTearing"></a><u>LateSwapTearing</u></big></dt>
+<dd>For late swap tearing <br><br>
 
 </dd>
 </dl>
@@ -173,14 +173,6 @@ Image screen = <font color=blue>new</font> Image(wnd.<u>capture</u>());
 <dt><big><a name="Window.hasMouseFocus"></a>const bool <u>hasMouseFocus</u>();
 </big></dt>
 <dd>Returns if the mouse focus is on this window.<br><br>
-
-</dd>
-<dt><big><a name="Window.getClock"></a>Clock <u>getClock</u>();
-</big></dt>
-<dd>Returns the window clock. You can freeze the application or get the current framerate.
-<br><br>
-<b>See:</b><br>
-Dgame.System.Clock<br><br>
 
 </dd>
 <dt><big><a name="Window.setFpsLimit"></a>pure nothrow void <u>setFpsLimit</u>(ubyte <i>fps</i>);

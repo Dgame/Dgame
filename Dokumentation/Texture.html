@@ -90,6 +90,36 @@ rschuett<br><br>
 <dd>Alias for GL_LUMINANCE_ALPHA <br><br>
 
 </dd>
+<dt><big><a name="Texture.Format.CompressedRGB"></a><u>CompressedRGB</u></big></dt>
+<dd>Compressed RGB<br><br>
+
+</dd>
+<dt><big><a name="Texture.Format.CompressedRGBA"></a><u>CompressedRGBA</u></big></dt>
+<dd>Compressed RGBA<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Texture.Compression"></a>enum <u>Compression</u>;
+</big></dt>
+<dd><u>Compression</u> modes<br><br>
+
+<dl><dt><big><a name="Texture.Compression.None"></a><u>None</u></big></dt>
+<dd>No compression<br><br>
+
+</dd>
+<dt><big><a name="Texture.Compression.DontCare"></a><u>DontCare</u></big></dt>
+<dd>The OpenGL implementation decide on their own<br><br>
+
+</dd>
+<dt><big><a name="Texture.Compression.Fastest"></a><u>Fastest</u></big></dt>
+<dd><u>Fastest</u> compression<br><br>
+
+</dd>
+<dt><big><a name="Texture.Compression.Nicest"></a><u>Nicest</u></big></dt>
+<dd><u>Nicest</u> but slowest mode of compression<br><br>
+
+</dd>
 </dl>
 </dd>
 <dt><big><a name="Texture.this"></a>final  this();
@@ -97,7 +127,7 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Texture.this"></a>final  this(ref const Texture <i>tex</i>, Format <i>t_fmt</i> = Format.None);
+<dt><big><a name="Texture.this"></a>final  this(const Texture <i>tex</i>, Format <i>t_fmt</i> = Format.None);
 </big></dt>
 <dd>Postblit<br><br>
 
@@ -181,6 +211,27 @@ Format enum.<br><br>
 <dt><big><a name="Texture.isRepeated"></a>final const pure nothrow bool <u>isRepeated</u>();
 </big></dt>
 <dd>Returns if repeating is enabled.<br><br>
+
+</dd>
+<dt><big><a name="Texture.setCompression"></a>final void <u>setCompression</u>(Compression <i>comp</i>);
+</big></dt>
+<dd>(Re)Set the compression mode.
+<br><br>
+<b>See:</b><br>
+Compression enum<br><br>
+
+</dd>
+<dt><big><a name="Texture.getCompression"></a>final const pure nothrow Compression <u>getCompression</u>();
+</big></dt>
+<dd>Returns the current Compression mode.
+<br><br>
+<b>See:</b><br>
+Compression enum<br><br>
+
+</dd>
+<dt><big><a name="Texture.isCompressed"></a>final const bool <u>isCompressed</u>();
+</big></dt>
+<dd>Checks whether the current Texture is compressed or not.<br><br>
 
 </dd>
 <dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);

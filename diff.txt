@@ -1,0 +1,1847 @@
+diff --git a/Audio/Core/core.d b/Audio/Core/core.d
+deleted file mode 100644
+index bdd5ab8..0000000
+--- a/Audio/Core/core.d
++++ /dev/null
+@@ -1,79 +0,0 @@
+-module Dgame.Audio.Core.core;
+-
+-package {
+-	import derelict.openal.al;
+-	
+-	import derelict.ogg.ogg;
+-	import derelict.ogg.vorbis;
+-	import derelict.ogg.vorbisfile;
+-}
+-
+-private struct AL {
+-private:
+-	ALCdevice* device;
+-	ALCcontext* context;
+-}
+-
+-private {
+-	debug import std.stdio : writeln;
+-	
+-	AL _myAl;
+-
+-	void _alError(string msg) {
+-		debug switch (alcGetError(_myAl.device)) {
+-			case ALC_INVALID_DEVICE:
+-				writeln("Invalid device");
+-				break;
+-			case ALC_INVALID_CONTEXT:
+-				writeln("Invalid context");
+-				break;
+-			case ALC_INVALID_ENUM:
+-				writeln("Invalid enum");
+-				break;
+-			case ALC_INVALID_VALUE:
+-				writeln("Invalid value");
+-				break;
+-			case ALC_OUT_OF_MEMORY:
+-				writeln("Out of memory");
+-				break;
+-			case ALC_NO_ERROR:
+-				writeln("No error");
+-				break;
+-			default: break;
+-		}
+-
+-		throw new Exception(msg);
+-	}
+-}
+-
+-static this() {
+-	// Init openAL
+-	debug writeln("init openAL");
+-	
+-	DerelictAL.load();
+-	DerelictOgg.load();
+-	DerelictVorbis.load();
+-	DerelictVorbisFile.load();
+-	
+-	_myAl.device = alcOpenDevice(null);
+-	if (_myAl.device is null)
+-		_alError("Device is null");
+-	
+-	_myAl.context = alcCreateContext(_myAl.device, null);
+-	if (_myAl.context is null)
+-		_alError("Context is null.");
+-	
+-	alcMakeContextCurrent(_myAl.context);
+-}
+-
+-static ~this() {
+-	alcMakeContextCurrent(null);
+-	alcDestroyContext(_myAl.context);
+-	alcCloseDevice(_myAl.device);
+-	
+-	DerelictVorbis.unload();
+-	DerelictVorbisFile.unload();
+-	DerelictOgg.unload();
+-	DerelictAL.unload();
+-}
+-
+diff --git a/Audio/Listener.d b/Audio/Listener.d
+index ffdd614..2576ae7 100644
+--- a/Audio/Listener.d
++++ b/Audio/Listener.d
+@@ -1,7 +1,7 @@
+ module Dgame.Audio.Listener;
+ 
+ private {
+-	import Dgame.Audio.Core.core;
++	import Dgame.Audio.Internal.core;
+ 	import Dgame.Math.VecN;
+ }
+ 
+diff --git a/Audio/Sound.d b/Audio/Sound.d
+index cf6588e..6ee227b 100644
+--- a/Audio/Sound.d
++++ b/Audio/Sound.d
+@@ -7,7 +7,7 @@ private {
+ 	
+ 	import derelict.openal.al;
+ 	
+-	//import Dgame.Core.AutoRef;
++	//import Dgame.Internal.AutoRef;
+ 	
+ 	import Dgame.Audio.SoundFile;
+ 	import Dgame.Audio.VorbisFile;
+diff --git a/Audio/all.d b/Audio/all.d
+index 43ff3a4..d8db68b 100644
+--- a/Audio/all.d
++++ b/Audio/all.d
+@@ -1,6 +1,6 @@
+ module Dgame.Audio.all;
+ 
+-private import Dgame.Audio.Core.core;
++private import Dgame.Audio.Internal.core;
+ 
+ public {
+ 	import Dgame.Audio.Sound;
+diff --git a/Core/Math.d b/Core/Math.d
+deleted file mode 100644
+index 63f4d69..0000000
+--- a/Core/Math.d
++++ /dev/null
+@@ -1,30 +0,0 @@
+-module Dgame.Core.Math;
+-
+-private import std.math : fabs;
+-
+-@safe
+-bool fpEqual(T : float)(const T a, const T b) pure nothrow {
+-	return .fabs(a - b) < T.epsilon;
+-} unittest {
+-	float f = 5f;
+-	
+-	assert(f == 5f);
+-	assert(fpEqual(f, 5f));
+-	
+-	float fValue1 = 1.345f;
+-	float fValue2 = 1.123f;
+-	float fTotal = fValue1 + fValue2; // should be 2.468f
+-	
+-	//assert(fTotal == 2.468f, to!string(fTotal));
+-	assert(fpEqual(fTotal, 2.468f));
+-}
+-
+-@safe
+-bool fpEqual(T : float, size_t n)(const T[n] values, const T b) pure nothrow {
+-	foreach (ref const T val; values) {
+-		if (!fpEqual(val, b))
+-			return false;
+-	}
+-	
+-	return true;
+-}
+\ No newline at end of file
+diff --git a/Core/Memory/Allocator.d b/Core/Memory/Allocator.d
+deleted file mode 100644
+index e7f8121..0000000
+--- a/Core/Memory/Allocator.d
++++ /dev/null
+@@ -1,95 +0,0 @@
+-module Dgame.Core.Memory.Allocator;
+-
+-private {
+-	debug import std.stdio : writefln;
+-	import core.stdc.stdlib : malloc, free;
+-}
+-
+-struct Allocator {
+-private:
+-	enum Limit = 8;
+-
+-	void*[Limit] _memory;
+-
+-	int _counter;
+-
+-public:
+-	@disable
+-	this(this);
+-
+-	~this() {
+-		this.collect();
+-	}
+-
+-	void collect() {
+-		debug writefln("Collect all (%d objects)", this._counter);
+-
+-		for (size_t i = 0; i < this._memory.length; ++i) {
+-			if (this._memory[i] is null)
+-				continue;
+-
+-			free(this._memory[i]);
+-			this._memory[i] = null;
+-		}
+-
+-		this._counter = 0;
+-	}
+-
+-	T[] allocate(T = void)(size_t N) {
+-		debug writefln("Allocate the %d object with N = %d.", this._counter, N);
+-
+-		if (this.remain() == 0)
+-			throw new Exception("Reached MemoryPool limit.");
+-		
+-		this._memory[this._counter] = malloc(N * T.sizeof);
+-		scope(exit) this._counter++;
+-
+-		return (cast(T*) this._memory[this._counter])[0 .. N];
+-	}
+-
+-	alias alloc = allocate;
+-
+-	bool deallocate(ref void* ptr) {
+-		debug writefln("Deallocate an object (%d remain)", this._counter);
+-
+-		size_t i = 0;
+-		for ( ; i < Limit; ++i) {
+-			if (this._memory[i] == ptr) {
+-				free(this._memory[i]);
+-
+-				this._memory[i] = null;
+-				ptr = null;
+-
+-				this._counter--;
+-
+-				if (i != this._counter && this._counter >= 0) {
+-					auto tmp = this._memory[this._counter];
+-					this._memory[i] = tmp;
+-					this._memory[this._counter] = null;
+-				}
+-
+-				break;
+-			}
+-		}
+-
+-		if (i < this._memory.length) {
+-			debug writefln("\tDeallocated the %d object.", i);
+-
+-			return true;
+-		}
+-
+-		return false;
+-	}
+-
+-	int count() const pure nothrow {
+-		return this._counter;
+-	}
+-
+-	ushort remain() const pure nothrow {
+-		// to avoid a cast...
+-		ushort max = Limit;
+-		max -= this._counter;
+-
+-		return max;
+-	}
+-}
+\ No newline at end of file
+diff --git a/Core/Memory/SmartPointer/Shared.d b/Core/Memory/SmartPointer/Shared.d
+deleted file mode 100644
+index a261e3f..0000000
+--- a/Core/Memory/SmartPointer/Shared.d
++++ /dev/null
+@@ -1,202 +0,0 @@
+-module Dgame.Core.Memory.SmartPointer.Shared;
+-
+-private debug import std.stdio : writeln, writefln;
+-
+-private static int _refCount = 0;
+-
+-debug static ~this() {
+-	writefln("%d shared_ref's remain.", _refCount);
+-}
+-
+-private struct Ref(T) {
+-private:
+-	void function(T*) _deleter;
+-
+-	void _destruct() {
+-		debug writefln("Destruct %s with %s (ptr = %X)",
+-				 __traits(identifier, T), typeof(&this._deleter).stringof, this._ptr);
+-
+-		if (this._ptr !is null) {
+-			_deleter(this._ptr);
+-			this._ptr = null;
+-
+-			_refCount--;
+-		}
+-	}
+-
+-	int _usage;
+-	T* _ptr;
+-
+-public:
+-	@disable
+-	this();
+-
+-	@disable
+-	this(this);
+-
+-	@disable
+-	this(typeof(null));
+-
+-	@disable
+-	void opAssign(Ref!(T)*);
+-
+-	this(T* ptr, void function(T*) _deleter) {
+-		this._ptr = ptr;
+-		this._deleter = _deleter;
+-
+-		_refCount++;
+-	}
+-
+-	void addRef() {
+-		this._usage++;
+-	}
+-
+-	void releaseRef() {
+-		debug writefln("Release %s with %s (%d usage :: ptr = %X)",
+-				 __traits(identifier, T), typeof(&this._deleter).stringof, this._usage, this._ptr);
+-
+-		this._usage--;
+-
+-		if (this._usage <= 0)
+-			this._destruct();
+-	}
+-
+-	@property
+-	int usage() const pure nothrow {
+-		return this._usage;
+-	}
+-}
+-
+-shared_ref!T make_shared(T)(T* ptr, void function(T*) _deleter) {
+-	auto _ref = new Ref!T(ptr, _deleter);
+-	_ref.addRef();
+-
+-	return shared_ref!T(_ref);
+-}
+-
+-struct shared_ref(T) {
+-private:
+-	Ref!(T)* _ref;
+-
+-	this(Ref!(T)* _ref) {
+-		this._ref = _ref;
+-	}
+-
+-public:
+-	this(this) {
+-		if (this._ref !is null)
+-			this._ref.addRef();
+-	}
+-
+-	~this() {
+-		if (this._ref !is null)
+-			this._ref.releaseRef();
+-	}
+-
+-	void collect() {
+-		if (this._ref !is null) {
+-			while (this._ref.usage > 0) {
+-				this._ref.releaseRef();
+-			}
+-		}
+-	}
+-
+-	@property
+-	inout(T*) ptr() inout pure nothrow {
+-		if (this._ref!is null)
+-			return this._ref._ptr;
+-
+-		return null;
+-	}
+-
+-	alias ptr this;
+-
+-	@property
+-	int usage() const pure nothrow {
+-		return this._ref !is null ? this._ref.usage : -1;
+-	}
+-
+-	bool isValid() const pure nothrow {
+-		return this._ref !is null ? this._ref._ptr !is null : false;
+-	}
+-}
+-
+-void dummy_deleter(void*) { }
+-
+-unittest {
+-	import std.conv : to;
+-
+-	struct A {
+-	public:
+-		int id;
+-	}
+-
+-	void test(shared_ref!A rhs) {
+-		//assert(rhs.isCopy);
+-		assert(rhs.id == 42);
+-		assert(rhs.isValid());
+-		assert(rhs.usage == 2);
+-	}
+-
+-	shared_ref!A as = make_shared(new A(42), (A* aptr) => dummy_deleter(aptr));
+-
+-	assert(as.id == 42);
+-	assert(as.usage == 1);
+-	assert(as.isValid());
+-	//assert(!as.isCopy);
+-
+-	test(as);
+-
+-	assert(as.id == 42);
+-	assert(as.usage == 1);
+-	assert(as.isValid());
+-	//assert(!as.isCopy);
+-
+-	shared_ref!A s1 = make_shared(new A(111), (A* aptr) => dummy_deleter(aptr));
+-	shared_ref!A s2 = s1;
+-
+-	assert(s1.usage == 2);
+-	assert(s2.usage == 2);
+-	//assert(s2.isCopy());
+-	assert(s1 == s2);
+-
+-	s1 = make_shared(new A(222), (A* aptr) => dummy_deleter(aptr));
+-
+-	debug writeln("\t\t", s1.usage, "::", s2.usage);
+-
+-	assert(s1.isValid());
+-	assert(s2.isValid());
+-	assert(s1.usage == 1, to!string(s1.usage));
+-	assert(s2.usage == 1, to!string(s2.usage));
+-	//assert(s2.isCopy());
+-	assert(s1 != s2);
+-
+-	void testDeleter(A* ptr) {
+-
+-	}
+-
+-	void test2(shared_ref!A rhs, int id) {
+-		//assert(rhs.isCopy);
+-		assert(rhs.id == id);
+-		assert(rhs.isValid());
+-		assert(rhs.usage == 2);
+-	}
+-
+-	shared_ref!A s3 = make_shared(new A(23), (A* aptr) => dummy_deleter(aptr));
+-
+-	assert(s3.isValid());
+-	assert(s3.id == 23);
+-	assert(s3.usage == 1);
+-
+-	test2(s3, 23);
+-
+-	assert(s3.isValid());
+-	assert(s3.id == 23);
+-	assert(s3.usage == 1);
+-
+-	s3 = make_shared(new A(42), (A* aptr) => dummy_deleter(aptr));
+-
+-	assert(s3.isValid());
+-	assert(s3.id == 42);
+-	assert(s3.usage == 1);
+-}
+\ No newline at end of file
+diff --git a/Core/Memory/SmartPointer/Unique.d b/Core/Memory/SmartPointer/Unique.d
+deleted file mode 100644
+index b43596d..0000000
+--- a/Core/Memory/SmartPointer/Unique.d
++++ /dev/null
+@@ -1,89 +0,0 @@
+-module Dgame.Core.Memory.SmartPointer.Unique;
+-
+-void dummy_deleter(void* ptr) pure nothrow {
+-	
+-}
+-
+-struct unique_ptr(T, alias _deleter = dummy_deleter)
+-	if (!is(T == class) && !is(T : U*, U))
+-{
+-private:
+-	T* _ptr;
+-	
+-public:
+-	@disable
+-	this(typeof(null));
+-	
+-	@disable
+-	this(this);
+-	
+-	@disable
+-	void opAssign(T*);
+-	
+-	this(T* ptr) {
+-		this._ptr = ptr;
+-	}
+-	
+-	~this() {
+-		this.release();
+-	}
+-	
+-	void release() {
+-		if (this.isValid()) {
+-			static if (is(T == struct) && is(typeof(T)))
+-				destroy!T(*this._ptr);
+-			
+-			_deleter(this._ptr);
+-		}
+-	}
+-	
+-	void reset(T* ptr) in {
+-		assert(ptr !is null);
+-	} body {
+-		this.release();
+-		
+-		this._ptr = ptr;
+-	}
+-	
+-	bool isValid() const pure nothrow {
+-		return this._ptr !is null;
+-	}
+-	
+-	@property
+-	inout(T*) ptr() inout {
+-		return this._ptr;
+-	}
+-	
+-	alias ptr this;
+-	
+-	typeof(this) move() {
+-		scope(exit) this._ptr = null;
+-		
+-		return typeof(this)(this._ptr);
+-	}
+-} unittest {
+-	struct A {
+-	public:
+-		int id;
+-	}
+-	
+-	void test(unique_ptr!A rhs) {
+-		assert(rhs.isValid());
+-		assert(rhs.id == 42);
+-	}
+-	
+-	unique_ptr!A as = new A(42);
+-	
+-	assert(as.isValid());
+-	assert(as.id == 42);
+-	
+-	typeof(as) as2 = as.move();
+-	
+-	assert(!as.isValid());
+-	assert(as2.isValid());
+-	assert(as2.id == 42);
+-	
+-	test(as2.move());
+-	
+-	assert(!as2.isValid());
+-}
+\ No newline at end of file
+diff --git a/Core/core.d b/Core/core.d
+deleted file mode 100644
+index 85d3aa4..0000000
+--- a/Core/core.d
++++ /dev/null
+@@ -1,95 +0,0 @@
+-module Dgame.Core.core;
+-
+-private {
+-	import std.stdio : writeln;
+-	import std.string : format;
+-
+-	import derelict.opengl3.gl;
+-}
+-
+-/**
+- * Current Version
+- */
+-enum DgVersion : ubyte {
+-	Major = 0,
+-	Minor = 1,
+-	PatchLevel = 1
+-}
+-
+-/**
+- * Returns a readable version number.
+- */
+-string getDgVersion() {
+-	return format("%d.%d.%d", DgVersion.Major, DgVersion.Minor, DgVersion.PatchLevel);
+-}
+-
+-/**
+- *
+- */
+-void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __LINE__) {
+-	try {
+-		Func();
+-	} catch (Throwable e) {
+-		writeln("GL Error for ", filename, " @ line ", line_number, ':');
+-		GLCheckError(filename, line_number);
+-
+-		throw e;
+-	}
+-}
+-
+-/**
+- *
+- */
+-void GLCheckError(string filename, size_t line_number) {
+-	// Get the last error
+-	GLenum ErrorCode = glGetError();
+-	
+-	if (ErrorCode != GL_NO_ERROR) {
+-		string Error = "unknown error";
+-		string Desc  = "no description";
+-		
+-		// Decode the error code
+-		switch (ErrorCode) {
+-			case GL_INVALID_ENUM:
+-				Error = "GL_INVALID_ENUM";
+-				Desc  = "an unacceptable value has been specified for an enumerated argument";
+-				break;
+-				
+-			case GL_INVALID_VALUE:
+-				Error = "GL_INVALID_VALUE";
+-				Desc  = "a numeric argument is out of range";
+-				break;
+-				
+-			case GL_INVALID_OPERATION:
+-				Error = "GL_INVALID_OPERATION";
+-				Desc  = "the specified operation is not allowed in the current state";
+-				break;
+-				
+-			case GL_STACK_OVERFLOW:
+-				Error = "GL_STACK_OVERFLOW";
+-				Desc  = "this command would cause a stack overflow";
+-				break;
+-				
+-			case GL_STACK_UNDERFLOW:
+-				Error = "GL_STACK_UNDERFLOW";
+-				Desc  = "this command would cause a stack underflow";
+-				break;
+-				
+-			case GL_OUT_OF_MEMORY:
+-				Error = "GL_OUT_OF_MEMORY";
+-				Desc  = "there is not enough memory left to execute the command";
+-				break;
+-				/*
+-				 case GL_INVALID_FRAMEBUFFER_OPERATION:
+-				 Error = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
+-				 Desc  = "the object bound to FRAMEBUFFER_BINDING_EXT is not 
+-				 \"framebuffer complete\"";
+-				 break;
+-				 */
+-			default: break;
+-		}
+-		
+-		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
+-		                            Error, Desc, filename, line_number));
+-	}
+-}
+\ No newline at end of file
+diff --git a/Dokumentation/Allocator.html b/Dokumentation/Allocator.html
+index 7b26a72..ee42fd0 100644
+--- a/Dokumentation/Allocator.html
++++ b/Dokumentation/Allocator.html
+@@ -1,9 +1,9 @@
+ <html><head>
+         <META http-equiv="content-type" content="text/html; charset=utf-8">
+-        <title>Dgame.Core.Memory.Allocator</title>
++        <title>Dgame.Internal.Allocator</title>
+         </head><body>
+-        <h1>Dgame.Core.Memory.Allocator</h1>
+-        <!-- Generated by Ddoc from Core\Memory\Allocator.d -->
++        <h1>Dgame.Internal.Allocator</h1>
++        <!-- Generated by Ddoc from Internal\Allocator.d -->
+ <br><br>
+ 
+         <hr><small>Page generated by <a href="http://dlang.org/ddoc.html">Ddoc</a>. </small>
+diff --git a/Dokumentation/Clock.html b/Dokumentation/Clock.html
+index a39d5ed..9524b2b 100644
+--- a/Dokumentation/Clock.html
++++ b/Dokumentation/Clock.html
+@@ -79,6 +79,11 @@ rschuett<br><br>
+ <dd>Returns only the milliseconds since the last reset.<br><br>
+ 
+ </dd>
++<dt><big><a name="Clock.getCurrentFps"></a>uint <u>getCurrentFps</u>();
++</big></dt>
++<dd>Returns the current framerate per seconds.<br><br>
++
++</dd>
+ <dt><big><a name="Clock.getTicks"></a>static uint <u>getTicks</u>();
+ </big></dt>
+ <dd>Returns the milliseconds since the application was started.<br><br>
+@@ -106,11 +111,6 @@ rschuett<br><br>
+  count per second of the high resolution counter.<br><br>
+ 
+ </dd>
+-<dt><big><a name="Clock.getCurrentFps"></a>uint <u>getCurrentFps</u>();
+-</big></dt>
+-<dd>Returns the current framerate per seconds.<br><br>
+-
+-</dd>
+ </dl>
+ </dd>
+ </dl>
+diff --git a/Dokumentation/Font.html b/Dokumentation/Font.html
+index e2fb91d..b5c3bc8 100644
+--- a/Dokumentation/Font.html
++++ b/Dokumentation/Font.html
+@@ -7,11 +7,8 @@
+ <br><br>
+ <dl><dt><big><a name="Font"></a>struct <u>Font</u>;
+ </big></dt>
+-<dd>version = Develop;
+-<br><br>
+-<u>Font</u> is the low-level class for loading and manipulating character fonts.
++<dd><u>Font</u> is the low-level class for loading and manipulating character fonts.
+  This class is meant to be used by Dgame.Graphics.Text.
+-
+ <br><br>
+ <b>Author:</b><br>
+ rschuett<br><br>
+@@ -167,7 +164,7 @@ Hint enum<br><br>
+ <dd>Returns a TTFthis.target pointer.<br><br>
+ 
+ </dd>
+-<dt><big><a name="Font.useCount"></a>const pure nothrow uint <u>useCount</u>();
++<dt><big><a name="Font.useCount"></a>const pure nothrow int <u>useCount</u>();
+ </big></dt>
+ <dd>Returns the current use count<br><br>
+ 
+diff --git a/Dokumentation/Math.html b/Dokumentation/Math.html
+index 4b1deae..3628951 100644
+--- a/Dokumentation/Math.html
++++ b/Dokumentation/Math.html
+@@ -1,9 +1,9 @@
+ <html><head>
+         <META http-equiv="content-type" content="text/html; charset=utf-8">
+-        <title>Dgame.Core.Math</title>
++        <title>Dgame.Internal.Math</title>
+         </head><body>
+-        <h1>Dgame.Core.Math</h1>
+-        <!-- Generated by Ddoc from Core\Math.d -->
++        <h1>Dgame.Internal.Math</h1>
++        <!-- Generated by Ddoc from Internal\Math.d -->
+ <br><br>
+ 
+         <hr><small>Page generated by <a href="http://dlang.org/ddoc.html">Ddoc</a>. </small>
+diff --git a/Dokumentation/Shape.html b/Dokumentation/Shape.html
+index 3feaf6f..c008ce6 100644
+--- a/Dokumentation/Shape.html
++++ b/Dokumentation/Shape.html
+@@ -31,21 +31,20 @@
+ </dd>
+ </dl>
+ </dd>
+-<dt><big><a name="Smooth.Hint"></a>enum <u>Hint</u>;
++<dt><big><a name="Smooth.Mode"></a>enum <u>Mode</u>;
+ </big></dt>
+-<dd>Smooth Hints to determine
+- which kind of smoothing is made.<br><br>
++<dd>The smooth mode<br><br>
+ 
+-<dl><dt><big><a name="Smooth.Hint.DontCare"></a><u>DontCare</u></big></dt>
++<dl><dt><big><a name="Smooth.Mode.DontCare"></a><u>DontCare</u></big></dt>
+ <dd>The OpenGL implementation decide on their own. <br><br>
+ 
+ </dd>
+-<dt><big><a name="Smooth.Hint.Fastest"></a><u>Fastest</u></big></dt>
++<dt><big><a name="Smooth.Mode.Fastest"></a><u>Fastest</u></big></dt>
+ <dd><u>Fastest</u> kind of smooth (default). <br><br>
+ 
+ </dd>
+-<dt><big><a name="Smooth.Hint.Nicest"></a><u>Nicest</u></big></dt>
+-<dd><u>Nicest</u> but lowest kind of smooth. <br><br>
++<dt><big><a name="Smooth.Mode.Nicest"></a><u>Nicest</u></big></dt>
++<dd><u>Nicest</u> but slowest kind of smooth. <br><br>
+ 
+ </dd>
+ </dl>
+@@ -55,9 +54,9 @@
+ <dd>Returns the current target<br><br>
+ 
+ </dd>
+-<dt><big><a name="Smooth.getHint"></a>const pure nothrow Hint <u>getHint</u>();
++<dt><big><a name="Smooth.getMode"></a>const pure nothrow Mode <u>getMode</u>();
+ </big></dt>
+-<dd>Return the current hint<br><br>
++<dd>Return the current mode<br><br>
+ 
+ </dd>
+ </dl>
+@@ -139,9 +138,9 @@ rschuett<br><br>
+ <dd>CTor<br><br>
+ 
+ </dd>
+-<dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Hint <i>sHint</i> = Smooth.Hint.Fastest);
++<dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Mode <i>sMode</i> = Smooth.Mode.Fastest);
+ </big></dt>
+-<dd>Set target and hint of smoothing.<br><br>
++<dd>Set target and mode of smoothing.<br><br>
+ 
+ </dd>
+ <dt><big><a name="Shape.getSmooth"></a>final const pure nothrow ref const(Smooth) <u>getSmooth</u>();
+diff --git a/Dokumentation/Shared.html b/Dokumentation/Shared.html
+index b4bf861..601bc96 100644
+--- a/Dokumentation/Shared.html
++++ b/Dokumentation/Shared.html
+@@ -1,9 +1,9 @@
+ <html><head>
+         <META http-equiv="content-type" content="text/html; charset=utf-8">
+-        <title>Dgame.Core.Memory.SmartPointer.Shared</title>
++        <title>Dgame.Internal.Shared</title>
+         </head><body>
+-        <h1>Dgame.Core.Memory.SmartPointer.Shared</h1>
+-        <!-- Generated by Ddoc from Core\Memory\SmartPointer\Shared.d -->
++        <h1>Dgame.Internal.Shared</h1>
++        <!-- Generated by Ddoc from Internal\Shared.d -->
+ <br><br>
+ 
+         <hr><small>Page generated by <a href="http://dlang.org/ddoc.html">Ddoc</a>. </small>
+diff --git a/Dokumentation/Surface.html b/Dokumentation/Surface.html
+index 688cd6d..090bd3f 100644
+--- a/Dokumentation/Surface.html
++++ b/Dokumentation/Surface.html
+@@ -120,7 +120,7 @@ rschuett<br><br>
+ <dd>Destroy the current Surface <b>and all</b>, which are linked to this Surface</b>.<br><br>
+ 
+ </dd>
+-<dt><big><a name="Surface.useCount"></a>const pure nothrow uint <u>useCount</u>();
++<dt><big><a name="Surface.useCount"></a>const pure nothrow int <u>useCount</u>();
+ </big></dt>
+ <dd>Returns the current use count<br><br>
+ 
+diff --git a/Dokumentation/Texture.html b/Dokumentation/Texture.html
+index b115ca7..29ad6f1 100644
+--- a/Dokumentation/Texture.html
++++ b/Dokumentation/Texture.html
+@@ -90,6 +90,36 @@ rschuett<br><br>
+ <dd>Alias for GL_LUMINANCE_ALPHA <br><br>
+ 
+ </dd>
++<dt><big><a name="Texture.Format.CompressedRGB"></a><u>CompressedRGB</u></big></dt>
++<dd>Compressed RGB<br><br>
++
++</dd>
++<dt><big><a name="Texture.Format.CompressedRGBA"></a><u>CompressedRGBA</u></big></dt>
++<dd>Compressed RGBA<br><br>
++
++</dd>
++</dl>
++</dd>
++<dt><big><a name="Texture.Compression"></a>enum <u>Compression</u>;
++</big></dt>
++<dd><u>Compression</u> modes<br><br>
++
++<dl><dt><big><a name="Texture.Compression.None"></a><u>None</u></big></dt>
++<dd>No compression<br><br>
++
++</dd>
++<dt><big><a name="Texture.Compression.DontCare"></a><u>DontCare</u></big></dt>
++<dd>The OpenGL implementation decide on their own<br><br>
++
++</dd>
++<dt><big><a name="Texture.Compression.Fastest"></a><u>Fastest</u></big></dt>
++<dd><u>Fastest</u> compression<br><br>
++
++</dd>
++<dt><big><a name="Texture.Compression.Nicest"></a><u>Nicest</u></big></dt>
++<dd><u>Nicest</u> but slowest mode of compression<br><br>
++
++</dd>
+ </dl>
+ </dd>
+ <dt><big><a name="Texture.this"></a>final  this();
+@@ -97,7 +127,7 @@ rschuett<br><br>
+ <dd>CTor<br><br>
+ 
+ </dd>
+-<dt><big><a name="Texture.this"></a>final  this(ref const Texture <i>tex</i>, Format <i>t_fmt</i> = Format.None);
++<dt><big><a name="Texture.this"></a>final  this(const Texture <i>tex</i>, Format <i>t_fmt</i> = Format.None);
+ </big></dt>
+ <dd>Postblit<br><br>
+ 
+@@ -183,6 +213,27 @@ Format enum.<br><br>
+ <dd>Returns if repeating is enabled.<br><br>
+ 
+ </dd>
++<dt><big><a name="Texture.setCompression"></a>final void <u>setCompression</u>(Compression <i>comp</i>);
++</big></dt>
++<dd>(Re)Set the compression mode.
++<br><br>
++<b>See:</b><br>
++Compression enum<br><br>
++
++</dd>
++<dt><big><a name="Texture.getCompression"></a>final const pure nothrow Compression <u>getCompression</u>();
++</big></dt>
++<dd>Returns the current Compression mode.
++<br><br>
++<b>See:</b><br>
++Compression enum<br><br>
++
++</dd>
++<dt><big><a name="Texture.isCompressed"></a>final const bool <u>isCompressed</u>();
++</big></dt>
++<dd>Checks whether the current Texture is compressed or not.<br><br>
++
++</dd>
+ <dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);
+ </big></dt>
+ <dd>Load from <i>memory</i>.<br><br>
+diff --git a/Dokumentation/Unique.html b/Dokumentation/Unique.html
+index b10007b..a968cfe 100644
+--- a/Dokumentation/Unique.html
++++ b/Dokumentation/Unique.html
+@@ -1,9 +1,9 @@
+ <html><head>
+         <META http-equiv="content-type" content="text/html; charset=utf-8">
+-        <title>Dgame.Core.Memory.SmartPointer.Unique</title>
++        <title>Dgame.Internal.Unique</title>
+         </head><body>
+-        <h1>Dgame.Core.Memory.SmartPointer.Unique</h1>
+-        <!-- Generated by Ddoc from Core\Memory\SmartPointer\Unique.d -->
++        <h1>Dgame.Internal.Unique</h1>
++        <!-- Generated by Ddoc from Internal\Unique.d -->
+ <br><br>
+ 
+         <hr><small>Page generated by <a href="http://dlang.org/ddoc.html">Ddoc</a>. </small>
+diff --git a/Dokumentation/Window.html b/Dokumentation/Window.html
+index 4d2e046..6b8638c 100644
+--- a/Dokumentation/Window.html
++++ b/Dokumentation/Window.html
+@@ -22,15 +22,15 @@ rschuett<br><br>
+  Default Syncronisation is <code><u>Sync</u>.Enable</code>.<br><br>
+ 
+ <dl><dt><big><a name="Window.Sync.Enable"></a><u>Enable</u></big></dt>
+-<dd>Sync is enabled. <br><br>
++<dd>Sync is enabled <br><br>
+ 
+ </dd>
+ <dt><big><a name="Window.Sync.Disable"></a><u>Disable</u></big></dt>
+-<dd>Sync is disabled. <br><br>
++<dd>Sync is disabled <br><br>
+ 
+ </dd>
+-<dt><big><a name="Window.Sync.None"></a><u>None</u></big></dt>
+-<dd>Unknown State. <br><br>
++<dt><big><a name="Window.Sync.LateSwapTearing"></a><u>LateSwapTearing</u></big></dt>
++<dd>For late swap tearing <br><br>
+ 
+ </dd>
+ </dl>
+@@ -175,14 +175,6 @@ Image screen = <font color=blue>new</font> Image(wnd.<u>capture</u>());
+ <dd>Returns if the mouse focus is on this window.<br><br>
+ 
+ </dd>
+-<dt><big><a name="Window.getClock"></a>Clock <u>getClock</u>();
+-</big></dt>
+-<dd>Returns the window clock. You can freeze the application or get the current framerate.
+-<br><br>
+-<b>See:</b><br>
+-Dgame.System.Clock<br><br>
+-
+-</dd>
+ <dt><big><a name="Window.setFpsLimit"></a>pure nothrow void <u>setFpsLimit</u>(ubyte <i>fps</i>);
+ </big></dt>
+ <dd>Set the framerate limit for this window.<br><br>
+diff --git a/Dokumentation/core.html b/Dokumentation/core.html
+index 1321e41..5388450 100644
+--- a/Dokumentation/core.html
++++ b/Dokumentation/core.html
+@@ -1,9 +1,9 @@
+ <html><head>
+         <META http-equiv="content-type" content="text/html; charset=utf-8">
+-        <title>Dgame.Core.core</title>
++        <title>Dgame.Internal.core</title>
+         </head><body>
+-        <h1>Dgame.Core.core</h1>
+-        <!-- Generated by Ddoc from Core\core.d -->
++        <h1>Dgame.Internal.core</h1>
++        <!-- Generated by Ddoc from Internal\core.d -->
+ <br><br>
+ <dl><dt><big><a name="DgVersion"></a>enum <u>DgVersion</u>;
+ </big></dt>
+diff --git a/Graphics/Color.d b/Graphics/Color.d
+index c03c871..20b8a12 100644
+--- a/Graphics/Color.d
++++ b/Graphics/Color.d
+@@ -6,8 +6,6 @@ private {
+ 	import derelict.sdl2.sdl;
+ }
+ 
+-///version = Develop;
+-
+ private SDL_Color[void*] _ColorStore;
+ 
+ static ~this() {
+@@ -63,7 +61,7 @@ public:
+ 		this.alpha = cast(ubyte)(ubyte.max * alpha);
+ 	}
+ 	
+-	version(Develop)
++	debug(Dgame)
+ 	this(this) {
+ 		debug writeln("Postblit Color");
+ 	}
+diff --git a/Graphics/Font.d b/Graphics/Font.d
+index d034597..01a52a1 100644
+--- a/Graphics/Font.d
++++ b/Graphics/Font.d
+@@ -8,11 +8,9 @@ private {
+ 
+ 	import derelict.sdl2.ttf;
+ 
+-	import Dgame.Core.Memory.SmartPointer.Shared;
++	import Dgame.Internal.Shared;
+ }
+ 
+-///version = Develop;
+-
+ /**
+ * Font is the low-level class for loading and manipulating character fonts.
+ * This class is meant to be used by Dgame.Graphics.Text.
+@@ -77,7 +75,7 @@ public:
+ 	/**
+ 	* Postblit
+ 	*/
+-	version(Develop)
++	debug(Dgame)
+ 	this(this) {
+ 		debug writeln("Font Postblit");
+ 	}
+@@ -107,7 +105,7 @@ public:
+ 	/**
+ 	* DTor
+ 	*/
+-	version(Develop)
++	debug(Dgame)
+ 	~this() {
+ 		writeln("Close Font");
+ 	}
+@@ -116,7 +114,7 @@ public:
+ 	* Close and release the current font <b>and all</b> which are linked to this Font.
+ 	*/
+  	void free() {
+-		this._target.collect();
++		this._target.dissolve();
+ 	}
+ 
+ 	/**
+@@ -222,11 +220,12 @@ public:
+ 	/**
+ 	* Returns the current use count
+ 	*/
+-	uint useCount() const pure nothrow {
++	int useCount() const pure nothrow {
+ 		return this._target.usage;
+ 	}
+ } unittest {
+ 	writeln("<Font unittest>");
++
+ 	{
+ 		Font f1 = Font("samples/font/arial.ttf", 14);
+ 
+@@ -255,5 +254,6 @@ public:
+ 		}
+ 		assert(f1.useCount() == 1, to!string(f1.useCount()));
+ 	}
++
+ 	writeln("</Font unittest>");
+ }
+\ No newline at end of file
+diff --git a/Graphics/Renderer.d b/Graphics/Renderer.d
+index 3e1a59d..9ab395b 100644
+--- a/Graphics/Renderer.d
++++ b/Graphics/Renderer.d
+@@ -3,12 +3,12 @@ module Dgame.Graphics.Renderer;
+ private {
+ 	import derelict.sdl2.sdl;
+ 	
++	import Dgame.Internal.Unique;
+ 	import Dgame.Math.Rect;
+ 	import Dgame.Graphics.Surface;
+ 	import Dgame.Graphics.Color;
+ 	import Dgame.Graphics.RendererTexture;
+ 	import Dgame.Window.Window;
+-	import Dgame.Core.Memory.SmartPointer.Unique;
+ }
+ 
+ /**
+diff --git a/Graphics/RendererTexture.d b/Graphics/RendererTexture.d
+index be52510..cab1f04 100644
+--- a/Graphics/RendererTexture.d
++++ b/Graphics/RendererTexture.d
+@@ -5,7 +5,7 @@ private {
+ 	
+ 	import derelict.sdl2.sdl;
+ 	
+-	import Dgame.Core.Memory.SmartPointer.Shared;
++	import Dgame.Internal.Shared;
+ 	import Dgame.Graphics.Surface;
+ 	import Dgame.Graphics.Color;
+ 	import Dgame.Graphics.Renderer;
+@@ -54,7 +54,7 @@ public:
+ 	 * Destroy the RendererTexture <b>and all</b> which are linked to this.
+ 	 */
+ 	void free() {
+-		this._target.collect();
++		this._target.dissolve();
+ 	}
+ 	
+ 	/**
+diff --git a/Graphics/Shape.d b/Graphics/Shape.d
+index 82f3462..18d8755 100644
+--- a/Graphics/Shape.d
++++ b/Graphics/Shape.d
+@@ -1,7 +1,7 @@
+ module Dgame.Graphics.Shape;
+ 
+ private {
+-	import std.math : sin, cos, PI;
++	import std.math : sin, cos;
+ 	import std.algorithm : remove;
+ 	import core.stdc.string : memcpy;
+ 	
+@@ -17,6 +17,8 @@ private {
+ 	import Dgame.System.VertexArrayObject;
+ }
+ 
++enum PIx2 = 3.14 * 2;
++
+ /**
+  * Smooth wrapper
+  */
+@@ -25,21 +27,20 @@ public:
+ 	/**
+ 	 * Supported smooth targets.
+ 	 */
+-	enum Target : ushort {
++	enum Target {
+ 		None,					 /** No smooth (default). */
+ 		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
+ 		Line  = GL_LINE_SMOOTH,   /** Enable smooth for lines. */
+-		Polygon = GL_POLYGON_SMOOTH_HINT /** Enable smooth for polygons. */
++		Polygon = GL_POLYGON_SMOOTH /** Enable smooth for polygons. */
+ 	}
+ 	
+ 	/**
+-	 * Smooth Hints to determine
+-	 * which kind of smoothing is made.
++	 * The smooth mode
+ 	 */
+-	enum Hint : ushort {
++	enum Mode {
+ 		DontCare = GL_DONT_CARE, /** The OpenGL implementation decide on their own. */
+ 		Fastest = GL_FASTEST,    /** Fastest kind of smooth (default). */
+-		Nicest  = GL_NICEST	     /** Nicest but lowest kind of smooth. */
++		Nicest  = GL_NICEST	     /** Nicest but slowest kind of smooth. */
+ 	}
+ 	
+ 	@disable
+@@ -54,21 +55,35 @@ public:
+ 	Target getTarget() const pure nothrow {
+ 		return this.target;
+ 	}
+-	
++
+ 	/**
+-	 * Return the current hint
+-	 */
+-	Hint getHint() const pure nothrow {
+-		return this.hint;
++	* Return the current mode
++	*/
++	Mode getMode() const pure nothrow {
++		return this.mode;
+ 	}
+ 	
+ private:
+ 	Target target;
+-	Hint hint;
++	Mode mode;
++	GLenum hint;
+ 	
+-	this(Target trg, Hint h) {
++	this(Target trg, Mode mode) {
+ 		this.target = target;
+-		this.hint = h;
++		this.mode = mode;
++
++		final switch (this.target) {
++			case Target.None: break;
++			case Target.Point:
++				this.hint = GL_POINT_SMOOTH_HINT;
++				break;
++			case Target.Line:
++				this.hint = GL_LINE_SMOOTH_HINT;
++				break;
++			case Target.Polygon:
++				this.hint = GL_POLYGON_SMOOTH_HINT;
++				break;
++		}
+ 	}
+ }
+ 
+@@ -230,7 +245,7 @@ protected:
+ 			if (!glIsEnabled(this._smooth.target))
+ 				glEnable(this._smooth.target);
+ 			
+-			glHint(this._smooth.target, this._smooth.hint);
++			glHint(this._smooth.hint, this._smooth.mode);
+ 		}
+ 		
+ 		if (glIsEnabled(GL_TEXTURE_2D))
+@@ -263,7 +278,7 @@ final:
+ 		this._lineWidth = 2;
+ 		
+ 		this._type = type;
+-		this._smooth = Smooth(Smooth.Target.None, Smooth.Hint.Fastest);
++		this._smooth = Smooth(Smooth.Target.None, Smooth.Mode.Fastest);
+ 	}
+ 	
+ 	/**
+@@ -274,11 +289,11 @@ final:
+ 	}
+ 	
+ 	/**
+-	 * Set target and hint of smoothing.
++	 * Set target and mode of smoothing.
+ 	 */
+-	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) pure nothrow {
++	void setSmooth(Smooth.Target sTarget, Smooth.Mode sMode = Smooth.Mode.Fastest) pure nothrow {
+ 		this._smooth.target = sTarget;
+-		this._smooth.hint = sHint;
++		this._smooth.mode = sMode;
+ 	}
+ 	
+ 	/**
+@@ -477,7 +492,6 @@ final:
+ 	static Shape makeCircle(ubyte radius, ref const Vector2f center, ubyte vecNum = 30) in {
+ 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
+ 	} body {
+-		enum PIx2 = PI * 2;
+ 		const float Deg2Rad = PIx2 / vecNum;
+ 		
+ 		Shape qs = new Shape(Type.LineLoop);
+diff --git a/Graphics/Surface.d b/Graphics/Surface.d
+index eba0603..156d62c 100644
+--- a/Graphics/Surface.d
++++ b/Graphics/Surface.d
+@@ -11,7 +11,7 @@ private {
+ 	import derelict.sdl2.sdl;
+ 	import derelict.sdl2.image;
+ 	
+-	import Dgame.Core.Memory.SmartPointer.Shared;
++	import Dgame.Internal.Shared;
+ 	
+ 	import Dgame.Math.Rect;
+ 	import Dgame.Math.Vector2;
+@@ -49,7 +49,7 @@ public:
+ 	enum GMask = 0; /** Default Green Mask. */
+ 	enum BMask = 0; /** Default Blue Mask. */
+ 	
+-	version (LittleEndian) {
++	version(LittleEndian) {
+ 		enum AMask = 0xff000000;
+ 	} else {
+ 		enum AMask = 0x000000ff;
+@@ -110,8 +110,9 @@ public:
+ 		this.loadFromFile(filename);
+ 	}
+ 	
++	debug(Dgame)
+ 	this(this) {
+-		debug writeln("Postblit Surface: ",
++		writeln("Postblit Surface: ",
+ 		              this._target.usage, ':',
+ 		              this.filename, ", ",
+ 		              this.filename.ptr);
+@@ -122,7 +123,6 @@ public:
+ 	 */
+ 	void opAssign(ref Surface rhs) {
+ 		debug writeln("opAssign lvalue");
+-		
+ 		this._filename = rhs.filename;
+ 		this._target = rhs._target;
+ 	}
+@@ -135,22 +135,23 @@ public:
+ 		this.opAssign(rhs);
+ 	}
+ 	
++	debug(Dgame)
+ 	~this() {
+-		debug writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
++		writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
+ 	}
+ 	
+ 	/**
+ 	 * Destroy the current Surface <b>and all</b>, which are linked to this Surface</b>.
+ 	 */
+ 	void free() {
+-		debug writeln("Free Surface", ':', this.filename);
+-		this._target.collect();
++		debug writeln("Free Surface:", this.filename);
++		this._target.dissolve();
+ 	}
+ 	
+ 	/**
+ 	 * Returns the current use count
+ 	 */
+-	uint useCount() const pure nothrow {
++	int useCount() const pure nothrow {
+ 		return this._target.usage;
+ 	}
+ 	
+@@ -760,6 +761,8 @@ public:
+ 		return flipped;
+ 	}
+ } unittest {
++	writeln("<Surface unittest>");
++
+ 	Surface s1 = Surface.make(64, 64, 32);
+ 	
+ 	assert(s1.useCount() == 1, to!string(s1.useCount()));
+@@ -786,4 +789,6 @@ public:
+ 		assert(s2.useCount() == 2, to!string(s2.useCount()));
+ 	}
+ 	assert(s1.useCount() == 1, to!string(s1.useCount()));
++
++	writeln("</Surface unittest>");
+ }
+\ No newline at end of file
+diff --git a/Graphics/Text.d b/Graphics/Text.d
+index 3b54c2d..ab5616d 100644
+--- a/Graphics/Text.d
++++ b/Graphics/Text.d
+@@ -23,8 +23,8 @@ static ~this() {
+ 	debug writeln("Finalize Font");
+ 
+ 	for (size_t i = 0; i < _FontFinalizer.length; ++i) {
+-		if (_FontFinalizer[i]) {
+-			debug writeln("Finalize font ", i);
++		if (_FontFinalizer[i] !is null) {
++			debug writeln(" -> Finalize font ", i, "::", _FontFinalizer[i].ptr);
+ 			_FontFinalizer[i].free();
+ 		}
+ 	}
+@@ -129,7 +129,7 @@ protected:
+ 		if (this._shouldUpdate)
+ 			this._update();
+ 		
+-		 // we need nothing for the text, so null is given
++		 // we need nothing to render the text, so null is given
+ 		this._tex._render(null);
+ 	}
+ 	
+@@ -150,7 +150,7 @@ public:
+ 	this(Font font, string text = null) {
+ 		this(font, text);
+ 	}
+-	
++
+ 	/**
+ 	 * Check whether the bounding box of this Text collide
+ 	 * with the bounding box of another Text
+diff --git a/Graphics/Texture.d b/Graphics/Texture.d
+index c7e6835..2741593 100644
+--- a/Graphics/Texture.d
++++ b/Graphics/Texture.d
+@@ -92,6 +92,17 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
+ 	}
+ }
+ 
++Texture.Format compressFormat(Texture.Format fmt) pure {
++	switch (fmt) {
++		case Texture.Format.RGB:  return Texture.Format.CompressedRGB;
++		case Texture.Format.RGBA: return Texture.Format.CompressedRGBA;
++		case Texture.Format.CompressedRGB:
++		case Texture.Format.CompressedRGBA:
++			return fmt;
++		default: return Texture.Format.None;
++	}
++}
++
+ private GLuint*[] _TexFinalizer;
+ 
+ static ~this() {
+@@ -151,7 +162,19 @@ public:
+ 		BGRA  = GL_BGRA,	/** Alias for GL_BGRA */
+ 		Alpha = GL_ALPHA,	/** Alias for GL_ALPHA */
+ 		Luminance = GL_LUMINANCE, /** Alias for GL_LUMINANCE */
+-		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */
++		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */,
++		CompressedRGB = GL_COMPRESSED_RGB, /// Compressed RGB
++		CompressedRGBA = GL_COMPRESSED_RGBA /// Compressed RGBA
++	}
++
++	/**
++	 * Compression modes
++	 */
++	enum Compression {
++		None, /// No compression
++		DontCare = GL_DONT_CARE, /// The OpenGL implementation decide on their own
++		Fastest  = GL_FASTEST, /// Fastest compression
++		Nicest   = GL_NICEST /// Nicest but slowest mode of compression
+ 	}
+ 
+ private:
+@@ -160,10 +183,11 @@ private:
+ 	ushort _width, _height;
+ 	ubyte _depth;
+ 	
+-	bool _isSmooth;
+-	bool _isRepeated;
++	bool _isSmooth = false;
++	bool _isRepeated = false;
+ 	
+ 	Format _format;
++	Compression _comp = Compression.None;
+ 	
+ package:
+ 	void _render(const Render* render) const {
+@@ -261,24 +285,10 @@ final:
+ 		this.bind();
+ 	}
+ 
+-	this(GLuint t_id, ushort width, ushort height, ubyte depth, Format t_fmt = Format.None) {
+-		assert(depth != 0 || t_fmt != Format.None);
+-
+-		this._texId = t_id;
+-
+-		this._width  = width;
+-		this._height = height;
+-		this._depth  = depth == 0 ? formatToBits(t_fmt) : depth;
+-		this._format = t_fmt == Format.None ? bitsToFormat(depth) : t_fmt;
+-
+-		this._isSmooth = false;
+-		this._isRepeated = false;
+-	}
+-	
+ 	/**
+ 	 * Postblit
+ 	 */
+-	this(ref const Texture tex, Format t_fmt = Format.None) {
++	this(const Texture tex, Format t_fmt = Format.None) {
+ 		this.loadFromMemory(tex.getMemory(),
+ 		                    tex.width, tex.height, tex.depth,
+ 		                    t_fmt ? t_fmt : tex.getFormat());
+@@ -424,6 +434,36 @@ final:
+ 	bool isRepeated() const pure nothrow {
+ 		return this._isRepeated;
+ 	}
++
++	/**
++	 * (Re)Set the compression mode.
++	 * 
++	 * See: Compression enum
++	*/
++	void setCompression(Compression comp) {
++		this._comp = comp;
++	}
++
++	/**
++	 * Returns the current Compression mode.
++	 *
++	 * See: Compression enum
++	 */
++	Compression getCompression() const pure nothrow {
++		return this._comp;
++	}
++
++	/**
++	 * Checks whether the current Texture is compressed or not.
++	 */
++	bool isCompressed() const {
++		this.bind();
++
++		GLint compressed;
++		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &compressed);
++
++		return compressed != 1;
++	}
+ 	
+ 	/**
+ 	 * Load from memory.
+@@ -432,6 +472,7 @@ final:
+ 						ubyte depth, Format fmt = Format.None)
+ 	in {
+ 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
++		assert(depth >= 8 || fmt != Format.None, "Need a depth or a format.");
+ 	} body {
+ 		/// Possible speedup because 'glTexSubImage2D'
+ 		/// is often faster than 'glTexImage2D'.
+@@ -443,13 +484,22 @@ final:
+ 			}
+ 		}
+ 		
+-		this._format = !fmt ? bitsToFormat(depth) : fmt;
++		this._format = fmt == Format.None ? bitsToFormat(depth) : fmt;
+ 		assert(this._format != Format.None, "Missing format.");
++		depth = depth < 8 ? formatToBits(this._format) : depth;
+ 
+ 		this.bind();
++
++		Format format = Format.None;
++		// Compression
++		if (this._comp != Compression.None) {
++			glHint(GL_TEXTURE_COMPRESSION_HINT, this._comp);
++			format = compressFormat(this._format);
++		}
+ 		
+-		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
+-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
++		glTexImage2D(GL_TEXTURE_2D, 0, 
++					 format == Format.None ? depth / 8 : format,
++					 width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
+ 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+ 		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+ 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+@@ -458,6 +508,14 @@ final:
+ 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
+ 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+ 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
++		glGenerateMipmap(GL_TEXTURE_2D); // We want MipMaps
++
++		debug {
++			if (format != Format.None) {
++				if (!this.isCompressed())
++					writeln("\tTexture wurde nicht komprimiert : ", cast(Format) format, "::", this._format);
++			}
++		}
+ 		
+ 		this._width  = width;
+ 		this._height = height;
+diff --git a/Math/Rect.d b/Math/Rect.d
+index 1949c9a..fae94c4 100644
+--- a/Math/Rect.d
++++ b/Math/Rect.d
+@@ -6,8 +6,7 @@ private {
+ 	
+ 	import derelict.sdl2.sdl;
+ 	
+-	import Dgame.Core.Memory.Allocator;
+-
++	import Dgame.Internal.Allocator : ScopeAllocator;
+ 	import Dgame.Math.Vector2;
+ }
+ 
+@@ -70,8 +69,9 @@ public:
+ 		     cast(T) rect.width, cast(T) rect.height);
+ 	}
+ 	
++	debug(Dgame)
+ 	this(this) {
+-		debug writeln("Postblit Rect");
++		writeln("Postblit");
+ 	}
+ 	
+ 	/**
+@@ -84,7 +84,6 @@ public:
+ 	
+ 	~this() {
+ 		debug writeln("DTor Rect");
+-		
+ 		_RectStore.remove(&this);
+ 	}
+ 	
+@@ -96,10 +95,10 @@ public:
+ 		const void* key = &this;
+ 		
+ 		/// TODO: Issue 11064
+-		const int x = cast(int) this.x;
+-		const int y = cast(int) this.y;
+-		const int w = cast(int) this.width;
+-		const int h = cast(int) this.height;
++		const int x = cast(int) this.x,
++			y = cast(int) this.y,
++			w = cast(int) this.width,
++			h = cast(int) this.height;
+ 		
+ 		if (SDL_Rect* _ptr = key in _RectStore) {
+ 			_ptr.x = x;
+@@ -237,8 +236,8 @@ public:
+ 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
+ 	 */
+ 	static Rect!T enclosePoints(const Vector2!T[] points) {
+-		Allocator m;
+-		SDL_Point[] sdl_points = m.alloc!SDL_Point(points.length);
++		ScopeAllocator m;
++		SDL_Point[] sdl_points = m.allocate!SDL_Point(points.length);
+ 		
+ 		foreach (i, ref const Vector2!T p; points) {
+ 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
+diff --git a/Math/Vector2.d b/Math/Vector2.d
+index 841541f..d121b7d 100644
+--- a/Math/Vector2.d
++++ b/Math/Vector2.d
+@@ -5,11 +5,9 @@ private {
+ 	import std.math : pow, sqrt, acos, PI;
+ 	import std.traits : isNumeric;
+ 	
+-	import Dgame.Core.Math : fpEqual;
++	import Dgame.Internal.Math : fpEqual;
+ }
+ 
+-//version = Develop;
+-
+ @safe
+ private bool equals(T, U)(const T a, const U b) pure nothrow 
+ 	if (isNumeric!T && isNumeric!U)
+@@ -60,7 +58,7 @@ public:
+ 		this(vec.x, vec.y);
+ 	}
+ 	
+-	version(Develop)
++	debug(Dgame)
+ 	this(this) {
+ 		writeln("Postblit Vector2");
+ 	}
+@@ -72,12 +70,7 @@ public:
+ 		debug writeln("opAssign Vector2");
+ 		this.set(rhs.x, rhs.y);
+ 	}
+-	
+-	version(Develop)
+-	~this() {
+-		writeln("DTor Vector2");
+-	}
+-	
++
+ 	/**
+ 	 * Supported operation: +=, -=, *=, /= and %=
+ 	 */
+diff --git a/System/Clock.d b/System/Clock.d
+index 32ddb50..ac99c64 100644
+--- a/System/Clock.d
++++ b/System/Clock.d
+@@ -94,6 +94,22 @@ public:
+ 	uint getElapsedTicks() const {
+ 		return SDL_GetTicks() - this._startTime;
+ 	}
++
++	/**
++	* Returns the current framerate per seconds.
++	*/
++	uint getCurrentFps() {
++		if (this.getElapsedTicks() >= 1000) {
++			this._currentFps = this._numFrames;
++
++			this._numFrames = 0;
++			this.reset();
++		}
++
++		this._numFrames++;
++
++		return this._currentFps;
++	}
+ 	
+ 	/**
+ 	 * Returns the milliseconds since the application was started.
+@@ -131,20 +147,4 @@ public:
+ 	static ulong getPerformanceFrequency() {
+ 		return SDL_GetPerformanceFrequency();
+ 	}
+-	
+-	/**
+-	 * Returns the current framerate per seconds.
+-	 */
+-	uint getCurrentFps() {
+-		if (this.getElapsedTicks() >= 1000) {
+-			this._currentFps = this._numFrames;
+-			
+-			this._numFrames = 0;
+-			this.reset();
+-		}
+-		
+-		this._numFrames++;
+-		
+-		return this._currentFps;
+-	}
+ }
+\ No newline at end of file
+diff --git a/System/FrameBufferObject.d b/System/FrameBufferObject.d
+index 3ce23cc..705092a 100644
+--- a/System/FrameBufferObject.d
++++ b/System/FrameBufferObject.d
+@@ -3,7 +3,7 @@ module Dgame.System.FrameBufferObject;
+ private {
+ 	import derelict.opengl3.gl;
+ 
+-	import Dgame.Core.core;
++	import Dgame.Internal.core;
+ 	import Dgame.Graphics.Drawable;
+ 	import Dgame.Graphics.Texture;
+ }
+diff --git a/System/VertexBufferObject.d b/System/VertexBufferObject.d
+index 64381fb..6610cad 100644
+--- a/System/VertexBufferObject.d
++++ b/System/VertexBufferObject.d
+@@ -5,7 +5,7 @@ private {
+ 	
+ 	import derelict.opengl3.gl;
+ 	
+-	import Dgame.Core.core;
++	import Dgame.Internal.core;
+ 	import Dgame.Graphics.Texture;
+ }
+ 
+diff --git a/Window/Window.d b/Window/Window.d
+index 25c503a..4839dec 100644
+--- a/Window/Window.d
++++ b/Window/Window.d
+@@ -6,7 +6,7 @@ private {
+ 	import derelict.sdl2.sdl;
+ 	import derelict.opengl3.gl;
+ 	
+-	import Dgame.Core.Memory.Allocator;
++	import Dgame.Internal.Allocator : ScopeAllocator;
+ 
+ 	import Dgame.Graphics.Color;
+ 	import Dgame.Graphics.Drawable;
+@@ -49,9 +49,9 @@ public:
+ 	 * Default Syncronisation is <code>Sync.Enable</code>.
+ 	 */
+ 	enum Sync {
+-		Enable  = 1,	/** Sync is enabled. */
+-		Disable = 0,	/** Sync is disabled. */
+-		None	= -1	/** Unknown State. */
++		Enable  = 1,	/** Sync is enabled */
++		Disable = 0,	/** Sync is disabled */
++		LateSwapTearing = -1	/** For late swap tearing */
+ 	}
+ 	
+ 	/**
+@@ -89,8 +89,6 @@ private:
+ 	string _title;
+ 	ubyte _fpsLimit;
+ 	
+-	Clock _clock;
+-	
+ 	static int _winCount;
+ 	
+ public:
+@@ -271,8 +269,8 @@ public:
+ 		const uint lineWidth = this.width * 4;
+ 		const uint hlw = this.height * lineWidth;
+ 		
+-		Allocator m;
+-		ubyte[] tmpLine = m.alloc!ubyte(lineWidth);
++		ScopeAllocator m;
++		ubyte[] tmpLine = m.allocate!ubyte(lineWidth);
+ 
+ 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
+ 		
+@@ -308,20 +306,6 @@ public:
+ 	}
+ 	
+ 	/**
+-	 * Returns the window clock. You can freeze the application or get the current framerate.
+-	 * 
+-	 * See: Dgame.System.Clock
+-	 */
+-	Clock getClock() {
+-		if (this._clock !is null)
+-			return this._clock;
+-		
+-		this._clock = new Clock();
+-		
+-		return this._clock;
+-	}
+-	
+-	/**
+ 	 * Set the framerate limit for this window.
+ 	 */
+ 	void setFpsLimit(ubyte fps) pure nothrow {
+@@ -399,7 +383,7 @@ public:
+ 			return;
+ 		
+ 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
+-			this.getClock().wait(1000 / this._fpsLimit);
++			Clock.wait(1000 / this._fpsLimit);
+ 
+ 		if (this._style & Style.OpenGL) {
+ 			if (_winCount > 1)
+diff --git a/build/build.d b/build/build.d
+index 639369d..2cffda9 100644
+--- a/build/build.d
++++ b/build/build.d
+@@ -129,7 +129,7 @@ static this() {
+ 		
+ 	// Initializes the source path map.
+ 	pathMap = [
+-		Pack.Core.name.toUpper() : Pack.Core,
++		Pack.Internal.name.toUpper() : Pack.Core,
+ 		Pack.Audio.name.toUpper() : Pack.Audio,
+ 		Pack.Graphics.name.toUpper() : Pack.Graphics,
+ 		Pack.Math.name.toUpper() : Pack.Math,
+diff --git a/main.d b/main.d
+index c42b2dd..da775b4 100644
+--- a/main.d
++++ b/main.d
+@@ -16,7 +16,7 @@ pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictGL3.lib");
+ pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictAL.lib");
+ pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictOGG.lib");
+ 
+-import Dgame.Core.core : getDgVersion;
++import Dgame.Internal.core : getDgVersion;
+ 
+ pragma(msg, getDgVersion());
+ 
+@@ -279,6 +279,8 @@ void main() {
+ 	Sprite fbo_s2 = new Sprite(fbo_img2);
+ 	fbo_s2.setPosition(680, 50);
+ 
++	Clock myclock = new Clock();
++
+ 	Event event;
+ 
+ 	while (wnd.isOpen()) {
+@@ -320,7 +322,7 @@ void main() {
+ 		tof.slide();
+ 		wnd.draw(tof);
+ 
+-		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
++		text.format("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
+ 
+ 		/*
+ 		if (Keyboard.isPressed(Keyboard.Code.Left))
+@@ -333,7 +335,7 @@ void main() {
+ 			switch (event.type) { /* Process the appropriate event type */
+ 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
+ 					writeln("Oh! Key press: ", event.keyboard.code);
+-					Time time = wnd.getClock().getTime();
++					Time time = Clock.getTime();
+ 					writefln("Game Loop runs now for %d ms - %f secs - %f min",
+ 							 time.msecs, time.seconds, time.minutes);
+ 

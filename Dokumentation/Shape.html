@@ -31,21 +31,20 @@
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Smooth.Hint"></a>enum <u>Hint</u>;
+<dt><big><a name="Smooth.Mode"></a>enum <u>Mode</u>;
 </big></dt>
-<dd>Smooth Hints to determine
- which kind of smoothing is made.<br><br>
+<dd>The smooth mode<br><br>
 
-<dl><dt><big><a name="Smooth.Hint.DontCare"></a><u>DontCare</u></big></dt>
+<dl><dt><big><a name="Smooth.Mode.DontCare"></a><u>DontCare</u></big></dt>
 <dd>The OpenGL implementation decide on their own. <br><br>
 
 </dd>
-<dt><big><a name="Smooth.Hint.Fastest"></a><u>Fastest</u></big></dt>
+<dt><big><a name="Smooth.Mode.Fastest"></a><u>Fastest</u></big></dt>
 <dd><u>Fastest</u> kind of smooth (default). <br><br>
 
 </dd>
-<dt><big><a name="Smooth.Hint.Nicest"></a><u>Nicest</u></big></dt>
-<dd><u>Nicest</u> but lowest kind of smooth. <br><br>
+<dt><big><a name="Smooth.Mode.Nicest"></a><u>Nicest</u></big></dt>
+<dd><u>Nicest</u> but slowest kind of smooth. <br><br>
 
 </dd>
 </dl>
@@ -55,9 +54,9 @@
 <dd>Returns the current target<br><br>
 
 </dd>
-<dt><big><a name="Smooth.getHint"></a>const pure nothrow Hint <u>getHint</u>();
+<dt><big><a name="Smooth.getMode"></a>const pure nothrow Mode <u>getMode</u>();
 </big></dt>
-<dd>Return the current hint<br><br>
+<dd>Return the current mode<br><br>
 
 </dd>
 </dl>
@@ -139,9 +138,9 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Hint <i>sHint</i> = Smooth.Hint.Fastest);
+<dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Mode <i>sMode</i> = Smooth.Mode.Fastest);
 </big></dt>
-<dd>Set target and hint of smoothing.<br><br>
+<dd>Set target and mode of smoothing.<br><br>
 
 </dd>
 <dt><big><a name="Shape.getSmooth"></a>final const pure nothrow ref const(Smooth) <u>getSmooth</u>();

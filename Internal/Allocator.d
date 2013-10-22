@@ -1,16 +1,15 @@
-module Dgame.Core.Memory.Allocator;
+module Dgame.Internal.Allocator;
 
 private {
 	debug import std.stdio : writefln;
 	import core.stdc.stdlib : malloc, free;
 }
 
-struct Allocator {
+struct ScopeAllocator {
 private:
 	enum Limit = 8;
 
 	void*[Limit] _memory;
-
 	int _counter;
 
 public:
@@ -36,21 +35,19 @@ public:
 	}
 
 	T[] allocate(T = void)(size_t N) {
-		debug writefln("Allocate the %d object with N = %d.", this._counter, N);
+		debug writefln("Allocate the %d object with N = %d.", this._counter + 1, N);
 
 		if (this.remain() == 0)
 			throw new Exception("Reached MemoryPool limit.");
-		
+
 		this._memory[this._counter] = malloc(N * T.sizeof);
 		scope(exit) this._counter++;
 
 		return (cast(T*) this._memory[this._counter])[0 .. N];
 	}
 
-	alias alloc = allocate;
-
 	bool deallocate(ref void* ptr) {
-		debug writefln("Deallocate an object (%d remain)", this._counter);
+		debug writefln("Deallocate an object (%d remain)", this._counter - 1);
 
 		size_t i = 0;
 		for ( ; i < Limit; ++i) {
@@ -73,7 +70,7 @@ public:
 		}
 
 		if (i < this._memory.length) {
-			debug writefln("\tDeallocated the %d object.", i);
+			debug writefln("\tDeallocated the %d object.", i + 1);
 
 			return true;
 		}

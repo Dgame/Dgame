@@ -11,7 +11,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.sdl2.image;
 	
-	import Dgame.Core.Memory.SmartPointer.Shared;
+	import Dgame.Internal.Shared;
 	
 	import Dgame.Math.Rect;
 	import Dgame.Math.Vector2;
@@ -49,7 +49,7 @@ public:
 	enum GMask = 0; /** Default Green Mask. */
 	enum BMask = 0; /** Default Blue Mask. */
 	
-	version (LittleEndian) {
+	version(LittleEndian) {
 		enum AMask = 0xff000000;
 	} else {
 		enum AMask = 0x000000ff;
@@ -110,8 +110,9 @@ public:
 		this.loadFromFile(filename);
 	}
 	
+	debug(Dgame)
 	this(this) {
-		debug writeln("Postblit Surface: ",
+		writeln("Postblit Surface: ",
 		              this._target.usage, ':',
 		              this.filename, ", ",
 		              this.filename.ptr);
@@ -122,7 +123,6 @@ public:
 	 */
 	void opAssign(ref Surface rhs) {
 		debug writeln("opAssign lvalue");
-		
 		this._filename = rhs.filename;
 		this._target = rhs._target;
 	}
@@ -135,22 +135,23 @@ public:
 		this.opAssign(rhs);
 	}
 	
+	debug(Dgame)
 	~this() {
-		debug writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
+		writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
 	}
 	
 	/**
 	 * Destroy the current Surface <b>and all</b>, which are linked to this Surface</b>.
 	 */
 	void free() {
-		debug writeln("Free Surface", ':', this.filename);
-		this._target.collect();
+		debug writeln("Free Surface:", this.filename);
+		this._target.dissolve();
 	}
 	
 	/**
 	 * Returns the current use count
 	 */
-	uint useCount() const pure nothrow {
+	int useCount() const pure nothrow {
 		return this._target.usage;
 	}
 	
@@ -760,6 +761,8 @@ public:
 		return flipped;
 	}
 } unittest {
+	writeln("<Surface unittest>");
+
 	Surface s1 = Surface.make(64, 64, 32);
 	
 	assert(s1.useCount() == 1, to!string(s1.useCount()));
@@ -786,4 +789,6 @@ public:
 		assert(s2.useCount() == 2, to!string(s2.useCount()));
 	}
 	assert(s1.useCount() == 1, to!string(s1.useCount()));
+
+	writeln("</Surface unittest>");
 }

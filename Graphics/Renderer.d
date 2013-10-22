@@ -3,12 +3,12 @@ module Dgame.Graphics.Renderer;
 private {
 	import derelict.sdl2.sdl;
 	
+	import Dgame.Internal.Unique;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.RendererTexture;
 	import Dgame.Window.Window;
-	import Dgame.Core.Memory.SmartPointer.Unique;
 }
 
 /**

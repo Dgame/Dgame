@@ -16,7 +16,7 @@ pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictGL3.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictAL.lib");
 pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictOGG.lib");
 
-import Dgame.Core.core : getDgVersion;
+import Dgame.Internal.core : getDgVersion;
 
 pragma(msg, getDgVersion());
 
@@ -279,6 +279,8 @@ void main() {
 	Sprite fbo_s2 = new Sprite(fbo_img2);
 	fbo_s2.setPosition(680, 50);
 
+	Clock myclock = new Clock();
+
 	Event event;
 
 	while (wnd.isOpen()) {
@@ -320,7 +322,7 @@ void main() {
 		tof.slide();
 		wnd.draw(tof);
 
-		text.format("Current Fps: %d <=> %d", wnd.getClock().getCurrentFps(), wnd.getFpsLimit());
+		text.format("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
 
 		/*
 		if (Keyboard.isPressed(Keyboard.Code.Left))
@@ -333,7 +335,7 @@ void main() {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
 					writeln("Oh! Key press: ", event.keyboard.code);
-					Time time = wnd.getClock().getTime();
+					Time time = Clock.getTime();
 					writefln("Game Loop runs now for %d ms - %f secs - %f min",
 							 time.msecs, time.seconds, time.minutes);
 

@@ -1,4 +1,4 @@
-module Dgame.Core.Math;
+module Dgame.Internal.Math;
 
 private import std.math : fabs;
 

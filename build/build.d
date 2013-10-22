@@ -129,7 +129,7 @@ static this() {
 		
 	// Initializes the source path map.
 	pathMap = [
-		Pack.Core.name.toUpper() : Pack.Core,
+		Pack.Internal.name.toUpper() : Pack.Core,
 		Pack.Audio.name.toUpper() : Pack.Audio,
 		Pack.Graphics.name.toUpper() : Pack.Graphics,
 		Pack.Math.name.toUpper() : Pack.Math,

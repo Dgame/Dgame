@@ -7,7 +7,7 @@ private {
 	
 	import derelict.openal.al;
 	
-	//import Dgame.Core.AutoRef;
+	//import Dgame.Internal.AutoRef;
 	
 	import Dgame.Audio.SoundFile;
 	import Dgame.Audio.VorbisFile;

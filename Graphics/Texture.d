@@ -92,6 +92,17 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
 	}
 }
 
+Texture.Format compressFormat(Texture.Format fmt) pure {
+	switch (fmt) {
+		case Texture.Format.RGB:  return Texture.Format.CompressedRGB;
+		case Texture.Format.RGBA: return Texture.Format.CompressedRGBA;
+		case Texture.Format.CompressedRGB:
+		case Texture.Format.CompressedRGBA:
+			return fmt;
+		default: return Texture.Format.None;
+	}
+}
+
 private GLuint*[] _TexFinalizer;
 
 static ~this() {
@@ -151,7 +162,19 @@ public:
 		BGRA  = GL_BGRA,	/** Alias for GL_BGRA */
 		Alpha = GL_ALPHA,	/** Alias for GL_ALPHA */
 		Luminance = GL_LUMINANCE, /** Alias for GL_LUMINANCE */
-		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */
+		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */,
+		CompressedRGB = GL_COMPRESSED_RGB, /// Compressed RGB
+		CompressedRGBA = GL_COMPRESSED_RGBA /// Compressed RGBA
+	}
+
+	/**
+	 * Compression modes
+	 */
+	enum Compression {
+		None, /// No compression
+		DontCare = GL_DONT_CARE, /// The OpenGL implementation decide on their own
+		Fastest  = GL_FASTEST, /// Fastest compression
+		Nicest   = GL_NICEST /// Nicest but slowest mode of compression
 	}
 
 private:
@@ -160,10 +183,11 @@ private:
 	ushort _width, _height;
 	ubyte _depth;
 	
-	bool _isSmooth;
-	bool _isRepeated;
+	bool _isSmooth = false;
+	bool _isRepeated = false;
 	
 	Format _format;
+	Compression _comp = Compression.None;
 	
 package:
 	void _render(const Render* render) const {
@@ -261,24 +285,10 @@ final:
 		this.bind();
 	}
 
-	this(GLuint t_id, ushort width, ushort height, ubyte depth, Format t_fmt = Format.None) {
-		assert(depth != 0 || t_fmt != Format.None);
-
-		this._texId = t_id;
-
-		this._width  = width;
-		this._height = height;
-		this._depth  = depth == 0 ? formatToBits(t_fmt) : depth;
-		this._format = t_fmt == Format.None ? bitsToFormat(depth) : t_fmt;
-
-		this._isSmooth = false;
-		this._isRepeated = false;
-	}
-	
 	/**
 	 * Postblit
 	 */
-	this(ref const Texture tex, Format t_fmt = Format.None) {
+	this(const Texture tex, Format t_fmt = Format.None) {
 		this.loadFromMemory(tex.getMemory(),
 		                    tex.width, tex.height, tex.depth,
 		                    t_fmt ? t_fmt : tex.getFormat());
@@ -424,6 +434,36 @@ final:
 	bool isRepeated() const pure nothrow {
 		return this._isRepeated;
 	}
+
+	/**
+	 * (Re)Set the compression mode.
+	 * 
+	 * See: Compression enum
+	*/
+	void setCompression(Compression comp) {
+		this._comp = comp;
+	}
+
+	/**
+	 * Returns the current Compression mode.
+	 *
+	 * See: Compression enum
+	 */
+	Compression getCompression() const pure nothrow {
+		return this._comp;
+	}
+
+	/**
+	 * Checks whether the current Texture is compressed or not.
+	 */
+	bool isCompressed() const {
+		this.bind();
+
+		GLint compressed;
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &compressed);
+
+		return compressed != 1;
+	}
 	
 	/**
 	 * Load from memory.
@@ -432,6 +472,7 @@ final:
 						ubyte depth, Format fmt = Format.None)
 	in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
+		assert(depth >= 8 || fmt != Format.None, "Need a depth or a format.");
 	} body {
 		/// Possible speedup because 'glTexSubImage2D'
 		/// is often faster than 'glTexImage2D'.
@@ -443,13 +484,22 @@ final:
 			}
 		}
 		
-		this._format = !fmt ? bitsToFormat(depth) : fmt;
+		this._format = fmt == Format.None ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
+		depth = depth < 8 ? formatToBits(this._format) : depth;
 
 		this.bind();
+
+		Format format = Format.None;
+		// Compression
+		if (this._comp != Compression.None) {
+			glHint(GL_TEXTURE_COMPRESSION_HINT, this._comp);
+			format = compressFormat(this._format);
+		}
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, true);
+		glTexImage2D(GL_TEXTURE_2D, 0, 
+					 format == Format.None ? depth / 8 : format,
+					 width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
@@ -458,6 +508,14 @@ final:
 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
+		glGenerateMipmap(GL_TEXTURE_2D); // We want MipMaps
+
+		debug {
+			if (format != Format.None) {
+				if (!this.isCompressed())
+					writeln("\tTexture wurde nicht komprimiert : ", cast(Format) format, "::", this._format);
+			}
+		}
 		
 		this._width  = width;
 		this._height = height;

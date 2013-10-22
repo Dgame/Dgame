@@ -6,8 +6,6 @@ private {
 	import derelict.sdl2.sdl;
 }
 
-///version = Develop;
-
 private SDL_Color[void*] _ColorStore;
 
 static ~this() {
@@ -63,7 +61,7 @@ public:
 		this.alpha = cast(ubyte)(ubyte.max * alpha);
 	}
 	
-	version(Develop)
+	debug(Dgame)
 	this(this) {
 		debug writeln("Postblit Color");
 	}

@@ -1,4 +1,4 @@
-module Dgame.Core.Memory.SmartPointer.Unique;
+module Dgame.Internal.Unique;
 
 void dummy_deleter(void* ptr) pure nothrow {
 	

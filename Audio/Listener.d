@@ -1,7 +1,7 @@
 module Dgame.Audio.Listener;
 
 private {
-	import Dgame.Audio.Core.core;
+	import Dgame.Audio.Internal.core;
 	import Dgame.Math.VecN;
 }
 

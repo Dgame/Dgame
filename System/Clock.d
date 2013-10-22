@@ -94,6 +94,22 @@ public:
 	uint getElapsedTicks() const {
 		return SDL_GetTicks() - this._startTime;
 	}
+
+	/**
+	* Returns the current framerate per seconds.
+	*/
+	uint getCurrentFps() {
+		if (this.getElapsedTicks() >= 1000) {
+			this._currentFps = this._numFrames;
+
+			this._numFrames = 0;
+			this.reset();
+		}
+
+		this._numFrames++;
+
+		return this._currentFps;
+	}
 	
 	/**
 	 * Returns the milliseconds since the application was started.
@@ -130,21 +146,5 @@ public:
 	 */
 	static ulong getPerformanceFrequency() {
 		return SDL_GetPerformanceFrequency();
-	}
-	
-	/**
-	 * Returns the current framerate per seconds.
-	 */
-	uint getCurrentFps() {
-		if (this.getElapsedTicks() >= 1000) {
-			this._currentFps = this._numFrames;
-			
-			this._numFrames = 0;
-			this.reset();
-		}
-		
-		this._numFrames++;
-		
-		return this._currentFps;
 	}
 }

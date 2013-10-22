@@ -23,8 +23,8 @@ static ~this() {
 	debug writeln("Finalize Font");
 
 	for (size_t i = 0; i < _FontFinalizer.length; ++i) {
-		if (_FontFinalizer[i]) {
-			debug writeln("Finalize font ", i);
+		if (_FontFinalizer[i] !is null) {
+			debug writeln(" -> Finalize font ", i, "::", _FontFinalizer[i].ptr);
 			_FontFinalizer[i].free();
 		}
 	}
@@ -129,7 +129,7 @@ protected:
 		if (this._shouldUpdate)
 			this._update();
 		
-		 // we need nothing for the text, so null is given
+		 // we need nothing to render the text, so null is given
 		this._tex._render(null);
 	}
 	
@@ -150,7 +150,7 @@ public:
 	this(Font font, string text = null) {
 		this(font, text);
 	}
-	
+
 	/**
 	 * Check whether the bounding box of this Text collide
 	 * with the bounding box of another Text

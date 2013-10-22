@@ -8,10 +8,8 @@ private {
 
 	import derelict.sdl2.ttf;
 
-	import Dgame.Core.Memory.SmartPointer.Shared;
+	import Dgame.Internal.Shared;
 }
-
-///version = Develop;
 
 /**
 * Font is the low-level class for loading and manipulating character fonts.
@@ -77,7 +75,7 @@ public:
 	/**
 	* Postblit
 	*/
-	version(Develop)
+	debug(Dgame)
 	this(this) {
 		debug writeln("Font Postblit");
 	}
@@ -107,7 +105,7 @@ public:
 	/**
 	* DTor
 	*/
-	version(Develop)
+	debug(Dgame)
 	~this() {
 		writeln("Close Font");
 	}
@@ -116,7 +114,7 @@ public:
 	* Close and release the current font <b>and all</b> which are linked to this Font.
 	*/
  	void free() {
-		this._target.collect();
+		this._target.dissolve();
 	}
 
 	/**
@@ -222,11 +220,12 @@ public:
 	/**
 	* Returns the current use count
 	*/
-	uint useCount() const pure nothrow {
+	int useCount() const pure nothrow {
 		return this._target.usage;
 	}
 } unittest {
 	writeln("<Font unittest>");
+
 	{
 		Font f1 = Font("samples/font/arial.ttf", 14);
 
@@ -255,5 +254,6 @@ public:
 		}
 		assert(f1.useCount() == 1, to!string(f1.useCount()));
 	}
+
 	writeln("</Font unittest>");
 }

@@ -5,7 +5,7 @@ private {
 	
 	import derelict.opengl3.gl;
 	
-	import Dgame.Core.core;
+	import Dgame.Internal.core;
 	import Dgame.Graphics.Texture;
 }
 

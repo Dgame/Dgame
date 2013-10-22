@@ -5,10 +5,8 @@ private {
 	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
 	
-	import Dgame.Core.Math : fpEqual;
+	import Dgame.Internal.Math : fpEqual;
 }
-
-//version = Develop;
 
 @safe
 private bool equals(T, U)(const T a, const U b) pure nothrow 
@@ -60,7 +58,7 @@ public:
 		this(vec.x, vec.y);
 	}
 	
-	version(Develop)
+	debug(Dgame)
 	this(this) {
 		writeln("Postblit Vector2");
 	}
@@ -72,12 +70,7 @@ public:
 		debug writeln("opAssign Vector2");
 		this.set(rhs.x, rhs.y);
 	}
-	
-	version(Develop)
-	~this() {
-		writeln("DTor Vector2");
-	}
-	
+
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */

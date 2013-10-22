@@ -1,7 +1,7 @@
 module Dgame.Graphics.Shape;
 
 private {
-	import std.math : sin, cos, PI;
+	import std.math : sin, cos;
 	import std.algorithm : remove;
 	import core.stdc.string : memcpy;
 	
@@ -17,6 +17,8 @@ private {
 	import Dgame.System.VertexArrayObject;
 }
 
+enum PIx2 = 3.14 * 2;
+
 /**
  * Smooth wrapper
  */
@@ -25,21 +27,20 @@ public:
 	/**
 	 * Supported smooth targets.
 	 */
-	enum Target : ushort {
+	enum Target {
 		None,					 /** No smooth (default). */
 		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
 		Line  = GL_LINE_SMOOTH,   /** Enable smooth for lines. */
-		Polygon = GL_POLYGON_SMOOTH_HINT /** Enable smooth for polygons. */
+		Polygon = GL_POLYGON_SMOOTH /** Enable smooth for polygons. */
 	}
 	
 	/**
-	 * Smooth Hints to determine
-	 * which kind of smoothing is made.
+	 * The smooth mode
 	 */
-	enum Hint : ushort {
+	enum Mode {
 		DontCare = GL_DONT_CARE, /** The OpenGL implementation decide on their own. */
 		Fastest = GL_FASTEST,    /** Fastest kind of smooth (default). */
-		Nicest  = GL_NICEST	     /** Nicest but lowest kind of smooth. */
+		Nicest  = GL_NICEST	     /** Nicest but slowest kind of smooth. */
 	}
 	
 	@disable
@@ -54,21 +55,35 @@ public:
 	Target getTarget() const pure nothrow {
 		return this.target;
 	}
-	
+
 	/**
-	 * Return the current hint
-	 */
-	Hint getHint() const pure nothrow {
-		return this.hint;
+	* Return the current mode
+	*/
+	Mode getMode() const pure nothrow {
+		return this.mode;
 	}
 	
 private:
 	Target target;
-	Hint hint;
+	Mode mode;
+	GLenum hint;
 	
-	this(Target trg, Hint h) {
+	this(Target trg, Mode mode) {
 		this.target = target;
-		this.hint = h;
+		this.mode = mode;
+
+		final switch (this.target) {
+			case Target.None: break;
+			case Target.Point:
+				this.hint = GL_POINT_SMOOTH_HINT;
+				break;
+			case Target.Line:
+				this.hint = GL_LINE_SMOOTH_HINT;
+				break;
+			case Target.Polygon:
+				this.hint = GL_POLYGON_SMOOTH_HINT;
+				break;
+		}
 	}
 }
 
@@ -230,7 +245,7 @@ protected:
 			if (!glIsEnabled(this._smooth.target))
 				glEnable(this._smooth.target);
 			
-			glHint(this._smooth.target, this._smooth.hint);
+			glHint(this._smooth.hint, this._smooth.mode);
 		}
 		
 		if (glIsEnabled(GL_TEXTURE_2D))
@@ -263,7 +278,7 @@ final:
 		this._lineWidth = 2;
 		
 		this._type = type;
-		this._smooth = Smooth(Smooth.Target.None, Smooth.Hint.Fastest);
+		this._smooth = Smooth(Smooth.Target.None, Smooth.Mode.Fastest);
 	}
 	
 	/**
@@ -274,11 +289,11 @@ final:
 	}
 	
 	/**
-	 * Set target and hint of smoothing.
+	 * Set target and mode of smoothing.
 	 */
-	void setSmooth(Smooth.Target sTarget, Smooth.Hint sHint = Smooth.Hint.Fastest) pure nothrow {
+	void setSmooth(Smooth.Target sTarget, Smooth.Mode sMode = Smooth.Mode.Fastest) pure nothrow {
 		this._smooth.target = sTarget;
-		this._smooth.hint = sHint;
+		this._smooth.mode = sMode;
 	}
 	
 	/**
@@ -477,7 +492,6 @@ final:
 	static Shape makeCircle(ubyte radius, ref const Vector2f center, ubyte vecNum = 30) in {
 		assert(vecNum >= 10, "Need at least 10 vectors for a circle.");
 	} body {
-		enum PIx2 = PI * 2;
 		const float Deg2Rad = PIx2 / vecNum;
 		
 		Shape qs = new Shape(Type.LineLoop);

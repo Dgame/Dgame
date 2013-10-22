@@ -1,6 +1,6 @@
 module Dgame.Audio.all;
 
-private import Dgame.Audio.Core.core;
+private import Dgame.Audio.Internal.core;
 
 public {
 	import Dgame.Audio.Sound;
