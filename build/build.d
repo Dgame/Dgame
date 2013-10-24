@@ -100,7 +100,7 @@ struct Package {
 
 final abstract class Pack {
 public:
-	static const Core	= Package("Core",	SrcDgame ~ "Core/");
+	static const Internal = Package("Internal",	SrcDgame ~ "Internal/");
 	static const Audio	= Package("Audio",	SrcDgame ~ "Audio/");
 	static const Graphics = Package("Graphics", SrcDgame ~ "Graphics/");
 	static const Math 	= Package("Math",	SrcDgame ~ "Math/");
@@ -129,7 +129,7 @@ static this() {
 		
 	// Initializes the source path map.
 	pathMap = [
-		Pack.Internal.name.toUpper() : Pack.Core,
+		Pack.Internal.name.toUpper() : Pack.Internal,
 		Pack.Audio.name.toUpper() : Pack.Audio,
 		Pack.Graphics.name.toUpper() : Pack.Graphics,
 		Pack.Math.name.toUpper() : Pack.Math,
