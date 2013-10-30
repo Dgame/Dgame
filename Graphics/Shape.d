@@ -7,6 +7,8 @@ private {
 	
 	import derelict.opengl3.gl;
 
+	import Dgame.Internal.Array;
+
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;

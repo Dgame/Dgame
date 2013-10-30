@@ -9,6 +9,8 @@ private {
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
+
+	import Dgame.Internal.Array;
 	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
@@ -171,7 +173,7 @@ private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) .read(this._filename));
 		
-		vec3f[] vertices;
+		array!vec3f vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -244,15 +246,14 @@ private:
 	}
 	
 	void _loadTileset() in {
-		assert(this._tmi.tileWidth == this._tmi.tileHeight,
-		       "Tile dimensions must be equal.");
+		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
 	} body {
 		SubSurface[] subs;
 		
 		ushort[2][ushort] used;
 		ushort[2]*[] coordinates;
 		
-		uint doubly = 0;
+		//uint doubly = 0;
 		
 		Surface tileset = Surface(this._tmi.source);
 		ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
@@ -266,8 +267,8 @@ private:
 					src.setPosition(used[t.gid][0], used[t.gid][1]); /// TODO: May Fixed in 2.064?
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 				}
-			} else
-				doubly++;
+			}/* else
+				doubly++;*/
 			
 			coordinates ~= &used[t.gid];
 		}
@@ -278,9 +279,7 @@ private:
 		this._loadTexCoords(coordinates);
 	}
 	
-	void _compress(ref Surface tileset,
-	               ref ushort[2][ushort] used, ref SubSurface[] subs)
-	{
+	void _compress(ref Surface tileset, ushort[2][ushort] used, SubSurface[] subs) {
 		if (this._doCompress) {
 			const ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
@@ -333,9 +332,9 @@ private:
 		}
 	}
 	
-	void _loadTexCoords(ref ushort[2]*[] coordinates) {
+	void _loadTexCoords(ushort[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		vec2f[] texCoords;
+		array!vec2f texCoords;
 		texCoords.reserve(coordinates.length * 4);
 		
 		debug writefln("TileMap: Reserve %d texCoords (%d).",

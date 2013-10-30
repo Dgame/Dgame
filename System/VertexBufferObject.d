@@ -117,11 +117,10 @@ private:
 	
 	Primitive.Target _curTarget;
 	
-	const ubyte _targetNums;
-	const ubyte[Primitive.Target] _targetIds;
-	
+	/*const */ubyte _targetNums;
+	/*const */ubyte[Primitive.Target] _targetIds;
 	bool[Primitive.Target] _dataAssigned;
-	
+
 public:
 	/**
 	 * CTor
@@ -132,19 +131,18 @@ public:
 		
 		this.type = type;
 		this.targets = trg;
-		
-		ubyte num = 0;
+
+		this._targetNums = 0;
 		if (Primitive.Target.Vertex & trg)
-			this._targetIds[Primitive.Target.Vertex] = num++;
+			this._targetIds[Primitive.Target.Vertex] = this._targetNums++;
 		if (Primitive.Target.Color & trg)
-			this._targetIds[Primitive.Target.Color] = num++;
+			this._targetIds[Primitive.Target.Color] = this._targetNums++;
 		if (Primitive.Target.TexCoords & trg)
-			this._targetIds[Primitive.Target.TexCoords] = num++;
-		
-		this._targetNums = num;
+			this._targetIds[Primitive.Target.TexCoords] = this._targetNums++;
+
 		this._curTarget = Primitive.Target.None;
 		
-		glGenBuffers(num, &this._vboId[0]);
+		glGenBuffers(this._targetNums, &this._vboId[0]);
 		
 		foreach (Primitive.Target id, _; this._targetIds) {
 			this.bind(id);

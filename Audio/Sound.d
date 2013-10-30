@@ -142,7 +142,6 @@ final:
 	 */
 	this() {
 		this._alChunk.init();
-		
 		this._status = Status.None;
 		
 		_ALFinalizer ~= &this._alChunk;
@@ -224,11 +223,10 @@ final:
 		assert(soundfile !is null, "Soundfile is null.");
 	} body {
 		const SoundFile* sFile = &soundfile.getData();
-		
 		this._soundfile = soundfile;
 		
 		/// Load
-		Channel ch;
+		Channel ch = void;
 		switch (sFile.bits) {
 			case 8:
 				if (sFile.channels == 1)
@@ -331,7 +329,7 @@ final:
 	/**
 	 * Returns the soundfile.
 	 */
-	final ref BaseSoundFile getSoundFile() {
+	final BaseSoundFile getSoundFile() {
 		return this._soundfile;
 	}
 	

@@ -19,9 +19,9 @@ protected:
 	override void _read(string filename) {
 		//scope(failure) throw new Exception("It seems that is not a valid wave file: " ~ to!string(alGetError()));
 		
-		_sFile.filename = filename;
+		super._sFile.filename = filename;
 		
-		FILE* fp = fopen(filename.ptr, "rb");
+		FILE* fp = fopen(filename.ptr, "rb".ptr);
 		
 		char[4] buf;
 		fread(&buf, char.sizeof, 4, fp);
@@ -29,9 +29,9 @@ protected:
 			throw new Exception("No Riff");
 		
 		fread(&buf, uint.sizeof, 1, fp);
-		fread(&_sFile.type, char.sizeof, 4, fp);
+		fread(&super._sFile.type, char.sizeof, 4, fp);
 		
-		if (_sFile.type != "WAVE")
+		if (super._sFile.type != "WAVE")
 			throw new Exception("No WAVE");
 		
 		fread(&buf, char.sizeof, 4, fp);
@@ -44,23 +44,23 @@ protected:
 		
 		fread(&chunkSize, uint.sizeof, 1, fp);
 		fread(&formatType, short.sizeof, 1, fp);
-		fread(&_sFile.channels, short.sizeof, 1, fp);
-		fread(&_sFile.rate, uint.sizeof, 1, fp);
+		fread(&super._sFile.channels, short.sizeof, 1, fp);
+		fread(&super._sFile.rate, uint.sizeof, 1, fp);
 		fread(&avgBytesPerSec, uint.sizeof, 1, fp);
-		fread(&_sFile.bytes, short.sizeof, 1, fp);
-		fread(&_sFile.bits, short.sizeof, 1, fp);
+		fread(&super._sFile.bytes, short.sizeof, 1, fp);
+		fread(&super._sFile.bits, short.sizeof, 1, fp);
 		
 		fread(&buf, char.sizeof, 4, fp);
 		if (buf != "data")
 			throw new Exception("Missing DATA");
 		
-		fread(&_sFile.dataSize, uint.sizeof, 1, fp);
-		debug writefln("Allocate %d memory for Wave.", _sFile.dataSize);
-		_sFile.buffer = new byte[_sFile.dataSize];
+		fread(&super._sFile.dataSize, uint.sizeof, 1, fp);
+		debug writefln("Allocate %d memory for Wave.", super._sFile.dataSize);
+		super._sFile.buffer = new byte[super._sFile.dataSize];
 		
-		assert(_sFile.buffer !is null);
-		fread(_sFile.buffer.ptr, byte.sizeof, _sFile.dataSize, fp);
-		assert(_sFile.buffer !is null);
+		debug assert(super._sFile.buffer !is null);
+		fread(super._sFile.buffer.ptr, byte.sizeof, super._sFile.dataSize, fp);
+		debug assert(super._sFile.buffer !is null);
 		
 		fclose(fp);
 		fp = null;

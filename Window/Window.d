@@ -6,7 +6,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Internal.Allocator : ScopeAllocator;
+	import Dgame.Internal.Allocator : Type;
 
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -95,10 +95,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this(VideoMode videoMode, string title = DefaultTitle,
-	     Style style = Window.Style.Default,
-	     short x = DefaultXPos, short y = DefaultYPos)
-	{
+	this(VideoMode videoMode, string title = DefaultTitle, Style style = Window.Style.Default, short x = DefaultXPos, short y = DefaultYPos) {
 		/// Create an application window with the following settings:
 		this._window = SDL_CreateWindow(title.ptr,	///    const char* title
 		                                x,	///    int x: initial x position
@@ -111,11 +108,6 @@ public:
 			throw new Exception("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
 		
 		if (style & Style.OpenGL) {
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 3);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 3);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 2);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 			
@@ -175,9 +167,9 @@ public:
 		if (this._window is null && this._glContext is null)
 			return;
 
-		/// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
+		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
 		SDL_GL_DeleteContext(this._glContext);  
-		/// Close and destroy the window
+		// Close and destroy the window
 		SDL_DestroyWindow(this._window);
 		
 		this._glContext = null;
@@ -260,18 +252,15 @@ public:
 	 * ----
 	 */
 	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
-		Surface _capture = Surface.make(this.width, this.height);
+		Surface mycapture = Surface.make(this.width, this.height);
 		
-		ubyte* pixels = cast(ubyte*) _capture.getPixels();
-		glReadPixels(0, 0, this.width, this.height,
-		             fmt, GL_UNSIGNED_BYTE, pixels);
+		ubyte* pixels = cast(ubyte*) mycapture.getPixels();
+		glReadPixels(0, 0, this.width, this.height, fmt, GL_UNSIGNED_BYTE, pixels);
 		
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		ScopeAllocator m;
-		ubyte[] tmpLine = m.allocate!ubyte(lineWidth);
-
+		auto tmpLine = Type!ubyte[lineWidth];
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
 		for (uint i = 0; i < this.height / 2; ++i) {
@@ -284,11 +273,11 @@ public:
 			tmpLine[] = pixels[tmpIdx1 .. tmpIdx2];
 			ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
 			
-			pixels[tmpIdx1 .. tmpIdx2][] = switchLine[];
-			pixels[switchIdx1 .. switchIdx2][] = tmpLine[];
+			pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
+			pixels[switchIdx1 .. switchIdx2] = tmpLine[];
 		}
 		
-		return _capture;
+		return mycapture;
 	}
 	
 	/**

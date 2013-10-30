@@ -1,92 +1,136 @@
+/**
+ * @file 
+ *
+ * allocator class.
+ */
 module Dgame.Internal.Allocator;
 
 private {
-	debug import std.stdio : writefln;
+	debug import std.stdio;
 	import core.stdc.stdlib : malloc, free;
 }
 
-struct ScopeAllocator {
-private:
-	enum Limit = 8;
-
-	void*[Limit] _memory;
-	int _counter;
-
-public:
-	@disable
-	this(this);
-
-	~this() {
-		this.collect();
+struct Type(T, const size_t StackSize = 4096 / T.sizeof) {
+	static {
+		T[StackSize] StackBuffer = void;
+		size_t StackLength;
 	}
 
-	void collect() {
-		debug writefln("Collect all (%d objects)", this._counter);
+	/**
+	 * This structure represents a Variable Length Array as you may known from C99.
+	 *
+	 * @author: Besitzer
+	 * @date: 27.10.2013
+	 */
+	static struct Vala {
+		T* ptr;
+		const size_t length;
+		const bool onHeap;
 
-		for (size_t i = 0; i < this._memory.length; ++i) {
-			if (this._memory[i] is null)
-				continue;
+		@disable
+		this(this);
 
-			free(this._memory[i]);
-			this._memory[i] = null;
-		}
+		~this() {
+			debug writeln("DTor Vala");
+			debug writeln("StackLength: ", StackLength);
 
-		this._counter = 0;
-	}
+			if (!this.onHeap)
+				StackLength -= this.length;
+			else if (this.ptr !is null) {
+				debug writefln("Deallocate %d elements.", this.length);
 
-	T[] allocate(T = void)(size_t N) {
-		debug writefln("Allocate the %d object with N = %d.", this._counter + 1, N);
-
-		if (this.remain() == 0)
-			throw new Exception("Reached MemoryPool limit.");
-
-		this._memory[this._counter] = malloc(N * T.sizeof);
-		scope(exit) this._counter++;
-
-		return (cast(T*) this._memory[this._counter])[0 .. N];
-	}
-
-	bool deallocate(ref void* ptr) {
-		debug writefln("Deallocate an object (%d remain)", this._counter - 1);
-
-		size_t i = 0;
-		for ( ; i < Limit; ++i) {
-			if (this._memory[i] == ptr) {
-				free(this._memory[i]);
-
-				this._memory[i] = null;
-				ptr = null;
-
-				this._counter--;
-
-				if (i != this._counter && this._counter >= 0) {
-					auto tmp = this._memory[this._counter];
-					this._memory[i] = tmp;
-					this._memory[this._counter] = null;
-				}
-
-				break;
+				.free(this.ptr);
 			}
 		}
 
-		if (i < this._memory.length) {
-			debug writefln("\tDeallocated the %d object.", i + 1);
-
-			return true;
+		inout(T[]) opSlice() inout {
+			return this.ptr[0 .. this.length];
 		}
 
-		return false;
+		void opSliceAssign(T item) {
+			for (size_t i = 0; i < this.length; ++i) {
+				this.ptr[i] = item;
+			}
+		}
+
+		void opSliceAssign(T[] items) {
+			const size_t len = this.length > items.length ? items.length : this.length;
+			for (size_t i = 0; i < len; ++i) {
+				this.ptr[i] = items[i];
+			}
+		}
+
+		void opSliceOpAssign(string op)(T item) {
+			for (size_t i = 0; i < this.length; ++i) {
+				mixin("this.ptr[i] " ~ op ~ "= item;");
+			}
+		}
+
+		alias ptr this;
 	}
 
-	int count() const pure nothrow {
-		return this._counter;
-	}
+	/**
+	 * This is the start method to initialize a Variable Length Array.
+	 *
+	 * @author: Besitzer
+	 * @date: 27.10.2013
+	 */
+	static Vala opIndex(size_t N) {
+		if ((StackLength + N) <= StackSize) {
+			debug writefln("Allocate %d elements on the stack.", N);
+			scope(exit) StackLength += N;
 
-	ushort remain() const pure nothrow {
-		// to avoid a cast...
-		ushort max = Limit;
-		max -= this._counter;
+			return Vala(&StackBuffer[StackLength], N, false);
+		}
 
-		return max;
+		debug writefln("Allocate %d elements on the heap.", N);
+
+		return Vala(cast(T*) .malloc(N * T.sizeof), N, true);
 	}
+}
+
+unittest {
+	int n = 128;
+	auto t = Type!int[n];
+
+	assert(t.length == n);
+	assert(t.onHeap == false);
+
+	int[] arr = t[];
+	assert(arr.length == n);
+
+	t[0] = 42;
+	assert(arr[0] == t[0] && t[0] == 42);
+
+	ushort w = 1024;
+	ushort h = 640;
+
+	auto foo1 = Type!ubyte[w * h * 4];
+	assert(foo1.length == w * h * 4);
+	assert(foo1.onHeap == true);
+
+	auto foo2 = Type!ubyte[w * 4];
+	assert(foo2.length == w * 4);
+	assert(foo2.onHeap == false);
+
+	auto test1 = Type!int[512];
+	assert(test1.length == 512);
+	assert(test1.onHeap == false);
+	assert(test1[0] != 42);
+
+	test1[42] = 1337;
+
+	assert(Type!int.StackLength == 640);
+
+	auto test2 = Type!int[384];
+	assert(test2.length == 384);
+	assert(test2.onHeap == false);
+
+	assert(test2[0] != 42 && test2[42] != 1337);
+
+	auto test3 = Type!int[256];
+	assert(test3.length == 256);
+	assert(test3.onHeap == true);
+
+	assert(test3[0] != 42 && test3[42] != 1337);
 }

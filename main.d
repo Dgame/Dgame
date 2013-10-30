@@ -7,14 +7,14 @@ import Dgame.System.all;
 
 import Dgame.System.FrameBufferObject;
 
-//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictGL.lib");
-//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\DerelictUtil.lib");
+//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
+//pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
 
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictSDL2.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictUtil.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictGL3.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictAL.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\DerelictOGG.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictSDL2.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictUtil.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictGL3.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictAL.lib");
+pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictOGG.lib");
 
 import Dgame.Internal.core : getDgVersion;
 

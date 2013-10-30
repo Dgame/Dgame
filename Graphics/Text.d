@@ -77,8 +77,10 @@ private:
 		
 		SDL_Color* fg = this._fg.ptr;
 		SDL_Color* bg = this._bg.ptr;
+
+		const Font.Mode fmode = this._font.getMode();
 		
-		final switch (this._font.getMode()) {
+		final switch (fmode) {
 			case Font.Mode.Solid:
 				srfc = TTF_RenderUTF8_Solid(this._font.ptr, cstr, *fg);
 				break;
@@ -92,7 +94,7 @@ private:
 		
 		assert(srfc !is null, "Surface is null.");
 		
-		if (this._font.getMode() != Font.Mode.Blended) {
+		if (fmode != Font.Mode.Blended) {
 			/// Adapt PixelFormat
 			SDL_PixelFormat fmt;
 			fmt.BitsPerPixel = 24;

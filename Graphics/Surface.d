@@ -204,8 +204,9 @@ public:
 		debug writefln("Load Image: %s", filename);
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
 		debug writefln("Image %s loaded :: %X", filename, srfc);
+
 		if (srfc is null)
-			throw new Exception("Could not load image " ~ filename ~ ". Error: " ~ to!string(SDL_GetError()));
+			throw new Exception(.format("Could not load image %s. Error: %s.", filename, to!string(SDL_GetError())));
 		
 		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 		
@@ -225,8 +226,7 @@ public:
 			RMask, GMask, BMask, AMask);
 		
 		if (srfc is null)
-			throw new Exception("Could not load image. Error: "
-								~ to!string(SDL_GetError()));
+			throw new Exception("Could not load image. Error: " ~ to!string(SDL_GetError()));
 		
 		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 	}
@@ -235,13 +235,11 @@ public:
 	 * Save the current pixel data to the file.
 	 */
 	void saveToFile(string filename) {
-		if (filename.length < 3)
+		if (filename.length < 4)
 			throw new Exception("File name is not allowed.");
 		
-		if (SDL_SaveBMP(this.ptr, toStringz(filename)) != 0) {
-			throw new Exception("Could not save image " ~ filename ~ ". Error: "
-								~ to!string(SDL_GetError()));
-		}
+		if (SDL_SaveBMP(this.ptr, toStringz(filename)) != 0)
+			throw new Exception(.format("Could not save image %s. Error: %s.", filename, to!string(SDL_GetError())));
 	}
 	
 	/**

@@ -7,7 +7,6 @@ package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
  * A helper struct for reading from a sound file.
  */
 struct SoundFile {
-public:
 	char[4] type;		/** Sound type. e.g. 'wave', 'ogg' */
 	string filename;	/** Sound filename */
 	byte[] buffer;		/** Buffer */
@@ -15,10 +14,11 @@ public:
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */
 	
-	int channels;	/** Number of channels */
-	ubyte bits;		/** Number of bits */
+	int channels;		/** Number of channels */
+	ubyte bits;			/** Number of bits */
 	ubyte bytes;		/** Number of bytes */
-	
+
+
 	@disable
 	this(this);
 }
@@ -42,7 +42,7 @@ enum MusicType : ubyte {
  */
 abstract class BaseSoundFile {
 protected:
-	SoundFile _sFile;
+	SoundFile _sFile = void;
 	
 	abstract void _read(string filename);
 	
@@ -51,9 +51,8 @@ public:
 	 * CTor
 	 */
 	this(string filename) {
-		if (!exists(filename)) {
+		if (!exists(filename))
 			throw new Exception("File " ~ filename ~ " does not exists.");
-		}
 		
 		this._read(filename);
 	}
@@ -62,7 +61,7 @@ public:
 	 * Free/delete the memory buffer.
 	 */
 	final void freeBuffer() {
-		.destroy(_sFile.buffer);
+		_sFile.buffer = null;
 	}
 	
 	/**
