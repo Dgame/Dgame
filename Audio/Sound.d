@@ -247,7 +247,7 @@ final:
 				throw new Exception("Switch error.");
 		}
 		
-		this.loadFromMemory(sFile.buffer.ptr, sFile.dataSize, sFile.rate, ch);
+		this.loadFromMemory(soundfile.getBuffer().ptr, sFile.dataSize, sFile.rate, ch);
 	}
 	
 	/**

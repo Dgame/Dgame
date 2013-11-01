@@ -6,21 +6,14 @@ package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 /**
  * A helper struct for reading from a sound file.
  */
+
 struct SoundFile {
-	char[4] type;		/** Sound type. e.g. 'wave', 'ogg' */
-	string filename;	/** Sound filename */
-	byte[] buffer;		/** Buffer */
-	
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */
 	
-	int channels;		/** Number of channels */
+	ubyte channels;	/** Number of channels */
 	ubyte bits;			/** Number of bits */
 	ubyte bytes;		/** Number of bytes */
-
-
-	@disable
-	this(this);
 }
 
 /**
@@ -43,6 +36,9 @@ enum MusicType : ubyte {
 abstract class BaseSoundFile {
 protected:
 	SoundFile _sFile = void;
+
+	string _filename;
+	byte[] _buffer;
 	
 	abstract void _read(string filename);
 	
@@ -56,14 +52,7 @@ public:
 		
 		this._read(filename);
 	}
-	
-	/**
-	 * Free/delete the memory buffer.
-	 */
-	final void freeBuffer() {
-		_sFile.buffer = null;
-	}
-	
+
 	/**
 	 * Returns the SoundFile struct.
 	 *
@@ -72,19 +61,26 @@ public:
 	final ref const(SoundFile) getData() const pure nothrow {
 		return this._sFile;
 	}
+
+	/**
+	 * Returns the Sound Buffer
+	 */
+	final const(byte[]) getBuffer() const pure nothrow {
+		return this._buffer;
+	}
 	
 	/**
 	 * Returns the filename of the loaded sound file.
 	 */
 	final string getFilename() const pure nothrow {
-		return this._sFile.filename;
+		return this._filename;
 	}
 	
 	/**
 	 * Returns the length of the sound in seconds.
 	 */
 	float getLength() const pure nothrow {
-		return (8 * _sFile.dataSize) / (_sFile.bits * _sFile.rate * _sFile.channels);
+		return (8 * this._sFile.dataSize) / (this._sFile.bits * this._sFile.rate * this._sFile.channels);
 	}
 	
 	/**

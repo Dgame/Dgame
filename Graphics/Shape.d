@@ -7,8 +7,6 @@ private {
 	
 	import derelict.opengl3.gl;
 
-	import Dgame.Internal.Array;
-
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
@@ -19,7 +17,7 @@ private {
 	import Dgame.System.VertexArrayObject;
 }
 
-enum PIx2 = 3.14 * 2;
+enum PIx2 = 3.14f * 2;
 
 /**
  * Smooth wrapper

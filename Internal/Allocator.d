@@ -1,12 +1,9 @@
-/**
- * @file 
- *
- * allocator class.
- */
 module Dgame.Internal.Allocator;
 
 private {
 	debug import std.stdio;
+
+	import core.memory : GC;
 	import core.stdc.stdlib : malloc, free;
 }
 
@@ -85,7 +82,9 @@ struct Type(T, const size_t StackSize = 4096 / T.sizeof) {
 
 		debug writefln("Allocate %d elements on the heap.", N);
 
-		return Vala(cast(T*) .malloc(N * T.sizeof), N, true);
+		T* ptr = heap_alloc!T(N);
+
+		return Vala(ptr, N, true);
 	}
 }
 
@@ -133,4 +132,23 @@ unittest {
 	assert(test3.onHeap == true);
 
 	assert(test3[0] != 42 && test3[42] != 1337);
+}
+
+enum Memory {
+	C,
+	GC
+}
+
+T* heap_alloc(T = void)(size_t N, Memory mem = Memory.C) {
+	final switch (mem) {
+		case Memory.C: return cast(T*) .malloc(N * T.sizeof);
+		case Memory.GC: return cast(T*) GC.malloc(N * T.sizeof);
+	}
+}
+
+void heap_free(void* ptr, Memory mem = Memory.C) {
+	final switch (mem) {
+		case Memory.C: free(ptr); break;
+		case Memory.GC: GC.free(ptr); break;
+	}
 }

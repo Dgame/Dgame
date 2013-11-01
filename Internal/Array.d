@@ -77,6 +77,8 @@ public:
 		}
 	}
 
+	// TODO: opSliceAssign(T item, size_t i1, size_t i2) ?
+
 	void opSliceAssign(T[] items) {
 		const size_t len = this.length > items.length ? items.length : this.length;
 		for (size_t i = 0; i < len; ++i) {

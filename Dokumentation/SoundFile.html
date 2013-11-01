@@ -9,22 +9,7 @@
 </big></dt>
 <dd>A helper struct for reading from a sound file.<br><br>
 
-<dl><dt><big><a name="SoundFile.type"></a>char[4] <u>type</u>;
-</big></dt>
-<dd>Sound <u>type</u>. e.g. 'wave', 'ogg' <br><br>
-
-</dd>
-<dt><big><a name="SoundFile.filename"></a>string <u>filename</u>;
-</big></dt>
-<dd>Sound <u>filename</u> <br><br>
-
-</dd>
-<dt><big><a name="SoundFile.buffer"></a>byte[] <u>buffer</u>;
-</big></dt>
-<dd>Buffer <br><br>
-
-</dd>
-<dt><big><a name="SoundFile.rate"></a>uint <u>rate</u>;
+<dl><dt><big><a name="SoundFile.rate"></a>uint <u>rate</u>;
 </big></dt>
 <dd>The sound <u>rate</u> <br><br>
 
@@ -34,7 +19,7 @@
 <dd>Total data size <br><br>
 
 </dd>
-<dt><big><a name="SoundFile.channels"></a>int <u>channels</u>;
+<dt><big><a name="SoundFile.channels"></a>ubyte <u>channels</u>;
 </big></dt>
 <dd>Number of <u>channels</u> <br><br>
 
@@ -93,17 +78,17 @@ rschuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="BaseSoundFile.freeBuffer"></a>final void <u>freeBuffer</u>();
-</big></dt>
-<dd>Free/delete the memory buffer.<br><br>
-
-</dd>
 <dt><big><a name="BaseSoundFile.getData"></a>final const pure nothrow ref const(SoundFile) <u>getData</u>();
 </big></dt>
 <dd>Returns the SoundFile struct.
 <br><br>
 <b>See:</b><br>
 SoundFile struct<br><br>
+
+</dd>
+<dt><big><a name="BaseSoundFile.getBuffer"></a>final const pure nothrow const(byte[]) <u>getBuffer</u>();
+</big></dt>
+<dd>Returns the Sound Buffer<br><br>
 
 </dd>
 <dt><big><a name="BaseSoundFile.getFilename"></a>final const pure nothrow string <u>getFilename</u>();
