@@ -547,37 +547,39 @@ public:
 	}
 	
 	/**
-	 * Returns a pointer of the pixel at the given coordinates.
+	 * Returns the pixel at the given coordinates.
 	 */
-	ubyte* getPixelAt(ref const Vector2s pos) const {
+	uint getPixelAt(ref const Vector2s pos) const {
 		return this.getPixelAt(pos.x, pos.y);
 	}
 	
 	/**
-	 * Returns a pointer of the pixel at the given coordinates.
+	 * Returns the pixel at the given coordinates.
 	 */
-	ubyte* getPixelAt(ushort x, ushort y) const {
-		ubyte* pixels = cast(ubyte*) this.getPixels();
+	uint getPixelAt(ushort x, ushort y) const {
+		uint* pixels = cast(uint*) this.getPixels();
 		if (pixels is null)
 			throw new Exception("No pixel here.");
 		
-		// pixels[(y * this.Width) + x];
-		return pixels + y * this.getPitch() + x * this.countBytes();
+		return pixels[(y * this._target.ptr.w) + x];
 	}
 	
 	/**
 	 * Put a new pixel at the given coordinates.
 	 */
-	void putPixelAt(ref const Vector2s pos, ubyte pixel) {
+	void putPixelAt(ref const Vector2s pos, uint pixel) {
 		this.putPixelAt(pos.x, pos.y, pixel);
 	}
 	
 	/**
 	 * Put a new pixel at the given coordinates.
 	 */
-	void putPixelAt(ushort x, ushort y, ubyte pixel) {
-		ubyte* p = this.getPixelAt(x, y);
-		*p = pixel;
+	void putPixelAt(ushort x, ushort y, uint pixel) {
+		uint* pixels = cast(uint*) this.getPixels();
+		if (pixels is null)
+			throw new Exception("No pixel here.");
+
+		pixels[(y * this._target.ptr.w) + x] = pixel;
 	}
 	
 	/**
@@ -594,11 +596,10 @@ public:
 		const uint len = this.width * this.height;
 		
 		if ((x * y) <= len) {
-			ubyte* p = this.getPixelAt(x, y);
+			const uint pixel = this.getPixelAt(x, y);
 			
 			ubyte r, g, b, a;
-			//cast(uint*)
-			SDL_GetRGBA(*p, this._target.ptr.format, &r, &g, &b, &a);
+			SDL_GetRGBA(pixel, this._target.ptr.format, &r, &g, &b, &a);
 			
 			return Color(r, g, b, a);
 		}

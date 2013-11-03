@@ -7,88 +7,133 @@ private {
 	import core.stdc.stdlib : malloc, free;
 }
 
-struct Type(T, const size_t StackSize = 4096 / T.sizeof) {
-	static {
-		T[StackSize] StackBuffer = void;
-		size_t StackLength;
-	}
+enum DefaultSize = 8192;
 
-	/**
-	 * This structure represents a Variable Length Array as you may known from C99.
-	 *
-	 * @author: Besitzer
-	 * @date: 27.10.2013
-	 */
-	static struct Vala {
+struct Type(T, ushort StackSize = DefaultSize / T.sizeof) {
+	static StackBuffer!(T, StackSize) _Buffer;
+
+	struct Vala {
 		T* ptr;
-		const size_t length;
-		const bool onHeap;
+		size_t length;
+		bool onHeap;
+
+		this(T* ptr, size_t length, bool onHeap) {
+			this.ptr = ptr;
+			this.length = length;
+			this.onHeap = onHeap;
+		}
 
 		@disable
 		this(this);
 
 		~this() {
-			debug writeln("DTor Vala");
-			debug writeln("StackLength: ", StackLength);
-
-			if (!this.onHeap)
-				StackLength -= this.length;
-			else if (this.ptr !is null) {
-				debug writefln("Deallocate %d elements.", this.length);
-
+			if (this.onHeap && this.ptr !is null)
 				.free(this.ptr);
-			}
 		}
 
-		inout(T[]) opSlice() inout {
-			return this.ptr[0 .. this.length];
-		}
+		T* move() {
+			scope(exit) this.ptr = null;
 
-		void opSliceAssign(T item) {
-			for (size_t i = 0; i < this.length; ++i) {
-				this.ptr[i] = item;
-			}
-		}
-
-		void opSliceAssign(T[] items) {
-			const size_t len = this.length > items.length ? items.length : this.length;
-			for (size_t i = 0; i < len; ++i) {
-				this.ptr[i] = items[i];
-			}
-		}
-
-		void opSliceOpAssign(string op)(T item) {
-			for (size_t i = 0; i < this.length; ++i) {
-				mixin("this.ptr[i] " ~ op ~ "= item;");
-			}
+			return this.ptr;
 		}
 
 		alias ptr this;
-	}
 
-	/**
-	 * This is the start method to initialize a Variable Length Array.
-	 *
-	 * @author: Besitzer
-	 * @date: 27.10.2013
-	 */
-	static Vala opIndex(size_t N) {
-		if ((StackLength + N) <= StackSize) {
-			debug writefln("Allocate %d elements on the stack.", N);
-			scope(exit) StackLength += N;
+		inout(T[]) opSlice() inout {
+			if (this.ptr is null)
+				return null;
 
-			return Vala(&StackBuffer[StackLength], N, false);
+			return this.ptr[0 .. this.length];
 		}
 
-		debug writefln("Allocate %d elements on the heap.", N);
+		inout(T[]) opSlice(size_t i1, size_t i2) inout {
+			return this.ptr[i1 .. i2];
+		}
 
-		T* ptr = heap_alloc!T(N);
+		void opSliceAssign(T item) {
+			if (this.ptr is null)
+				return;
 
-		return Vala(ptr, N, true);
+			this.ptr[0 .. this.length] = item;
+		}
+
+		void opSliceOpAssign(string op)(T item) {
+			if (this.ptr is null)
+				return;
+
+			mixin("this.ptr[0 .. this.length] " ~ op ~ "= item;");
+		}
+
+		void opSliceAssign(T[] items) {
+			if (this.ptr is null)
+				return;
+
+			this.ptr[0 .. items.length] = items;
+		}
+	}
+
+	static int remain() {
+		return _Buffer.remain();
+	}
+
+	static Vala opIndex(size_t N) {
+		T* ptr = null;
+		bool onHeap = false;
+
+		T[] buf = _Buffer[N];
+
+		if (buf.length != 0)
+			ptr = &buf[0];
+		else {
+			ptr = cast(T*) .malloc(N * T.sizeof);
+			onHeap = true;
+		}
+
+		return Vala(ptr, N, onHeap);
+	}
+}
+
+struct Stack(T, ushort StackSize = DefaultSize / T.sizeof) {
+	alias Limit = StackSize;
+
+	static T[Limit] Buffer = void;
+	static ushort StackUsage;
+
+	static T[] opIndex(size_t N) {
+		if (N <= (Limit - StackUsage)) {
+			scope(exit) StackUsage += N;
+
+			return Buffer[StackUsage .. StackUsage + N];
+		}
+
+		return null;
+	}
+}
+
+struct StackBuffer(T, ushort StackSize = DefaultSize / T.sizeof) {
+	alias Limit = StackSize;
+
+	T[Limit] Buffer = void;
+	ushort stackUsage;
+
+	int remain() const pure nothrow {
+		return Limit - this.stackUsage;
+	}
+
+	T[] opIndex(size_t N) {
+		if (N <= this.remain()) {
+			scope(exit) this.stackUsage += N;
+
+			return Buffer[this.stackUsage .. this.stackUsage + N];
+		}
+
+		return null;
 	}
 }
 
 unittest {
+	import std.conv : to;
+
 	int n = 128;
 	auto t = Type!int[n];
 
@@ -101,8 +146,8 @@ unittest {
 	t[0] = 42;
 	assert(arr[0] == t[0] && t[0] == 42);
 
-	ushort w = 1024;
-	ushort h = 640;
+	ushort w = 1920;
+	ushort h = 1080;
 
 	auto foo1 = Type!ubyte[w * h * 4];
 	assert(foo1.length == w * h * 4);
@@ -119,7 +164,7 @@ unittest {
 
 	test1[42] = 1337;
 
-	assert(Type!int.StackLength == 640);
+	assert(Type!int.remain() == 384);
 
 	auto test2 = Type!int[384];
 	assert(test2.length == 384);
