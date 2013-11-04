@@ -164,16 +164,16 @@ unittest {
 
 	test1[42] = 1337;
 
-	assert(Type!int.remain() == 384);
+	assert(Type!int.remain() == 1408, to!string(Type!int.remain()));
 
-	auto test2 = Type!int[384];
-	assert(test2.length == 384);
+	auto test2 = Type!int[1024];
+	assert(test2.length == 1024);
 	assert(test2.onHeap == false);
 
 	assert(test2[0] != 42 && test2[42] != 1337);
 
-	auto test3 = Type!int[256];
-	assert(test3.length == 256);
+	auto test3 = Type!int[512];
+	assert(test3.length == 512);
 	assert(test3.onHeap == true);
 
 	assert(test3[0] != 42 && test3[42] != 1337);

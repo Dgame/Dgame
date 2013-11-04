@@ -532,18 +532,24 @@ public:
 	 * See: Surface.Mask enum.
 	 */
 	bool isMask(Mask mask, uint col) const pure nothrow {
-		bool result = false;
+		bool[4] result;
+		ubyte index = 0;
 		
 		if (mask & Mask.Red)
-			result = this._target.ptr.format.Rmask == col;
+			result[index++] = this._target.ptr.format.Rmask == col;
 		if (mask & Mask.Green)
-			result = result && this._target.ptr.format.Gmask == col;
+			result[index++] = this._target.ptr.format.Gmask == col;
 		if (mask & Mask.Blue)
-			result = result && this._target.ptr.format.Bmask == col;
+			result[index++] = this._target.ptr.format.Bmask == col;
 		if (mask & Mask.Alpha)
-			result = result && this._target.ptr.format.Amask == col;
-		
-		return result;
+			result[index++] = this._target.ptr.format.Amask == col;
+
+		for (ubyte i = 0; i < index; ++i) {
+			if (!result[i])
+				return false;
+		}
+
+		return true;
 	}
 	
 	/**
