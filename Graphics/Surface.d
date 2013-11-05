@@ -65,7 +65,6 @@ public:
 	
 private:
 	shared_ref!(SDL_Surface) _target;
-	
 	string _filename;
 	
 package:

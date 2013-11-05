@@ -29,10 +29,6 @@ private {
 struct TileMapInfo {
 public:
 	/**
-	 * The map filename
-	 */
-	string source;
-	/**
 	 * The map width in pixel
 	 */
 	ushort width;
@@ -53,6 +49,10 @@ public:
 	 * The tile height in pixel
 	 */
 	ubyte tileHeight;
+	/**
+	* The map filename
+	*/
+	string source;
 }
 
 /**
@@ -145,7 +145,7 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 	assert(calcDim(46 , 16) == 128);
 }
 
-ushort[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
+short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
 	uint tilesPerRow = width / tw;
 	
 	uint y = gid / tilesPerRow;
@@ -250,8 +250,8 @@ private:
 	} body {
 		SubSurface[] subs;
 		
-		ushort[2][ushort] used;
-		ushort[2]*[] coordinates;
+		short[2][ushort] used;
+		short[2]*[] coordinates;
 		
 		//uint doubly = 0;
 		
@@ -264,7 +264,7 @@ private:
 				used[t.gid] = calcPos(t.gid, tileset.width,
 				                      this._tmi.tileWidth, this._tmi.tileHeight);
 				if (this._doCompress) {
-					src.setPosition(used[t.gid][0], used[t.gid][1]); /// TODO: May Fixed in 2.064?
+					src.setPosition(used[t.gid]);
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 				}
 			}/* else
@@ -279,7 +279,7 @@ private:
 		this._loadTexCoords(coordinates);
 	}
 	
-	void _compress(ref Surface tileset, ushort[2][ushort] used, SubSurface[] subs) {
+	void _compress(ref Surface tileset, short[2][ushort] used, SubSurface[] subs) {
 		if (this._doCompress) {
 			const ushort dim = calcDim(used.length, this._tmi.tileWidth);
 			
@@ -332,7 +332,7 @@ private:
 		}
 	}
 	
-	void _loadTexCoords(ushort[2]*[] coordinates) {
+	void _loadTexCoords(short[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
 		array!vec2f texCoords;
 		texCoords.reserve(coordinates.length * 4);
@@ -346,7 +346,7 @@ private:
 		const float tw = this._tmi.tileWidth;
 		const float th = this._tmi.tileHeight;
 		
-		foreach (nr, ushort[2]* tc; coordinates) {
+		foreach (nr, short[2]* tc; coordinates) {
 			float tx = (*tc)[0];
 			float ty = (*tc)[1];
 			

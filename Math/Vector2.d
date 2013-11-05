@@ -37,7 +37,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this()(T x, T y) { // TODO: Fixed in 2.064
+	this(T x, T y) {
 		this.x = x;
 		this.y = y;
 	}

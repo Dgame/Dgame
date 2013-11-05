@@ -2,7 +2,7 @@ module Dgame.Audio.VorbisFile;
 
 private {
 	debug import std.stdio : writefln;
-	import std.string : to, toStringz;
+	import std.string : toStringz;
 
 	import derelict.ogg.ogg;
 	import derelict.ogg.vorbis;

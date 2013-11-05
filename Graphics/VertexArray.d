@@ -121,7 +121,7 @@ final:
 			this._indices.reserve(this._vertices.length);
 		}
 
-		size_t i = complete ? 0 : this._indices.length;
+		uint i = complete ? 0 : cast(uint) this._indices.length;
 		for (; i < this._vertices.length; ++i) {
 			this._indices ~= i;
 		}

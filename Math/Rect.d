@@ -46,7 +46,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this()(T x, T y, T width, T height) { // TODO: Fixed in 2.064
+	this(T x, T y, T width, T height) {
 		this.x = x;
 		this.y = y;
 		
@@ -57,7 +57,7 @@ public:
 	/**
 	 * CTor
 	 */
-	this()(ref const Vector2!T vec, T width, T height) { // TODO: Fixed in 2.064
+	this(ref const Vector2!T vec, T width, T height) {
 		this(vec.x, vec.y, width, height);
 	}
 	
@@ -272,27 +272,27 @@ public:
 		this.width  += width;
 		this.height += height;
 	}
+
+	/**
+	* Set a new position with an array.
+	*/
+	void setPosition(T[2] pos) pure nothrow {
+		this.setPosition(pos[0], pos[1]);
+	}
+
+	/**
+	* Set a new position with coordinates.
+	*/
+	void setPosition(T x, T y) pure nothrow {
+		this.x = x;
+		this.y = y;
+	}
 	
 	/**
 	 * Set a new position with a vector.
 	 */
 	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
-	}
-	
-	/**
-	 * Set a new position with an array.
-	 */
-	void setPosition(T[2] pos) pure nothrow {
-		this.setPosition(pos[0], pos[1]);
-	}
-	
-	/**
-	 * Set a new position with coordinates.
-	 */
-	void setPosition(T x, T y) pure nothrow {
-		this.x = x;
-		this.y = y;
 	}
 	
 	/**

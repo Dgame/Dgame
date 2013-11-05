@@ -172,12 +172,11 @@ public:
 	
 protected:
 	ubyte _lineWidth;
-	size_t _pixelCount;
-	
 	bool _shouldFill;
 	bool _update;
 	
 	Type _type;
+	size_t _pixelCount;
 	Smooth _smooth;
 	
 	Pixel[] _pixels;

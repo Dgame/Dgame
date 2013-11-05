@@ -161,7 +161,7 @@ t2(t1); <font color=green>// now both t's draw 'My new string' on screen.
 <br><br>
 
 </dd>
-<dt><big><a name="Text.opBinary"></a>Text <u>opBinary</u>(string op)(string <i>text</i>);
+<dt><big><a name="Text.opBinary"></a>Text <u>opBinary</u>(string op)(string <i>text</i>) if (op == "~" || op == "+");
 </big></dt>
 <dd>Concatenate the current string with another.
 <br><br>
@@ -177,7 +177,7 @@ t ~= <font color=red>"is great!"</font>; <font color=green>// t draws now 'My ne
  Both operators (~ and +) are allowed.<br><br>
 
 </dd>
-<dt><big><a name="Text.opBinary"></a>Text <u>opBinary</u>(string op)(ref const Text <i>t</i>);
+<dt><big><a name="Text.opBinary"></a>Text <u>opBinary</u>(string op)(ref const Text <i>t</i>) if (op == "~" || op == "+");
 </big></dt>
 <dd>Concatenate the current string with another.<br><br>
 

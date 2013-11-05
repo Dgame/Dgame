@@ -24,10 +24,10 @@ public:
 	*/
 	enum Style : ubyte {
 		Bold      = TTF_STYLE_BOLD,			/** Makes the text bold */
-			Italic    = TTF_STYLE_ITALIC,		/** Makes the text italic */
-			Underline = TTF_STYLE_UNDERLINE,	/** Underline the text */
-			Crossed   = TTF_STYLE_STRIKETHROUGH, /** Cross the text */
-			Normal    = TTF_STYLE_NORMAL		/** Normal text without any style. */
+		Italic    = TTF_STYLE_ITALIC,		/** Makes the text italic */
+		Underline = TTF_STYLE_UNDERLINE,	/** Underline the text */
+		Crossed   = TTF_STYLE_STRIKETHROUGH, /** Cross the text */
+		Normal    = TTF_STYLE_NORMAL		/** Normal text without any style. */
 	}
 
 	/**
@@ -51,10 +51,9 @@ public:
 
 private:
 	shared_ref!(TTF_Font) _target;
-
-	ubyte _fontSize;
 	string _filename;
 
+	ubyte _fontSize;
 	Mode _mode;
 	Style _style;
 	Hint _hint;

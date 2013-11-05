@@ -10,7 +10,6 @@ package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 struct SoundFile {
 	uint rate;			/** The sound rate */
 	uint dataSize;		/** Total data size */
-	
 	ubyte channels;	/** Number of channels */
 	ubyte bits;			/** Number of bits */
 	ubyte bytes;		/** Number of bytes */
