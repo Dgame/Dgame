@@ -5,8 +5,6 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-import Dgame.System.FrameBufferObject;
-
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
 
