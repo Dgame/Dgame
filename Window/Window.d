@@ -29,7 +29,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Internal.Allocator : Type;
+	import Dgame.Internal.Allocator;
 
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -159,7 +159,7 @@ public:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			glDisable(GL_DEPTH_TEST);
+			//glDisable(GL_DEPTH_TEST);
 			
 			// Hints
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
@@ -282,8 +282,10 @@ public:
 		
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
+
+		TypeAlloc ta;
 		
-		auto tmpLine = Type!ubyte[lineWidth];
+		ubyte[] tmpLine = Array!ubyte(&ta)[lineWidth];
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
 		for (uint i = 0; i < this.height / 2; ++i) {
@@ -367,7 +369,7 @@ public:
 	 * Clears the buffer.
 	 */
 	void clear() const {
-		glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
 	/**

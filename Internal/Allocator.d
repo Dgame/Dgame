@@ -25,198 +25,331 @@ module Dgame.Internal.Allocator;
 
 private {
 	debug import std.stdio;
-
-	import core.memory : GC;
-	import core.stdc.stdlib : malloc, free;
+	import core.stdc.stdlib : malloc, calloc, realloc, free;
 }
 
-enum DefaultSize = 8192;
+struct Memory {
+	void*[void*] _pool;
 
-struct Type(T, ushort StackSize = DefaultSize / T.sizeof) {
-	static StackBuffer!(T, StackSize) _Buffer;
+	@disable
+	this(this);
 
-	struct Vala {
-		T* ptr;
-		size_t length;
-		bool onHeap;
-
-		this(T* ptr, size_t length, bool onHeap) {
-			this.ptr = ptr;
-			this.length = length;
-			this.onHeap = onHeap;
-		}
-
-		@disable
-		this(this);
-
-		~this() {
-			if (this.onHeap && this.ptr !is null)
-				.free(this.ptr);
-		}
-
-		T* move() {
-			scope(exit) this.ptr = null;
-
-			return this.ptr;
-		}
-
-		alias ptr this;
-
-		inout(T[]) opSlice() inout {
-			if (this.ptr is null)
-				return null;
-
-			return this.ptr[0 .. this.length];
-		}
-
-		inout(T[]) opSlice(size_t i1, size_t i2) inout {
-			return this.ptr[i1 .. i2];
-		}
-
-		void opSliceAssign(T item) {
-			if (this.ptr is null)
-				return;
-
-			this.ptr[0 .. this.length] = item;
-		}
-
-		void opSliceOpAssign(string op)(T item) {
-			if (this.ptr is null)
-				return;
-
-			mixin("this.ptr[0 .. this.length] " ~ op ~ "= item;");
-		}
-
-		void opSliceAssign(T[] items) {
-			if (this.ptr is null)
-				return;
-
-			this.ptr[0 .. items.length] = items;
+	~this() {
+		foreach (void* ptr; this._pool) {
+			if (ptr !is null)
+				this.free(ptr);
 		}
 	}
 
-	static int remain() {
-		return _Buffer.remain();
+	void* malloc(size_t N) {
+		void* ptr = .malloc(N);
+		this._pool[ptr] = ptr;
+
+		return ptr;
 	}
 
-	static Vala opIndex(size_t N) {
-		T* ptr = null;
-		bool onHeap = false;
+	void* calloc(size_t N, size_t sizeOf) {
+		void* ptr = .calloc(N, sizeOf);
+		this._pool[ptr] = ptr;
 
-		T[] buf = _Buffer[N];
+		return ptr;
+	}
 
-		if (buf.length != 0)
-			ptr = &buf[0];
-		else {
-			ptr = cast(T*) .malloc(N * T.sizeof);
-			onHeap = true;
+	T* allocate(T)(size_t N) {
+		static if (is(T == void))
+			return cast(T*) this.malloc(N);
+		else
+			return cast(T*) this.calloc(N, T.sizeof);
+	}
+
+	void* realloc(ref void* ptr, size_t N) {
+		void* iptr = ptr in this._pool;
+		if (iptr is null) {
+			if (ptr !is null)
+				throw new Exception("This pointer does not belong to this memory pool.");
+
+			ptr = this.malloc(N);
+			return ptr;
 		}
 
-		return Vala(ptr, N, onHeap);
+		ptr = .realloc(ptr, N);
+		if (ptr is null)
+			return null;
+
+		if (ptr !is iptr) {
+			this.deselect(iptr);
+			this._pool[ptr] = ptr;
+		}
+
+		return ptr;
+	}
+
+	void* realloc(ref void* ptr, size_t N, size_t sizeOf) {
+		return this.realloc(ptr, N * sizeOf);
+	}
+
+	T* reallocate(T)(ref T* ptr, size_t N) {
+		return cast(T*) this.realloc(ptr, N, T.sizeof);
+	}
+
+	void free(ref void* ptr) {
+		if (ptr !in this._pool)
+			throw new Exception("This pointer does not belong to this memory pool.");
+
+		.free(ptr);
+
+		this._pool[ptr] = null;
+		ptr = null;
+	}
+
+	void deselect(void* ptr) {
+		if (ptr !in this._pool)
+			throw new Exception("This pointer does not belong to this memory pool.");
+
+		this._pool[ptr] = null;
 	}
 }
 
-struct Stack(T, ushort StackSize = DefaultSize / T.sizeof) {
-	alias Limit = StackSize;
+struct Array(T) {
+	Memory* mem;
+	Stack* stack;
 
-	static T[Limit] Buffer = void;
-	static ushort StackUsage;
+	@disable
+	this();
 
-	static T[] opIndex(size_t N) {
-		if (N <= (Limit - StackUsage)) {
-			scope(exit) StackUsage += N;
+	@disable
+	this(typeof(null));
 
-			return Buffer[StackUsage .. StackUsage + N];
+	@disable
+	this(this);
+
+	this(Memory* mem, Stack* stack = null) {
+		this.mem = mem;
+		this.stack = stack;
+	}
+
+	this(TypeAlloc* ta) {
+		this.mem = &ta.mem;
+		this.stack = &ta.stack;
+	}
+
+	T[] of(size_t N) {
+		if (this.stack !is null) {
+			void[] arr = this.stack.take(N, T.sizeof);
+			debug if (arr.length != 0)
+				writeln("Alloc on stack");
+			if (arr !is null)
+				return cast(T[]) arr;
 		}
 
-		return null;
-	}
-}
+		debug writeln("Alloc on heap");
 
-struct StackBuffer(T, ushort StackSize = DefaultSize / T.sizeof) {
-	alias Limit = StackSize;
+		if (this.mem is null)
+			return null;
 
-	T[Limit] Buffer = void;
-	ushort stackUsage;
-
-	int remain() const pure nothrow {
-		return Limit - this.stackUsage;
+		T* ptr = this.mem.allocate!T(N);
+		return ptr[0 .. N];
 	}
 
 	T[] opIndex(size_t N) {
-		if (N <= this.remain()) {
-			scope(exit) this.stackUsage += N;
+		return this.of(N);
+	}
+}
 
-			return Buffer[this.stackUsage .. this.stackUsage + N];
+enum StackSize = 8192;
+
+struct Stack {
+	void[StackSize] buffer = void;
+	size_t usage = 0;
+
+	@disable
+	this(this);
+
+	void[] take(size_t N) {
+		if (this.remain() >= N) {
+			scope(exit) this.usage += N;
+
+			return this.buffer[this.usage .. this.usage + N];
 		}
 
 		return null;
 	}
+
+	void[] take(size_t N, size_t sizeOf) {
+		return this.take(N * sizeOf);
+	}
+
+	size_t remain() const pure nothrow {
+		return StackSize - this.usage;
+	}
+
+	void reset() {
+		this.usage = 0;
+	}
+}
+
+struct TypeAlloc {
+	Memory mem;
+	Stack stack;
+
+	@disable
+	this(this);
+}
+
+struct Indexer(T) {
+private:
+	T[] _storage;
+	size_t _length = 0;
+
+public:
+	this(T[] store) {
+		this._storage = store;
+	}
+
+	this(T* ptr, size_t length) {
+		this(ptr[0 .. length]);
+	}
+
+	void set(T[] store) {
+		assert(this._storage.length == 0);
+
+		this._storage = store;
+	}
+
+	void set(T* ptr, size_t length) {
+		this.set(ptr[0 .. length]);
+	}
+
+	void append(T elem) {
+		this.append(elem);
+	}
+
+	void append(ref T elem) {
+		if (this.remain() > 0)
+			this._storage[this._length++] = elem;
+	}
+
+	void opOpAssign(string op : "~")(T elem) {
+		this.append(elem);
+	}
+
+	void opOpAssign(string op : "~")(ref T elem) {
+		this.append(elem);
+	}
+
+	size_t remain() const pure nothrow {
+		return this.capacity() - this._length;
+	}
+
+	@property
+	inout(T[]) ptr() inout pure nothrow {
+		return this._storage;
+	}
+
+	@property
+	size_t length() const pure nothrow {
+		return this._length;
+	}
+
+	@property
+	size_t capacity() const pure nothrow {
+		return this._storage.length;
+	}
+}
+
+struct List(T...) {
+public:
+	alias Type = T[0];
+
+	Type*[12] ptrs = void;
+
+	void opAssign(Type[] values) {
+		foreach (index, ptr; ptrs) {
+			//writeln(" -> ", index, "::", values);
+			if (index >= values.length)
+				break;
+
+			*ptr = values[index];
+		}
+	}
+}
+
+List!U list(U = T[0], T...)(auto ref T vars) {
+	List!U tmpList;
+
+	foreach (i, ref U var; vars) {
+		tmpList.ptrs[i] = &var;
+	}
+
+	return tmpList;
+} unittest {
+	int a, b, c;
+
+	list(a, b, c) = [1, 2, 3];
+
+	assert(a == 1);
+	assert(b == 2);
+	assert(c == 3);
 }
 
 unittest {
-	import std.conv : to;
+	Memory mem;
+	Stack s;
 
-	int n = 128;
-	auto t = Type!int[n];
+	void* ptr = mem.malloc(128);
+	assert(mem._pool.length == 1);
+	assert(ptr in mem._pool);
+	assert(ptr is mem._pool[ptr]);
 
-	assert(t.length == n);
-	assert(t.onHeap == false);
+	int[] arr1 = Array!int(&mem, &s).of(128);
+	assert(mem._pool.length == 1);
+	assert(s.usage == 128 * int.sizeof);
 
-	int[] arr = t[];
-	assert(arr.length == n);
+	int[] arr2 = Array!int(&mem, &s)[512];
+	assert(mem._pool.length == 1);
+	assert(s.usage == 128 * int.sizeof + 512 * int.sizeof);
 
-	t[0] = 42;
-	assert(arr[0] == t[0] && t[0] == 42);
-
-	ushort w = 1920;
-	ushort h = 1080;
-
-	auto foo1 = Type!ubyte[w * h * 4];
-	assert(foo1.length == w * h * 4);
-	assert(foo1.onHeap == true);
-
-	auto foo2 = Type!ubyte[w * 4];
-	assert(foo2.length == w * 4);
-	assert(foo2.onHeap == false);
-
-	auto test1 = Type!int[512];
-	assert(test1.length == 512);
-	assert(test1.onHeap == false);
-	assert(test1[0] != 42);
-
-	test1[42] = 1337;
-
-	assert(Type!int.remain() == 1408, to!string(Type!int.remain()));
-
-	auto test2 = Type!int[1024];
-	assert(test2.length == 1024);
-	assert(test2.onHeap == false);
-
-	assert(test2[0] != 42 && test2[42] != 1337);
-
-	auto test3 = Type!int[512];
-	assert(test3.length == 512);
-	assert(test3.onHeap == true);
-
-	assert(test3[0] != 42 && test3[42] != 1337);
-}
-
-enum Memory {
-	C,
-	GC
-}
-
-T* heap_alloc(T = void)(size_t N, Memory mem = Memory.C) {
-	final switch (mem) {
-		case Memory.C: return cast(T*) .malloc(N * T.sizeof);
-		case Memory.GC: return cast(T*) GC.malloc(N * T.sizeof);
+	{
+		int[] arr3 = Array!int(&mem, &s)[arr1.length];
+		assert(mem._pool.length == 1);
+		assert(s.usage == 2 * 128 * int.sizeof + 512 * int.sizeof);
 	}
-}
 
-void heap_free(void* ptr, Memory mem = Memory.C) {
-	final switch (mem) {
-		case Memory.C: free(ptr); break;
-		case Memory.GC: GC.free(ptr); break;
+	assert(mem._pool.length == 1);
+	assert(s.usage == 2 * 128 * int.sizeof + 512 * int.sizeof);
+
+	{
+		TypeAlloc ta;
+		int[] arr4 = Array!int(&ta)[arr1.length];
+
+		assert(ta.stack.usage == arr1.length * int.sizeof);
+		assert(ta.mem._pool.length == 0);
+
+		assert(mem._pool.length == 1);
+		assert(s.usage == 2 * 128 * int.sizeof + 512 * int.sizeof);
 	}
+
+	assert(mem._pool.length == 1);
+	assert(s.usage == 2 * 128 * int.sizeof + 512 * int.sizeof);
+
+	int a, b, c, d;
+	list(a, b, c, d) = arr1[0 .. 4];
+	//writeln(a, "::", b, "::", c, "::", d);
+	assert(a == 0
+		   && b == 0
+		   && c == 0
+		   && d == 0);
+
+	auto indexer = Indexer!int(arr1);
+	indexer.append(1);
+	indexer.append(2);
+	indexer.append(3);
+	indexer.append(4);
+
+	list(a, b, c, d) = arr1[0 .. 4];
+	//writeln(a, "::", b, "::", c, "::", d);
+	assert(a == 1
+		   && b == 2
+		   && c == 3
+		   && d == 4);
 }

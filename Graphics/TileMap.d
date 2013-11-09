@@ -33,7 +33,7 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 
-	import Dgame.Internal.Array;
+	import Dgame.Internal.Allocator;
 	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
@@ -149,7 +149,7 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 		dim2 *= 2;
 	}
 	///debug writeln("TileNum: ", tileNum, " - Dim1: ", dim1, " - Dim2: ", dim2);
-	version (none) {
+	version(none) {
 		return roundToNext2Pot(dim1);
 	} else {
 		return cast(ushort)(fmax(dim1, dim2) * tileDim);
@@ -196,7 +196,8 @@ private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) .read(this._filename));
 		
-		array!vec3f vertices;
+		TypeAlloc ta;
+		Indexer!vec3f vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -214,8 +215,10 @@ private:
 					if (vertices.length != 0)
 						throw new Exception("Wrong format.");
 					
-					const size_t cap = vertices.reserve(this._tmi.width * this._tmi.height * 4);
+					const size_t cap = this._tmi.width * this._tmi.height * 4;
 					debug writefln("TileMap: Reserve %d vertices.", cap);
+
+					vertices.set(Array!vec3f(&ta).of(cap));
 				}
 				
 				ushort row, col;
@@ -259,9 +262,9 @@ private:
 		this._vbo.bind(Primitive.Target.Vertex);
 		
 		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&vertices[0], vertices.length * vec3f.sizeof);
+			this._vbo.modify(&vertices.ptr[0], vertices.length * vec3f.sizeof);
 		else
-			this._vbo.cache(&vertices[0], vertices.length * vec3f.sizeof);
+			this._vbo.cache(&vertices.ptr[0], vertices.length * vec3f.sizeof);
 		
 		this._vbo.unbind();
 		
@@ -357,8 +360,11 @@ private:
 	
 	void _loadTexCoords(short[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		array!vec2f texCoords;
-		texCoords.reserve(coordinates.length * 4);
+
+		TypeAlloc ta;
+
+		Indexer!vec2f texCoords;
+		texCoords.set(Array!vec2f(&ta).of(coordinates.length * 4));
 		
 		debug writefln("TileMap: Reserve %d texCoords (%d).",
 		               texCoords.capacity, coordinates.length * 4);
@@ -384,9 +390,9 @@ private:
 		this._vbo.bind(Primitive.Target.TexCoords);
 		
 		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&texCoords[0], texCoords.length * vec2f.sizeof);
+			this._vbo.modify(&texCoords.ptr[0], texCoords.length * vec2f.sizeof);
 		else
-			this._vbo.cache(&texCoords[0], texCoords.length * vec2f.sizeof);
+			this._vbo.cache(&texCoords.ptr[0], texCoords.length * vec2f.sizeof);
 		
 		this._vbo.unbind();
 	}

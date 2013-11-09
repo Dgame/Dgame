@@ -253,10 +253,10 @@ package:
 				break;
 		}
 
-		float dx = 0f;
-		float dy = 0f;
-		float dw = this._width;
-		float dh = this._height;
+		float dx = 0f,
+			dy = 0f,
+			dw = this._width,
+			dh = this._height;
 
 		if (render !is null && render.dest !is null) {
 			dx = render.dest.x;
@@ -281,7 +281,7 @@ package:
 
 		this.bind();
 
-		VertexRenderer.drawArrays(Primitive.Type.Quad, vertices.length);
+		VertexRenderer.drawArrays(Primitive.Type.TriangleFan, vertices.length);
 	}
 
 	void _render(ref const Render render) const {

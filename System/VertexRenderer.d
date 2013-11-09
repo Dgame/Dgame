@@ -156,8 +156,8 @@ public:
 	 *
 	 * See: pointTo
 	 */
-	static void drawArrays(Primitive.Type ptype, size_t count, uint start = 0) {
-		glDrawArrays(ptype, start, cast(int) count);
+	static void drawArrays(Primitive.Type ptype, size_t count, size_t start = 0) {
+		glDrawArrays(ptype, start, cast(uint) count);
 	}
 	
 	/**
@@ -170,7 +170,7 @@ public:
 		if (indices.length == 0)
 			return;
 		
-		glDrawElements(ptype, cast(int) count, GL_UNSIGNED_INT, &indices[0]); 
+		glDrawElements(ptype, cast(uint) count, GL_UNSIGNED_INT, &indices[0]); 
 	}
 	
 	/**
@@ -181,18 +181,15 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawRangeElements(Primitive.Type ptype, size_t count,
-	                              uint[] indices, uint start = 0, uint end = 0)
-	{
+	static void drawRangeElements(Primitive.Type ptype, size_t count, uint[] indices, uint start = 0, uint end = 0) {
 		if (indices.length == 0)
 			return;
 		
-		glDrawRangeElements(
-			ptype,
-			start,
-			end != 0 ? end : cast(int) indices.length,
-			cast(int) count,
-			GL_UNSIGNED_INT,
-			&indices[0]);
+		glDrawRangeElements(ptype,
+							start,
+							end != 0 ? end : cast(uint) indices.length,
+							cast(uint) count,
+							GL_UNSIGNED_INT,
+							&indices[0]);
 	}
 }
