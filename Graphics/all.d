@@ -24,12 +24,12 @@
 module Dgame.Graphics.all;
 
 public {
+	import Dgame.Graphics.Blend;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Image;
 	import Dgame.Graphics.Shape;
-	import Dgame.Graphics.VertexArray;
 	import Dgame.Graphics.Sprite;
 	import Dgame.Graphics.Spritesheet;
 	import Dgame.Graphics.Unit;

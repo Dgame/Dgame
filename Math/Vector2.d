@@ -28,17 +28,7 @@ private {
 	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
 	
-	import Dgame.Internal.Math : fpEqual;
-}
-
-@safe
-private bool equals(T, U)(const T a, const U b) pure nothrow 
-	if (isNumeric!T && isNumeric!U)
-{
-	static if (is(T == float) || is(T == double) || is(T == real))
-		return fpEqual(a, cast(T) b);
-	else
-		return a == b;
+	import Dgame.Internal.util : fpEqual, equals;
 }
 
 /**
@@ -282,8 +272,7 @@ public:
 	 * Normalize the vector in which the coordinates are divided by the length.
 	 */
 	ref Vector2!T normalize() pure nothrow {
-		float len = this.length;
-		
+		const float len = this.length;
 		if (!fpEqual(len, 0f)) {
 			this.x /= len;
 			this.y /= len;

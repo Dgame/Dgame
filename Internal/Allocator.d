@@ -62,7 +62,7 @@ struct Memory {
 			return cast(T*) this.calloc(N, T.sizeof);
 	}
 
-	void* realloc(ref void* ptr, size_t N) {
+	void* realloc(void* ptr, size_t N) {
 		void* iptr = ptr in this._pool;
 		if (iptr is null) {
 			if (ptr !is null)
@@ -84,15 +84,15 @@ struct Memory {
 		return ptr;
 	}
 
-	void* realloc(ref void* ptr, size_t N, size_t sizeOf) {
+	void* realloc(void* ptr, size_t N, size_t sizeOf) {
 		return this.realloc(ptr, N * sizeOf);
 	}
 
-	T* reallocate(T)(ref T* ptr, size_t N) {
+	T* reallocate(T)(T* ptr, size_t N) {
 		return cast(T*) this.realloc(ptr, N, T.sizeof);
 	}
 
-	void free(ref void* ptr) {
+	void free(void* ptr) {
 		if (ptr !in this._pool)
 			throw new Exception("This pointer does not belong to this memory pool.");
 
@@ -100,6 +100,21 @@ struct Memory {
 
 		this._pool[ptr] = null;
 		ptr = null;
+	}
+
+	static void copy(T)(T* dst, T* src, size_t sizeOf = 1) {
+		assert(sizeOf > 0);
+
+		.memcpy(dst, src, T.sizeof * sizeOf);
+	}
+
+	T* copy(T)(T* src, size_t sizeOf = 1) {
+		assert(sizeOf > 0);
+
+		T* dst = this.allocate!T(sizeOf);
+		.memcpy(dst, src, T.sizeof * sizeOf);
+
+		return dst;
 	}
 
 	void deselect(void* ptr) {
@@ -257,41 +272,6 @@ public:
 	}
 }
 
-struct List(T...) {
-public:
-	alias Type = T[0];
-
-	Type*[12] ptrs = void;
-
-	void opAssign(Type[] values) {
-		foreach (index, ptr; ptrs) {
-			//writeln(" -> ", index, "::", values);
-			if (index >= values.length)
-				break;
-
-			*ptr = values[index];
-		}
-	}
-}
-
-List!U list(U = T[0], T...)(auto ref T vars) {
-	List!U tmpList;
-
-	foreach (i, ref U var; vars) {
-		tmpList.ptrs[i] = &var;
-	}
-
-	return tmpList;
-} unittest {
-	int a, b, c;
-
-	list(a, b, c) = [1, 2, 3];
-
-	assert(a == 1);
-	assert(b == 2);
-	assert(c == 3);
-}
-
 unittest {
 	Memory mem;
 	Stack s;
@@ -331,6 +311,8 @@ unittest {
 
 	assert(mem._pool.length == 1);
 	assert(s.usage == 2 * 128 * int.sizeof + 512 * int.sizeof);
+
+	import Dgame.Internal.util : list;
 
 	int a, b, c, d;
 	list(a, b, c, d) = arr1[0 .. 4];

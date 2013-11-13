@@ -46,7 +46,7 @@ protected:
 
 private:
 	void _updateAreaSize() {
-		super._setAreaSize(this._clipRect.width, this._clipRect.height);
+		super.setAreaSize(this._clipRect.width, this._clipRect.height);
 	}
 	
 protected:
@@ -56,10 +56,9 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 
-		this._applyTranslation();
+		this.applyTranslation();
 
-		this._tex._render(Render(&this._clipRect,
-								 this._texView.isEmpty() ? null : &this._texView));
+		this._tex._render(Viewport(&this._clipRect, this._texView.isEmpty() ? null : &this._texView));
 	}
 	
 public:

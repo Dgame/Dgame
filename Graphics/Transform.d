@@ -80,14 +80,7 @@ public:
 			glScissor(vx, this._winSize[1] - vy, this._view.width, this._view.height);
 		}
 	}
-	
-	/**
-	 * Apply the translation.
-	 */
-	void applyTranslation() const {
-		super._applyTranslation();
-	}
-	
+
 	/**
 	 * Update should be called if the window is resized.
 	 */

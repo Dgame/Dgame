@@ -53,13 +53,6 @@ protected:
 		
 	}
 	
-	/**
-	 * Apply translation to the object.
-	 */
-	void _applyTranslation() const {
-		glTranslatef(this._position.x, this._position.y, 0f);
-	}
-	
 public:
 	/**
 	 * Overloadable method to reset the position.
@@ -67,6 +60,13 @@ public:
 	 */
 	void resetTranslation() {
 		this.setPosition(0, 0);
+	}
+
+	/**
+	* Apply translation to the object.
+	*/
+	void applyTranslation() const {
+		glTranslatef(this._position.x, this._position.y, 0f);
 	}
 	
 final:

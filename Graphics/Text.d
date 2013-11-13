@@ -36,7 +36,7 @@ private {
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.Template.Blendable;
+	import Dgame.Graphics.Blend;
 	import Dgame.Math.Rect;
 }
 
@@ -85,7 +85,7 @@ private:
 		                         cast(ushort) rhs.h,
 		                         rhs.format.BitsPerPixel, fmt);
 
-		super._setAreaSize(this._tex.width, this._tex.height);
+		super.setAreaSize(this._tex.width, this._tex.height);
 	}
 	
 	void _update() in {
@@ -149,7 +149,7 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		super._applyTranslation();
+		super.applyTranslation();
 		
 		if (this._shouldUpdate)
 			this._update();
@@ -225,70 +225,25 @@ final:
 	ushort height() const pure nothrow {
 		return this._tex !is null ? this._tex.height : 0;
 	}
-	
+
 	/**
-	 * Enable or Disable blending
-	 */
-	void enableBlending(bool enable) {
-		this._tex.enableBlending(enable);
+	* Set (or reset) the current Blend instance.
+	*/
+	void setBlend(Blend blend) {
+		assert(this._tex !is null, "Texture is null.");
+
+		this._tex.setBlend(blend);
 	}
-	
+
 	/**
-	 * Returns if Blending is enabled
-	 */
-	bool isBlendingEnabled() const pure nothrow {
-		return this._tex.isBlendingEnabled();
+	* Checks whether this Texture has a Blend instance.
+	*/
+	bool hasBlend() const pure nothrow {
+		assert(this._tex !is null, "Texture is null.");
+
+		return this._tex.hasBlend();
 	}
-	
-	/**
-	 * Set the Blendmode.
-	 */
-	void setBlendMode(BlendMode mode) {
-		this._tex.setBlendMode(mode);
-	}
-	
-	/**
-	 * Returns the current Blendmode.
-	 */
-	BlendMode getBlendMode() const pure nothrow {
-		return this._tex.getBlendMode();
-	}
-	
-	/**
-	 * Set the Blend Color.
-	 */
-	void setBlendColor(ref const Color col) {
-		this._tex.setBlendColor(col);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setBlendColor(const Color col) {
-		this.setBlendColor(col);
-	}
-	
-	/**
-	 * Returns the current Blend Color.
-	 */
-	ref const(Color) getBlendColor() const pure nothrow {
-		return this._tex.getBlendColor();
-	}
-	
-	/**
-	 * Activate or deactivate the using of the Blend color.
-	 */
-	void enableBlendColor(bool use) {
-		this._tex.enableBlendColor(use);
-	}
-	
-	/**
-	 * Returns, if using blend color is activated, or not.
-	 */
-	bool isBlendColorEnabled() const pure nothrow {
-		return this._tex.isBlendColorEnabled();
-	}
-	
+
 	/**
 	 * Replace the current Font.
 	 */

@@ -55,66 +55,55 @@ public:
 	 */
 	@disable
 	this();
+	
+	/**
+	 * CTor
+	 */
+	this(float x, float y, float z = 0f, float tx = 0f, float ty = 0f) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+
+		this.tx = tx;
+		this.ty = ty;
+
+		this.setColor(Color.White);
+	}
 
 	/**
-	* CTor
-	*/
-	this(float x, float y, float z) {
-		this.setPosition(x, y, z);
-		this.setTexCoord(0, 0);
-		this.setColor(Color.White);
+	 * CTor
+	 */
+	this(ref const Vector2f position) {
+		this(position.x, position.y);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(float x, float y, float z, float tx, float ty) {
-		this.setPosition(x, y, z);
-		this.setTexCoord(tx, ty);
-		this.setColor(Color.White);
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(ref const Vector2f position, ref const Vector2f texcoord) {
-		debug writeln("CTor Pixel");
-		this.setPosition(position);
-		this.setTexCoord(texcoord);
-		this.setColor(Color.White);
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(ref const Vector2f position, ref const Color col, ref const Vector2f texcoord) {
-		debug writeln("CTor Pixel");
-		this.set(position, col, texcoord);
-	}
-	
-	/**
-	 * Set a (new) position, a (new) color and (new) texcoords.
-	 */
-	void set(ref const Vector2f position, ref const Color col, ref const Vector2f texcoord) pure nothrow {
+	this(ref const Vector2f position, ref const Vector2f texcoord, ref const Color col) {
 		this.setPosition(position);
 		this.setTexCoord(texcoord);
 		this.setColor(col);
 	}
-	
+
+	/**
+	 * CTor
+	 */
+	this(ref const Vector2f position, ref const Color col) {
+		this.setPosition(position);
+		this.setColor(col);
+
+		this.tx = 0f;
+		this.ty = 0f;
+	}
+
 	/**
 	 * Set a (new) position
 	 */
 	void setPosition(ref const Vector2f position) pure nothrow {
-		this.setPosition(position.x, position.y);
-	}
-	
-	/**
-	 * Set a (new) position
-	 */
-	void setPosition(float px, float py, float pz = 0f) pure nothrow {
-		this.x = px;
-		this.y = py;
-		this.z = pz;
+		this.x = position.x;
+		this.y = position.y;
+		this.z = 0f;
 	}
 	
 	/**
@@ -133,17 +122,10 @@ public:
 	 * Set (new) texcoords
 	 */
 	void setTexCoord(ref const Vector2f texcoord) pure nothrow {
-		this.setTexCoord(texcoord.x, texcoord.y);
+		this.tx = texcoord.x;
+		this.ty = texcoord.y;
 	}
-	
-	/**
-	 * Set (new) texcoords
-	 */
-	void setTexCoord(float tx, float ty) pure nothrow {
-		this.tx = tx;
-		this.ty = ty;
-	}
-	
+
 	/**
 	 * Create a Color from the color data
 	 */

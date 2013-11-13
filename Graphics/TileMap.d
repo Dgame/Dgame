@@ -488,7 +488,7 @@ final:
 		this._readTileMap();
 
 		// Area Size
-		this._transform._setAreaSize(this._tmi.width, this._tmi.height);
+		this._transform.setAreaSize(this._tmi.width, this._tmi.height);
 	}
 	
 	/**

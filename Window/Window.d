@@ -111,10 +111,12 @@ private:
 	
 	string _title;
 	ubyte _fpsLimit;
+	bool _drawn;
 	
 	static int _winCount;
 	
 public:
+final:
 	/**
 	 * CTor
 	 */
@@ -168,7 +170,7 @@ public:
 			
 			glOrtho(0, videoMode.width, videoMode.height, 0, 1, -1);
 			
-			this.setVerticalSync(Sync.Enable);
+			this.useVerticalSync(Sync.Enable);
 			this.setClearColor(Color.White);
 			
 			SDL_GL_MakeCurrent(this._window, this._glContext);
@@ -225,7 +227,7 @@ public:
 	 *
 	 * Returns if the sync mode is supported.
 	 */
-	bool setVerticalSync(Sync sync) const {
+	bool useVerticalSync(Sync sync) const {
 		if (sync == Sync.Enable || sync == Sync.Disable)
 			return SDL_GL_SetSwapInterval(sync) == 0;
 		else
@@ -276,6 +278,8 @@ public:
 	 */
 	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
 		Surface mycapture = Surface.make(this.width, this.height);
+
+		glReadBuffer(GL_FRONT);
 		
 		ubyte* pixels = cast(ubyte*) mycapture.getPixels();
 		glReadPixels(0, 0, this.width, this.height, fmt, GL_UNSIGNED_BYTE, pixels);
@@ -288,7 +292,7 @@ public:
 		ubyte[] tmpLine = Array!ubyte(&ta)[lineWidth];
 		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
 		
-		for (uint i = 0; i < this.height / 2; ++i) {
+		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
 			const uint tmpIdx2 = (i + 1) * lineWidth;
 			
@@ -378,6 +382,9 @@ public:
 	void draw(Drawable draw) const in {
 		assert(draw !is null, "Drawable object is null.");
 	} body {
+		//if (this._drawn)
+		//    return;
+
 		draw.render();
 	}
 	
@@ -395,7 +402,12 @@ public:
 	void display() {
 		if (!this.isOpen())
 			return;
-		
+
+		//if (this._drawn)
+		//    return;
+		//
+		//this._drawn = true;
+
 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
 			Clock.wait(1000 / this._fpsLimit);
 

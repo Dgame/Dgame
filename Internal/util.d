@@ -21,9 +21,46 @@
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************************
 */
-module Dgame.Internal.Math;
+module Dgame.Internal.util;
 
-private import std.math : fabs;
+private {
+	import std.math : fabs;
+	import std.traits : isNumeric;
+}
+
+struct List(T...) {
+	alias Type = T[0];
+
+	Type*[12] ptrs = void;
+
+	void opAssign(Type[] values) {
+		foreach (index, ptr; ptrs) {
+			//writeln(" -> ", index, "::", values);
+			if (index >= values.length)
+				break;
+
+			*ptr = values[index];
+		}
+	}
+}
+
+List!U list(U = T[0], T...)(auto ref T vars) {
+	List!U tmpList;
+
+	foreach (i, ref U var; vars) {
+		tmpList.ptrs[i] = &var;
+	}
+
+	return tmpList;
+} unittest {
+	int a, b, c;
+
+	list(a, b, c) = [1, 2, 3];
+
+	assert(a == 1);
+	assert(b == 2);
+	assert(c == 3);
+}
 
 @safe
 bool fpEqual(T : float)(const T a, const T b) pure nothrow {
@@ -50,4 +87,14 @@ bool fpEqual(T : float, size_t n)(const T[n] values, const T b) pure nothrow {
 	}
 	
 	return true;
+}
+
+@safe
+bool equals(T, U)(const T a, const U b) pure nothrow 
+	if (isNumeric!T && isNumeric!U)
+{
+	static if (is(T == float) || is(T == double) || is(T == real))
+		return fpEqual(a, cast(T) b);
+	else
+		return a == b;
 }
