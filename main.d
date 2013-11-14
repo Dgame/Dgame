@@ -241,7 +241,7 @@ void main() {
 	circle3.bindTexture(img);
 	circle3.setTextureRect(ShortRect(25, 25, 100, 100));
 	circle3.move(300, -100);
-	//circle3.setRotation(25);
+	circle3.setRotation(25);
 
 	Shape va = Shape.make(Shape.Type.Quad, pos);
 	va.bindTexture(img);

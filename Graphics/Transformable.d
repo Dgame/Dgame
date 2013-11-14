@@ -40,12 +40,10 @@ abstract class Transformable : Moveable {
 private:
 	short _rotAngle;
 	float _zoom = 1f;
-	int[2] _areaSize;
-	
-package:
-	void setAreaSize(int width, int height) pure nothrow {
-		this._areaSize[0] = width;
-		this._areaSize[1] = height;
+
+protected:
+	int[2] _getAreaSize() const pure nothrow {
+		return [0, 0];
 	}
 	
 public:
@@ -66,19 +64,21 @@ public:
 		super.applyTranslation();
 
 		if (this._rotAngle != 0) {
-			if (this._areaSize[0] != 0 && this._areaSize[1] != 0)
-				glTranslatef(this._areaSize[0] / 2, this._areaSize[1] / 2, 0);
+			const int[2] area_size = this._getAreaSize();
+
+			if (area_size[0] != 0 && area_size[1] != 0)
+				glTranslatef(area_size[0] / 2, area_size[1] / 2, 0);
 
 			glRotatef(this._rotAngle, 0f, 0f, 1f);
 
-			if (this._areaSize[0] != 0 && this._areaSize[1] != 0)
-				glTranslatef(-(this._areaSize[0] / 2), -(this._areaSize[1] / 2), 0);
+			if (area_size[0] != 0 && area_size[1] != 0)
+				glTranslatef(-(area_size[0] / 2), -(area_size[1] / 2), 0);
 		}
 
 		if (!isNaN(this._zoom) && this._zoom != 1f)
 			glScalef(this._zoom, this._zoom, 0f);
 	}
-	
+
 final:
 	/**
 	 * Set a (new) rotation.

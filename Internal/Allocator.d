@@ -35,6 +35,8 @@ struct Memory {
 	this(this);
 
 	~this() {
+		debug writeln("Free Memory Pool");
+
 		foreach (void* ptr; this._pool) {
 			if (ptr !is null)
 				this.free(ptr);

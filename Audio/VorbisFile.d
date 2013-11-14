@@ -71,7 +71,7 @@ protected:
 		super._buffer = new byte[super._sFile.dataSize];
 
 		uint inserted = 0;
-		byte[ushort.max] tmpBuf = void;
+		byte[ushort.max] tmpBuf = void; // TODO: mallocen?
 
 		while (true) {
 			// Read up to a buffer's worth of decoded sound data

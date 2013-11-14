@@ -25,10 +25,20 @@ module Dgame.Graphics.Transform;
 
 private {
 	import derelict.opengl3.gl;
-	
-	import Dgame.Graphics.Transformable;
+
 	import Dgame.Window.Window;
+	import Dgame.Graphics.Transformable;
 	import Dgame.Math.Rect;
+}
+
+/**
+ * Formable for attaching to Transform
+ *
+ * Author: rschuett
+ */
+interface Formable {
+	/// Returns the Area size
+	int[2] getAreaSize() const pure nothrow;
 }
 
 /**
@@ -41,6 +51,16 @@ private:
 	ShortRect _view;
 	bool _viewActive = true;
 	int[2] _winSize;
+
+	Formable _child;
+
+protected:
+	override int[2] _getAreaSize() const pure nothrow {
+		if (this._child !is null)
+			return this._child.getAreaSize();
+
+		return super._getAreaSize();
+	}
 	
 public:
 	/**
@@ -65,9 +85,13 @@ public:
 	this(const ShortRect view) {
 		this(view);
 	}
+
+	void attach(Formable f) {
+		this._child = f;
+	}
 	
 	/**
-	 * Apply the viewport. The view is recalulcated by the given View Rectangle.
+	 * Apply the viewport. The view is recalculated by the given View Rectangle.
 	 */
 	void applyViewport() const {
 		if (this._viewActive && !this._view.isEmpty()) {
@@ -85,7 +109,7 @@ public:
 	 * Update should be called if the window is resized.
 	 */
 	void updateWindowSize() {
-		int[4] viewport;
+		int[4] viewport = void;
 		glGetIntegerv(GL_VIEWPORT, &viewport[0]);
 		
 		this._winSize[] = viewport[2 .. 4];

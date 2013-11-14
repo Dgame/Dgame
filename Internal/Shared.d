@@ -123,7 +123,7 @@ public:
 	}
 
 	@disable
-		void opAssign(T* ptr);
+	void opAssign(T* ptr);
 
 	void dissolve() {
 		while (this._ownership.isValid() && this._ownership._ref.count > 0) {

@@ -230,7 +230,7 @@ public:
 protected:
 	ubyte _lineWidth;
 	bool _filled = true;
-	bool _update = false;
+	bool _needUpdate = false;
 	
 	Type _type;
 	Smooth _smooth;
@@ -263,14 +263,16 @@ protected:
 			glHint(this._smooth.hint, this._smooth.mode);
 		}
 
-		glLineWidth(this._lineWidth);
+		if (this._lineWidth > 1)
+			glLineWidth(this._lineWidth);
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 
-		if (this._update && this._tex !is null) {
-			this._update = false;
-			this._updateTexCoords();
+		if (this._needUpdate && this._tex !is null) {
+			this._needUpdate = false;
+
+			this._needUpdateTexCoords();
 		}
 
 		Vertex* ptr = &this._vertices[0];
@@ -295,7 +297,13 @@ protected:
 		VertexRenderer.drawArrays(shapeToPrimitive(type), this._vertices.length);
 	}
 
-	final void _updateTexCoords() pure nothrow {
+	override int[2] _getAreaSize() const pure nothrow {
+		const MinMax[2] mm = minmax(this._vertices);
+
+		return [cast(int) mm[0].max, cast(int) mm[1].max];
+	}
+
+	final void _needUpdateTexCoords() pure nothrow {
 		if (this._vertices.length == 0)
 			return;
 
@@ -333,8 +341,6 @@ final:
 	 * CTor
 	 */
 	this(Type type, Texture tex = null) {
-		this._lineWidth = 2;
-		
 		this._type = type;
 		this._smooth = Smooth(Smooth.Target.None, Smooth.Mode.Fastest);
 
@@ -397,11 +403,9 @@ final:
 	
 	/**
 	 * The current shape will be updated.
-	 * If 'autoUpdate' is activated, this happens automatically,
-	 * otherwise you should use this.
 	 */
-	void update(bool update = true) pure nothrow {
-		this._update = update;
+	void forceUpdate() pure nothrow {
+		this._needUpdate = true;
 	}
 	
 	/**
@@ -480,7 +484,7 @@ final:
 	 * Stores a Vertex for this Shape.
 	 */
 	void append(ref const Vertex vx) {
-		this._update = true;
+		this._needUpdate = true;
 
 		this._vertices ~= vx;
 	}
@@ -496,7 +500,7 @@ final:
 	 * Stores multiple Vertices for this Shape.
 	 */
 	void append(const Vertex[] vertices) {
-		this._update = true;
+		this._needUpdate = true;
 
 		this._vertices ~= vertices;
 	}
@@ -509,9 +513,9 @@ final:
 		if (index >= this._vertices.length)
 			return;
 
-		this._update = true;
+		this._needUpdate = true;
 
-		if (vp)
+		if (vp !is null)
 			.memcpy(vp, &this._vertices[index], Vertex.sizeof);
 		
 		this._vertices = .remove(this._vertices, index);
