@@ -133,9 +133,38 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Shape.this"></a>final  this(Type <i>type</i>);
+<dt><big><a name="Shape.this"></a>final  this(Type <i>type</i>, Texture <i>tex</i> = null);
 </big></dt>
 <dd>CTor<br><br>
+
+</dd>
+<dt><big><a name="Shape.bindTexture"></a>final void <u>bindTexture</u>(Texture <i>tex</i>);
+</big></dt>
+<dd>Bind (or unbind) a Texture.<br><br>
+
+</dd>
+<dt><big><a name="Shape.setTextureRect"></a>final void <u>setTextureRect</u>(ref const ShortRect <i>texRect</i>);
+</big></dt>
+<dd>Set a Texture Rect<br><br>
+
+</dd>
+<dt><big><a name="Shape.setTextureRect"></a>final void <u>setTextureRect</u>(const ShortRect <i>texRect</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
+
+</dd>
+<dt><big><a name="Shape.fetchTextureRect"></a>final inout pure nothrow inout(ShortRect*) <u>fetchTextureRect</u>();
+</big></dt>
+<dd>Returns a pointer to the Texture Rect.
+ With this you can change the existing Rect without setting a new one.
+ You can e.g. collapse the Rect with this method.
+<br><br>
+<b>Example:</b><br>
+<pre class="d_code">Shape s = Shape.make(...);
+<font color=green>// A lot of code
+</font>s.<u>fetchTextureRect</u>().collapse();
+</pre>
+<br><br>
 
 </dd>
 <dt><big><a name="Shape.setSmooth"></a>final pure nothrow void <u>setSmooth</u>(Smooth.Target <i>sTarget</i>, Smooth.Mode <i>sMode</i> = Smooth.Mode.Fastest);
@@ -148,11 +177,9 @@ rschuett<br><br>
 <dd>Return the current smooth<br><br>
 
 </dd>
-<dt><big><a name="Shape.update"></a>final pure nothrow void <u>update</u>(bool <u>update</u> = true);
+<dt><big><a name="Shape.forceUpdate"></a>final pure nothrow void <u>forceUpdate</u>();
 </big></dt>
-<dd>The current shape will be updated.
- If 'autoUpdate' is activated, this happens automatically,
- otherwise you should use this.<br><br>
+<dd>The current shape will be updated.<br><br>
 
 </dd>
 <dt><big><a name="Shape.setType"></a>final pure nothrow void <u>setType</u>(Type <i>type</i>);
@@ -171,7 +198,7 @@ Shape.Type enum.<br><br>
 Shape.Type enum.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setPixelColor"></a>final void <u>setPixelColor</u>(ref const Color <i>col</i>);
+<dt><big><a name="Shape.setVertexColor"></a>final void <u>setVertexColor</u>(ref const Color <i>col</i>);
 </big></dt>
 <dd>Set for <b>all</b> vertices a (new) color.
 <br><br>
@@ -179,21 +206,21 @@ Shape.Type enum.<br><br>
 This method does not need an update call.<br><br>
 
 </dd>
-<dt><big><a name="Shape.setPixelColor"></a>final void <u>setPixelColor</u>(const Color <i>col</i>);
+<dt><big><a name="Shape.setVertexColor"></a>final void <u>setVertexColor</u>(const Color <i>col</i>);
 </big></dt>
 <dd>Rvalue version<br><br>
 
 </dd>
-<dt><big><a name="Shape.enableFill"></a>final pure nothrow void <u>enableFill</u>(bool <i>fill</i>);
+<dt><big><a name="Shape.fill"></a>final pure nothrow void <u>fill</u>(bool <u>fill</u>);
 </big></dt>
-<dd>Activate <i>fill</i> mode.
+<dd>Activate <u>fill</u> mode.
  This means the whole shape is drawn and not only the outlines.
 <br><br>
 <b>Note:</b><br>
 This method does not need an update call.<br><br>
 
 </dd>
-<dt><big><a name="Shape.shouldFill"></a>final const pure nothrow bool <u>shouldFill</u>();
+<dt><big><a name="Shape.filled"></a>final const pure nothrow bool <u>filled</u>();
 </big></dt>
 <dd>Returns if the fill mode is active or not.<br><br>
 
@@ -211,72 +238,58 @@ This method does not need an update call.<br><br>
 <dd>Returns the line width.<br><br>
 
 </dd>
-<dt><big><a name="Shape.appendVector"></a>final void <u>appendVector</u>(ref const Vector2f <i>vec</i>);
+<dt><big><a name="Shape.append"></a>final void <u>append</u>(ref const Vertex <i>vx</i>);
 </big></dt>
-<dd>Stores Pixel coordinates for this Shape.<br><br>
+<dd>Stores a Vertex for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.appendVector"></a>final void <u>appendVector</u>(const Vector2f <i>vec</i>);
+<dt><big><a name="Shape.append"></a>final void <u>append</u>(const Vertex <i>vec</i>);
 </big></dt>
-<dd>Rvalue version<br><br>
+<dd>Rvalue version.<br><br>
 
 </dd>
-<dt><big><a name="Shape.appendPixel"></a>final void <u>appendPixel</u>(ref const Pixel <i>vx</i>);
-</big></dt>
-<dd>Stores a Pixel for this Shape.<br><br>
-
-</dd>
-<dt><big><a name="Shape.appendPixels"></a>final void <u>appendPixels</u>(const Pixel[] <i>pixels</i>);
+<dt><big><a name="Shape.append"></a>final void <u>append</u>(const Vertex[] <i>vertices</i>);
 </big></dt>
 <dd>Stores multiple Vertices for this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.appendVectors"></a>final void <u>appendVectors</u>(const Vector2f[] <i>vec</i>);
+<dt><big><a name="Shape.remove"></a>final void <u>remove</u>(uint <i>index</i>, Vertex* <i>vp</i> = null);
 </big></dt>
-<dd>Stores multiple Pixel coordinates for this Shape.<br><br>
+<dd>Remove the Vertex on the specific <i>index</i>.
+ If <i>vp</i> is not <b>null</b>, the droped Vertex is stored there.<br><br>
 
 </dd>
-<dt><big><a name="Shape.remove"></a>final void <u>remove</u>(uint <i>index</i>, Pixel* <i>vp</i> = null);
+<dt><big><a name="Shape.getVertices"></a>final const pure nothrow const(Vertex[]) <u>getVertices</u>();
 </big></dt>
-<dd>Remove the Pixel on the specific <i>index</i>.
- If <i>vp</i> is not <b>null</b>, the droped Pixel is stored there.<br><br>
+<dd>Returns all Vertex of this Shape.<br><br>
 
 </dd>
-<dt><big><a name="Shape.getPixels"></a>final const pure nothrow const(Pixel[]) <u>getPixels</u>();
+<dt><big><a name="Shape.getVertexAt"></a>final const ref const(Vertex) <u>getVertexAt</u>(uint <i>idx</i>);
 </big></dt>
-<dd>Returns all Pixel of this Shape.<br><br>
-
-</dd>
-<dt><big><a name="Shape.getPixelAt"></a>final const ref const(Pixel) <u>getPixelAt</u>(uint <i>idx</i>);
-</big></dt>
-<dd>Returns the Pixel at the given index
+<dd>Returns the Vertex at the given index
  or throws an exception, if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.fetchPixelAt"></a>final inout inout(Pixel)* <u>fetchPixelAt</u>(uint <i>idx</i>);
+<dt><big><a name="Shape.fetchVertexAt"></a>final inout inout(Vertex)* <u>fetchVertexAt</u>(uint <i>idx</i>);
 </big></dt>
-<dd>Returns a pointer of the Pixel at the given index
+<dd>Returns a pointer of the Vertex at the given index
  or <b>null</b> if the index is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Vector2f[] <i>vec</i>);
+<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const float[] <i>mat</i>);
 </big></dt>
-<dd>Make a new Shape object with the given <i>type</i> and vertices.<br><br>
+<dd>Add an array of floats
+ Note that 3 dimensional coordinate components are expected.<br><br>
 
 </dd>
-<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Pixel[] <i>pixels</i>);
+<dt><big><a name="Shape.make"></a>static Shape <u>make</u>(Type <i>type</i>, const Vertex[] <i>vertices</i>);
 </big></dt>
-<dd>Make a new Shape object with the given <i>type</i> and vertices.<br><br>
-
-</dd>
-<dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(ubyte <i>radius</i>, ref const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
-</big></dt>
-<dd>Make a new Shape object as Circle.<br><br>
+<dd>Make a new Shape object with the given <i>type</i> and <i>vertices</i>.<br><br>
 
 </dd>
 <dt><big><a name="Shape.makeCircle"></a>static Shape <u>makeCircle</u>(ubyte <i>radius</i>, const Vector2f <i>center</i>, ubyte <i>vecNum</i> = 30);
 </big></dt>
-<dd>Rvalue version<br><br>
+<dd>Make a new Shape object as Circle.<br><br>
 
 </dd>
 </dl>

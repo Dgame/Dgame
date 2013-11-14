@@ -21,75 +21,52 @@
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************************
 */
-module Dgame.Graphics.Template.Blendable;
+module Dgame.Graphics.Blend;
 
-private import Dgame.Graphics.Color;
+private {
+	import derelict.opengl3.gl;
+
+	import Dgame.Graphics.Color;
+}
 
 /**
- * Supported BlendModes
- */
-enum BlendMode {
-	None,      /** No blending. */
-	Alpha,    /** Pixel = Src * a + Dest * (1 - a) */
-	Add,      /** Pixel = Src + Dest */
-	Multiply /** Pixel = Src * Dest */
-}
-
-enum BlendColor {
-	Default,
-	Color4f
-}
-
+ * Enable blending
+*/
 interface Blendable {
+	/**
+	 * Set (or reset) the current Blend instance.
+	 */
+	void setBlend(Blend blend);
+	/**
+	 * Checks whether this Texture has a Blend instance.
+	 */
+	bool hasBlend() const pure nothrow;
+}
+
+class Blend {
 public:
 	/**
-	 * Enable or Disable blending
-	 */
-	void enableBlending(bool);
-	/**
-	 * Returns if Blending is enabled
-	 */
-	bool isBlendingEnabled() const pure nothrow;
-	/**
-	 * Set the Blendmode.
-	 */
-	void setBlendMode(BlendMode);
-	/**
-	 * Returns the current Blendmode.
-	 */
-	BlendMode getBlendMode() const pure nothrow;
-	/**
-	 * Set the Blend Color.
-	 */
-	void setBlendColor(ref const Color);
-	/**
-	 * Rvalue version
-	 */
-	void setBlendColor(const Color);
-	/**
-	 * Returns the current Blend Color.
-	 */
-	ref const(Color) getBlendColor() const pure nothrow;
-	/**
-	 * Activate or deactivate the using of the Blend color.
-	 */
-	void enableBlendColor(bool);
-	/**
-	 * Returns, if using blend color is activated, or not.
-	 */
-	bool isBlendColorEnabled() const pure nothrow;
-}
+	* Supported BlendModes
+	*/
+	enum Mode {
+		None,      /// No blending.
+		Alpha,     /// Pixel = Src * a + Dest * (1 - a)
+		Add,       /// Pixel = Src + Dest
+		Multiply   /// Pixel = Src * Dest
+	}
 
-mixin template TplBlendable() {
 private:
-	BlendMode _blendMode;
-	Color _blendColor;
+	Mode _mode;
+	Color _color;
 	
 	bool _isBlending;
 	bool _isBlendColor;
 	
-protected:
-	void _applyBlending() const {
+public:
+	/**
+	 * Apply the blending
+	 */
+	void applyBlending() const {
 		if (!this._isBlending)
 			return;
 
@@ -97,7 +74,7 @@ protected:
 			glEnable(GL_BLEND);
 
 		if (this._isBlendColor) {
-			const float[4] col = this._blendColor.asGLColor();
+			const float[4] col = this._color.asGLColor();
 
 			version(all)
 				glBlendColor(col[0], col[1], col[2], col[3]);
@@ -105,28 +82,33 @@ protected:
 				glColor4f(col[0], col[1], col[2], col[3]);
 		}
 
-		final switch (this._blendMode) {
-			// Alpha blending
-			case BlendMode.Alpha:
+		final switch (this._mode) {
+			case Mode.Alpha: // Alpha blending
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				break;
-				// Additive blending
-			case BlendMode.Add:
+			case Mode.Add: // Additive blending
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 				break;
-				// Multiplicative blending
-			case BlendMode.Multiply :
+			case Mode.Multiply: // Multiplicative blending
 				glBlendFunc(GL_DST_COLOR, GL_ZERO);
 				break;
-				// No blending
-			case BlendMode.None:
+			case Mode.None: // No blending
 				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 		}
 	}
-	
-public:
+
 final:
+	/**
+	 * CTor
+	 */
+	this(Mode mode, const Color* col = null) {
+		this.setBlendMode(mode);
+		
+		if (col !is null)
+			this.setBlendColor(*col);
+	}
+
 	/**
 	 * Enable or Disable blending
 	 */
@@ -158,16 +140,16 @@ final:
 	/**
 	 * Set the Blendmode.
 	 */
-	void setBlendMode(BlendMode mode) {
-		this._blendMode = mode;
+	void setBlendMode(Mode mode) {
+		this._mode = mode;
 		this._isBlending = true;
 	}
 	
 	/**
 	 * Returns the current Blendmode.
 	 */
-	BlendMode getBlendMode() const pure nothrow {
-		return this._blendMode;
+	Mode getBlendMode() const pure nothrow {
+		return this._mode;
 	}
 	
 	/**
@@ -175,7 +157,7 @@ final:
 	 */
 	void setBlendColor(ref const Color col) {
 		this._isBlendColor = true;
-		this._blendColor = col;
+		this._color = col;
 	}
 	
 	/**
@@ -189,6 +171,6 @@ final:
 	 * Returns the current Blend Color.
 	 */
 	ref const(Color) getBlendColor() const pure nothrow {
-		return this._blendColor;
+		return this._color;
 	}
 }

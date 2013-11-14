@@ -62,39 +62,29 @@ rschuett<br><br>
 <dd>Disable default CTor<br><br>
 
 </dd>
-<dt><big><a name="Vertex.this"></a> this(float <i>x</i>, float <i>y</i>, float <i>z</i>);
+<dt><big><a name="Vertex.this"></a> this(float <i>x</i>, float <i>y</i>, float <i>z</i> = 0.000000F, float <i>tx</i> = 0.000000F, float <i>ty</i> = 0.000000F);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vertex.this"></a> this(float <i>x</i>, float <i>y</i>, float <i>z</i>, float <i>tx</i>, float <i>ty</i>);
+<dt><big><a name="Vertex.this"></a> this(ref const Vector2f <i>position</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vertex.this"></a> this(ref const Vector2f <i>position</i>, ref const Vector2f <i>texcoord</i>);
+<dt><big><a name="Vertex.this"></a> this(ref const Vector2f <i>position</i>, ref const Vector2f <i>texcoord</i>, ref const Color <i>col</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vertex.this"></a> this(ref const Vector2f <i>position</i>, ref const Color <i>col</i>, ref const Vector2f <i>texcoord</i>);
+<dt><big><a name="Vertex.this"></a> this(ref const Vector2f <i>position</i>, ref const Color <i>col</i>);
 </big></dt>
 <dd>CTor<br><br>
-
-</dd>
-<dt><big><a name="Vertex.set"></a>pure nothrow void <u>set</u>(ref const Vector2f <i>position</i>, ref const Color <i>col</i>, ref const Vector2f <i>texcoord</i>);
-</big></dt>
-<dd>Set a (new) <i>position</i>, a (new) color and (new) texcoords.<br><br>
 
 </dd>
 <dt><big><a name="Vertex.setPosition"></a>pure nothrow void <u>setPosition</u>(ref const Vector2f <i>position</i>);
 </big></dt>
 <dd>Set a (new) <i>position</i><br><br>
-
-</dd>
-<dt><big><a name="Vertex.setPosition"></a>pure nothrow void <u>setPosition</u>(float <i>px</i>, float <i>py</i>, float <i>pz</i> = 0.000000F);
-</big></dt>
-<dd>Set a (new) position<br><br>
 
 </dd>
 <dt><big><a name="Vertex.setColor"></a>pure nothrow void <u>setColor</u>(ref const Color <i>col</i>);
@@ -103,11 +93,6 @@ rschuett<br><br>
 
 </dd>
 <dt><big><a name="Vertex.setTexCoord"></a>pure nothrow void <u>setTexCoord</u>(ref const Vector2f <i>texcoord</i>);
-</big></dt>
-<dd>Set (new) texcoords<br><br>
-
-</dd>
-<dt><big><a name="Vertex.setTexCoord"></a>pure nothrow void <u>setTexCoord</u>(float <i>tx</i>, float <i>ty</i>);
 </big></dt>
 <dd>Set (new) texcoords<br><br>
 

@@ -44,11 +44,6 @@ protected:
 	ShortRect _clipRect;
 	ShortRect _texView;
 
-private:
-	void _updateAreaSize() {
-		super._setAreaSize(this._clipRect.width, this._clipRect.height);
-	}
-	
 protected:
 	void _render() const in {
 		assert(this._tex !is null, "Sprite couldn't rendered, because the Texture is null.");
@@ -56,10 +51,13 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 
-		this._applyTranslation();
+		this.applyTranslation();
 
-		this._tex._render(Render(&this._clipRect,
-								 this._texView.isEmpty() ? null : &this._texView));
+		this._tex._render(Viewport(&this._clipRect, this._texView.isEmpty() ? null : &this._texView));
+	}
+
+	override int[2] _getAreaSize() const pure nothrow {
+		return [this._clipRect.width, this._clipRect.height];
 	}
 	
 public:
@@ -67,7 +65,7 @@ public:
 	 * CTor
 	 */
 	this() {
-		this._tex = null;
+		this(null);
 	}
 	
 	/**
@@ -109,7 +107,6 @@ final:
 		this._texView = texView;
 		
 		this._clipRect.setSize(texView.width, texView.height);
-		this._updateAreaSize();
 	}
 	
 	/**
@@ -135,7 +132,6 @@ final:
 		this._texView.collapse();
 		
 		this._clipRect.setSize(this._tex.width, this._tex.height);
-		this._updateAreaSize();
 	}
 	
 	/**
@@ -170,7 +166,6 @@ final:
 		this._tex = tex;
 		
 		this._clipRect.setSize(tex.width, tex.height);
-		this._updateAreaSize();
 	}
 	
 	/**

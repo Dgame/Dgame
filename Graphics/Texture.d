@@ -30,11 +30,9 @@ private {
 	
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
-	import Dgame.Graphics.Template.Blendable;
+	import Dgame.Graphics.Blend;
 	import Dgame.System.VertexRenderer;
 }
-
-public import Dgame.Graphics.Template.Blendable : BlendMode;
 
 /**
  * Format a Texture.Format into the related bit count.
@@ -115,6 +113,11 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
 	}
 }
 
+/**
+ * Choose the right compress format for the given Texture.Format.
+ *
+ * See: Texture.Format enum
+ */
 Texture.Format compressFormat(Texture.Format fmt) pure {
 	switch (fmt) {
 		case Texture.Format.RGB:  return Texture.Format.CompressedRGB;
@@ -144,7 +147,7 @@ static ~this() {
 	debug writeln(" >> Texture Finalized");
 }
 
-package struct Render {
+package struct Viewport {
 public:
 	enum Mode {
 		Normal,
@@ -152,16 +155,16 @@ public:
 	}
 
 	const ShortRect* dest;
-	const ShortRect* viewport;
+	const ShortRect* view;
 
 	const Mode mode;
 
 	@disable
 	this();
 
-	this(const ShortRect* dest, const ShortRect* viewport, Mode mode = Mode.Normal) {
+	this(const ShortRect* dest, const ShortRect* view, Mode mode = Mode.Normal) {
 		this.dest = dest;
-		this.viewport = viewport;
+		this.view = view;
 		this.mode = mode;
 	}
 }
@@ -178,15 +181,15 @@ public:
 	 * Supported Texture Format
 	 */
 	enum Format {
-		None  = 0, /** Take this if you want to declare that you give no Format. */
-		RGB   = GL_RGB,		/** Alias for GL_RGB */
-		RGBA  = GL_RGBA,	/** Alias for GL_RGBA */
-		BGR   = GL_BGR,		/** Alias for GL_BGR */
-		BGRA  = GL_BGRA,	/** Alias for GL_BGRA */
-		Alpha = GL_ALPHA,	/** Alias for GL_ALPHA */
-		Luminance = GL_LUMINANCE, /** Alias for GL_LUMINANCE */
-		LuminanceAlpha = GL_LUMINANCE_ALPHA /** Alias for GL_LUMINANCE_ALPHA */,
-		CompressedRGB = GL_COMPRESSED_RGB, /// Compressed RGB
+		None  = 0,							/// Take this if you want to declare that you give no Format.
+		RGB   = GL_RGB,						/// Alias for GL_RGB
+		RGBA  = GL_RGBA,					/// Alias for GL_RGBA
+		BGR   = GL_BGR,						/// Alias for GL_BGR
+		BGRA  = GL_BGRA,					/// Alias for GL_BGRA
+		Alpha = GL_ALPHA,					/// Alias for GL_ALPHA
+		Luminance = GL_LUMINANCE,			/// Alias for GL_LUMINANCE
+		LuminanceAlpha = GL_LUMINANCE_ALPHA, /// Alias for GL_LUMINANCE_ALPHA
+		CompressedRGB = GL_COMPRESSED_RGB,	/// Compressed RGB
 		CompressedRGBA = GL_COMPRESSED_RGBA /// Compressed RGBA
 	}
 
@@ -211,9 +214,11 @@ private:
 	
 	Format _format;
 	Compression _comp = Compression.None;
-	
+
+	Blend _blend;
+
 package:
-	void _render(const Render* render) const {
+	void _render(const Viewport* vp) const {
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
 
@@ -222,30 +227,31 @@ package:
 		float tw = 1f;
 		float th = 1f;
 
-		if (render !is null && render.viewport !is null) {
-			tx = (0f + render.viewport.x) / this._width;
-			ty = (0f + render.viewport.y) / this._height;
-			tw = (0f + render.viewport.width) / this._width;
-			th = (0f + render.viewport.height) / this._height;
+		if (vp !is null && vp.view !is null) {
+			tx = (0f + vp.view.x) / this._width;
+			ty = (0f + vp.view.y) / this._height;
+			tw = (0f + vp.view.width) / this._width;
+			th = (0f + vp.view.height) / this._height;
 		}
 
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
 
 		// apply blending
-		this._applyBlending();
+		if (this._blend !is null)
+			this._blend.applyBlending();
 
-		const Render.Mode mode = render !is null ? render.mode : Render.Mode.Normal;
+		const Viewport.Mode mode = vp !is null ? vp.mode : Viewport.Mode.Normal;
 
 		float[8] texCoords = void;
 		final switch (mode) {
-			case Render.Mode.Normal:
+			case Viewport.Mode.Normal:
 				texCoords = [tx,      ty,
 							 tx + tw, ty,
 							 tx + tw, ty + th,
 							 tx,      ty + th];
 				break;
-			case Render.Mode.Reverse:
+			case Viewport.Mode.Reverse:
 				texCoords = [tx,      ty + th,
 							 tx + tw, ty + th,
 							 tx + tw, ty,
@@ -253,16 +259,16 @@ package:
 				break;
 		}
 
-		float dx = 0f,
-			dy = 0f,
-			dw = this._width,
-			dh = this._height;
+		float dx = 0f;
+		float dy = 0f;
+		float dw = this._width;
+		float dh = this._height;
 
-		if (render !is null && render.dest !is null) {
-			dx = render.dest.x;
-			dy = render.dest.y;
-			dw = render.dest.width;
-			dh = render.dest.height;
+		if (vp !is null && vp.dest !is null) {
+			dx = vp.dest.x;
+			dy = vp.dest.y;
+			dw = vp.dest.width;
+			dh = vp.dest.height;
 		}
 
 		float[12] vertices = [dx,	   dy,      0f,
@@ -284,18 +290,15 @@ package:
 		VertexRenderer.drawArrays(Primitive.Type.TriangleFan, vertices.length);
 	}
 
-	void _render(ref const Render render) const {
-		this._render(&render);
+	void _render(ref const Viewport vp) const {
+		this._render(&vp);
 	}
 
-	void _render(const Render render) const {
-		this._render(&render);
+	void _render(const Viewport vp) const {
+		this._render(&vp);
 	}
-	
+
 public:
-	/// mixin blendable functionality
-	mixin TplBlendable;
-	
 final:
 	/**
 	 * CTor
@@ -487,6 +490,20 @@ final:
 
 		return compressed != 1;
 	}
+
+	/**
+	 * Set (or reset) the current Blend instance.
+	 */
+	void setBlend(Blend blend) {
+		this._blend = blend;
+	}
+
+	/**
+	 * Checks whether this Texture has a Blend instance.
+	 */
+	bool hasBlend() const pure nothrow {
+		return this._blend !is null;
+	}
 	
 	/**
 	 * Load from memory.
@@ -640,7 +657,7 @@ final:
 			glEnable(GL_TEXTURE_2D);
 		
 		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
-		this._render(Render(&dest, &rect, Render.Mode.Reverse));
+		this._render(Viewport(&dest, &rect, Viewport.Mode.Reverse));
 		
 		tex.bind();
 		
@@ -688,7 +705,7 @@ final:
 			glEnable(GL_TEXTURE_2D);
 		
 		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
-		tex._render(Render(&dest, rect, Render.Mode.Reverse));
+		tex._render(Viewport(&dest, rect, Viewport.Mode.Reverse));
 		
 		this.bind();
 		

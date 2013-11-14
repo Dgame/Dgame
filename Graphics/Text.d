@@ -36,7 +36,7 @@ private {
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.Template.Blendable;
+	import Dgame.Graphics.Blend;
 	import Dgame.Math.Rect;
 }
 
@@ -67,7 +67,7 @@ static ~this() {
 class Text : Transformable, Blendable, Drawable {
 protected:
 	string _text;
-	bool _shouldUpdate;
+	bool _needUpdate;
 	
 	Color _fg = Color.Black;
 	Color _bg = Color.White;
@@ -80,18 +80,13 @@ private:
 		assert(this._tex !is null, "No Texture!");
 		assert(rhs !is null, "No Surface!");
 	} body {
-		this._tex.loadFromMemory(rhs.pixels,
-		                         cast(ushort) rhs.w,
-		                         cast(ushort) rhs.h,
-		                         rhs.format.BitsPerPixel, fmt);
-
-		super._setAreaSize(this._tex.width, this._tex.height);
+		this._tex.loadFromMemory(rhs.pixels, cast(ushort) rhs.w, cast(ushort) rhs.h, rhs.format.BitsPerPixel, fmt);
 	}
 	
 	void _update() in {
 		assert(this._tex !is null, "No Texture!");
 	} body {
-		this._shouldUpdate = false;
+		this._needUpdate = false;
 		
 		SDL_Surface* srfc;
 		scope(exit) SDL_FreeSurface(srfc);
@@ -149,15 +144,22 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		super._applyTranslation();
+		super.applyTranslation();
 		
-		if (this._shouldUpdate)
+		if (this._needUpdate)
 			this._update();
 		
 		 // we need nothing to render the text, so null is given
 		this._tex._render(null);
 	}
-	
+
+	override int[2] _getAreaSize() const pure nothrow {
+		if (this._tex is null)
+			return [0, 0];
+
+		return [this._tex.width, this._tex.height];
+	}
+
 public:
 	/**
 	 * CTor
@@ -166,7 +168,7 @@ public:
 		this.replaceFont(font);
 
 		this._text = text;
-		this._shouldUpdate = true;
+		this._needUpdate = true;
 		this._tex = new Texture();
 	}
 	
@@ -225,70 +227,25 @@ final:
 	ushort height() const pure nothrow {
 		return this._tex !is null ? this._tex.height : 0;
 	}
-	
+
 	/**
-	 * Enable or Disable blending
-	 */
-	void enableBlending(bool enable) {
-		this._tex.enableBlending(enable);
+	* Set (or reset) the current Blend instance.
+	*/
+	void setBlend(Blend blend) {
+		assert(this._tex !is null, "Texture is null.");
+
+		this._tex.setBlend(blend);
 	}
-	
+
 	/**
-	 * Returns if Blending is enabled
-	 */
-	bool isBlendingEnabled() const pure nothrow {
-		return this._tex.isBlendingEnabled();
+	* Checks whether this Texture has a Blend instance.
+	*/
+	bool hasBlend() const pure nothrow {
+		assert(this._tex !is null, "Texture is null.");
+
+		return this._tex.hasBlend();
 	}
-	
-	/**
-	 * Set the Blendmode.
-	 */
-	void setBlendMode(BlendMode mode) {
-		this._tex.setBlendMode(mode);
-	}
-	
-	/**
-	 * Returns the current Blendmode.
-	 */
-	BlendMode getBlendMode() const pure nothrow {
-		return this._tex.getBlendMode();
-	}
-	
-	/**
-	 * Set the Blend Color.
-	 */
-	void setBlendColor(ref const Color col) {
-		this._tex.setBlendColor(col);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setBlendColor(const Color col) {
-		this.setBlendColor(col);
-	}
-	
-	/**
-	 * Returns the current Blend Color.
-	 */
-	ref const(Color) getBlendColor() const pure nothrow {
-		return this._tex.getBlendColor();
-	}
-	
-	/**
-	 * Activate or deactivate the using of the Blend color.
-	 */
-	void enableBlendColor(bool use) {
-		this._tex.enableBlendColor(use);
-	}
-	
-	/**
-	 * Returns, if using blend color is activated, or not.
-	 */
-	bool isBlendColorEnabled() const pure nothrow {
-		return this._tex.isBlendColorEnabled();
-	}
-	
+
 	/**
 	 * Replace the current Font.
 	 */
@@ -296,7 +253,7 @@ final:
 		this._font = font;
 		_FontFinalizer ~= &this._font;
 
-		this._shouldUpdate = true;
+		this._needUpdate = true;
 	}
 	
 	/**
@@ -326,8 +283,8 @@ final:
 	 * In most cases, this happens automatically,
 	 * but sometimes it is usefull.
 	 */
-	void update() {
-		this._shouldUpdate = true;
+	void forceUpdate() {
+		this._needUpdate = true;
 	}
 	
 	/**
@@ -338,7 +295,7 @@ final:
 		
 		if (formated != this._text) {
 			this._text = formated;
-			this._shouldUpdate = true;
+			this._needUpdate = true;
 		}
 	}
 	
@@ -355,7 +312,7 @@ final:
 	void opCall(string text) {
 		if (text != this._text) {
 			this._text = text;
-			this._shouldUpdate = true;
+			this._needUpdate = true;
 		}
 	}
 	
@@ -393,7 +350,7 @@ final:
 	 */
 	ref Text opBinary(string op)(string text) if (op == "~" || op == "+") {
 		this._text ~= text;
-		this._shouldUpdate = true;
+		this._needUpdate = true;
 		
 		return this;
 	}
@@ -416,7 +373,7 @@ final:
 	 * Set the (foreground) color.
 	 */
 	void setColor(ref const Color col) {
-		this._shouldUpdate = true;
+		this._needUpdate = true;
 		this._fg = col;
 	}
 	
@@ -439,7 +396,7 @@ final:
 	 * Only needed if your Font.Mode is not Font.Mode.Solid.
 	 */
 	void setBackgroundColor(ref const Color col) {
-		this._shouldUpdate = true;
+		this._needUpdate = true;
 		this._bg = col;
 	}
 	

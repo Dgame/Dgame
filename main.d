@@ -44,7 +44,7 @@ pragma(msg, getDgVersion());
 pragma(msg, Color.sizeof);
 pragma(msg, Font.sizeof);
 pragma(msg, Surface.sizeof);
-pragma(msg, Pixel.sizeof);
+pragma(msg, Vertex.sizeof);
 pragma(msg, Vertex.sizeof);
 pragma(msg, FloatRect.sizeof);
 pragma(msg, Vector2f.sizeof);
@@ -55,7 +55,7 @@ void main() {
 	const ushort height = 640;
 
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
-	wnd.setVerticalSync(Window.Sync.Disable);
+	wnd.useVerticalSync(Window.Sync.Disable);
 	//wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 
@@ -81,14 +81,13 @@ void main() {
 			 Color.Green.red, Color.Green.green, Color.Green.blue, Color.Green.alpha);
 	
 	Shape qs = Shape.make(Shape.Type.Quad, [
-		Vector2f(75, 75),
-		Vector2f(275, 75),
-		Vector2f(275, 275),
-		Vector2f(75, 275)]);
+		Vertex(75, 75),
+		Vertex(275, 75),
+		Vertex(275, 275),
+		Vertex(75, 275)]);
 	
 	//qs.setSmooth(Shape.SmoothTarget.Line, Shape.SmoothHint.Nicest);
-	qs.enableFill(true);
-	qs.setPixelColor(Color.Blue);
+	qs.setVertexColor(Color.Blue);
 	//qs.setType(Shape.Type.Triangle);
 	//	qs.rotate(-25);
 	qs.setPosition(500, 300);
@@ -97,24 +96,23 @@ void main() {
 	circle.setSmooth(Smooth.Target.Line);
 
 	Shape many = Shape.make(Shape.Type.Quad, [
-		Vector2f(55, 55),
-		Vector2f(60, 55),
-		Vector2f(60, 60),
-		Vector2f(55, 60),
-		Vector2f(15, 15),
-		Vector2f(20, 15),
-		Vector2f(20, 20),
-		Vector2f(15, 20),
-		Vector2f(30, 30),
-		Vector2f(35, 30),
-		Vector2f(35, 35),
-		Vector2f(30, 35),
-		Vector2f(40, 40),
-		Vector2f(45, 40),
-		Vector2f(45, 45),
-		Vector2f(40, 45)]);
-	many.enableFill(true);
-	many.setPixelColor(Color.Red);
+		Vertex(55, 55),
+		Vertex(60, 55),
+		Vertex(60, 60),
+		Vertex(55, 60),
+		Vertex(15, 15),
+		Vertex(20, 15),
+		Vertex(20, 20),
+		Vertex(15, 20),
+		Vertex(30, 30),
+		Vertex(35, 30),
+		Vertex(35, 35),
+		Vertex(30, 35),
+		Vertex(40, 40),
+		Vertex(45, 40),
+		Vertex(45, 45),
+		Vertex(40, 45)]);
+	many.setVertexColor(Color.Red);
 
 	Surface wiki = Surface("samples/img/wiki.png"); // <
 
@@ -229,23 +227,26 @@ void main() {
 		310, 170, 0,
 		310, 310, 0,
 		170, 310, 0];
-	float[8] texels = [
-		0, 0,
-		1, 0,
-		1, 1,
-		0, 1];
+
+	Blend blend = new Blend(Blend.Mode.Multiply, &Color.Blue);
 
 	Image trans_img = new Image("samples/img/wiki.png");
-	trans_img.setBlendMode(BlendMode.Multiply);
-	trans_img.setBlendColor(Color.Blue);
+	trans_img.setBlend(blend);
 	Sprite trans_sprite = new Sprite(trans_img);
 	trans_sprite.setPosition(500, 400);
 
 	Image img = new Image("samples/img/wiki.png");//, Texture.Format.RGB);
 
-	VertexArray va = new VertexArray(img, Primitive.Type.Polygon);
-	va.append(pos, texels);
-	va.setColor(Color.Green.withTransparency(125));
+	Shape circle3 = Shape.makeCircle(50, Vector2f(180, 380), 30);
+	circle3.bindTexture(img);
+	circle3.setTextureRect(ShortRect(25, 25, 100, 100));
+	circle3.move(300, -100);
+	circle3.setRotation(25);
+
+	Shape va = Shape.make(Shape.Type.Quad, pos);
+	va.bindTexture(img);
+	va.setVertexColor(Color.Green.withTransparency(125));
+	va.setRotation(25);
 
 	Image exploImg = new Image("samples/img/explosion.png");
 	Spritesheet explosion = new Spritesheet(exploImg, ShortRect(0, 0, 256, 256));
@@ -254,10 +255,11 @@ void main() {
 
 	Transform tf = tm.getTransform();
 	//tf.setView(90, 90, 60, 60);
+	tf.setRotation(45);
 
 	tm.setTransform(tf);
 
-	va.setIndices([0, 1, 2, 3]);
+	//va.setIndices([0, 1, 2, 3]);
 
 	//wnd.clear();
 	//wnd.display();
@@ -287,10 +289,10 @@ void main() {
 
 	Shape circle2 = Shape.makeCircle(25, Vector2f(60, 60));
 	circle2.setSmooth(Smooth.Target.Line);
-	circle2.setPixelColor(Color.Red);
+	circle2.setVertexColor(Color.Red);
+	circle2.fill(false);
 
-	VertexArray va_many = new VertexArray(Primitive.Type.Quad);
-	va_many.appendArray(mat);
+	Shape va_many = Shape.make(Shape.Type.Quad, mat);
 
 	FrameBufferObject fbo = new FrameBufferObject(fbo_img1);
 	fbo.draw(va_many);
@@ -322,16 +324,16 @@ void main() {
 					writefln("Game Loop runs now for %d ms - %f secs - %f min",
 							 time.msecs, time.seconds, time.minutes);
 					
-					uint[] va_indices = va.fetchIndices();
-					if (va_indices[0] == 1) {
-						foreach (i; 0 .. 4) {
-							va_indices[i] -= 1;
-						}
-					} else {
-						foreach (i; 0 .. 4) {
-							va_indices[i] += 1;
-						}
-					}
+					//uint[] va_indices = va.fetchIndices();
+					//if (va_indices[0] == 1) {
+					//    foreach (i; 0 .. 4) {
+					//        va_indices[i] -= 1;
+					//    }
+					//} else {
+					//    foreach (i; 0 .. 4) {
+					//        va_indices[i] += 1;
+					//    }
+					//}
 
 					sp.slideTextureRect();
 
@@ -403,7 +405,7 @@ void main() {
 					writefln("Es verbleiben %d second bei %d %%. Status: %s",
 					         powI.seconds, powI.percent, powI.state);
 
-					qs.setPixelColor(colors[cidx++ % colors.length]);
+					qs.setVertexColor(colors[cidx++ % colors.length]);
 					qs.setType(Shape.Type.LineLoop);
 
 					//tm.move(5, 5);
@@ -440,25 +442,26 @@ void main() {
 
 		wnd.clear();
 
+		//writefln("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
+
 		text.format("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
 
-		//		tf.setScale(2);
-
 		wnd.draw(tm);
 
-		tf.setPosition(250, 50);
-		tf.setScale(0.5f);
-		//		tf.activate(true);
-
-		wnd.draw(tm);
-
-		//		tf.activate(false);
-		tf.resetTranslation();
-
+		//tf.setPosition(250, 50);
+		//tf.setScale(0.5f);
+		////tf.activateView(true);
+		//
+		//wnd.draw(tm);
+		//
+		////tf.activateView(false);
+		//tf.resetTranslation();
+		//
 		wnd.draw(qs);
 		wnd.draw(many);
 		wnd.draw(circle);
+		wnd.draw(circle3);
 
 		wnd.draw(wiki_sprite);
 		wnd.draw(sp);
@@ -478,10 +481,7 @@ void main() {
 		tof.slide();
 		wnd.draw(tof);
 
-		
-
 		//qs.move(1, 1);
-	Ldisplay:
 		wnd.display();
 
 		//SDL_Delay(20);

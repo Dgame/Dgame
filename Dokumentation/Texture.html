@@ -46,7 +46,15 @@
 <br><br>
 
 </dd>
-<dt><big><a name="Texture"></a>class <u>Texture</u>: Dgame.Graphics.Template.Blendable.Blendable;
+<dt><big><a name="compressFormat"></a>pure Texture.Format <u>compressFormat</u>(Texture.Format <i>fmt</i>);
+</big></dt>
+<dd>Choose the right compress format for the given Texture.Format.
+<br><br>
+<b>See:</b><br>
+Texture.Format enum<br><br>
+
+</dd>
+<dt><big><a name="Texture"></a>class <u>Texture</u>: Dgame.Graphics.Blend.Blendable;
 </big></dt>
 <dd>A <u>Texture</u> is a 2 dimensional pixel reprasentation.
  It is a wrapper of an OpenGL <u>Texture</u>.
@@ -59,35 +67,35 @@ rschuett<br><br>
 <dd>Supported Texture <u>Format</u><br><br>
 
 <dl><dt><big><a name="Texture.Format.None"></a><u>None</u></big></dt>
-<dd>Take this if you want to declare that you give no Format. <br><br>
+<dd>Take this if you want to declare that you give no Format.<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.RGB"></a><u>RGB</u></big></dt>
-<dd>Alias for GL_RGB <br><br>
+<dd>Alias for GL_RGB<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.RGBA"></a><u>RGBA</u></big></dt>
-<dd>Alias for GL_RGBA <br><br>
+<dd>Alias for GL_RGBA<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.BGR"></a><u>BGR</u></big></dt>
-<dd>Alias for GL_BGR <br><br>
+<dd>Alias for GL_BGR<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.BGRA"></a><u>BGRA</u></big></dt>
-<dd>Alias for GL_BGRA <br><br>
+<dd>Alias for GL_BGRA<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.Alpha"></a><u>Alpha</u></big></dt>
-<dd>Alias for GL_ALPHA <br><br>
+<dd>Alias for GL_ALPHA<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.Luminance"></a><u>Luminance</u></big></dt>
-<dd>Alias for GL_LUMINANCE <br><br>
+<dd>Alias for GL_LUMINANCE<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.LuminanceAlpha"></a><u>LuminanceAlpha</u></big></dt>
-<dd>Alias for GL_LUMINANCE_ALPHA <br><br>
+<dd>Alias for GL_LUMINANCE_ALPHA<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.CompressedRGB"></a><u>CompressedRGB</u></big></dt>
@@ -232,6 +240,16 @@ Compression enum<br><br>
 <dt><big><a name="Texture.isCompressed"></a>final const bool <u>isCompressed</u>();
 </big></dt>
 <dd>Checks whether the current Texture is compressed or not.<br><br>
+
+</dd>
+<dt><big><a name="Texture.setBlend"></a>final void <u>setBlend</u>(Blend <i>blend</i>);
+</big></dt>
+<dd>Set (or reset) the current Blend instance.<br><br>
+
+</dd>
+<dt><big><a name="Texture.hasBlend"></a>final const pure nothrow bool <u>hasBlend</u>();
+</big></dt>
+<dd>Checks whether this Texture has a Blend instance.<br><br>
 
 </dd>
 <dt><big><a name="Texture.loadFromMemory"></a>final void <u>loadFromMemory</u>(void* <i>memory</i>, ushort <i>width</i>, ushort <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);

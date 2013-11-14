@@ -191,7 +191,7 @@ short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  *
  * Author: rschuett
  */
-class TileMap : Drawable {
+class TileMap : Drawable, Formable {
 private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) .read(this._filename));
@@ -423,6 +423,10 @@ protected:
 		this._vbo.disableAllStates();
 		this._vbo.unbind();
 	}
+
+	int[2] getAreaSize() const pure nothrow {
+		return [this._tmi.width, this._tmi.height];
+	}
 	
 private:
 	TileMapInfo _tmi;
@@ -450,6 +454,7 @@ final:
 		this._vbo = new VertexBufferObject(Primitive.Target.Vertex | Primitive.Target.TexCoords);
 		
 		this._transform = new Transform();
+		this._transform.attach(this);
 
 		this.load(filename, compress);
 	}
@@ -482,13 +487,10 @@ final:
 		
 		if (this._tiles.length != 0) {
 			.destroy(this._tmi);
-			.destroy(this._tiles);
+			this._tiles = null;
 		}
 		
 		this._readTileMap();
-
-		// Area Size
-		this._transform._setAreaSize(this._tmi.width, this._tmi.height);
 	}
 	
 	/**

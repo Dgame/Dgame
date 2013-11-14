@@ -30,6 +30,7 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Internal.Allocator;
+	import Dgame.Internal.util : equals;
 	import Dgame.Math.Vector2;
 }
 
@@ -179,10 +180,17 @@ public:
 	}
 	
 	/**
-	 * Checks if this Rect is empty (if it's collapsed).
+	 * Checks if this Rect is empty (if it's collapsed) with SDL_RectEmpty.
 	 */
 	bool isEmpty() const {
-		return SDL_RectEmpty(this.ptr);
+		return SDL_RectEmpty(this.ptr) == SDL_TRUE;
+	}
+
+	/**
+	 * Checks if this Rect is empty (if it's collapsed).
+	 */
+	bool hasArea() const pure nothrow {
+		return equals(this.x, 0) && equals(this.y, 0) && equals(this.width, 0) && equals(this.height, 0);
 	}
 	
 	/**
@@ -361,6 +369,41 @@ public:
 	 */
 	T[4] asArray() const pure nothrow {
 		return [this.x, this.y, this.width, this.height];
+	}
+
+	/**
+	 * Calculate and returns the x distance, also called side a.
+	 */
+	T distanceX() const pure nothrow {
+		return cast(T)(this.width - this.x);
+	}
+
+	/**
+	 * Calculate and returns the y distance, also called side b.
+	 */
+	T distanceY() const pure nothrow {
+		return cast(T)(this.height - this.y);
+	}
+
+	/**
+	 * Calculate and returns the size of the area.
+	 */
+	T getArea() const pure nothrow {
+		return cast(T)(this.distanceX() * this.distanceY());
+	}
+
+	/**
+	 * Calculate and return the size of the extent.
+	 */
+	T getExtent() const pure nothrow {
+		return cast(T)((2 * this.distanceX()) + (2 * this.distanceY()));
+	}
+
+	/**
+	 * Calculate and returns the diagonal distance.
+	 */
+	float diagonal() const pure nothrow {
+		return sqrt(0f + pow(this.distanceX(), 2) + pow(this.distanceY(), 2));
 	}
 }
 

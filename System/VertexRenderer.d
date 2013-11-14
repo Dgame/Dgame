@@ -71,9 +71,7 @@ public:
 	 * See: glTexCoordPointer
 	 * See: Primitive.Target enum.
 	 */
-	static void pointTo(Primitive.Target trg, void* ptr = null,
-	                    ubyte stride = 0, ubyte offset = 0)
-	{
+	static void pointTo(Primitive.Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
 		VertexRenderer.enableState(trg);
 		
 		if (ptr)
@@ -119,18 +117,14 @@ public:
 	 * Enable all client states
 	 */
 	static void enableAllStates() {
-		VertexRenderer.enableState(Primitive.Target.Vertex
-		                           | Primitive.Target.Color
-		                           | Primitive.Target.TexCoords);
+		VertexRenderer.enableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
 	}
 	
 	/**
 	 * Disable all client states
 	 */
 	static void disableAllStates() {
-		VertexRenderer.disableState(Primitive.Target.Vertex
-		                            | Primitive.Target.Color
-		                            | Primitive.Target.TexCoords);
+		VertexRenderer.disableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
 	}
 	
 	/**
@@ -157,7 +151,7 @@ public:
 	 * See: pointTo
 	 */
 	static void drawArrays(Primitive.Type ptype, size_t count, size_t start = 0) {
-		glDrawArrays(ptype, start, cast(uint) count);
+		glDrawArrays(ptype, cast(uint) start, cast(uint) count);
 	}
 	
 	/**
@@ -185,11 +179,7 @@ public:
 		if (indices.length == 0)
 			return;
 		
-		glDrawRangeElements(ptype,
-							start,
-							end != 0 ? end : cast(uint) indices.length,
-							cast(uint) count,
-							GL_UNSIGNED_INT,
-							&indices[0]);
+		glDrawRangeElements(ptype, start, end != 0 ? end : cast(uint) indices.length,
+							cast(uint) count, GL_UNSIGNED_INT, &indices[0]);
 	}
 }
