@@ -236,6 +236,13 @@ final:
 
 		this._tex.setBlend(blend);
 	}
+	/**
+	* Returns the current Blend instance
+	*/
+	inout(Blend) getBlend() inout pure nothrow {
+		return this._tex !is null ? this._tex.getBlend() : null;
+	}
+
 
 	/**
 	* Checks whether this Texture has a Blend instance.

@@ -499,6 +499,13 @@ final:
 	}
 
 	/**
+	 * Returns the current Blend instance
+	 */
+	inout(Blend) getBlend() inout pure nothrow {
+		return this._blend;
+	}
+
+	/**
 	 * Checks whether this Texture has a Blend instance.
 	 */
 	bool hasBlend() const pure nothrow {

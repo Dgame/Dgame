@@ -87,7 +87,7 @@ public:
 	}
 	
 private:
-	shared_ref!(SDL_Surface) _target;
+	shared_ptr!(SDL_Surface) _target;
 	string _filename;
 	
 package:

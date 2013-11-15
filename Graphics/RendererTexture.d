@@ -56,7 +56,7 @@ public:
 	const Access access;
 	
 private:
-	shared_ref!(SDL_Texture) _target;
+	shared_ptr!(SDL_Texture) _target;
 	
 public:
 	/**

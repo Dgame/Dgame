@@ -73,7 +73,7 @@ public:
 	}
 
 private:
-	shared_ref!(TTF_Font) _target;
+	shared_ptr!(TTF_Font) _target;
 	string _filename;
 
 	ubyte _fontSize;

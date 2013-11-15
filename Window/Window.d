@@ -81,19 +81,21 @@ public:
 	 * The specific window styles
 	 */
 	enum Style {
-		Fullscreen	= SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
-		Desktop     = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
-		OpenGL		= SDL_WINDOW_OPENGL,	 /** OpenGL support */
-		Shown		= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
-		Borderless	= SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
-		Resizeable	= SDL_WINDOW_RESIZABLE,  /** Window is resizeable */
-		Maximized	= SDL_WINDOW_MAXIMIZED,  /** Maximize the Window immediately */
-		Minimized	= SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
+		Fullscreen = SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
+		Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
+		OpenGL	= SDL_WINDOW_OPENGL,	 /** OpenGL support */
+		Shown	= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
+		Borderless = SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
+		Resizeable = SDL_WINDOW_RESIZABLE,  /** Window is resizeable */
+		Maximized = SDL_WINDOW_MAXIMIZED,  /** Maximize the Window immediately */
+		Minimized = SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
 		InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /** Grab the input inside the window */
-		InputFocus  = SDL_WINDOW_INPUT_FOCUS, /** The Window has input (keyboard) focus */
-		MouseFocus  = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
-		
-		Default = Shown | OpenGL /** Default mode is Shown | OpenGL */
+		InputFocus = SDL_WINDOW_INPUT_FOCUS, /** The Window has input (keyboard) focus */
+		MouseFocus = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
+		//HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /** Window should be created in high-DPI mode if supported (>= SDL 2.0.1) */
+		Foreign = SDL_WINDOW_FOREIGN, /** The window was created by some other framework. */
+
+		Default = Shown | OpenGL/* | HighDPI /** Default mode is Shown | OpenGL */
 	}
 	
 private:
@@ -121,13 +123,13 @@ final:
 	 * CTor
 	 */
 	this(VideoMode videoMode, string title = DefaultTitle, Style style = Window.Style.Default, short x = DefaultXPos, short y = DefaultYPos) {
-		/// Create an application window with the following settings:
-		this._window = SDL_CreateWindow(title.ptr,	///    const char* title
-		                                x,	///    int x: initial x position
-		                                y,	///    int y: initial y position
-		                                videoMode.width,	///    int w: width, in pixels
-		                                videoMode.height,	///    int h: height, in pixels
-		                                style);	///    Uint32 flags: window options
+		// Create an application window with the following settings:
+		this._window = SDL_CreateWindow(title.ptr,	// const char* title
+		                                x,	// int x: initial x position
+		                                y,	// int y: initial y position
+		                                videoMode.width,	// int w: width, in pixels
+		                                videoMode.height,	// int h: height, in pixels
+		                                style);	// Uint32 flags: window options
 		
 		if (this._window is null)
 			throw new Exception("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));

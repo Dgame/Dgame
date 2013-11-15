@@ -80,7 +80,6 @@ enum PIx2 = 3.14f * 2;
  * Smooth wrapper
  */
 struct Smooth {
-public:
 	/**
 	 * Supported smooth targets.
 	 */
@@ -100,27 +99,6 @@ public:
 		Nicest  = GL_NICEST	     /** Nicest but slowest kind of smooth. */
 	}
 	
-	@disable
-	this();
-	
-	@disable
-	this(this);
-	
-	/**
-	 * Returns the current target
-	 */
-	Target getTarget() const pure nothrow {
-		return this.target;
-	}
-
-	/**
-	* Return the current mode
-	*/
-	Mode getMode() const pure nothrow {
-		return this.mode;
-	}
-	
-private:
 	Target target;
 	Mode mode;
 	GLenum hint;

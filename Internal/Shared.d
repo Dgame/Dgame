@@ -33,126 +33,116 @@ debug {
 	static int _sharedCount;
 
 	static ~this() {
-		writefln(" > Remaining shared_ref's: %d / %d", _refCount, _sharedCount);
+		writefln(" > Remaining shared_ptr's: %d / %d", _refCount, _sharedCount);
 	}
 }
 
-struct shared_ref(T) if (!is(T == class)) {
-private:
-	static struct Owner {
-		static struct Ref {
-			T* ptr;
-			int count;
+struct shared_ptr(T) {
+	struct Ref {
+		T* ptr;
+		int usage;
 
-			void function(T*) destructFunc;
-		}
+		void function(T*) clean_up;
 
-		Ref* _ref;
-
-		this(T* ptr, void function(T*) destructFunc) {
-			debug {
-				_sharedCount++;
-				writefln(" > Create the %d shared_ref.", _sharedCount);
-			}
-
-			this._ref = cast(Ref*) malloc(Ref.sizeof);
-			this._ref.ptr = ptr;
-			this._ref.count = 0;
-			this._ref.destructFunc = destructFunc;
-
-			this.addRef();
-		}
-
-		bool isValid() const pure nothrow {
-			return this._ref !is null;
-		}
-
-		void addRef() pure nothrow in {
-			assert(this.isValid());
-		} body {
-			this._ref.count++;
+		void addRef()/* pure nothrow */{
+			this.usage++;
 			debug _refCount++;
 		}
 
-		void releaseRef() in {
-			assert(this.isValid());
-		} body {
-			this._ref.count--;
+		void releaseRef()/* pure nothrow */{
+			this.usage--;
 			debug _refCount--;
-
-			if (this._ref.count <= 0)
-				this._destruct();
 		}
 
-		void _destruct() in {
-			assert(this.isValid());
-		} body {
-			debug writefln("\tDestroy shared_ref with type = %s and func = %s (ptr = %X)",
-						   __traits(identifier, T), typeof(&this._ref.destructFunc).stringof, this._ref.ptr);
-			this._ref.destructFunc(this._ref.ptr);
-
-			free(this._ref);
-			this._ref = null;
+		void destruct() {
+			this.clean_up(this.ptr);
 		}
 	}
 
-	Owner _ownership;
+	Ref* _ref;
 
-public:
-	this(T* ptr, void function(T*) df) {
+	this(T* ptr, void function(T*) clean_up) {
 		debug writefln("\tShared CTor for type %s with func = %s (ptr = %X)",
-					   __traits(identifier, T), typeof(&df).stringof, ptr);
+						   __traits(identifier, T), typeof(&clean_up).stringof, ptr);
 
-		this._ownership = Owner(ptr, df);
+		this._ref = cast(Ref*) .malloc(Ref.sizeof);
+
+		this._ref.ptr = ptr;
+		this._ref.usage = 0;
+		this._ref.clean_up = clean_up;
+
+		debug {
+			_sharedCount++;
+			writefln(" > Create the %d shared_ptr.", _sharedCount);
+		}
+
+		this._ref.addRef();
+	}
+
+	this(T* ptr) {
+		this(ptr, null);
 	}
 
 	this(this) {
 		debug writefln("\tShared Postblit for type %s (ptr = %X) with usage = %d",
-					   __traits(identifier, T), this.ptr, this.usage);
+						   __traits(identifier, T), this.ptr, this.usage);
 
-		if (this._ownership.isValid())
-			this._ownership.addRef();
+		if (this.isValid())
+			this._ref.addRef();
 	}
 
 	~this() {
 		debug writefln("\tShared DTor for type %s (ptr = %X) with usage = %d",
-					   __traits(identifier, T), this.ptr, this.usage);
+						   __traits(identifier, T), this.ptr, this.usage);
 
-		if (this._ownership.isValid())
-			this._ownership.releaseRef();
+		if (this.isValid()) {
+			this._ref.releaseRef();
+
+			if (this._ref.usage <= 0)
+				this.release();
+		}
 	}
 
-	@disable
-	void opAssign(T* ptr);
+	void release() {
+		if (this.isValid() && this._ref.clean_up !is null) {
+			debug writefln(" > Destroy shared_ptr with type = %s and func = %s (ptr = %X)",
+							   __traits(identifier, T), typeof(&this._ref.clean_up).stringof, this._ref.ptr);
 
-	void dissolve() {
-		while (this._ownership.isValid() && this._ownership._ref.count > 0) {
-			this._ownership.releaseRef();
+			this._ref.destruct();
+
+			.free(this._ref);
+			this._ref = null;
+		}
+	}
+
+	void dissolve()/* pure nothrow */{
+		while (this.isValid() && this._ref.usage > 0) {
+			this._ref.releaseRef();
 		}
 	}
 
 	bool isValid() const pure nothrow {
-		return this._ownership.isValid() && this.usage > 0;
+		return this._ref !is null;
 	}
 
 	@property
-	int usage() const pure nothrow {
-		if (this._ownership.isValid())
-			return this._ownership._ref.count;
+		int usage() const pure nothrow {
+			if (this.isValid())
+				return this._ref.usage;
 
-		return -1;
-	}
+			return -1;
+		}
 
 	@property
-	inout(T*) ptr() inout {
-		return this._ownership.isValid() ? this._ownership._ref.ptr : null;
-	}
+		inout(T*) ptr() inout pure nothrow {
+			return this.isValid() ? this._ref.ptr : null;
+		}
 
 	alias ptr this;
 }
 
-shared_ref!T make_shared(T)(T* ptr, void function(T*) df) {
-	return shared_ref!T(ptr, df);
+shared_ptr!T make_shared(T)(T* ptr, void function(T*) df) {
+	return shared_ptr!T(ptr, df);
 }
 
 void dummy_deleter(void*) { }
@@ -165,14 +155,14 @@ unittest {
 		int id;
 	}
 
-	void test(shared_ref!A rhs) {
+	void test(shared_ptr!A rhs) {
 		//assert(rhs.isCopy);
 		assert(rhs.id == 42);
 		assert(rhs.isValid());
 		assert(rhs.usage == 2);
 	}
 
-	shared_ref!A as = make_shared(new A(42), (A* aptr) => dummy_deleter(aptr));
+	shared_ptr!A as = make_shared(new A(42), (A* aptr) => dummy_deleter(aptr));
 	assert(_refCount == 1, to!string(_refCount));
 
 	assert(as.id == 42);
@@ -187,8 +177,8 @@ unittest {
 	assert(as.isValid());
 	//assert(!as.isCopy);
 
-	shared_ref!A s1 = make_shared(new A(111), (A* aptr) => dummy_deleter(aptr));
-	shared_ref!A s2 = s1;
+	shared_ptr!A s1 = make_shared(new A(111), (A* aptr) => dummy_deleter(aptr));
+	shared_ptr!A s2 = s1;
 	assert(_refCount == 3, to!string(_refCount));
 
 	assert(s1.usage == 2);
@@ -212,14 +202,14 @@ unittest {
 
 	}
 
-	void test2(shared_ref!A rhs, int id) {
+	void test2(shared_ptr!A rhs, int id) {
 		//assert(rhs.isCopy);
 		assert(rhs.id == id);
 		assert(rhs.isValid());
 		assert(rhs.usage == 2);
 	}
 
-	shared_ref!A s3 = make_shared(new A(23), (A* aptr) => dummy_deleter(aptr));
+	shared_ptr!A s3 = make_shared(new A(23), (A* aptr) => dummy_deleter(aptr));
 	assert(_refCount == 4, to!string(_refCount));
 
 	assert(s3.isValid());

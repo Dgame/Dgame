@@ -38,11 +38,23 @@ interface Blendable {
 	 */
 	void setBlend(Blend blend);
 	/**
+	 * Returns the current Blend instance, or null.
+	 */
+	inout(Blend) getBlend() inout pure nothrow;
+	/**
 	 * Checks whether this Texture has a Blend instance.
 	 */
 	bool hasBlend() const pure nothrow;
 }
 
+// TODO: Is a class really neccessary? Or could a struct do the same job?...
+
+/**
+ * The Blend class. If you want that a blendable object get some blend, 
+ * create an instance of this class and give it to your blendable.
+ *
+ * Author: rschuett
+ */
 class Blend {
 public:
 	/**
