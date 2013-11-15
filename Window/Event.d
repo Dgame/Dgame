@@ -67,16 +67,16 @@ public:
 	 * All supported Event Types.
 	 */
 	enum Type {
-		Quit		= SDL_QUIT,			/** Quit Event. Time to close the window. */
-		Window		= SDL_WINDOWEVENT,	/** Something happens with the window. */
-		KeyDown		= SDL_KEYDOWN,		/** A key is pressed. */
-		KeyUp		= SDL_KEYUP,		/** A key is released. */
+		Quit = SDL_QUIT,			/** Quit Event. Time to close the window. */
+		Window  = SDL_WINDOWEVENT,	/** Something happens with the window. */
+		KeyDown = SDL_KEYDOWN,		/** A key is pressed. */
+		KeyUp = SDL_KEYUP,		/** A key is released. */
 		MouseMotion = SDL_MOUSEMOTION,	/** The mouse has moved. */
 		MouseButtonDown = SDL_MOUSEBUTTONDOWN,	/** A mouse button is pressed. */
 		MouseButtonUp = SDL_MOUSEBUTTONUP,	/** A mouse button is released. */
-		MouseWheel	  = SDL_MOUSEWHEEL,		/** The mouse wheel has scolled. */
-		TextEdit	  = SDL_TEXTEDITING,            /**< Keyboard text editing (composition) */
-		TextInput	  = SDL_TEXTINPUT              /**< Keyboard text input */
+		MouseWheel = SDL_MOUSEWHEEL,		/** The mouse wheel has scolled. */
+		TextEdit   = SDL_TEXTEDITING,            /**< Keyboard text editing (composition) */
+		TextInput  = SDL_TEXTINPUT              /**< Keyboard text input */
 	}
 	
 public:
@@ -88,51 +88,44 @@ public:
 	/**
 	 * The Keyboard Event structure.
 	 */
-	struct KeyboardEvent {
-		Keyboard.State	state;	/** Keyboard State. See: Dgame.Input.Keyboard. */
-		Keyboard.Code	code;	/** The Key which is released or pressed. */
-		Keyboard.ScanCode	scancode;	/** The Key which is released or pressed. */
-		Keyboard.Mod	mod;	/** The Key modifier. */
+	static struct KeyboardEvent {
+		Keyboard.State state;	/** Keyboard State. See: Dgame.Input.Keyboard. */
+		Keyboard.Code code;	/** The Key which is released or pressed. */
+		Keyboard.ScanCode scancode;	/** The Key which is released or pressed. */
+		Keyboard.Mod mod;	/** The Key modifier. */
 		
 		alias key = code;
 		
 		bool repeat;	/** true, if this is a key repeat. */
-		
-		version(none) {
-			bool capslock;	/** true, if capslock is pressed. */
-			bool control;	/** true, if control/cmd is pressed. */
-			bool shift;		/** true, if shift is pressed. */
-			bool alt;		/** true, if alt is pressed. */
-		}
 	}
 	
 	/**
 	 * Keyboard text editing event structure
 	 */
-	struct TextEditEvent {
-		char[TextSize] text;    /**< The editing text */
-		short start;            /**< The start cursor of selected editing text */
-		ushort length;          /**< The length of selected editing text */
+	static struct TextEditEvent {
+		char[TextSize] text = void; /**< The editing text */
+		short start; /**< The start cursor of selected editing text */
+		ushort length; /**< The length of selected editing text */
 	}
 	
 	/**
 	 * Keyboard text input event structure
 	 */
-	struct TextInputEvent {
-		char[TextSize] text;	/**< The input text */
+	static struct TextInputEvent {
+		char[TextSize] text = void; /**< The input text */
 	}
 	
 	/**
 	 * The Window Event structure.
 	 */
-	struct WindowEvent {
+	static struct WindowEvent {
 		WindowEventId eventId;
 	}
 	
 	/**
 	 * The Mouse button Event structure.
 	 */
-	struct MouseButtonEvent {
+	static struct MouseButtonEvent {
 		Mouse.Button button; /** The mouse button which is pressed or released. */
 		
 		short x; /** Current x position. */
@@ -142,7 +135,7 @@ public:
 	/**
 	 * The Mouse motion Event structure.
 	 */
-	struct MouseMotionEvent {
+	static struct MouseMotionEvent {
 		Mouse.State state; /** Mouse State. See: Dgame.Input.Mouse. */
 		
 		short x; /** Current x position. */
@@ -155,7 +148,7 @@ public:
 	/**
 	 * The Mouse wheel Event structure.
 	 */
-	struct MouseWheelEvent {
+	static struct MouseWheelEvent {
 		short x; /** Current x position. */
 		short y; /** Current y position. */
 		
