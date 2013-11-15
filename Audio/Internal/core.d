@@ -40,7 +40,7 @@ private:
 private {
 	debug import std.stdio : writeln;
 	
-	AL _myAl = void;
+	AL _myAl;
 
 	void _alError(string msg) {
 		debug switch (alcGetError(_myAl.device)) {

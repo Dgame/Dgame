@@ -216,15 +216,18 @@ public:
 	 * Supported shape types.
 	 */
 	enum Type {
-		Quad		= GL_QUADS,				/** Declare that the stored vertices are Quads. */
-		QuadStrip	= GL_QUAD_STRIP,		/** Declare that the stored vertices are Quad Strips*/
-		Triangle	= GL_TRIANGLES,			/** Declare that the stored vertices are Triangles. */
+		Quad = GL_QUADS,			/** Declare that the stored vertices are Quads. */
+		QuadStrip = GL_QUAD_STRIP,	/** Declare that the stored vertices are Quad Strips*/
+		Triangle = GL_TRIANGLES,	/** Declare that the stored vertices are Triangles. */
 		TriangleStrip = GL_TRIANGLE_STRIP,	/** Declare that the stored vertices are Triangles Strips */
 		TriangleFan = GL_TRIANGLE_FAN,		/** Declare that the stored vertices are Triangles Fans. */
-		Lines		= GL_LINES,				/** Declare that the stored vertices are Lines. */
-		LineStrip	= GL_LINE_STRIP,		/** Declare that the stored vertices are Line Strips. */
-		LineLoop	= GL_LINE_LOOP,			/** Declare that the stored vertices are Line Loops. */
-		Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
+		Lines = GL_LINES,			/** Declare that the stored vertices are Lines. */
+		LineStrip = GL_LINE_STRIP,	/** Declare that the stored vertices are Line Strips. */
+		LineLoop = GL_LINE_LOOP,	/** Declare that the stored vertices are Line Loops. */
+		Polygon = GL_POLYGON,		/** Declare that the stored vertices are Polygons. */
+
+		Unfilled = LineLoop,		/** Unfilled Type. It is identical to LineLoop. */
+		Circle = TriangleFan		/** Circle Type. It is identical to TriangleFan. */
 	}
 	
 protected:
@@ -238,8 +241,6 @@ protected:
 	Vertex[] _vertices;
 	Texture _tex;
 	ShortRect _texRect;
-
-	enum DefaultType = Type.LineLoop;
 
 protected:
 	void _render() {
@@ -272,7 +273,7 @@ protected:
 		if (this._needUpdate && this._tex !is null) {
 			this._needUpdate = false;
 
-			this._needUpdateTexCoords();
+			this._updateTexCoords();
 		}
 
 		Vertex* ptr = &this._vertices[0];
@@ -293,7 +294,7 @@ protected:
 		
 		super.applyTranslation();
 		
-		Type type = !this.filled() && this._tex is null ? DefaultType : this._type;
+		Type type = !this.filled() && this._tex is null ? Type.Unfilled : this._type;
 		VertexRenderer.drawArrays(shapeToPrimitive(type), this._vertices.length);
 	}
 
@@ -303,7 +304,7 @@ protected:
 		return [cast(int) mm[0].max, cast(int) mm[1].max];
 	}
 
-	final void _needUpdateTexCoords() pure nothrow {
+	final void _updateTexCoords() pure nothrow {
 		if (this._vertices.length == 0)
 			return;
 
@@ -353,7 +354,7 @@ final:
 	void bindTexture(Texture tex) {
 		this._tex = tex;
 
-		if (this._type == Type.LineLoop)
+		if (tex !is null && this._type == Type.LineLoop)
 			this._type = Type.Polygon;
 	}
 
@@ -583,7 +584,7 @@ final:
 	} body {
 		const float Deg2Rad = PIx2 / vecNum;
 		
-		Shape s = new Shape(Type.LineLoop);
+		Shape s = new Shape(Type.Circle);
 
 		for (ubyte i = 0; i < vecNum; i++) {
 			const float degInRad = i * Deg2Rad;

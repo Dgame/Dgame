@@ -102,7 +102,7 @@ public:
 	 * Returns the length of the sound in seconds.
 	 */
 	float getLength() const pure nothrow {
-		return (8 * this._sFile.dataSize) / (this._sFile.bits * this._sFile.rate * this._sFile.channels);
+		return (0f + 8 * this._sFile.dataSize) / (this._sFile.bits * this._sFile.rate * this._sFile.channels);
 	}
 	
 	/**

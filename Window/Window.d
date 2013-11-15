@@ -382,9 +382,6 @@ final:
 	void draw(Drawable draw) const in {
 		assert(draw !is null, "Drawable object is null.");
 	} body {
-		//if (this._drawn)
-		//    return;
-
 		draw.render();
 	}
 	
@@ -402,11 +399,6 @@ final:
 	void display() {
 		if (!this.isOpen())
 			return;
-
-		//if (this._drawn)
-		//    return;
-		//
-		//this._drawn = true;
 
 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
 			Clock.wait(1000 / this._fpsLimit);

@@ -92,7 +92,7 @@ void main() {
 	//	qs.rotate(-25);
 	qs.setPosition(500, 300);
 	
-	Shape circle = Shape.makeCircle(25, Vector2f(180, 380));
+	Shape circle = Shape.makeCircle(25, Vector2f(225, 425));
 	circle.setSmooth(Smooth.Target.Line);
 
 	Shape many = Shape.make(Shape.Type.Quad, [
@@ -218,8 +218,7 @@ void main() {
 
 	TileMap tm = new TileMap("map2.tmx");
 
-	Unit tof = new Unit(new Image("samples/img/tofte.png"),
-	                    ShortRect(0, 0, 32, 32));
+	Unit tof = new Unit(new Image("samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
 
 	float[12] pos = [
@@ -340,11 +339,13 @@ void main() {
 					if (event.keyboard.key == Keyboard.Code.Esc) {
 						EventHandler.push(Event.Type.Quit);
 					} else if (event.keyboard.key == Keyboard.Code.Num1) {
+						writefln("Sound #0 (type = %s) is %f seconds long.", sound[0].getType(), sound[0].getLength());
 						sound[0].play();
 						//writeln("set color");
 						//qs.getVertexAt(0).color = Color.Red;
 						//qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Num2) {
+						writefln("Sound #1 (type = %s) is %f seconds long.", sound[1].getType(), sound[1].getLength());
 						sound[1].play();
 						//    writeln("set color");
 						//    qs.getVertexAt(1).color = Color.Cyan;
