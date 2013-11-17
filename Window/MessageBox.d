@@ -9,7 +9,7 @@ private {
 struct MessageBox {
 	static struct Color {
 		.Color color = .Color.White;
-		uint flag;
+		int flag;
 
 		enum {
 			Background = SDL_MESSAGEBOX_COLOR_BACKGROUND,

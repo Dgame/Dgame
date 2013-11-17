@@ -133,14 +133,12 @@ public:
 public:
 	const Type type;
 	const Primitive.Target targets;
+	const ubyte numTargets;
 	
 private:
-	uint[3] _vboId;
-	
+	GLuint[3] _vboId;
 	Primitive.Target _curTarget;
-	
-	/*const */ubyte _targetNums;
-	/*const */ubyte[Primitive.Target] _targetIds;
+	ubyte[Primitive.Target] _targetIds;
 	bool[Primitive.Target] _dataAssigned;
 
 public:
@@ -150,21 +148,21 @@ public:
 	this(Primitive.Target trg, Type type = Type.Array) {
 		if (trg == Primitive.Target.None)
 			Log.error("Invalid PointerTarget.");
-		
+
+		ubyte num_targets = 0;
+		if (Primitive.Target.Vertex & trg)
+			this._targetIds[Primitive.Target.Vertex] = num_targets++;
+		if (Primitive.Target.Color & trg)
+			this._targetIds[Primitive.Target.Color] = num_targets++;
+		if (Primitive.Target.TexCoords & trg)
+			this._targetIds[Primitive.Target.TexCoords] = num_targets++;
+
 		this.type = type;
 		this.targets = trg;
-
-		this._targetNums = 0;
-		if (Primitive.Target.Vertex & trg)
-			this._targetIds[Primitive.Target.Vertex] = this._targetNums++;
-		if (Primitive.Target.Color & trg)
-			this._targetIds[Primitive.Target.Color] = this._targetNums++;
-		if (Primitive.Target.TexCoords & trg)
-			this._targetIds[Primitive.Target.TexCoords] = this._targetNums++;
-
+		this.numTargets = num_targets;
 		this._curTarget = Primitive.Target.None;
 		
-		glGenBuffers(this._targetNums, &this._vboId[0]);
+		glGenBuffers(this.numTargets, &this._vboId[0]);
 		
 		foreach (Primitive.Target id, _; this._targetIds) {
 			this.bind(id);
