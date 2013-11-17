@@ -24,7 +24,7 @@
 module Dgame.Internal.Shared;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writefln;
 	import core.stdc.stdlib : malloc, free;
 }
 
@@ -60,6 +60,12 @@ struct shared_ptr(T) {
 	}
 
 	Ref* _ref;
+
+	/// Because invariant is useless
+	private void _validate() {
+		if (this._ref !is null && this._ref.usage <= 0)
+			this.release();
+	}
 
 	this(T* ptr, void function(T*) clean_up) {
 		debug writefln("\tShared CTor for type %s with func = %s (ptr = %X)",
@@ -98,8 +104,7 @@ struct shared_ptr(T) {
 		if (this.isValid()) {
 			this._ref.releaseRef();
 
-			if (this._ref.usage <= 0)
-				this.release();
+			this._validate();
 		}
 	}
 
@@ -115,10 +120,12 @@ struct shared_ptr(T) {
 		}
 	}
 
-	void dissolve()/* pure nothrow */{
+	void dissolve() {
 		while (this.isValid() && this._ref.usage > 0) {
 			this._ref.releaseRef();
 		}
+
+		this._validate();
 	}
 
 	bool isValid() const pure nothrow {
