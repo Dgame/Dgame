@@ -32,7 +32,6 @@ private import Dgame.Math.Vector2;
  * Author: rschuett
  */
 struct VecN(T, const uint Dim) if (isNumeric!T) {
-public:
 	/**
 	 * Stores the vector values.
 	 */

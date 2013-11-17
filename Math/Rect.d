@@ -65,8 +65,7 @@ public:
 	 */
 	T width = 0;
 	T height = 0;
-	
-public:
+
 	/**
 	 * CTor
 	 */

@@ -36,7 +36,6 @@ public {
  * Author: rschuett
  */
 struct Vertex {
-public:
 	/**
 	 * The coordinates
 	 */

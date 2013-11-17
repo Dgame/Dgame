@@ -37,7 +37,6 @@ private {
  * Author: rschuett
  */
 struct Vector2(T) if (isNumeric!T) {
-public:
 	/**
 	 * x coordinate
 	 */
