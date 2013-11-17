@@ -24,8 +24,10 @@
 module Dgame.Internal.Allocator;
 
 private {
-	debug import std.stdio;
+	debug import std.stdio : writeln;
 	import core.stdc.stdlib : malloc, calloc, realloc, free;
+
+	import Dgame.Internal.Log;
 }
 
 struct Memory {
@@ -35,7 +37,7 @@ struct Memory {
 	this(this);
 
 	~this() {
-		debug writeln("Free Memory Pool");
+		debug Log.info("Free Memory Pool");
 
 		foreach (void* ptr; this._pool) {
 			if (ptr !is null)
@@ -68,7 +70,7 @@ struct Memory {
 		void* iptr = ptr in this._pool;
 		if (iptr is null) {
 			if (ptr !is null)
-				throw new Exception("This pointer does not belong to this memory pool.");
+				Log.error("This pointer does not belong to this memory pool.");
 
 			ptr = this.malloc(N);
 			return ptr;
@@ -96,7 +98,7 @@ struct Memory {
 
 	void free(void* ptr) {
 		if (ptr !in this._pool)
-			throw new Exception("This pointer does not belong to this memory pool.");
+			Log.error("This pointer does not belong to this memory pool.");
 
 		.free(ptr);
 
@@ -104,15 +106,15 @@ struct Memory {
 		ptr = null;
 	}
 
-	static void copy(T)(T* dst, T* src, size_t sizeOf = 1) {
+	static void copy(T)(T* dst, T* src, size_t sizeOf = 1) in {
 		assert(sizeOf > 0);
-
+	} body {
 		.memcpy(dst, src, T.sizeof * sizeOf);
 	}
 
-	T* copy(T)(T* src, size_t sizeOf = 1) {
+	T* copy(T)(T* src, size_t sizeOf = 1) in {
 		assert(sizeOf > 0);
-
+	} body {
 		T* dst = this.allocate!T(sizeOf);
 		.memcpy(dst, src, T.sizeof * sizeOf);
 
@@ -121,7 +123,7 @@ struct Memory {
 
 	void deselect(void* ptr) {
 		if (ptr !in this._pool)
-			throw new Exception("This pointer does not belong to this memory pool.");
+			Log.error("This pointer does not belong to this memory pool.");
 
 		this._pool[ptr] = null;
 	}

@@ -23,7 +23,11 @@
 */
 module Dgame.Audio.SoundFile;
 
-private import std.file : exists;
+private {
+	import std.file : exists;
+
+	import Dgame.Internal.Log;
+}
 package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 
 /**
@@ -70,7 +74,7 @@ public:
 	 */
 	this(string filename) {
 		if (!exists(filename))
-			throw new Exception("File " ~ filename ~ " does not exists.");
+			Log.error("File " ~ filename ~ " does not exists.");
 		
 		this._read(filename);
 	}

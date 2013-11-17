@@ -266,7 +266,8 @@ void main() {
 	//
 	//return;
 
-	float[] mat = [55, 55, 0f,
+	float[] mat = [
+		55, 55, 0f,
 		60, 55, 0f,
 		60, 60, 0f,
 		55, 60, 0f,
@@ -320,8 +321,7 @@ void main() {
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
 					writeln("Oh! Key press: ", event.keyboard.code);
 					Time time = Clock.getTime();
-					writefln("Game Loop runs now for %d ms - %f secs - %f min",
-							 time.msecs, time.seconds, time.minutes);
+					writefln("Game Loop runs now for %d ms - %f secs - %f min", time.msecs, time.seconds, time.minutes);
 					
 					//uint[] va_indices = va.fetchIndices();
 					//if (va_indices[0] == 1) {
@@ -359,7 +359,7 @@ void main() {
 						//    qs.getVertexAt(3).color = Color.Magenta;
 						//    qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Space) {
-						//tm.load("../level_1.tmx");
+						tm.load("../level_1.tmx");
 						//Keyboard.startTextInput();
 					} else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
 						//Keyboard.stopTextInput();

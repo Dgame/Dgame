@@ -24,13 +24,13 @@
 module Dgame.Graphics.Text;
 
 private {
-	debug import std.stdio : writeln;
 	import std.string : format, toStringz;
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
 	import derelict.sdl2.ttf;
-	
+
+	import Dgame.Internal.Log;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Color;
@@ -43,18 +43,18 @@ private {
 private Font*[] _FontFinalizer;
 
 static ~this() {
-	debug writeln("Finalize Font");
+	debug Log.info("Finalize Font");
 
 	for (size_t i = 0; i < _FontFinalizer.length; ++i) {
 		if (_FontFinalizer[i] !is null) {
-			debug writeln(" -> Finalize font ", i, "::", _FontFinalizer[i].ptr);
+			debug Log.info(" -> Finalize font %d : %x", i, _FontFinalizer[i].ptr);
 			_FontFinalizer[i].free();
 		}
 	}
 
 	_FontFinalizer = null;
 
-	debug writeln("Font finalized");
+	debug Log.info("Font finalized");
 }
 
 /**
@@ -155,7 +155,7 @@ protected:
 
 	override int[2] _getAreaSize() const pure nothrow {
 		if (this._tex is null)
-			return [0, 0];
+			return super._getAreaSize();
 
 		return [this._tex.width, this._tex.height];
 	}
@@ -231,9 +231,9 @@ final:
 	/**
 	* Set (or reset) the current Blend instance.
 	*/
-	void setBlend(Blend blend) {
+	void setBlend(Blend blend) in {
 		assert(this._tex !is null, "Texture is null.");
-
+	} body {
 		this._tex.setBlend(blend);
 	}
 	/**
@@ -247,9 +247,9 @@ final:
 	/**
 	* Checks whether this Texture has a Blend instance.
 	*/
-	bool hasBlend() const pure nothrow {
+	bool hasBlend() const pure nothrow in {
 		assert(this._tex !is null, "Texture is null.");
-
+	} body {
 		return this._tex.hasBlend();
 	}
 

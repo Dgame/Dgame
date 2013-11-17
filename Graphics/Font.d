@@ -31,6 +31,7 @@ private {
 
 	import derelict.sdl2.ttf;
 
+	import Dgame.Internal.Log;
 	import Dgame.Internal.Shared;
 }
 
@@ -85,9 +86,7 @@ public:
 	/**
 	* CTor
 	*/
-	this(string filename, ubyte size,
-		 Mode mode = Mode.Solid, Style style = Style.Normal)
-	{
+	this(string filename, ubyte size, Mode mode = Mode.Solid, Style style = Style.Normal) {
 		this._mode  = mode;
 		this._style = style;
 
@@ -99,14 +98,14 @@ public:
 	*/
 	debug(Dgame)
 	this(this) {
-		debug writeln("Font Postblit");
+		debug Log.info("Font Postblit");
 	}
 
 	/**
 	* opAssign
 	*/
 	void opAssign(ref Font fnt) {
-		debug writeln("Font opAssign");
+		debug Log.info("Font opAssign");
 
 		this._fontSize = fnt._fontSize;
 
@@ -129,7 +128,7 @@ public:
 	*/
 	debug(Dgame)
 	~this() {
-		writeln("Close Font");
+		debug Log.info("Close Font");
 	}
 
 	/**
@@ -148,15 +147,14 @@ public:
 		this._filename = fontFile;
 
 		this._fontSize = fontSize == 0 ? this._fontSize : fontSize;
-		debug assert(this._fontSize != 0, "No size for this font.");
+		assert(this._fontSize != 0, "No size for this font.");
 
 		if (!exists(fontFile))
-			throw new Exception("Font File does not exists.");
+			Log.error("Font File does not exists.");
 
 		TTF_Font* font = TTF_OpenFont(toStringz(fontFile), this._fontSize);
 		if (font is null) {
-			throw new Exception("Could not load font " ~ fontFile ~ ". TTF Error: "
-								~ to!(string)(TTF_GetError()));
+			Log.error("Could not load font " ~ fontFile ~ ". TTF Error: " ~ to!(string)(TTF_GetError()));
 		}
 
 		this._target = make_shared(font, (TTF_Font* ttf) => (TTF_CloseFont(ttf)));

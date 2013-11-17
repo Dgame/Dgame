@@ -24,13 +24,12 @@
 module Dgame.Audio.Sound;
 
 private {
-	debug import std.stdio : writeln, writefln;
 	import std.algorithm : endsWith;
 	import std.string : toLower;
 	
 	import derelict.openal.al;
 	
-	//import Dgame.Internal.AutoRef;
+	import Dgame.Internal.Log;
 	
 	import Dgame.Audio.SoundFile;
 	import Dgame.Audio.VorbisFile;
@@ -117,18 +116,18 @@ public:
 private ALChunk*[] _ALFinalizer;
 
 static ~this() {
-	debug writefln("Finalize Sound (%d)", _ALFinalizer.length);
+	debug Log.info("Finalize Sound (%d)", _ALFinalizer.length);
 	
 	for (size_t i = 0; i < _ALFinalizer.length; i++) {
 		if (_ALFinalizer[i]) {
-			debug writefln(" -> Sound finalized: %d", i);
+			debug Log.info(" -> Sound finalized: %d", i);
 			_ALFinalizer[i].free();
 		}
 	}
 	
 	_ALFinalizer = null;
 	
-	debug writeln(" >> Sound Finalized");
+	debug Log.info(" >> Sound Finalized");
 }
 
 /**
@@ -266,8 +265,8 @@ final:
 				break;
 				
 			default: 
-				debug writefln("Bits: %d", sFile.bits);
-				throw new Exception("Switch error.");
+				debug Log.info("Bits: %d", sFile.bits);
+				Log.error("Switch error.");
 		}
 		
 		this.loadFromMemory(soundfile.getBuffer().ptr, sFile.dataSize, sFile.rate, ch);
@@ -325,7 +324,8 @@ final:
 				else
 					this._format = AL_FORMAT_STEREO16;
 				break;
-			default: throw new Exception("Switch error.");
+			default:
+				Log.error("Switch error.");
 		}
 		
 		this._frequency = frequency;

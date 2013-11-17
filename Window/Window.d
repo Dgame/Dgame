@@ -24,12 +24,11 @@
 module Dgame.Window.Window;
 
 private {
-	debug import std.stdio : writeln;
-	
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Allocator;
+	import Dgame.Internal.Log;
 
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -45,14 +44,14 @@ private {
 private Window[] _WndFinalizer;
 
 static ~this() {
-	debug writeln("Close open Windows.");
+	debug Log.info("Close open Windows.");
 
 	for (size_t i = 0; i < _WndFinalizer.length; ++i) {
 		if (_WndFinalizer[i])
 			_WndFinalizer[i].close();
 	}
 
-	debug writeln("Open Windows closed.");
+	debug Log.info("Open Windows closed.");
 
 	_WndFinalizer = null;
 }
@@ -132,7 +131,7 @@ final:
 		                                style);	// Uint32 flags: window options
 		
 		if (this._window is null)
-			throw new Exception("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
+			Log.error("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
 		
 		if (style & Style.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -140,13 +139,13 @@ final:
 			
 			this._glContext = SDL_GL_CreateContext(this._window);
 			if (this._glContext is null)
-				throw new Exception("Error while creating gl context: " ~ to!string(SDL_GetError()));
+				Log.error("Error while creating gl context: " ~ to!string(SDL_GetError()));
 			
 			const GLVersion glver = DerelictGL.reload();
-			debug writefln("Derelict loaded GL version: %s (%s), available GL version: %s",
+			debug Log.info("Derelict loaded GL version: %s (%s), available GL version: %s",
 			               DerelictGL.loadedVersion, glver, to!(string)(glGetString(GL_VERSION)));
 			if (glver < GLVersion.GL30)
-				throw new Exception("Your OpenGL version is too low. Need at least GL 3.0.");
+				Log.error("Your OpenGL version (%d) is too low. Need at least GL 3.0.", glver);
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -163,7 +162,7 @@ final:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			//glDisable(GL_DEPTH_TEST);
+			glDisable(GL_DEPTH_TEST);
 			
 			// Hints
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
@@ -233,7 +232,9 @@ final:
 		if (sync == Sync.Enable || sync == Sync.Disable)
 			return SDL_GL_SetSwapInterval(sync) == 0;
 		else
-			throw new Exception("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
+			Log.error("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
+
+		return false;
 	}
 	
 	/**
@@ -292,7 +293,7 @@ final:
 		TypeAlloc ta;
 		
 		ubyte[] tmpLine = Array!ubyte(&ta)[lineWidth];
-		debug writeln("Screenshot alloc: ", tmpLine.length, "::", lineWidth);
+		debug Log.info("Screenshot alloc: %d : %d", tmpLine.length, lineWidth);
 		
 		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
@@ -375,7 +376,7 @@ final:
 	 * Clears the buffer.
 	 */
 	void clear() const {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 	}
 	
 	/**

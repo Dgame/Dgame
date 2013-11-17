@@ -27,12 +27,12 @@ private {
 	import std.xml : Document, Element;
 	import std.file : read;
 	import std.conv : to;
-	import std.string : format;
 	import std.math : log2, pow, round, ceil, floor, fmax;
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 
+	import Dgame.Internal.Log;
 	import Dgame.Internal.Allocator;
 	
 	import Dgame.Math.Vector2;
@@ -139,7 +139,7 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 	if (tileNum == 1)
 		return tileDim;
 	if (tileNum >= ubyte.max)
-		throw new Exception("Too large dimensions");
+		Log.error("Too large dimension.");
 	
 	ubyte dim1 = cast(ubyte) tileNum;
 	ubyte dim2 = 1;
@@ -213,10 +213,10 @@ private:
 					this._tmi.height = to!ushort(elem.tag.attr["height"]);
 					
 					if (vertices.length != 0)
-						throw new Exception("Wrong format.");
+						Log.error("Wrong vertice format.");
 					
 					const size_t cap = this._tmi.width * this._tmi.height * 4;
-					debug writefln("TileMap: Reserve %d vertices.", cap);
+					debug Log.info("TileMap: Reserve %d vertices.", cap);
 
 					vertices.set(Array!vec3f(&ta).of(cap));
 				}
@@ -249,7 +249,7 @@ private:
 			}
 		}
 		
-		debug writefln("TileMap: Needed %d vertices.", vertices.length);
+		debug Log.info("TileMap: Needed %d vertices.", vertices.length);
 		
 		/// Store the map size
 		this._tmi.mapSize[0] = this._tmi.width;
@@ -299,7 +299,7 @@ private:
 			coordinates ~= &used[t.gid];
 		}
 		
-		//writefln("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
+		//Log.info("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
 
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
@@ -319,8 +319,7 @@ private:
 			//int c = 0;
 			foreach (ref SubSurface sub; subs) {
 				if (!newTileset.blit(sub.clip, null, &src)) {
-					throw new Exception("An error occured by blitting the tile on the new tileset: "
-										~ to!string(SDL_GetError()));
+					Log.error("An error occured by blitting the tile on the new tileset: " ~ to!string(SDL_GetError()));
 				}
 				
 				used[sub.gid][0] = col;
@@ -344,8 +343,7 @@ private:
 			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width,
-			                         newTileset.height, newTileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height, newTileset.countBits(), t_fmt);
 		} else {
 			//tileset.saveToFile("new_tilset.png");
 			
@@ -353,8 +351,7 @@ private:
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(tileset.getPixels(), tileset.width,
-			                         tileset.height, tileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(tileset.getPixels(), tileset.width, tileset.height, tileset.countBits(), t_fmt);
 		}
 	}
 	
@@ -366,8 +363,7 @@ private:
 		Indexer!vec2f texCoords;
 		texCoords.set(Array!vec2f(&ta).of(coordinates.length * 4));
 		
-		debug writefln("TileMap: Reserve %d texCoords (%d).",
-		               texCoords.capacity, coordinates.length * 4);
+		debug Log.info("TileMap: Reserve %d texCoords (%d).", texCoords.capacity, coordinates.length * 4);
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
@@ -385,7 +381,7 @@ private:
 			texCoords ~= vec2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
 		
-		debug writefln("TileMap: Needed %d texCoords.", texCoords.length);
+		debug Log.info("TileMap: Needed %d texCoords.", texCoords.length);
 		
 		this._vbo.bind(Primitive.Target.TexCoords);
 		
@@ -417,8 +413,7 @@ protected:
 		this._transform.applyTranslation();
 		
 		this._vbo.bindTexture(this._tex);
-		this._vbo.drawArrays(Primitive.Type.TriangleStrip,
-		                     this._tiles.length * 4);
+		this._vbo.drawArrays(Primitive.Type.TriangleStrip, this._tiles.length * 4);
 		
 		this._vbo.disableAllStates();
 		this._vbo.unbind();
@@ -478,7 +473,7 @@ final:
 	 */
 	void load(string filename, bool compress = true) {
 		if (!exists(filename))
-			throw new Exception("Could not find tilemap " ~ filename);
+			Log.error("Could not find tilemap " ~ filename);
 
 		this._filename = filename;
 		this._doCompress = compress;
@@ -765,7 +760,7 @@ final:
 	ref const(Tile) getTileAt(short x, short y) const {
 		uint index = 0;
 		if (!this.isTileAt(x, y, &index))
-			throw new Exception(.format("No Tile at position %d:%d", x, y));
+			Log.error("No Tile at position %d:%d", x, y);
 		
 		return this._tiles[index];
 	}

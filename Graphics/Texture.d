@@ -24,10 +24,9 @@
 module Dgame.Graphics.Texture;
 
 private {
-	debug import std.stdio : writefln, writeln;
-	
 	import derelict.opengl3.gl;
-	
+
+	import Dgame.Internal.Log;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Blend;
@@ -132,11 +131,11 @@ Texture.Format compressFormat(Texture.Format fmt) pure {
 private GLuint*[] _TexFinalizer;
 
 static ~this() {
-	debug writefln("Finalize Texture (%d)", _TexFinalizer.length);
+	debug Log.info("Finalize Texture (%d)", _TexFinalizer.length);
 	
 	for (size_t i = 0; i < _TexFinalizer.length; i++) {
 		if (_TexFinalizer[i] && *_TexFinalizer[i] != 0) {
-			debug writefln(" -> Texture finalized: %d", i);
+			debug Log.info(" -> Texture finalized: %d", i);
 			
 			glDeleteTextures(1, _TexFinalizer[i]);
 		}
@@ -144,7 +143,7 @@ static ~this() {
 	
 	_TexFinalizer = null;
 	
-	debug writeln(" >> Texture Finalized");
+	debug Log.info(" >> Texture Finalized");
 }
 
 package struct Viewport {
@@ -333,7 +332,7 @@ final:
 	 */
 	void free() {
 		if (this._texId != 0) {
-			debug writeln("Destroy texture");
+			debug Log.info("Destroy texture");
 			glDeleteTextures(1, &this._texId);
 			
 			this._texId = 0;
@@ -515,9 +514,7 @@ final:
 	/**
 	 * Load from memory.
 	 */
-	void loadFromMemory(void* memory, ushort width, ushort height,
-						ubyte depth, Format fmt = Format.None)
-	in {
+	void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth, Format fmt = Format.None) in {
 		assert(width != 0 && height != 0, "Width and height cannot be 0.");
 		assert(depth >= 8 || fmt != Format.None, "Need a depth or a format.");
 	} body {
@@ -560,7 +557,7 @@ final:
 		debug {
 			if (format != Format.None) {
 				if (!this.isCompressed())
-					writeln("\tTexture wurde nicht komprimiert : ", cast(Format) format, "::", this._format);
+					Log.info("\tTexture wurde nicht komprimiert : %s : %s", cast(Format) format, this._format);
 			}
 		}
 		
@@ -619,7 +616,7 @@ final:
 		if (this._format == Format.None
 		    || (this._depth < 24 || this._height == 0 || this._width == 0)) 
 		{
-			debug writeln("@Texture.GetPixels: Null Pixel");
+			debug Log.info("@Texture.GetPixels: Null Pixel");
 			return null;
 		}
 		
@@ -648,9 +645,8 @@ final:
 		//		scope(exit) Texture._reBind(previous_texture);
 		
 		Texture tex = new Texture();
-		debug writeln("Format switch: ", .switchFormat(this._format, true));
-		tex.loadFromMemory(null, rect.width, rect.height,
-		                   this._depth, this._format.switchFormat(true));
+		debug Log.info("Format switch: %s.", .switchFormat(this._format, true));
+		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
 		
 		int[4] vport;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
@@ -725,9 +721,7 @@ final:
 	 * If it is null (default) the whole Texture will be updated.
 	 * The third parameter is the format of the pixels.
 	 */
-	void updateMemory(const void* memory, const ShortRect* rect = null,
-	                  Format fmt = Format.None)
-	in {
+	void updateMemory(const void* memory, const ShortRect* rect = null,  Format fmt = Format.None) in {
 		assert(memory !is null, "Pixels is null.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {

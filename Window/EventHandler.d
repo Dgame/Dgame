@@ -26,6 +26,8 @@ module Dgame.Window.EventHandler;
 private {
 	import derelict.sdl2.types;
 	import derelict.sdl2.functions;
+
+	import Dgame.Internal.Log;
 }
 
 public import Dgame.Window.Event;
@@ -47,7 +49,7 @@ public:
 private:
 	static bool _process(Event* event, ref const SDL_Event sdl_event) {
 		if (event is null)
-			throw new Exception("Null Event");
+			Log.error("Null Event");
 		
 		switch (sdl_event.type) {
 			case Event.Type.KeyDown:

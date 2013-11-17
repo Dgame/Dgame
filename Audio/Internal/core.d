@@ -25,10 +25,11 @@ module Dgame.Audio.Internal.core;
 
 package {
 	import derelict.openal.al;
-	
 	import derelict.ogg.ogg;
 	import derelict.ogg.vorbis;
 	import derelict.ogg.vorbisfile;
+
+	import Dgame.Internal.Log;
 }
 
 private struct AL {
@@ -38,40 +39,38 @@ private:
 }
 
 private {
-	debug import std.stdio : writeln;
-	
 	AL _myAl;
 
 	void _alError(string msg) {
 		debug switch (alcGetError(_myAl.device)) {
 			case ALC_INVALID_DEVICE:
-				writeln("Invalid device");
+				Log.info("Invalid device");
 				break;
 			case ALC_INVALID_CONTEXT:
-				writeln("Invalid context");
+				Log.info("Invalid context");
 				break;
 			case ALC_INVALID_ENUM:
-				writeln("Invalid enum");
+				Log.info("Invalid enum");
 				break;
 			case ALC_INVALID_VALUE:
-				writeln("Invalid value");
+				Log.info("Invalid value");
 				break;
 			case ALC_OUT_OF_MEMORY:
-				writeln("Out of memory");
+				Log.info("Out of memory");
 				break;
 			case ALC_NO_ERROR:
-				writeln("No error");
+				Log.info("No error");
 				break;
 			default: break;
 		}
 
-		throw new Exception(msg);
+		Log.error(msg);
 	}
 }
 
 static this() {
 	// Init openAL
-	debug writeln("init openAL");
+	debug Log.info("init openAL");
 	
 	DerelictAL.load();
 	DerelictOgg.load();

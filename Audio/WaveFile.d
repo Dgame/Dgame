@@ -24,11 +24,11 @@
 module Dgame.Audio.WaveFile;
 
 private {
-	debug import std.stdio;
 	import std.string : toStringz;
 
 	import derelict.openal.al;
 
+	import Dgame.Internal.Log;
 	import Dgame.Internal.Allocator;
 	import Dgame.Audio.SoundFile;
 }
@@ -69,7 +69,8 @@ protected:
 		Header header = void;
 		fread(&header, Header.sizeof, 1, fp);
 
-		debug writefln("Allocate %d memory for Wave.", header.data_size);
+		debug Log.info("Allocate %d memory for Wave.", header.data_size);
+
 		super._buffer = new byte[header.data_size];
 		fread(super._buffer.ptr, byte.sizeof, header.data_size, fp);
 

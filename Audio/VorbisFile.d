@@ -24,7 +24,6 @@
 module Dgame.Audio.VorbisFile;
 
 private {
-	debug import std.stdio : writefln;
 	import std.string : toStringz;
 
 	import derelict.ogg.ogg;
@@ -33,6 +32,7 @@ private {
 	import derelict.ogg.vorbisfiletypes;
 	import derelict.ogg.vorbistypes;
 
+	import Dgame.Internal.Log;
 	import Dgame.Audio.SoundFile;
 }
 
@@ -56,7 +56,7 @@ protected:
 		scope(exit) ov_clear(&oggFile);
 
 		if (ov_fopen(toStringz(filename), &oggFile) < 0)
-			throw new Exception(filename ~ " is no valid Vorbis file.");
+			Log.error(filename ~ " is no valid Vorbis file.");
 
 		// Get some information about the OGG file
 		vorbis_info* pInfo = ov_info(&oggFile, -1);
@@ -67,7 +67,7 @@ protected:
 		super._sFile.dataSize = cast(uint) ov_pcm_total(&oggFile, -1) * super._sFile.bytes * pInfo.channels;
 		super._sFile.channels = cast(ubyte) pInfo.channels;
 
-		debug writefln("Allocate %d memory for Vorbis.", _sFile.dataSize);
+		debug Log.info("Allocate %d memory for Vorbis.", _sFile.dataSize);
 		super._buffer = new byte[super._sFile.dataSize];
 
 		uint inserted = 0;
