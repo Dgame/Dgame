@@ -26,7 +26,7 @@ module Dgame.System.FrameBufferObject;
 private {
 	import derelict.opengl3.gl;
 
-	import Dgame.Internal.core;
+	import Dgame.Internal.Log;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Texture;
 }
@@ -52,21 +52,20 @@ public:
 	this(Texture tex, bool depthBuffer = false) in {
 		assert(tex !is null && tex.isValid());
 	} body {
-		glCheck(glGenFramebuffers(1, &this._fboId));
+		glGenFramebuffers(1, &this._fboId);
 		if (!this._fboId)
-			throw new Exception("Failed to create the frame buffer object");
+			Log.error("Failed to create the frame buffer object.");
 
-		glCheck(glBindFramebuffer(GL_FRAMEBUFFER, this._fboId));
+		glBindFramebuffer(GL_FRAMEBUFFER, this._fboId);
 
 		if (depthBuffer) {
-			glCheck(glGenRenderbuffers(1, &this._depthBuffer));
+			glGenRenderbuffers(1, &this._depthBuffer);
 			if (!this._depthBuffer)
-				throw new Exception("Failed to create the attached depth buffer");
+				Log.error("Failed to create the attached depth buffer.");
 
-			glCheck(glBindRenderbuffer(GL_RENDERBUFFER, this._depthBuffer));
-			glCheck(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, tex.width, tex.height));
-			glCheck(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-												 GL_RENDERBUFFER, this._depthBuffer));
+			glBindRenderbuffer(GL_RENDERBUFFER, this._depthBuffer);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, tex.width, tex.height);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this._depthBuffer);
 		}
 
 		this.setTexture(tex);
@@ -74,9 +73,9 @@ public:
 
 	~this() {
 		if (this._depthBuffer != 0)
-			glCheck(glDeleteRenderbuffers(1, &this._depthBuffer));
+			glDeleteRenderbuffers(1, &this._depthBuffer);
 
-		glCheck(glDeleteFramebuffers(1, &this._fboId));
+		glDeleteFramebuffers(1, &this._fboId);
 	}
 
 	/**
@@ -88,12 +87,12 @@ public:
 		this.bind();
 		scope(exit) this.unbind();
 
-		glCheck(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.Id, 0));
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.Id, 0);
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			glCheck(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			throw new Exception("Failed to link the target texture to the frame buffer");
+			Log.error("Failed to link the target texture to the frame buffer.");
 		}
 
 		this._tex = tex;
@@ -145,13 +144,13 @@ public:
 	 * Bind the current FBO. This is mostly done automatically.
 	 */
 	void bind() const {
-		glCheck(glBindFramebuffer(GL_FRAMEBUFFER, this._fboId));
+		glBindFramebuffer(GL_FRAMEBUFFER, this._fboId);
 	}
 
 	/**
 	* Unbind the current FBO. This is mostly done automatically.
 	*/
 	void unbind() const {
-		glCheck(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

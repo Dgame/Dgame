@@ -24,10 +24,9 @@
 module Dgame.System.VertexBufferObject;
 
 private {
-	import std.conv : to;
-	
 	import derelict.opengl3.gl;
 	
+	import Dgame.Internal.Log;
 	import Dgame.Internal.core;
 	import Dgame.Graphics.Texture;
 }
@@ -150,7 +149,7 @@ public:
 	 */
 	this(Primitive.Target trg, Type type = Type.Array) {
 		if (trg == Primitive.Target.None)
-			throw new Exception("Invalid PointerTarget.");
+			Log.error("Invalid PointerTarget.");
 		
 		this.type = type;
 		this.targets = trg;
@@ -189,7 +188,7 @@ public:
 		
 		this._curTarget = trg;
 		
-		ubyte id = this._targetIds[trg];
+		const ubyte id = this._targetIds[trg];
 		glBindBuffer(this.type, this._vboId[id]);
 	}
 	
@@ -235,7 +234,7 @@ public:
 	 */
 	bool isEmpty(Primitive.Target trg) const {
 		if ((trg & this.targets) == 0)
-			throw new Exception(to!string(trg) ~ " is not a valid target of this buffer");
+			Log.error("%s is not a valid target of this buffer.", trg);
 		
 		return this._dataAssigned[trg] == false;
 	}
@@ -271,9 +270,7 @@ public:
 	 */
 	void cache(const void* ptr, size_t totalSize, uint usage = Usage.Static.Draw) {
 		this._dataAssigned[this._curTarget] = true;
-		
-		ubyte id = this._targetIds[this._curTarget];
-		
+
 		glBufferData(this.type, totalSize, ptr, usage);
 	}
 	

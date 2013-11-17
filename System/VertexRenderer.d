@@ -23,7 +23,11 @@
 */
 module Dgame.System.VertexRenderer;
 
-private import derelict.opengl3.gl;
+private {
+	import derelict.opengl3.gl;
+
+	import Dgame.Internal.Log;
+}
 
 /**
  * Primitive Types and targets
@@ -81,7 +85,8 @@ public:
 		
 		final switch (trg) {
 			case Primitive.Target.None:
-				assert(0, "Invalid Primitive.Target");
+				Log.error("Invalid Primitive.Target");
+				break;
 			case Primitive.Target.Vertex:
 				glVertexPointer(3, GL_FLOAT, stride, ptr);
 				break;
@@ -101,7 +106,7 @@ public:
 	 */
 	static void enableState(Primitive.Target trg) {
 		if (trg & Primitive.Target.None)
-			assert(0, "Invalid Primitive.Target");
+			Log.error("Invalid Primitive.Target");
 		
 		if (trg & Primitive.Target.Vertex)
 			glEnableClientState(GL_VERTEX_ARRAY);
@@ -132,7 +137,7 @@ public:
 	 */
 	static void disableState(Primitive.Target trg) {
 		if (trg & Primitive.Target.None)
-			assert(0, "Invalid Primitive.Target");
+			Log.error("Invalid Primitive.Target");
 		
 		if (trg & Primitive.Target.Vertex)
 			glDisableClientState(GL_VERTEX_ARRAY);
@@ -179,7 +184,6 @@ public:
 		if (indices.length == 0)
 			return;
 		
-		glDrawRangeElements(ptype, start, end != 0 ? end : cast(uint) indices.length,
-							cast(uint) count, GL_UNSIGNED_INT, &indices[0]);
+		glDrawRangeElements(ptype, start, end != 0 ? end : cast(uint) indices.length, cast(uint) count, GL_UNSIGNED_INT, &indices[0]);
 	}
 }
