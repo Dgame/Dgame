@@ -35,6 +35,7 @@ private {
 
 public {
 	import Dgame.Window.EventHandler; // imports already Dgame.Window.Event
+	import Dgame.Window.MessageBox;
 	import Dgame.Window.VideoMode;
 	import Dgame.Window.Window;
 }
