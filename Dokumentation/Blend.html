@@ -14,9 +14,101 @@
 <dd>Set (or reset) the current Blend instance.<br><br>
 
 </dd>
+<dt><big><a name="Blendable.getBlend"></a>abstract inout pure nothrow inout(Blend) <u>getBlend</u>();
+</big></dt>
+<dd>Returns the current Blend instance, or <b>null</b>.<br><br>
+
+</dd>
 <dt><big><a name="Blendable.hasBlend"></a>abstract const pure nothrow bool <u>hasBlend</u>();
 </big></dt>
 <dd>Checks whether this Texture has a Blend instance.<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Blend"></a>class <u>Blend</u>;
+</big></dt>
+<dd>The <u>Blend</u> class. If you want that a blendable object get some blend,
+ create an instance of this class and give it to your blendable.
+<br><br>
+<b>Author:</b><br>
+rschuett<br><br>
+
+<dl><dt><big><a name="Blend.Mode"></a>enum <u>Mode</u>: int;
+</big></dt>
+<dd>Supported BlendModes<br><br>
+
+<dl><dt><big><a name="Blend.Mode.None"></a><u>None</u></big></dt>
+<dd>No blending.<br><br>
+
+</dd>
+<dt><big><a name="Blend.Mode.Alpha"></a><u>Alpha</u></big></dt>
+<dd>Pixel = Src * a + Dest * (1 - a)<br><br>
+
+</dd>
+<dt><big><a name="Blend.Mode.Add"></a><u>Add</u></big></dt>
+<dd>Pixel = Src + Dest<br><br>
+
+</dd>
+<dt><big><a name="Blend.Mode.Multiply"></a><u>Multiply</u></big></dt>
+<dd>Pixel = Src * Dest<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Blend.applyBlending"></a>const void <u>applyBlending</u>();
+</big></dt>
+<dd>Apply the blending<br><br>
+
+</dd>
+<dt><big><a name="Blend.this"></a>final  this(Mode <i>mode</i>, const Color* <i>col</i> = null);
+</big></dt>
+<dd>CTor<br><br>
+
+</dd>
+<dt><big><a name="Blend.enableBlending"></a>final void <u>enableBlending</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Enable or Disable blending<br><br>
+
+</dd>
+<dt><big><a name="Blend.isBlendingEnabled"></a>final const pure nothrow bool <u>isBlendingEnabled</u>();
+</big></dt>
+<dd>Returns if Blending is enabled<br><br>
+
+</dd>
+<dt><big><a name="Blend.enableBlendColor"></a>final void <u>enableBlendColor</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Activate or deactivate the using of the blend color.<br><br>
+
+</dd>
+<dt><big><a name="Blend.isBlendColorEnabled"></a>final const pure nothrow bool <u>isBlendColorEnabled</u>();
+</big></dt>
+<dd>Returns, if using blend color is activated, or not.<br><br>
+
+</dd>
+<dt><big><a name="Blend.setBlendMode"></a>final void <u>setBlendMode</u>(Mode <i>mode</i>);
+</big></dt>
+<dd>Set the Blendmode.<br><br>
+
+</dd>
+<dt><big><a name="Blend.getBlendMode"></a>final const pure nothrow Mode <u>getBlendMode</u>();
+</big></dt>
+<dd>Returns the current Blendmode.<br><br>
+
+</dd>
+<dt><big><a name="Blend.setBlendColor"></a>final void <u>setBlendColor</u>(ref const Color <i>col</i>);
+</big></dt>
+<dd>Set the Blend Color.<br><br>
+
+</dd>
+<dt><big><a name="Blend.setBlendColor"></a>final void <u>setBlendColor</u>(const Color <i>col</i>);
+</big></dt>
+<dd>Rvalue version<br><br>
+
+</dd>
+<dt><big><a name="Blend.getBlendColor"></a>final const pure nothrow ref const(Color) <u>getBlendColor</u>();
+</big></dt>
+<dd>Returns the current Blend Color.<br><br>
 
 </dd>
 </dl>
