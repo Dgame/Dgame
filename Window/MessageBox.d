@@ -7,8 +7,8 @@ private {
 }
 
 struct MessageBox {
-	static struct MBColor {
-		Color color;
+	static struct Color {
+		.Color color = .Color.White;
 		uint flag;
 
 		enum {
@@ -42,11 +42,10 @@ struct MessageBox {
 	string title;
 	string msg;
 	int flag;
-
-	MBColor* box_color;
-	Button* box_button;
-
 	int winId;
+
+	Color* box_color;
+	Button* box_button;
 
 	this(int flag, string title, string msg, int wndId = -1) {
 		this.flag = flag;
