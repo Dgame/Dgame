@@ -44,25 +44,25 @@ Rvalue version<br><br>
  Reset the viewport and the direction<br><br>
 
 </dd>
-<dt><big><a name="Unit.setSwap"></a>final void <u>setSwap</u>(float <i>swap</i>);
+<dt><big><a name="Unit.setSwap"></a>final void <u>setSwap</u>(byte <i>swap</i>);
 </big></dt>
-<dd>Set a new <i>swap</i> value (starting value is 1f)
+<dd>Set a new <i>swap</i> value (starting value is 1)
  The <i>swap</i> value affect how fast the Spritesheet pictures are swapped.
- The Update value is 10f and every frame the current <i>swap</i>/update counter is increased by the <i>swap</i> value.
- If Update (10f) is reached, the next picture comes.<br><br>
+ The Update value is 10 and every frame the current <i>swap</i>/update counter is increased by the <i>swap</i> value.
+ If Update (10) is reached, the next picture comes.<br><br>
 
 </dd>
-<dt><big><a name="Unit.getSwap"></a>final const pure nothrow float <u>getSwap</u>();
+<dt><big><a name="Unit.getSwap"></a>final const pure nothrow byte <u>getSwap</u>();
 </big></dt>
-<dd>Returns the current swap value (starting value is 1f)<br><br>
+<dd>Returns the current swap value (starting value is 1)<br><br>
 
 </dd>
-<dt><big><a name="Unit.setSpeed"></a>final void <u>setSpeed</u>(float <i>speed</i>);
+<dt><big><a name="Unit.setSpeed"></a>final void <u>setSpeed</u>(byte <i>speed</i>);
 </big></dt>
 <dd>Set a new <i>speed</i><br><br>
 
 </dd>
-<dt><big><a name="Unit.getSpeed"></a>final const pure nothrow float <u>getSpeed</u>();
+<dt><big><a name="Unit.getSpeed"></a>final const pure nothrow byte <u>getSpeed</u>();
 </big></dt>
 <dd>Returns the current speed (starting value is 1)<br><br>
 
@@ -124,9 +124,9 @@ slide<br><br>
 </big></dt>
 <dd>Slide/Move the Unit
  Every time this method is called the current speed is added to an internal update property.
- If this property reaches 10f or more, the direction is added to the current position
+ If this property reaches 10 or more, the direction is added to the current position
  and the slideViewport method from Spritesheet ist called.
- Also the update property is decreased about 10f.<br><br>
+ Also the update property is decreased about 10.<br><br>
 
 </dd>
 </dl>

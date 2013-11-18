@@ -15,7 +15,7 @@
 <b>Author:</b><br>
 rschuett<br><br>
 
-<dl><dt><big><a name="Spritesheet.Grid"></a>enum <u>Grid</u>: int;
+<dl><dt><big><a name="Spritesheet.Grid"></a>enum <u>Grid</u>: ubyte;
 </big></dt>
 <dd>The <u>Grid</u><br><br>
 
@@ -37,6 +37,12 @@ rschuett<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Spritesheet.row"></a>ubyte <u>row</u>;
+</big></dt>
+<dd>Set or get the current <u>row</u>.
+ This only matters, if you slide without Grid.Column.<br><br>
+
+</dd>
 <dt><big><a name="Spritesheet.this"></a>final  this(Texture <i>tex</i>);
 </big></dt>
 <dd>CTor<br><br>
@@ -52,17 +58,6 @@ rschuett<br><br>
 <dd>CTor
 <br><br>
 Rvalue version<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.getRow"></a>final const pure nothrow ubyte <u>getRow</u>();
-</big></dt>
-<dd>Returns the current row (starting value is 0)<br><br>
-
-</dd>
-<dt><big><a name="Spritesheet.setRow"></a>final void <u>setRow</u>(ubyte <i>row</i>);
-</big></dt>
-<dd>Set a new <i>row</i>.
- This only matters, if you slide without Grid.Column.<br><br>
 
 </dd>
 <dt><big><a name="Spritesheet.slideTextureRect"></a>final void <u>slideTextureRect</u>(Grid <i>grid</i> = Grid.Both);

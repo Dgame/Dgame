@@ -64,7 +64,13 @@ rschuett<br><br>
 </dd>
 <dt><big><a name="hasArea"></a>const pure nothrow bool <u>hasArea</u>();
 </big></dt>
-<dd>Checks if this Rect is empty (if it's collapsed).<br><br>
+<dd>Checks if this Rect is collapsed (empty).
+ This is a pure and nothrow variant of isEmpty.<br><br>
+
+</dd>
+<dt><big><a name="isZero"></a>const pure nothrow bool <u>isZero</u>();
+</big></dt>
+<dd>Checks if all corners are zero.<br><br>
 
 </dd>
 <dt><big><a name="getUnion"></a>const Rect!T <u>getUnion</u>(ref const Rect!T <i>rect</i>);
@@ -115,19 +121,9 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Replace current size.<br><br>
 
 </dd>
-<dt><big><a name="getSizeAsArray"></a>const pure nothrow T[2] <u>getSizeAsArray</u>();
-</big></dt>
-<dd>Returns the size (width and height) as static array.<br><br>
-
-</dd>
 <dt><big><a name="increase"></a>pure nothrow void <u>increase</u>(T <i>width</i>, T <i>height</i>);
 </big></dt>
 <dd>Increase current size.<br><br>
-
-</dd>
-<dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(T[2] <i>pos</i>);
-</big></dt>
-<dd>Set a new position with an array.<br><br>
 
 </dd>
 <dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(T <i>x</i>, T <i>y</i>);
@@ -138,16 +134,6 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dt><big><a name="setPosition"></a>pure nothrow void <u>setPosition</u>(ref const Vector2!T <i>position</i>);
 </big></dt>
 <dd>Set a new <i>position</i> with a vector.<br><br>
-
-</dd>
-<dt><big><a name="getPositionAsArray"></a>const pure nothrow T[2] <u>getPositionAsArray</u>();
-</big></dt>
-<dd>Returns the position as static array.<br><br>
-
-</dd>
-<dt><big><a name="getPositionAsVector"></a>const pure nothrow Vector2!T <u>getPositionAsVector</u>();
-</big></dt>
-<dd>Creates a Vector2!T and returns thereby the current position.<br><br>
 
 </dd>
 <dt><big><a name="move"></a>pure nothrow void <u>move</u>(ref const Vector2!T <i>vec</i>);
