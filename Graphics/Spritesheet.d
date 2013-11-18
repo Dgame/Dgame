@@ -42,17 +42,20 @@ public:
 	/**
 	 * The Grid
 	 */
-	enum Grid {
+	enum Grid : ubyte {
 		None = 0, /// No Grid is used
 		Row = 1,  /// Only Rows are used
 		Column = 2, /// Only Columns are used
 		Both = Row | Column /// Both, Columns <b>and</b> Rows are used
 	}
-	
-protected:
-	ubyte _row;
-	
+
 public:
+	/**
+	 * Set or get the current row.
+	 * This only matters, if you slide without Grid.Column.
+	 */
+	ubyte row;
+
 final:
 	/**
 	 * CTor
@@ -80,21 +83,6 @@ final:
 	}
 	
 	/**
-	 * Returns the current row (starting value is 0)
-	 */
-	ubyte getRow() const pure nothrow {
-		return this._row;
-	}
-	
-	/**
-	 * Set a new row.
-	 * This only matters, if you slide without Grid.Column.
-	 */
-	void setRow(ubyte row) {
-		this._row = row;
-	}
-	
-	/**
 	 * Slide/move the current Viewport of the Texture.
 	 * So the next area of the Texture atlas will be drawn.
 	 * With grid you can decide if both, x and y, or only one of them are updated.
@@ -112,7 +100,7 @@ final:
 
 		if (!(grid & Grid.Column)) {
 			// to avoid a cast...
-			rect.y = this._row;
+			rect.y = this.row;
 			rect.y *= h;
 		}
 		

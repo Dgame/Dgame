@@ -420,7 +420,7 @@ void main() {
 					}
 					*/
 
-					tof.setRow(1);
+					tof.row = 1;
 
 					//					if (wnd.isFullscreen())
 					//						wnd.setFullscreen(false);

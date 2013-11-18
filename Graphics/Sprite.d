@@ -44,6 +44,8 @@ protected:
 	ShortRect _clipRect;
 	ShortRect _texView;
 
+	Viewport _tview;
+
 protected:
 	void _render() const in {
 		assert(this._tex !is null, "Sprite couldn't rendered, because the Texture is null.");
@@ -53,7 +55,7 @@ protected:
 
 		this.applyTranslation();
 
-		this._tex._render(Viewport(&this._clipRect, this._texView.isEmpty() ? null : &this._texView));
+		this._tex._render(&this._tview);
 	}
 
 	override int[2] _getAreaSize() const pure nothrow {
@@ -73,6 +75,8 @@ public:
 	 */
 	this(Texture tex) {
 		this.setTexture(tex);
+
+		this._tview = Viewport(&this._clipRect, &this._texView);
 	}
 	
 	/**

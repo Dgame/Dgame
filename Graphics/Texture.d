@@ -147,21 +147,19 @@ static ~this() {
 }
 
 package struct Viewport {
-public:
-	enum Mode {
+	enum Mode : ubyte {
 		Normal,
 		Reverse
 	}
 
-	const ShortRect* dest;
-	const ShortRect* view;
-
 	const Mode mode;
+	const(ShortRect)* dest;
+	const(ShortRect)* view;
 
 	@disable
 	this();
 
-	this(const ShortRect* dest, const ShortRect* view, Mode mode = Mode.Normal) {
+	this(const(ShortRect)* dest, const(ShortRect)* view, Mode mode = Mode.Normal) {
 		this.dest = dest;
 		this.view = view;
 		this.mode = mode;
@@ -205,7 +203,8 @@ public:
 private:
 	GLuint _texId;
 	
-	ushort _width, _height;
+	ushort _width;
+	ushort _height;
 	ubyte _depth;
 	
 	bool _isSmooth = false;
@@ -226,11 +225,14 @@ package:
 		float tw = 1f;
 		float th = 1f;
 
-		if (vp !is null && vp.view !is null) {
+		if (vp !is null && vp.view !is null && !vp.view.isZero()) {
 			tx = (0f + vp.view.x) / this._width;
 			ty = (0f + vp.view.y) / this._height;
-			tw = (0f + vp.view.width) / this._width;
-			th = (0f + vp.view.height) / this._height;
+
+			if (!vp.view.isEmpty()) {
+				tw = (0f + vp.view.width) / this._width;
+				th = (0f + vp.view.height) / this._height;
+			}
 		}
 
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
@@ -266,8 +268,11 @@ package:
 		if (vp !is null && vp.dest !is null) {
 			dx = vp.dest.x;
 			dy = vp.dest.y;
-			dw = vp.dest.width;
-			dh = vp.dest.height;
+
+			if (!vp.dest.isEmpty()) {
+				dw = vp.dest.width;
+				dh = vp.dest.height;
+			}
 		}
 
 		float[12] vertices = [dx,	   dy,      0f,
