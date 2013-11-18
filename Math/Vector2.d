@@ -28,7 +28,7 @@ private {
 	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
 	
-	import Dgame.Internal.util : fpEqual, equals;
+	import Dgame.Internal.util : equals;
 }
 
 /**
@@ -57,9 +57,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(U)(U x, U y)
-		if (isNumeric!U && !is(U : T))
-	{
+	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
 		this(cast(T) x, cast(T) y);
 	}
 	
@@ -206,23 +204,9 @@ struct Vector2(T) if (isNumeric!T) {
 	 * Checks if this vector is empty. This means that his coordinates are 0.
 	 */
 	bool isEmpty() const pure nothrow {
-		return equals(this.x, 0) && equals(this.y, 0);
+		return this.x == 0 && this.y == 0;
 	}
-	
-	/**
-	 * Check if this vector is a unit vector. That means that his length is 1.
-	 */
-	bool isUnit() const pure nothrow {
-		return equals(this.length, 1);
-	}
-	
-	/**
-	 * Check if another vector is orthogonal to this.
-	 */
-	bool isOrtho(ref const Vector2!T vec) const pure nothrow {
-		return equals(this.scalar(vec), 0);
-	}
-	
+
 	/**
 	 * Calculate the scalar product.
 	 */
@@ -272,7 +256,7 @@ struct Vector2(T) if (isNumeric!T) {
 	 */
 	ref Vector2!T normalize() pure nothrow {
 		const float len = this.length;
-		if (!fpEqual(len, 0f)) {
+		if (!equals(len, 0)) {
 			this.x /= len;
 			this.y /= len;
 		}
@@ -295,7 +279,7 @@ struct Vector2(T) if (isNumeric!T) {
 		this.x += x;
 		this.y += y;
 	}
-	
+
 	/**
 	 * Returns the Vector as static array.
 	 */

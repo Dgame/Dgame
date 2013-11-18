@@ -24,8 +24,6 @@
 module Dgame.Graphics.Unit;
 
 private {
-	import std.math : isNaN;
-
 	import Dgame.Graphics.Spritesheet;
 	import Dgame.Graphics.Texture;
 	import Dgame.Math.Vector2;
@@ -44,11 +42,11 @@ class Unit : Spritesheet {
 protected:
 	Vector2f _direction;
 
-	float _speed = 1f;
-	float _swap = 1f;
-	float _update = 0f;
+	byte _speed = 1;
+	byte _swap = 1;
+	byte _update = 0;
 
-	enum Update = 10f;
+	static immutable ubyte Update = 10;
 
 public:
 final:
@@ -95,33 +93,33 @@ final:
 	}
 
 	/**
-	* Set a new swap value (starting value is 1f)
+	* Set a new swap value (starting value is 1)
 	* The swap value affect how fast the Spritesheet pictures are swapped.
-	* The Update value is 10f and every frame the current swap/update counter is increased by the swap value.
-	* If Update (10f) is reached, the next picture comes.
+	* The Update value is 10 and every frame the current swap/update counter is increased by the swap value.
+	* If Update (10) is reached, the next picture comes.
 	*/
-	void setSwap(float swap) {
+	void setSwap(byte swap) {
 		this._swap = swap;
 	}
 
 	/**
-	* Returns the current swap value (starting value is 1f)
+	* Returns the current swap value (starting value is 1)
 	*/
-	float getSwap() const pure nothrow {
+	byte getSwap() const pure nothrow {
 		return this._swap;
 	}
 
 	/**
 	* Set a new speed
 	*/
-	void setSpeed(float speed) {
+	void setSpeed(byte speed) {
 		this._speed = speed;
 	}
 
 	/**
 	* Returns the current speed (starting value is 1)
 	*/
-	float getSpeed() const pure nothrow {
+	byte getSpeed() const pure nothrow {
 		return this._speed;
 	}
 
@@ -199,16 +197,13 @@ final:
 	/**
 	* Slide/Move the Unit
 	* Every time this method is called the current speed is added to an internal update property.
-	* If this property reaches 10f or more, the direction is added to the current position 
+	* If this property reaches 10 or more, the direction is added to the current position 
 	* and the slideViewport method from Spritesheet ist called.
-	* Also the update property is decreased about 10f.
+	* Also the update property is decreased about 10.
 	*/
 	void slide() {
-		if (isNaN(this._speed) || isNaN(this._swap) 
-			|| this._speed == 0f || this._swap == 0f)
-		{
+		if (this._speed == 0 || this._swap == 0)
 			return;
-		}
 
 		this._update += this._swap;
 
@@ -219,11 +214,10 @@ final:
 
 		super.slideTextureRect();
 
-		if (this._speed == 1f)
+		if (this._speed == 1)
 			super.move(this._direction);
 		else {
 			const Vector2f mulDirection = this._direction * this._speed;
-
 			super.move(mulDirection);
 		}
 	}

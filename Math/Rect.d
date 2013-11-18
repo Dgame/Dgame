@@ -30,7 +30,6 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Internal.Allocator;
-	import Dgame.Internal.util : equals;
 	import Dgame.Math.Vector2;
 }
 
@@ -186,12 +185,20 @@ public:
 	}
 
 	/**
-	 * Checks if this Rect is empty (if it's collapsed).
+	 * Checks if this Rect is collapsed (empty).
+	 * This is a pure and nothrow variant of isEmpty.
 	 */
 	bool hasArea() const pure nothrow {
-		return equals(this.x, 0) && equals(this.y, 0) && equals(this.width, 0) && equals(this.height, 0);
+		return this.width <= 0 || this.height <= 0;
 	}
-	
+
+	/**
+	 * Checks if all corners are zero.
+	 */
+	bool isZero() const pure nothrow {
+		return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
+	}
+
 	/**
 	 * Returns an union of the given and this Rect.
 	 */
@@ -252,7 +259,6 @@ public:
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
 			if (overlap !is null) {
 				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);
-				
 				overlap._adaptToPtr();
 			}
 			
@@ -275,7 +281,6 @@ public:
 		
 		Rect!T rect = void;
 		SDL_EnclosePoints(sdl_points.ptr, cast(int)(points.length), null, rect.ptr);
-		
 		rect._adaptToPtr();
 		
 		return rect;
@@ -288,27 +293,13 @@ public:
 		this.width  = width;
 		this.height = height;
 	}
-	
-	/**
-	 * Returns the size (width and height) as static array.
-	 */
-	T[2] getSizeAsArray() const pure nothrow {
-		return [this.x, this.y];
-	}
-	
+
 	/**
 	 * Increase current size.
 	 */
 	void increase(T width, T height) pure nothrow {
 		this.width  += width;
 		this.height += height;
-	}
-
-	/**
-	* Set a new position with an array.
-	*/
-	void setPosition(T[2] pos) pure nothrow {
-		this.setPosition(pos[0], pos[1]);
 	}
 
 	/**
@@ -325,21 +316,7 @@ public:
 	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
-	
-	/**
-	 * Returns the position as static array.
-	 */
-	T[2] getPositionAsArray() const pure nothrow {
-		return [this.x, this.y];
-	}
-	
-	/**
-	 * Creates a Vector2!T and returns thereby the current position.
-	 */
-	Vector2!T getPositionAsVector() const pure nothrow {
-		return Vector2!T(this.x, this.y);
-	}
-	
+
 	/**
 	 * Move the object.
 	 */
@@ -362,7 +339,7 @@ public:
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}
-	
+
 	/**
 	 * Returns the coordinates as static array
 	 */

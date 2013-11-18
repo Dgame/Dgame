@@ -290,7 +290,8 @@ private:
 				used[t.gid] = calcPos(t.gid, tileset.width,
 				                      this._tmi.tileWidth, this._tmi.tileHeight);
 				if (this._doCompress) {
-					src.setPosition(used[t.gid]);
+					const short[2] pos = used[t.gid];
+					src.setPosition(pos[0], pos[1]);
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 				}
 			}/* else
