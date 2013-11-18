@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Math.Rect;
 
 private {
@@ -33,11 +33,33 @@ private {
 	import Dgame.Math.Vector2;
 }
 
-private SDL_Rect[void*] _RectStore;
-
-static ~this() {
-	_RectStore = null;
+private struct CircularBuffer {
+	enum Limit = 8;
+	
+	private SDL_Rect[Limit] _rects;
+	private uint _length;
+	
+	SDL_Rect* put(T)(ref const Rect!T rect) {
+		SDL_Rect* rptr = &this._rects[this._length];
+		this._length = (this._length + 1) % Limit;
+		
+		static if (is(T : int)) {
+			rptr.x = rect.x;
+			rptr.y = rect.y;
+			rptr.w = rect.width;
+			rptr.h = rect.height;
+		} else {
+			rptr.x = cast(int) rect.x;
+			rptr.y = cast(int) rect.y;
+			rptr.w = cast(int) rect.width;
+			rptr.h = cast(int) rect.height;
+		}
+		
+		return rptr;
+	}
 }
+
+static CircularBuffer _cbuf;
 
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
@@ -47,10 +69,8 @@ static ~this() {
 struct Rect(T) if (isNumeric!T) {
 private:
 	void _adaptToPtr() {
-		this.set(cast(T) this.ptr.x,
-		         cast(T) this.ptr.y,
-		         cast(T) this.ptr.w,
-		         cast(T) this.ptr.h);
+		this.set(cast(T) this.ptr.x, cast(T) this.ptr.y,
+		         cast(T) this.ptr.w, cast(T) this.ptr.h);
 	}
 	
 public:
@@ -64,7 +84,7 @@ public:
 	 */
 	T width = 0;
 	T height = 0;
-
+	
 	/**
 	 * CTor
 	 */
@@ -87,8 +107,12 @@ public:
 	 * CTor
 	 */
 	this(U)(ref const Rect!U rect) {
-		this(cast(T) rect.x, cast(T) rect.y,
-		     cast(T) rect.width, cast(T) rect.height);
+		static if (is(U : T)) {
+			this(rect.x, rect.y, rect.width, rect.height);
+		} else {
+			this(cast(T) rect.x, cast(T) rect.y,
+			     cast(T) rect.width, cast(T) rect.height);
+		}
 	}
 	
 	debug(Dgame)
@@ -104,9 +128,9 @@ public:
 		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
 	}
 	
+	debug(Dgame)
 	~this() {
 		debug writeln("DTor Rect");
-		_RectStore.remove(&this);
 	}
 	
 	/**
@@ -114,25 +138,7 @@ public:
 	 */
 	@property
 	SDL_Rect* ptr() const {
-		const void* key = &this;
-		
-		/// TODO: Issue 11064
-		const int x = cast(int) this.x,
-			y = cast(int) this.y,
-			w = cast(int) this.width,
-			h = cast(int) this.height;
-		
-		if (SDL_Rect* _ptr = key in _RectStore) {
-			_ptr.x = x;
-			_ptr.y = y;
-			_ptr.w = w;
-			_ptr.h = h;
-			
-			return _ptr;
-		} else
-			_RectStore[key] = SDL_Rect(x, y, w, h);
-		
-		return &_RectStore[key];
+		return _cbuf.put(this);
 	}
 	
 	/**
@@ -165,7 +171,8 @@ public:
 				              this.y % rect.y,
 				              this.width % rect.width,
 				              this.height % rect.height);
-			default: throw new Exception("Unsupported Operation: " ~ op);
+			default:
+				throw new Exception("Unsupported Operation: " ~ op);
 		}
 	}
 	
@@ -183,7 +190,7 @@ public:
 	bool isEmpty() const {
 		return SDL_RectEmpty(this.ptr) == SDL_TRUE;
 	}
-
+	
 	/**
 	 * Checks if this Rect is collapsed (empty).
 	 * This is a pure and nothrow variant of isEmpty.
@@ -191,21 +198,20 @@ public:
 	bool hasArea() const pure nothrow {
 		return this.width <= 0 || this.height <= 0;
 	}
-
+	
 	/**
 	 * Checks if all corners are zero.
 	 */
 	bool isZero() const pure nothrow {
 		return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
 	}
-
+	
 	/**
 	 * Returns an union of the given and this Rect.
 	 */
 	Rect!T getUnion(ref const Rect!T rect) const {
-		Rect!T union_rect;
+		Rect!T union_rect = void;
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
-		
 		union_rect._adaptToPtr();
 		
 		return union_rect;
@@ -293,7 +299,7 @@ public:
 		this.width  = width;
 		this.height = height;
 	}
-
+	
 	/**
 	 * Increase current size.
 	 */
@@ -301,10 +307,10 @@ public:
 		this.width  += width;
 		this.height += height;
 	}
-
+	
 	/**
-	* Set a new position with coordinates.
-	*/
+	 * Set a new position with coordinates.
+	 */
 	void setPosition(T x, T y) pure nothrow {
 		this.x = x;
 		this.y = y;
@@ -316,7 +322,7 @@ public:
 	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
-
+	
 	/**
 	 * Move the object.
 	 */
@@ -339,42 +345,42 @@ public:
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}
-
+	
 	/**
 	 * Returns the coordinates as static array
 	 */
 	T[4] asArray() const pure nothrow {
 		return [this.x, this.y, this.width, this.height];
 	}
-
+	
 	/**
 	 * Calculate and returns the x distance, also called side a.
 	 */
 	T distanceX() const pure nothrow {
 		return cast(T)(this.width - this.x);
 	}
-
+	
 	/**
 	 * Calculate and returns the y distance, also called side b.
 	 */
 	T distanceY() const pure nothrow {
 		return cast(T)(this.height - this.y);
 	}
-
+	
 	/**
 	 * Calculate and returns the size of the area.
 	 */
 	T getArea() const pure nothrow {
 		return cast(T)(this.distanceX() * this.distanceY());
 	}
-
+	
 	/**
 	 * Calculate and return the size of the extent.
 	 */
 	T getExtent() const pure nothrow {
 		return cast(T)((2 * this.distanceX()) + (2 * this.distanceY()));
 	}
-
+	
 	/**
 	 * Calculate and returns the diagonal distance.
 	 */
