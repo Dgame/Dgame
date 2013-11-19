@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Window.Window;
 
 private {
@@ -29,7 +29,7 @@ private {
 	
 	import Dgame.Internal.Allocator;
 	import Dgame.Internal.Log;
-
+	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
@@ -45,14 +45,14 @@ private Window[] _WndFinalizer;
 
 static ~this() {
 	debug Log.info("Close open Windows.");
-
+	
 	for (size_t i = 0; i < _WndFinalizer.length; ++i) {
 		if (_WndFinalizer[i])
 			_WndFinalizer[i].close();
 	}
-
+	
 	debug Log.info("Open Windows closed.");
-
+	
 	_WndFinalizer = null;
 }
 
@@ -93,7 +93,7 @@ public:
 		MouseFocus = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
 		//HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /** Window should be created in high-DPI mode if supported (>= SDL 2.0.1) */
 		Foreign = SDL_WINDOW_FOREIGN, /** The window was created by some other framework. */
-
+		
 		Default = Shown | OpenGL/* | HighDPI /** Default mode is Shown | OpenGL */
 	}
 	
@@ -112,7 +112,6 @@ private:
 	
 	string _title;
 	ubyte _fpsLimit;
-	bool _drawn;
 	
 	static int _winCount;
 	
@@ -161,7 +160,7 @@ final:
 			
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+			
 			glDisable(GL_DEPTH_TEST);
 			
 			// Hints
@@ -180,7 +179,7 @@ final:
 		this._title = title;
 		this._videoMode = videoMode;
 		this._style = style;
-
+		
 		_WndFinalizer ~= this;
 		
 		_winCount += 1;
@@ -192,7 +191,7 @@ final:
 	void close() {
 		if (this._window is null && this._glContext is null)
 			return;
-
+		
 		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
 		SDL_GL_DeleteContext(this._glContext);  
 		// Close and destroy the window
@@ -233,7 +232,7 @@ final:
 			return SDL_GL_SetSwapInterval(sync) == 0;
 		else
 			Log.error("Unknown sync mode. Sync mode must be one of Sync.Enable, Sync.Disable.");
-
+		
 		return false;
 	}
 	
@@ -281,7 +280,7 @@ final:
 	 */
 	Surface capture(Texture.Format fmt = Texture.Format.BGRA) const {
 		Surface mycapture = Surface.make(this.width, this.height);
-
+		
 		glReadBuffer(GL_FRONT);
 		
 		ubyte* pixels = cast(ubyte*) mycapture.getPixels();
@@ -289,7 +288,7 @@ final:
 		
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
-
+		
 		TypeAlloc ta;
 		
 		ubyte[] tmpLine = Array!ubyte(&ta)[lineWidth];
@@ -402,14 +401,14 @@ final:
 	void display() {
 		if (!this.isOpen())
 			return;
-
+		
 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
 			Clock.wait(1000 / this._fpsLimit);
-
+		
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
 				SDL_GL_MakeCurrent(this._window, this._glContext);
-
+			
 			SDL_GL_SwapWindow(this._window);
 		} else
 			SDL_UpdateWindowSurface(this._window);
@@ -584,7 +583,7 @@ final:
 	void setFullscreen(uint style) {
 		if (style != 0 && style & this._style)
 			return;
-
+		
 		const uint flags = style == Style.Fullscreen || style == Style.Desktop ? style : 0;
 		if (SDL_SetWindowFullscreen(this._window, flags) == 0) {
 			if (flags != 0)

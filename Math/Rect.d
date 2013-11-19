@@ -39,7 +39,7 @@ private struct CircularBuffer {
 	private SDL_Rect[Limit] _rects;
 	private uint _length;
 	
-	SDL_Rect* put(T)(ref const Rect!T rect) {
+	SDL_Rect* put(T)(ref const Rect!T rect) pure nothrow {
 		SDL_Rect* rptr = &this._rects[this._length];
 		this._length = (this._length + 1) % Limit;
 		
