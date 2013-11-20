@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module build;
 
 import std.stdio;
@@ -62,7 +62,7 @@ version(Windows) {
 		Posix = true
 	}
 } else
-    static assert(false, "Unknown operating system.");
+	static assert(false, "Unknown operating system.");
 
 enum {
 	Project = "Dgame",
@@ -73,14 +73,14 @@ enum {
 // Compiler configuration
 version(DigitalMars) {
 	pragma(msg, "Using the Digital Mars DMD compiler.");
-
+	
 	debug {
 		enum Release = "-debug";
 	} else {
 		enum Release = "-release -inline";
 	}
 	enum CompilerOptions = "-lib -O " ~ Release ~ " -wi";
-
+	
 	string buildCompileString(string files, string libName) {
 		return format("dmd %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
 	}
@@ -88,15 +88,15 @@ version(DigitalMars) {
 	pragma(msg, "Using the GNU GDC compiler.");
 	
 	enum CompilerOptions = "-c -s -O3 -Wall";
-
+	
 	string buildCompileString(string files, string libName) {
 		return format("gdc %s -o %s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
 	}
 } else version(LDC) {
 	pragma(msg, "Using the LDC compiler.");
-
+	
 	enum CompilerOptions = "-lib -O -release -enable-inlining -w -wi";
-
+	
 	string buildCompileString(string files, string libName) {
 		return format("ldc2 %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
 	}
@@ -146,10 +146,10 @@ debug {
 static this() {
 	if (!LibDir.exists())
 		mkdir(LibDir);
-		
+	
 	if (!outdir.exists())
 		mkdir(outdir);
-		
+	
 	// Initializes the source path map.
 	pathMap = [
 		Pack.Internal.name.toUpper() : Pack.Internal,
@@ -167,37 +167,37 @@ void main(string[] args) {
 	// Determine the path to this executable so that imports and source files can be found
 	// no matter what the working directory.
 	buildPath = args[0].dirName();
-
+	
 	string derelictPath = args[0].absolutePath().dirName() ~ "/../../" ~ DerelictDirname;
 	derelictPath = derelictPath.buildNormalizedPath();
-
+	
 	writeln("Assume '", derelictPath, "' as derelict path.");
 	writeln("Verify...\n");
-
+	
 	if (.exists(derelictPath))
 		derelictImportDir = derelictPath;
 	else {
 		writeln("Assume, that the derelict path is in 'external.txt'.");
 		writeln("Verify...\n");
-
+		
 		if (.exists(buildPath ~ "/external.txt"))
 			derelictImportDir = cast(string) .read(buildPath ~ "/external.txt");
-
+		
 		if (derelictImportDir.length == 0 || !.exists(derelictImportDir)) {
 			do {
 				writeln("Derelict import path not found.");
 				writeln("You can enter the full path in 'external.txt'.");
 				writeln("But for now, please enter the full path here or press q for quit:");
-
+				
 				derelictImportDir = readln().chop();
-
+				
 				if (derelictImportDir[0] == 'q')
 					return;
-
+				
 				if (.exists(derelictImportDir)) {
 					if (derelictImportDir.endsWith(DerelictDirname))
 						break;
-
+					
 					derelictImportDir ~= DerelictDirname;
 					if (.exists(derelictImportDir))
 						break;
@@ -205,19 +205,19 @@ void main(string[] args) {
 			} while (true);
 		}
 	}
-
+	
 	if (derelictImportDir.endsWith(DerelictDirname))
 		derelictImportDir = derelictImportDir.dirName();
-
+	
 	if (buildPath != "./") {
 		outdir = buildNormalizedPath(buildPath, outdir);
-
+		
 		// fix up the package paths
 		foreach (ref Package pack; pathMap) {
 			pack.path = buildNormalizedPath(buildPath, pack.path);
 		}
 	}
-
+	
 	if (args.length == 1)
 		buildAll();
 	else
@@ -231,7 +231,7 @@ void buildAll() {
 		foreach (ref Package pack; pathMap) {
 			buildPackage(pack);
 		}
-
+		
 		writeln("\nAll builds complete\n");
 	}
 	// Eat any ErrnoException. The compiler will print the right thing on a failed build, no need
@@ -248,14 +248,14 @@ void buildSome(string[] args) {
 		// that package.
 		foreach (s; args) {
 			auto key = s.toUpper();
-
+			
 			Package* p = key in pathMap;
 			if (!p)
 				writefln("Unknown package '%s'", s);
 			else
 				buildPackage(*p);
 		}
-
+		
 		writeln("\nSelected builds complete\n");
 	} catch (ErrnoException e) {
 		writeln("\nBuild Failed!\n");
@@ -266,7 +266,7 @@ void buildPackage(ref const Package pack) {
 	writeln();
 	writefln("Building %s/%s", Project, pack.name);
 	writeln();
-
+	
 	// Build up a string of all .d files in the package directory.
 	string joined;
 	foreach (string s; dirEntries(pack.path, SpanMode.breadth)) {
@@ -275,14 +275,14 @@ void buildPackage(ref const Package pack) {
 			joined ~= " " ~ s;
 		}
 	}
-
+	
 	writeln();
-
+	
 	string libName = format("%s%s%s%s", Prefix, Project, pack.name, Extension);
 	string arg = buildCompileString(joined, libName);
 	writeln(arg);
-
+	
 	(system(arg) == 0).enforce(new ErrnoException("Build failure"));
-
+	
 	writeln("Build succeeded.");
 }

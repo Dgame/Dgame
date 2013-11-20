@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Audio.Sound;
 
 private {
@@ -348,26 +348,26 @@ final:
 		alSourcefv(this._alChunk.source, AL_VELOCITY, &this._sourceVel[0]);
 		alSourcei(this._alChunk.source, AL_LOOPING, this._looping);
 	}
-
+	
 	/**
 	 * Returns the interal Soundfile which contains the filename, the music type and the length in seconds.
 	 */
 	BaseSoundFile getSoundFile() {
 		return this._soundfile;
 	}
-
+	
 	string getFilename() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getFilename() : null;
 	}
-
+	
 	float getLength() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getLength() : 0f;
 	}
-
+	
 	MusicType getType() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getType() : MusicType.None;
 	}
-
+	
 	/**
 	 * Returns the Format.
 	 */
@@ -484,7 +484,7 @@ final:
 		
 		this._status = Status.Paused;
 	}
-
+	
 	/**
 	 * Set the position.
 	 */

@@ -29,19 +29,15 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Internal.Allocator;
+	import Dgame.Internal.Allocator : TypeAlloc, Array, CircularBuffer;
 	import Dgame.Math.Vector2;
 }
 
-private struct CircularBuffer {
-	enum Limit = 8;
+private struct RectCBuffer {
+	CircularBuffer!(SDL_Rect) _buf;
 	
-	private SDL_Rect[Limit] _rects;
-	private uint _length;
-	
-	SDL_Rect* put(T)(ref const Rect!T rect) pure nothrow {
-		SDL_Rect* rptr = &this._rects[this._length];
-		this._length = (this._length + 1) % Limit;
+	SDL_Rect* put(T)(ref const Rect!T rect) {
+		SDL_Rect* rptr = this._buf.get();
 		
 		static if (is(T : int)) {
 			rptr.x = rect.x;
@@ -59,7 +55,7 @@ private struct CircularBuffer {
 	}
 }
 
-static CircularBuffer _cbuf;
+static RectCBuffer _cbuf;
 
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
@@ -67,13 +63,6 @@ static CircularBuffer _cbuf;
  * Author: rschuett
  */
 struct Rect(T) if (isNumeric!T) {
-private:
-	void _adaptToPtr() {
-		this.set(cast(T) this.ptr.x, cast(T) this.ptr.y,
-		         cast(T) this.ptr.w, cast(T) this.ptr.h);
-	}
-	
-public:
 	/**
 	 * The x and y coordinates
 	 */
@@ -139,6 +128,11 @@ public:
 	@property
 	SDL_Rect* ptr() const {
 		return _cbuf.put(this);
+	}
+	
+	void adaptToPtr() {
+		this.set(cast(T) this.ptr.x, cast(T) this.ptr.y,
+		         cast(T) this.ptr.w, cast(T) this.ptr.h);
 	}
 	
 	/**
@@ -211,8 +205,9 @@ public:
 	 */
 	Rect!T getUnion(ref const Rect!T rect) const {
 		Rect!T union_rect = void;
+		
 		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
-		union_rect._adaptToPtr();
+		union_rect.adaptToPtr();
 		
 		return union_rect;
 	}
@@ -265,7 +260,7 @@ public:
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
 			if (overlap !is null) {
 				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);
-				overlap._adaptToPtr();
+				overlap.adaptToPtr();
 			}
 			
 			return true;
@@ -287,7 +282,7 @@ public:
 		
 		Rect!T rect = void;
 		SDL_EnclosePoints(sdl_points.ptr, cast(int)(points.length), null, rect.ptr);
-		rect._adaptToPtr();
+		rect.adaptToPtr();
 		
 		return rect;
 	}

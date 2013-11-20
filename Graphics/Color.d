@@ -1,39 +1,52 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphics.Color;
 
 private {
 	debug import std.stdio : writeln;
 	
 	import derelict.sdl2.sdl;
+	
+	import Dgame.Internal.Allocator : CircularBuffer;
 }
 
-private SDL_Color[void*] _ColorStore;
-
-static ~this() {
-	_ColorStore = null;
+private struct ColorCBuffer {
+	CircularBuffer!(SDL_Color) _buf;
+	
+	SDL_Color* put(ref const Color col) {
+		SDL_Color* pcol = this._buf.get();
+		
+		pcol.r = col.red;
+		pcol.g = col.green;
+		pcol.b = col.blue;
+		pcol.unused = col.alpha;
+		
+		return pcol;
+	}
 }
+
+static ColorCBuffer _cbuf;
 
 /**
  * Color defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
@@ -89,10 +102,9 @@ public:
 		debug writeln("Postblit Color");
 	}
 	
+	debug(Dgame)
 	~this() {
 		debug writeln("DTor Color");
-		
-		_ColorStore.remove(&this);
 	}
 	
 	/**
@@ -113,15 +125,15 @@ public:
 	void opAssign(const Color rhs) {
 		this.opAssign(rhs);
 	}
-
+	
 	/**
-	* Returns a copy of the current Color with a given transpareny.
-	* 
-	* Example:
-	* ----
-	* Color(current.red, current.green, current.blue, alpha);
-	* ----
-	*/
+	 * Returns a copy of the current Color with a given transpareny.
+	 * 
+	 * Example:
+	 * ----
+	 * Color(current.red, current.green, current.blue, alpha);
+	 * ----
+	 */
 	Color withTransparency(ubyte alpha = 0) const {
 		return Color(this.red, this.green, this.blue, alpha);
 	}
@@ -131,19 +143,7 @@ public:
 	 */
 	@property
 	SDL_Color* ptr() const {
-		const void* key = &this;
-		
-		if (SDL_Color* _ptr = key in _ColorStore) {
-			_ptr.r = this.red;
-			_ptr.g = this.green;
-			_ptr.b = this.blue;
-			_ptr.unused = this.alpha;
-			
-			return _ptr;
-		} else
-			_ColorStore[key] = SDL_Color(this.red, this.green, this.blue, this.alpha);
-		
-		return &_ColorStore[key];
+		return _cbuf.put(this);
 	}
 	
 	/**

@@ -91,10 +91,10 @@ public:
 		InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /** Grab the input inside the window */
 		InputFocus = SDL_WINDOW_INPUT_FOCUS, /** The Window has input (keyboard) focus */
 		MouseFocus = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
-		//HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /** Window should be created in high-DPI mode if supported (>= SDL 2.0.1) */
+		HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /** Window should be created in high-DPI mode if supported (>= SDL 2.0.1) */
 		Foreign = SDL_WINDOW_FOREIGN, /** The window was created by some other framework. */
 		
-		Default = Shown | OpenGL/* | HighDPI /** Default mode is Shown | OpenGL */
+		Default = Shown | OpenGL | HighDPI /** Default mode is Shown | OpenGL | HighDPI */
 	}
 	
 private:
@@ -133,9 +133,6 @@ final:
 			Log.error("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
 		
 		if (style & Style.OpenGL) {
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-			SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-			
 			this._glContext = SDL_GL_CreateContext(this._window);
 			if (this._glContext is null)
 				Log.error("Error while creating gl context: " ~ to!string(SDL_GetError()));
@@ -145,9 +142,6 @@ final:
 			               DerelictGL.loadedVersion, glver, to!(string)(glGetString(GL_VERSION)));
 			if (glver < GLVersion.GL30)
 				Log.error("Your OpenGL version (%d) is too low. Need at least GL 3.0.", glver);
-			
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
 			
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();

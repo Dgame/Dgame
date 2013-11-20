@@ -1,29 +1,35 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Window.VideoMode;
 
-private import derelict.sdl2.sdl;
+private {
+	import std.conv : to;
+	
+	import derelict.sdl2.sdl;
+	
+	import Dgame.Internal.Log;
+}
 
 /**
  * The VideoMode struct contains informations about the current window video mode.
@@ -44,7 +50,7 @@ public:
 	this(uint width, uint height, uint hz = 0) {
 		this.width  = cast(ushort) width;
 		this.height = cast(ushort) height;
-
+		
 		this.refreshRate = cast(ubyte) hz;
 	}
 	
@@ -73,6 +79,8 @@ public:
 	static VideoMode getDesktopMode(ubyte display = 1) {
 		SDL_DisplayMode mode;
 		int result = SDL_GetDesktopDisplayMode(display, &mode);
+		if (result != 0)
+			Log.error(to!string(SDL_GetError()));
 		
 		return VideoMode(mode.w, mode.h, mode.refresh_rate);
 	}
@@ -83,6 +91,8 @@ public:
 	static VideoMode getMode(uint index, ubyte display = 1) {
 		SDL_DisplayMode mode;
 		int result = SDL_GetDisplayMode(display, index, &mode);
+		if (result != 0)
+			Log.error(to!string(SDL_GetError()));
 		
 		return VideoMode(mode.w, mode.h, mode.refresh_rate);
 	}
@@ -106,7 +116,7 @@ public:
 	static int countModes(ubyte display = 1) {
 		return SDL_GetNumDisplayModes(display);
 	}
-
+	
 	/**
 	 * Returns how many display are available.
 	 */

@@ -1,32 +1,32 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Internal.core;
 
 private {
 	import std.stdio : writeln;
 	import std.string : format;
-
+	
 	import derelict.opengl3.gl;
 }
 
@@ -55,7 +55,7 @@ void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __
 	} catch (Throwable e) {
 		writeln("GL Error for ", filename, " @ line ", line_number, ':');
 		GLCheckError(filename, line_number);
-
+		
 		throw e;
 	}
 }
@@ -112,7 +112,7 @@ void GLCheckError(string filename, size_t line_number) {
 			default: break;
 		}
 		
-		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in File %s in Line %d",
+		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in file %s on line %d",
 		                            Error, Desc, filename, line_number));
 	}
 }
