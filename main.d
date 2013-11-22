@@ -368,31 +368,31 @@ void main() {
 						wnd.capture().saveToFile("screenshot.png");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Ctrl) {
+					if (event.keyboard.mod & Keyboard.Mod.Ctrl) {
 						writeln("CTRL");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Shift) {
+					if (event.keyboard.mod & Keyboard.Mod.Shift) {
 						writeln("SHIFT");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Caps) {
+					if (event.keyboard.mod & Keyboard.Mod.Caps) {
 						writeln("CAPS");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Alt) {
+					if (event.keyboard.mod & Keyboard.Mod.Alt) {
 						writeln("ALT");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Gui) {
+					if (event.keyboard.mod & Keyboard.Mod.Gui) {
 						writeln("GUI");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Mode) {
+					if (event.keyboard.mod & Keyboard.Mod.Mode) {
 						writeln("Alt Gr");
 					}
 					
-					if (Keyboard.getModifier() & Keyboard.Mod.Num) {
+					if (event.keyboard.mod & Keyboard.Mod.Num) {
 						writeln("Num Lock");
 					}
 					
@@ -423,11 +423,12 @@ void main() {
 					
 					tof.row = 1;
 					
-					//					if (wnd.isFullscreen())
-					//						wnd.setFullscreen(false);
-					//					else
-					//						wnd.setFullscreen(true);
-					//					
+					if (event.keyboard.code == Keyboard.Code.F1) {
+						wnd.toggleFullscreen();
+						
+						writeln("Is fullscreen: ", wnd.isFullscreen());
+					}
+					
 					break;
 					
 				case Event.Type.MouseButtonDown:

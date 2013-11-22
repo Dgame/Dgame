@@ -77,7 +77,7 @@ public:
 	 * Returns: the desktop video mode
 	 */
 	static VideoMode getDesktopMode(ubyte display = 1) {
-		SDL_DisplayMode mode;
+		SDL_DisplayMode mode = void;
 		int result = SDL_GetDesktopDisplayMode(display, &mode);
 		if (result != 0)
 			Log.error(to!string(SDL_GetError()));
@@ -89,7 +89,7 @@ public:
 	 * Returns: the video mode on the given index
 	 */
 	static VideoMode getMode(uint index, ubyte display = 1) {
-		SDL_DisplayMode mode;
+		SDL_DisplayMode mode = void;
 		int result = SDL_GetDisplayMode(display, index, &mode);
 		if (result != 0)
 			Log.error(to!string(SDL_GetError()));

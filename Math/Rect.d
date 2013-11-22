@@ -256,7 +256,7 @@ struct Rect(T) if (isNumeric!T) {
 	 * If, and the parameter 'overlap' isn't null,
 	 * the colliding rectangle is stored there.
 	 */
-	bool intersects(ref const Rect!T rect, Rect!short* overlap = null) const {
+	bool intersects(ref const Rect!T rect, Rect!(T)* overlap = null) const {
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
 			if (overlap !is null) {
 				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);

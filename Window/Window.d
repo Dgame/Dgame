@@ -81,7 +81,7 @@ public:
 	 */
 	enum Style {
 		Fullscreen = SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
-		Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Desktop Fullscreen */
+		Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Window has Desktop Fullscreen */
 		OpenGL	= SDL_WINDOW_OPENGL,	 /** OpenGL support */
 		Shown	= SDL_WINDOW_SHOWN,		 /** Show the Window immediately */
 		Borderless = SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
@@ -98,17 +98,11 @@ public:
 	}
 	
 private:
-	/// Defaults
-	static immutable string DefaultTitle = "App";
-	enum DefaultXPos = 25;
-	enum DefaultYPos = 50;
-	
-private:
 	SDL_Window* _window;
 	SDL_GLContext _glContext;
 	
-	Window.Style _style;
-	VideoMode _videoMode;
+	VideoMode _vMode = void;
+	Style _style;
 	
 	string _title;
 	ubyte _fpsLimit;
@@ -117,16 +111,23 @@ private:
 	
 public:
 final:
+	static immutable string DefaultTitle = "App";
+	enum DefaultXPos = SDL_WINDOWPOS_CENTERED;
+	enum DefaultYPos = SDL_WINDOWPOS_CENTERED;
+	
 	/**
 	 * CTor
 	 */
-	this(VideoMode videoMode, string title = DefaultTitle, Style style = Window.Style.Default, short x = DefaultXPos, short y = DefaultYPos) {
+	this(VideoMode vMode, string title = DefaultTitle,
+	     Style style = Style.Default,
+	     int x = DefaultXPos, int y = DefaultYPos)
+	{
 		// Create an application window with the following settings:
 		this._window = SDL_CreateWindow(title.ptr,	// const char* title
 		                                x,	// int x: initial x position
 		                                y,	// int y: initial y position
-		                                videoMode.width,	// int w: width, in pixels
-		                                videoMode.height,	// int h: height, in pixels
+		                                vMode.width,	// int w: width, in pixels
+		                                vMode.height,	// int h: height, in pixels
 		                                style);	// Uint32 flags: window options
 		
 		if (this._window is null)
@@ -162,7 +163,7 @@ final:
 			glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
 			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_FASTEST);
 			
-			glOrtho(0, videoMode.width, videoMode.height, 0, 1, -1);
+			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
 			
 			this.useVerticalSync(Sync.Enable);
 			this.setClearColor(Color.White);
@@ -171,7 +172,7 @@ final:
 		}
 		
 		this._title = title;
-		this._videoMode = videoMode;
+		this._vMode = vMode;
 		this._style = style;
 		
 		_WndFinalizer ~= this;
@@ -183,9 +184,6 @@ final:
 	 * Close and destroy this window.
 	 */
 	void close() {
-		if (this._window is null && this._glContext is null)
-			return;
-		
 		// Once finished with OpenGL functions, the SDL_GLContext can be deleted.
 		SDL_GL_DeleteContext(this._glContext);  
 		// Close and destroy the window
@@ -202,6 +200,14 @@ final:
 	 */
 	static int count() {
 		return _winCount;
+	}
+	
+	/**
+	 * Returns the current VideoMode which hold the current width, the current height and the refresh rate.
+	 * The first two can also be accessed with the 'width' and 'height' property.
+	 */
+	ref const(VideoMode) getVideoMode() const {
+		return this._vMode;
 	}
 	
 	/**
@@ -384,7 +390,7 @@ final:
 	/**
 	 * Draw a Renderer on the screen.
 	 */
-	void draw(Renderer rtarget) const {
+	void draw(ref Renderer rtarget) const {
 		rtarget.present();
 	}
 	
@@ -455,9 +461,8 @@ final:
 	 *
 	 * Returns: the old title
 	 */
-	const(string) setTitle(const string title) {
-		const string old_title = this.getTitle();
-		
+	string setTitle(string title) {
+		string old_title = this.getTitle();
 		SDL_SetWindowTitle(this._window, title.ptr);
 		
 		return old_title;
@@ -469,8 +474,8 @@ final:
 	void setSize(ushort width, ushort height) {
 		SDL_SetWindowSize(this._window, width, height);
 		
-		this._videoMode.width  = width;
-		this._videoMode.height = height;
+		this._vMode.width  = width;
+		this._vMode.height = height;
 	}
 	
 	void fetchSize(int* w, int* h) in {
@@ -488,12 +493,12 @@ final:
 	
 	@property
 	ushort width() const pure nothrow {
-		return this._videoMode.width;
+		return this._vMode.width;
 	}
 	
 	@property
 	ushort height() const pure nothrow {
-		return this._videoMode.height;
+		return this._vMode.height;
 	}
 	
 	/**
@@ -568,30 +573,42 @@ final:
 		return SDL_SetWindowBrightness(this._window, bright) == 0;
 	}
 	
+	enum FullScreenMask = Style.Fullscreen | Style.Desktop;
+	
 	/**
-	 * Use this function to set a window's fullscreen state.
-	 * style  may be Style.Fullscreen for "real" fullscreen with a videomode change
+	 * Use this function to (re)set Window's fullscreen states.
+	 * style may be Style.Fullscreen for "real" fullscreen with a videomode change
 	 * or Style.Desktop for "fake" fullscreen that takes the size of the desktop
-	 * 0 for windowed mode.
+	 * Set 0 for windowed mode.
 	 */
-	void setFullscreen(uint style) {
-		if (style != 0 && style & this._style)
+	void setFullscreen(int style) {
+		if (style & this._style)
 			return;
 		
-		const uint flags = style == Style.Fullscreen || style == Style.Desktop ? style : 0;
-		if (SDL_SetWindowFullscreen(this._window, flags) == 0) {
-			if (flags != 0)
-				this._style |= Style.Fullscreen;
-			else
-				this._style &= ~Style.Fullscreen;
+		if (style & FullScreenMask || style == 0) {
+			if (SDL_SetWindowFullscreen(this._window, style) == 0) {
+				this._style &= ~FullScreenMask;
+				if (style != 0)
+					this._style |= style;
+			}
 		}
+	}
+	
+	/**
+	 * Toggle between Fullscreen and windowed mode, depending on the current state.
+	 */
+	void toggleFullscreen() {
+		if (this._style & FullScreenMask)
+			this.setFullscreen(0);
+		else
+			this.setFullscreen(Style.Fullscreen);
 	}
 	
 	/**
 	 * Returns, if this Window is in fullscreen mode.
 	 */
 	bool isFullscreen() const pure nothrow {
-		return this._style & Style.Fullscreen;
+		return (this._style & FullScreenMask) != 0;
 	}
 	
 	/**
@@ -599,12 +616,5 @@ final:
 	 */
 	void setIcon(ref Surface icon) {
 		SDL_SetWindowIcon(this._window, icon.ptr);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setIcon(Surface icon) {
-		this.setIcon(icon);
 	}
 }

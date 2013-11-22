@@ -7,6 +7,38 @@ private {
 	import Dgame.Graphics.Color;
 }
 
+private {
+	SDL_MessageBoxColorScheme _asSDLColorScheme(const MessageBox.Color[] mcols) {
+		SDL_MessageBoxColorScheme color_scheme;
+		
+		foreach (ref const MessageBox.Color mcol; mcols) {
+			SDL_MessageBoxColor sdl_mcol = void;
+			sdl_mcol.r = mcol.color.red;
+			sdl_mcol.g = mcol.color.green;
+			sdl_mcol.b = mcol.color.blue;
+			
+			color_scheme.colors[mcol.flag] = sdl_mcol;
+		}
+		
+		return color_scheme;
+	}
+	
+	SDL_MessageBoxButtonData[] _asSDLButton(const MessageBox.Button[] mbuttons) {
+		SDL_MessageBoxButtonData[] buttons;
+		
+		foreach (ref const MessageBox.Button mbtn; mbuttons) {
+			SDL_MessageBoxButtonData button_data = void;
+			button_data.flags = mbtn.defKey;
+			button_data.buttonid = mbtn.buttonId;
+			button_data.text = mbtn.text.ptr;
+			
+			buttons ~= button_data;
+		}
+		
+		return buttons;
+	}
+}
+
 /**
  * A MessageBox is a short window which present a title and a message.
  * It is really helpfull to present Exceptions or Errors.
@@ -34,7 +66,7 @@ struct MessageBox {
 		}
 		
 		DefaultKey defKey; /** The Default key */
-		int buttonid; /** User defined button id (value returned via SDL_ShowMessageBox) */
+		int buttonId = -1; /** User defined button id (value returned via SDL_ShowMessageBox) */
 		char[16] text = void;  /** The UTF-8 button text */
 	}
 	
@@ -96,7 +128,9 @@ struct MessageBox {
 		if (flag < Error || flag > Information)
 			flag = Default;
 		
-		SDL_Window* wnd = SDL_GetWindowFromID(this.winId);
+		SDL_Window* wnd = null;
+		if (this.winId != -1)
+			wnd = SDL_GetWindowFromID(this.winId);
 		if (wnd is null)
 			wnd = SDL_GL_GetCurrentWindow();
 		
@@ -105,13 +139,20 @@ struct MessageBox {
 			result = SDL_ShowSimpleMessageBox(flag, this.title.ptr, this.msg.ptr, wnd);
 		else {
 			SDL_MessageBoxData mbd = void;
+			
 			mbd.flags = flag;
 			mbd.window = wnd;
 			mbd.title = this.title.ptr;
 			mbd.message = this.msg.ptr;
-			//			mbd.numbuttons = this.box_buttons.length;
-			//			mbd.buttons = &this.box_buttons[0];
-			//			mbd.colorScheme = &this.box_colors[0];
+			mbd.numbuttons = this.box_buttons.length;
+			
+			if (this.box_buttons.length != 0)
+				mbd.buttons = _asSDLButton(this.box_buttons).ptr;
+			
+			if (this.box_colors.length != 0) {
+				SDL_MessageBoxColorScheme box_color_scheme = _asSDLColorScheme(this.box_colors);
+				mbd.colorScheme = &box_color_scheme;
+			}
 			
 			result = SDL_ShowMessageBox(&mbd, null);
 		}
