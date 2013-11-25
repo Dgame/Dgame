@@ -38,7 +38,7 @@ debug {
 }
 
 struct shared_ptr(T) {
-	struct Ref {
+	static struct Ref {
 		T* ptr;
 		int usage;
 		
