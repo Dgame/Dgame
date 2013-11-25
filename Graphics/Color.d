@@ -55,7 +55,6 @@ static ColorCBuffer _cbuf;
  * Author: rschuett
  */
 struct Color {
-public:
 	static const Color Black   = Color(0,     0,   0); /** Black Color (0, 0, 0) */
 	static const Color White   = Color(255, 255, 255); /** White Color (255, 255, 255) */
 	static const Color Red     = Color(255,   0,   0); /** Red Color (255, 0, 0) */

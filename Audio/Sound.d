@@ -59,7 +59,6 @@ enum ChannelType : ubyte {
  * Channel struct which stores the channel information.
  */
 struct Channel {
-public:
 	ubyte bits;			/** How many bits has this channel */
 	ChannelType type;	/** Which type is this channel */
 	
@@ -87,7 +86,6 @@ public:
 }
 
 struct ALChunk {
-public:
 	ALuint source;
 	ALuint buffer;
 	

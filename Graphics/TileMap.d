@@ -33,7 +33,6 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Internal.Log;
-	import Dgame.Internal.Allocator;
 	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
@@ -50,7 +49,6 @@ private {
  * This structure stores information about the tile map properties
  */
 struct TileMapInfo {
-public:
 	/**
 	 * The map width in pixel
 	 */
@@ -82,7 +80,6 @@ public:
  * The Tile structure contains informations about every tile on the map
  */
 struct Tile {
-public:
 	/**
 	 * The gid is the Tile id.
 	 * It contains the positions of this tile on the tileset.
@@ -117,7 +114,6 @@ public:
 }
 
 struct SubSurface {
-public:
 	Surface clip;
 	ushort gid;
 }
@@ -196,8 +192,7 @@ private:
 	void _readTileMap() {
 		Document doc = new Document(cast(string) .read(this._filename));
 		
-		TypeAlloc ta;
-		Indexer!vec3f vertices;
+		vec3f[] vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {
@@ -218,7 +213,7 @@ private:
 					const size_t cap = this._tmi.width * this._tmi.height * 4;
 					debug Log.info("TileMap: Reserve %d vertices.", cap);
 					
-					vertices.set(Array!vec3f(&ta).of(cap));
+					vertices.reserve(cap);
 				}
 				
 				ushort row, col;
@@ -228,9 +223,7 @@ private:
 					float vx = col * this._tmi.tileWidth;
 					float vy = row * this._tmi.tileHeight;
 					
-					this._tiles ~= Tile(gid, elem.tag.attr["name"],
-					[cast(ushort) vx, cast(ushort) vy],
-					[col, row]);
+					this._tiles ~= Tile(gid, elem.tag.attr["name"], [cast(ushort) vx, cast(ushort) vy], [col, row]);
 					
 					float vw = this._tmi.tileWidth;
 					float vh = this._tmi.tileHeight;
@@ -358,11 +351,9 @@ private:
 	
 	void _loadTexCoords(short[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		
-		TypeAlloc ta;
-		
-		Indexer!vec2f texCoords;
-		texCoords.set(Array!vec2f(&ta).of(coordinates.length * 4));
+		/// 
+		vec2f[] texCoords;
+		texCoords.reserve(coordinates.length * 4);
 		
 		debug Log.info("TileMap: Reserve %d texCoords (%d).", texCoords.capacity, coordinates.length * 4);
 		

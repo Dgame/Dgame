@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphics.Surface;
 
 private {
@@ -47,7 +47,6 @@ private {
  * Author: rschuett
  */
 struct Surface {
-public:
 	/**
 	 * Supported BlendModes
 	 */
@@ -135,9 +134,9 @@ public:
 	debug(Dgame)
 	this(this) {
 		writeln("Postblit Surface: ",
-		              this._target.usage, ':',
-		              this.filename, ", ",
-		              this.filename.ptr);
+		        this._target.usage, ':',
+		        this.filename, ", ",
+		        this.filename.ptr);
 	}
 	
 	/**
@@ -222,11 +221,11 @@ public:
 	void loadFromFile(string filename) {
 		if (filename.length < 4 || !exists(filename))
 			throw new Exception("Die Datei " ~ filename ~ " existiert nicht.");
-
+		
 		debug writefln("Load Image: %s", filename);
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
 		debug writefln("Image %s loaded :: %X", filename, srfc);
-
+		
 		if (srfc is null)
 			throw new Exception(.format("Could not load image %s. Error: %s.", filename, to!string(SDL_GetError())));
 		
@@ -288,7 +287,7 @@ public:
 	void fill(ref const Color col, const ShortRect* rect = null) {
 		const SDL_Rect* ptr = rect ? rect.ptr : null;
 		const uint key = SDL_MapRGBA(this._target.ptr.format,
-		                       col.red, col.green, col.blue, col.alpha);
+		                             col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRect(this._target.ptr, ptr, key);
 	}
@@ -306,7 +305,7 @@ public:
 	void fillAreas(ref const Color col, const ShortRect[] rects) {
 		const SDL_Rect* ptr = (rects.length > 0) ? rects[0].ptr : null;
 		const uint key = SDL_MapRGBA(this._target.ptr.format,
-		                       col.red, col.green, col.blue, col.alpha);
+		                             col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRects(this._target.ptr, ptr, cast(int) rects.length, key);
 	}
@@ -565,12 +564,12 @@ public:
 			result[index++] = this._target.ptr.format.Bmask == col;
 		if (mask & Mask.Alpha)
 			result[index++] = this._target.ptr.format.Amask == col;
-
+		
 		for (ubyte i = 0; i < index; ++i) {
 			if (!result[i])
 				return false;
 		}
-
+		
 		return true;
 	}
 	
@@ -606,7 +605,7 @@ public:
 		uint* pixels = cast(uint*) this.getPixels();
 		if (pixels is null)
 			throw new Exception("No pixel here.");
-
+		
 		pixels[(y * this._target.ptr.w) + x] = pixel;
 	}
 	
@@ -634,7 +633,7 @@ public:
 		
 		if (len == 0)
 			throw new Exception("Invalid Surface for getColorAt.");
-
+		
 		throw new Exception("No color at this position.");
 	}
 	
@@ -789,7 +788,7 @@ public:
 	}
 } unittest {
 	writeln("<Surface unittest>");
-
+	
 	Surface s1 = Surface.make(64, 64, 32);
 	
 	assert(s1.useCount() == 1, to!string(s1.useCount()));
@@ -816,6 +815,6 @@ public:
 		assert(s2.useCount() == 2, to!string(s2.useCount()));
 	}
 	assert(s1.useCount() == 1, to!string(s1.useCount()));
-
+	
 	writeln("</Surface unittest>");
 }

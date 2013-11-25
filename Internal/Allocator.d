@@ -276,20 +276,6 @@ public:
 	}
 }
 
-struct CircularBuffer(T, const size_t Limit = 16) {
-	private T[Limit] _store; /// TODO: = void?
-	private uint _length;
-	
-	T* get() {
-		T* ptr = &this._store[this._length];
-		this._length = (this._length + 1) % Limit;
-		
-		//writeln("CB length = ", this._length);
-		
-		return ptr;
-	}
-}
-
 unittest {
 	Memory mem;
 	Stack s;
@@ -352,4 +338,18 @@ unittest {
 	       && b == 2
 	       && c == 3
 	       && d == 4);
+}
+
+struct CircularBuffer(T, const size_t Limit = 16) {
+	private T[Limit] _store; /// TODO: = void?
+	private uint _length;
+	
+	T* get() {
+		T* ptr = &this._store[this._length];
+		this._length = (this._length + 1) % Limit;
+		
+		//writeln("CB length = ", this._length);
+		
+		return ptr;
+	}
 }

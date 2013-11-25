@@ -38,12 +38,10 @@ private {
  * Author: rschuett
  */
 struct VideoMode {
-public:
 	ushort width;	/** The width of this video mode */
 	ushort height;	/** The height of this video mode */
 	ubyte refreshRate;	/** The refresh rate of this video mode */
 	
-public:
 	/**
 	 * CTor
 	 */
