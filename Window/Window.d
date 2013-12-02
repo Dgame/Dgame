@@ -27,7 +27,7 @@ private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
 	
-	import Dgame.Internal.Allocator;
+	import Dgame.Internal.Scoped;
 	import Dgame.Internal.Log;
 	
 	import Dgame.Graphics.Color;
@@ -289,9 +289,7 @@ final:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 		
-		TypeAlloc ta;
-		
-		ubyte[] tmpLine = Array!ubyte(&ta)[lineWidth];
+		scoped!(ubyte[]) tmpLine = new ubyte[lineWidth];
 		debug Log.info("Screenshot alloc: %d : %d", tmpLine.length, lineWidth);
 		
 		for (ushort i = 0; i < this.height / 2; ++i) {

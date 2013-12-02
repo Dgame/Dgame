@@ -32,7 +32,7 @@ private {
 	import derelict.ogg.vorbisfiletypes;
 	import derelict.ogg.vorbistypes;
 	
-	import Dgame.Internal.Allocator : Memory, Array;
+	import Dgame.Internal.Scoped;
 	import Dgame.Internal.Log;
 	import Dgame.Audio.SoundFile;
 }
@@ -71,8 +71,7 @@ protected:
 		debug Log.info("Allocate %d memory for Vorbis.", _sFile.dataSize);
 		super._buffer = new byte[super._sFile.dataSize];
 		
-		Memory mem;
-		byte[] tmpBuf = Array!byte(&mem).of(ushort.max);
+		scoped!(byte[]) tmpBuf = new byte[ushort.max];
 		uint inserted = 0;
 		
 		while (true) {
