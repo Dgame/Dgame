@@ -28,7 +28,7 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Internal.Allocator : CircularBuffer;
+	import Dgame.Internal.util : CircularBuffer;
 }
 
 private struct ColorCBuffer {

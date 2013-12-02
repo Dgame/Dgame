@@ -1,35 +1,34 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Audio.WaveFile;
 
 private {
 	import std.string : toStringz;
-
+	
 	import derelict.openal.al;
-
+	
 	import Dgame.Internal.Log;
-	import Dgame.Internal.Allocator;
 	import Dgame.Audio.SoundFile;
 }
 
@@ -52,11 +51,11 @@ struct Header {
 }
 
 /**
-* A Wave implementation of BaseSoundFile
-* Open a wave file and store the attributes from it's headers.
-*
-* Author: rschuett
-*/
+ * A Wave implementation of BaseSoundFile
+ * Open a wave file and store the attributes from it's headers.
+ *
+ * Author: rschuett
+ */
 class WaveFile : BaseSoundFile {
 protected:
 	override void _read(string filename) {
@@ -65,33 +64,33 @@ protected:
 			fclose(fp);
 			fp = null;
 		}
-
+		
 		Header header = void;
 		fread(&header, Header.sizeof, 1, fp);
-
+		
 		debug Log.info("Allocate %d memory for Wave.", header.data_size);
-
+		
 		super._buffer = new byte[header.data_size];
 		fread(super._buffer.ptr, byte.sizeof, header.data_size, fp);
-
+		
 		super._sFile.rate = header.sample_rate;
 		super._sFile.dataSize = header.data_size;
 		super._sFile.channels = cast(ubyte) header.channels;
 		super._sFile.bits = cast(ubyte) header.bits_per_sample;
 		super._sFile.bytes = cast(ubyte)(header.bits_per_sample / 8);
 	}
-
+	
 public:
 	/**
-	* CTor
-	*/
+	 * CTor
+	 */
 	this(string filename) {
 		super(filename);
 	}
-
+	
 	/**
-	* Returns the music type. In this case: wave.
-	*/
+	 * Returns the music type. In this case: wave.
+	 */
 	override MusicType getType() const pure nothrow {
 		return MusicType.Wave;
 	}

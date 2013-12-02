@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Internal.util;
 
 private {
@@ -28,17 +28,31 @@ private {
 	import std.traits : isNumeric;
 }
 
+struct CircularBuffer(T, const size_t Limit = 16) {
+	private T[Limit] _store; /// TODO: = void?
+	private uint _length;
+	
+	T* get() {
+		T* ptr = &this._store[this._length];
+		this._length = (this._length + 1) % Limit;
+		
+		//writeln("CB length = ", this._length);
+		
+		return ptr;
+	}
+}
+
 struct List(T...) {
 	alias Type = T[0];
-
+	
 	Type*[12] ptrs = void;
-
+	
 	void opAssign(Type[] values) {
 		foreach (index, ptr; ptrs) {
 			//writeln(" -> ", index, "::", values);
 			if (index >= values.length)
 				break;
-
+			
 			*ptr = values[index];
 		}
 	}
@@ -46,17 +60,17 @@ struct List(T...) {
 
 List!U list(U = T[0], T...)(auto ref T vars) {
 	List!U tmpList;
-
+	
 	foreach (i, ref U var; vars) {
 		tmpList.ptrs[i] = &var;
 	}
-
+	
 	return tmpList;
 } unittest {
 	int a, b, c;
-
+	
 	list(a, b, c) = [1, 2, 3];
-
+	
 	assert(a == 1);
 	assert(b == 2);
 	assert(c == 3);

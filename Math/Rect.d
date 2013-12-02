@@ -29,7 +29,8 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Internal.Allocator : TypeAlloc, Array, CircularBuffer;
+	import Dgame.Internal.util : CircularBuffer;
+	import Dgame.Internal.Scoped;
 	import Dgame.Math.Vector2;
 }
 
@@ -273,8 +274,7 @@ struct Rect(T) if (isNumeric!T) {
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		TypeAlloc ta;
-		SDL_Point[] sdl_points = Array!SDL_Point(&ta)[points.length];
+		scoped!(SDL_Point[]) sdl_points = new SDL_Point[points.length];
 		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
