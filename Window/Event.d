@@ -117,7 +117,7 @@ struct Event {
 	 * The Window Event structure.
 	 */
 	static struct WindowEvent {
-		WindowEventId eventId;
+		WindowEventId eventId; /** < The Window Event id. */
 	}
 	
 	/**

@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphics.Text;
 
 private {
@@ -29,7 +29,7 @@ private {
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl; // because of SDL_Surface and SDL_FreeSurface
 	import derelict.sdl2.ttf;
-
+	
 	import Dgame.Internal.Log;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
@@ -43,17 +43,17 @@ private {
 private Font*[] _FontFinalizer;
 
 static ~this() {
-	debug Log.info("Finalize Font");
-
+	debug Log.info("Text: Finalize Font");
+	
 	for (size_t i = 0; i < _FontFinalizer.length; ++i) {
 		if (_FontFinalizer[i] !is null) {
-			debug Log.info(" -> Finalize font %d : %x", i, _FontFinalizer[i].ptr);
+			debug Log.info(" -> Finalize font i = %d, ptr = %x", i, _FontFinalizer[i].ptr);
 			_FontFinalizer[i].free();
 		}
 	}
-
+	
 	_FontFinalizer = null;
-
+	
 	debug Log.info("Font finalized");
 }
 
@@ -95,7 +95,7 @@ private:
 		
 		SDL_Color* fg = this._fg.ptr;
 		SDL_Color* bg = this._bg.ptr;
-
+		
 		const Font.Mode fmode = this._font.getMode();
 		
 		final switch (fmode) {
@@ -149,24 +149,24 @@ protected:
 		if (this._needUpdate)
 			this._update();
 		
-		 // we need nothing to render the text, so null is given
+		// we need nothing to render the text, so null is given
 		this._tex._render(null);
 	}
-
+	
 	override int[2] _getAreaSize() const pure nothrow {
 		if (this._tex is null)
 			return super._getAreaSize();
-
+		
 		return [this._tex.width, this._tex.height];
 	}
-
+	
 public:
 	/**
 	 * CTor
 	 */
 	this(ref Font font, string text = null) {
 		this.replaceFont(font);
-
+		
 		this._text = text;
 		this._needUpdate = true;
 		this._tex = new Texture();
@@ -178,7 +178,7 @@ public:
 	this(Font font, string text = null) {
 		this(font, text);
 	}
-
+	
 	/**
 	 * Check whether the bounding box of this Text collide
 	 * with the bounding box of another Text
@@ -227,39 +227,39 @@ final:
 	ushort height() const pure nothrow {
 		return this._tex !is null ? this._tex.height : 0;
 	}
-
+	
 	/**
-	* Set (or reset) the current Blend instance.
-	*/
+	 * Set (or reset) the current Blend instance.
+	 */
 	void setBlend(Blend blend) in {
 		assert(this._tex !is null, "Texture is null.");
 	} body {
 		this._tex.setBlend(blend);
 	}
 	/**
-	* Returns the current Blend instance
-	*/
+	 * Returns the current Blend instance
+	 */
 	inout(Blend) getBlend() inout pure nothrow {
 		return this._tex !is null ? this._tex.getBlend() : null;
 	}
-
-
+	
+	
 	/**
-	* Checks whether this Texture has a Blend instance.
-	*/
+	 * Checks whether this Texture has a Blend instance.
+	 */
 	bool hasBlend() const pure nothrow in {
 		assert(this._tex !is null, "Texture is null.");
 	} body {
 		return this._tex.hasBlend();
 	}
-
+	
 	/**
 	 * Replace the current Font.
 	 */
 	void replaceFont(ref Font font) {
 		this._font = font;
 		_FontFinalizer ~= &this._font;
-
+		
 		this._needUpdate = true;
 	}
 	
