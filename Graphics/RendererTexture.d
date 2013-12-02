@@ -28,11 +28,11 @@ private {
 	
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Internal.Shared;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Renderer;
 	import Dgame.Math.Rect;
+	import Dgame.Internal.Shared;
 }
 
 ///version = Develop;

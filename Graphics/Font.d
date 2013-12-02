@@ -31,8 +31,8 @@ private {
 	
 	import derelict.sdl2.ttf;
 	
-	import Dgame.Internal.Log;
 	import Dgame.Internal.Shared;
+	import Dgame.Internal.Log;
 }
 
 /**
@@ -173,7 +173,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	void setStyle(Style style) {
-		TTF_SetFontStyle(this._target.ptr, style);
+		TTF_SetFontStyle(this._target, style);
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public:
 	 * See: Font.Style enum
 	 */
 	Style getStyle() const {
-		return cast(Style) TTF_GetFontStyle(this._target.ptr);
+		return cast(Style) TTF_GetFontStyle(this._target);
 	}
 	
 	/**
@@ -211,7 +211,7 @@ public:
 	void setHint(Hint hint) {
 		this._hint = hint;
 		
-		TTF_SetFontHinting(this._target.ptr, hint);
+		TTF_SetFontHinting(this._target, hint);
 	}
 	
 	/**
