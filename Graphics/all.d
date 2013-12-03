@@ -39,6 +39,7 @@ public {
 	import Dgame.Graphics.Text;
 	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.TileMap;
+	import Dgame.Graphics.TiledMap;
 	import Dgame.Graphics.Transform;
 	
 	import Dgame.Math.all;

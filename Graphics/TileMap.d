@@ -24,20 +24,14 @@
 module Dgame.Graphics.TileMap;
 
 private {
-	import std.xml : Document, Element;
-	import std.file : read;
-	import std.conv : to;
 	import std.math : log2, pow, round, ceil, floor, fmax;
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
 	
-	import Dgame.Internal.Log;
-	
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
-	import Dgame.Math.VecN;
-	
+	import Dgame.Internal.Log;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
@@ -90,30 +84,22 @@ struct Tile {
 	 * uint x = gid % tilesPerRow;
 	 * ----
 	 */
-	const ushort gid;
+	ushort gid;
+	/**
+	 * The coordinates in pixel of this tile on the map
+	 */
+	ushort[2] pixelCoords;
+	/**
+	 * The coordinates of this tile on the map
+	 */
+	ushort[2] tileCoords;
 	/**
 	 * The layer of the tile, if any
 	 */
 	string layer;
-	/**
-	 * The coordinates in pixel of this tile on the map
-	 */
-	const ushort[2] pixelCoords;
-	/**
-	 * The coordinates of this tile on the map
-	 */
-	const ushort[2] tileCoords;
-	
-	void opAssign(ref const Tile t) nothrow {
-		.memcpy(&this, &t, Tile.sizeof);
-	}
-	
-	void opAssign(const Tile t) nothrow {
-		this.opAssign(t);
-	}
 }
 
-struct SubSurface {
+private struct SubSurface {
 	Surface clip;
 	ushort gid;
 }
@@ -134,8 +120,8 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 		return 0;
 	if (tileNum == 1)
 		return tileDim;
-	if (tileNum >= ubyte.max)
-		Log.error("Too large dimension.");
+	
+	assert(tileNum < ubyte.max, "Too large dimension.");
 	
 	ubyte dim1 = cast(ubyte) tileNum;
 	ubyte dim2 = 1;
@@ -165,10 +151,10 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 }
 
 short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
-	uint tilesPerRow = width / tw;
+	int tilesPerRow = width / tw;
 	
-	uint y = gid / tilesPerRow;
-	uint x = gid % tilesPerRow;
+	int y = gid / tilesPerRow;
+	int x = gid % tilesPerRow;
 	
 	if (x)
 		x -= 1;
@@ -177,7 +163,7 @@ short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
 		x = tilesPerRow - 1;
 	}
 	
-	return [cast(ushort)(x * tw), cast(ushort)(y * th)];
+	return [cast(short)(x * tw), cast(short)(y * th)];
 } unittest {
 	assert(calcPos(109, 832, 16, 16) == [4 * 16, 2 * 16]);
 }
@@ -188,81 +174,11 @@ short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  * Author: rschuett
  */
 class TileMap : Drawable, Formable {
-private:
-	void _readTileMap() {
-		Document doc = new Document(cast(string) .read(this._filename));
-		
-		vec3f[] vertices;
-		
-		foreach (const Element elem; doc.elements) {
-			if (elem.tag.name == "tileset") {
-				this._tmi.source = elem.elements[0].tag.attr["source"];
-				
-				this._tmi.tileWidth = to!ubyte(elem.tag.attr["tilewidth"]);
-				this._tmi.tileHeight = to!ubyte(elem.tag.attr["tileheight"]);
-			}
-			
-			if (elem.tag.name == "layer") {
-				if (!this._tmi.width) {
-					this._tmi.width  = to!ushort(elem.tag.attr["width"]);
-					this._tmi.height = to!ushort(elem.tag.attr["height"]);
-					
-					if (vertices.length != 0)
-						Log.error("Wrong vertice format.");
-					
-					const size_t cap = this._tmi.width * this._tmi.height * 4;
-					debug Log.info("TileMap: Reserve %d vertices.", cap);
-					
-					vertices.reserve(cap);
-				}
-				
-				ushort row, col;
-				foreach (const Element child; elem.elements[0].elements) {
-					ushort gid = to!ushort(child.tag.attr["gid"]);
-					
-					float vx = col * this._tmi.tileWidth;
-					float vy = row * this._tmi.tileHeight;
-					
-					this._tiles ~= Tile(gid, elem.tag.attr["name"], [cast(ushort) vx, cast(ushort) vy], [col, row]);
-					
-					float vw = this._tmi.tileWidth;
-					float vh = this._tmi.tileHeight;
-					
-					vertices ~= vec3f(vx, vy, 0f); /// #1
-					vertices ~= vec3f(vx + vw, vy, 0f); /// #2
-					vertices ~= vec3f(vx, vy + vh, 0f); /// #3
-					vertices ~= vec3f(vx + vw, vy + vh, 0f); /// #4
-					
-					col++;
-					if (col >= this._tmi.width) {
-						col = 0;
-						row++;
-					}
-				}
-			}
-		}
-		
-		debug Log.info("TileMap: Needed %d vertices.", vertices.length);
-		
-		/// Store the map size
-		this._tmi.mapSize[0] = this._tmi.width;
-		this._tmi.mapSize[1] = this._tmi.height;
-		
-		/// Adjust to real size in pixel
-		this._tmi.width *= this._tmi.tileWidth;
-		this._tmi.height *= this._tmi.tileHeight;
-		
-		this._vbo.bind(Primitive.Target.Vertex);
-		
-		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&vertices.ptr[0], vertices.length * vec3f.sizeof);
-		else
-			this._vbo.cache(&vertices.ptr[0], vertices.length * vec3f.sizeof);
-		
-		this._vbo.unbind();
-		
-		this._loadTileset();
-	}
+protected:
+	/**
+	 * The read method must be overriden by any specialized TileMap.
+	 */
+	abstract void _readTileMap();
 	
 	void _loadTileset() in {
 		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
@@ -272,7 +188,7 @@ private:
 		short[2][ushort] used;
 		short[2]*[] coordinates;
 		
-		//uint doubly = 0;
+		uint doubly = 0;
 		
 		Surface tileset = Surface(this._tmi.source);
 		ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
@@ -280,20 +196,19 @@ private:
 		/// Sammeln der Tiles, die wirklich benötigt werden
 		foreach (ref const Tile t; this._tiles) {
 			if (t.gid !in used) {
-				used[t.gid] = calcPos(t.gid, tileset.width,
-				                      this._tmi.tileWidth, this._tmi.tileHeight);
+				const short[2] pos = calcPos(t.gid, tileset.width, this._tmi.tileWidth, this._tmi.tileHeight);
+				used[t.gid] = pos;
+				
 				if (this._doCompress) {
-					const short[2] pos = used[t.gid];
 					src.setPosition(pos[0], pos[1]);
 					subs ~= SubSurface(tileset.subSurface(src), t.gid);
 				}
-			}/* else
-			  doubly++;*/
+			} else doubly++;
 			
 			coordinates ~= &used[t.gid];
 		}
 		
-		//Log.info("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
+		Log.info("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
 		
 		this._compress(tileset, used, subs);
 		this._loadTexCoords(coordinates);
@@ -310,14 +225,12 @@ private:
 			ushort col = 0;
 			
 			/// Anpassen der Tile Koordinaten
-			//int c = 0;
 			foreach (ref SubSurface sub; subs) {
 				if (!newTileset.blit(sub.clip, null, &src)) {
 					Log.error("An error occured by blitting the tile on the new tileset: " ~ to!string(SDL_GetError()));
 				}
 				
-				used[sub.gid][0] = col;
-				used[sub.gid][1] = row;
+				used[sub.gid] = [col, row];
 				
 				col += this._tmi.tileWidth;
 				if (col >= dim) {
@@ -325,8 +238,6 @@ private:
 					row += this._tmi.tileHeight;
 				}
 				
-				//sub.clip.saveToFile("tile_" ~ to!string(c) ~ ".png");
-				//c++;
 				sub.clip.free(); // Free subsurface
 				src.setPosition(col, row);
 			}
@@ -337,7 +248,8 @@ private:
 			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width, newTileset.height, newTileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width,
+			                         newTileset.height, newTileset.countBits(), t_fmt);
 		} else {
 			//tileset.saveToFile("new_tilset.png");
 			
@@ -345,32 +257,32 @@ private:
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(tileset.getPixels(), tileset.width, tileset.height, tileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(tileset.getPixels(), tileset.width,
+			                         tileset.height, tileset.countBits(), t_fmt);
 		}
 	}
 	
 	void _loadTexCoords(short[2]*[] coordinates) {
 		/// Sammeln der Textur Koordinaten
-		/// 
-		vec2f[] texCoords;
+		
+		Vector2f[] texCoords;
 		texCoords.reserve(coordinates.length * 4);
 		
 		debug Log.info("TileMap: Reserve %d texCoords (%d).", texCoords.capacity, coordinates.length * 4);
 		
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
-		
 		const float tw = this._tmi.tileWidth;
 		const float th = this._tmi.tileHeight;
 		
-		foreach (nr, short[2]* tc; coordinates) {
+		foreach (nr, const short[2]* tc; coordinates) {
 			float tx = (*tc)[0];
 			float ty = (*tc)[1];
 			
-			texCoords ~= vec2f(tx > 0 ? (tx / tsw) : tx, ty > 0 ? (ty / tsh) : ty); /// #1
-			texCoords ~= vec2f((tx + tw) / tsw,  ty > 0 ? (ty / tsh) : ty); /// #2
-			texCoords ~= vec2f(tx > 0 ? (tx / tsw) : tx, (ty + th) / tsh); /// #3
-			texCoords ~= vec2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
+			texCoords ~= Vector2f(tx > 0 ? (tx / tsw) : tx, ty > 0 ? (ty / tsh) : ty); /// #1
+			texCoords ~= Vector2f((tx + tw) / tsw,  ty > 0 ? (ty / tsh) : ty); /// #2
+			texCoords ~= Vector2f(tx > 0 ? (tx / tsw) : tx, (ty + th) / tsh); /// #3
+			texCoords ~= Vector2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
 		
 		debug Log.info("TileMap: Needed %d texCoords.", texCoords.length);
@@ -378,14 +290,13 @@ private:
 		this._vbo.bind(Primitive.Target.TexCoords);
 		
 		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&texCoords.ptr[0], texCoords.length * vec2f.sizeof);
+			this._vbo.modify(&texCoords.ptr[0], texCoords.length * Vector2f.sizeof);
 		else
-			this._vbo.cache(&texCoords.ptr[0], texCoords.length * vec2f.sizeof);
+			this._vbo.cache(&texCoords.ptr[0], texCoords.length * Vector2f.sizeof);
 		
 		this._vbo.unbind();
 	}
 	
-protected:
 	void _render() in {
 		assert(this._transform !is null, "Transform is null.");
 	} body {
@@ -415,7 +326,7 @@ protected:
 		return [this._tmi.width, this._tmi.height];
 	}
 	
-private:
+protected:
 	TileMapInfo _tmi;
 	Texture _tex;
 	Transform _transform;
@@ -595,7 +506,7 @@ final:
 	 * Replace multiple tiles with another.
 	 */
 	void reload(const Vector2s[] coords, ref const Vector2s newCoord) {
-		const Tile tile = this.getTileAt(newCoord);
+		Tile tile = this.getTileAt(newCoord);
 		
 		foreach (ref const Vector2s coord; coords) {
 			this.reload(coord, newCoord);
@@ -693,7 +604,7 @@ final:
 	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(ref const Vector2s vec, ref const Tile newTile, Tile* oldTile = null) {
+	void replaceTileAt(ref const Vector2s vec, Tile newTile, Tile* oldTile = null) {
 		this.replaceTileAt(vec.x, vec.y, newTile, oldTile);
 	}
 	
@@ -704,7 +615,7 @@ final:
 	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(short[2] tilePos, ref const Tile newTile, Tile* oldTile = null) {
+	void replaceTileAt(short[2] tilePos, Tile newTile, Tile* oldTile = null) {
 		this.replaceTileAt(tilePos[0], tilePos[1], newTile, oldTile);
 	}
 	
@@ -715,7 +626,7 @@ final:
 	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(short x, short y, ref const Tile newTile, Tile* oldTile = null) {
+	void replaceTileAt(short x, short y, ref Tile newTile, Tile* oldTile = null) {
 		uint index = 0;
 		
 		if (this.isTileAt(x, y, &index)) {
@@ -730,7 +641,7 @@ final:
 	 * Returns the tile at the given position, or throw an Exception
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	ref const(Tile) getTileAt(ref const Vector2s vec) const {
+	Tile getTileAt(ref const Vector2s vec) const {
 		return this.getTileAt(vec.x, vec.y);
 	}
 	
@@ -740,7 +651,7 @@ final:
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 * Note: This function is fast and takes ~ O(1) for a lookup.
 	 */
-	ref const(Tile) getTileAt(short[2] tilePos) const {
+	Tile getTileAt(short[2] tilePos) const {
 		return this.getTileAt(tilePos[0], tilePos[1]);
 	}
 	
@@ -748,7 +659,7 @@ final:
 	 * Returns the tile at the given position, or throw an Exception
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	ref const(Tile) getTileAt(short x, short y) const {
+	Tile getTileAt(short x, short y) const {
 		uint index = 0;
 		if (!this.isTileAt(x, y, &index))
 			Log.error("No Tile at position %d:%d", x, y);
