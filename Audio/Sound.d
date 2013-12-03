@@ -25,16 +25,32 @@ module Dgame.Audio.Sound;
 
 private {
 	import std.algorithm : endsWith;
-	import std.string : toLower;
 	
 	import derelict.openal.al;
 	
 	import Dgame.Internal.Log;
-	
+	import Dgame.Math.Vector3;
 	import Dgame.Audio.SoundFile;
 	import Dgame.Audio.VorbisFile;
 	import Dgame.Audio.WaveFile;
-	import Dgame.Math.VecN;
+}
+
+private {
+	@safe
+	char toLower(char ch) pure nothrow { 
+		return ch | 32; 
+	}
+	
+	@safe
+	string toLower(string str) pure nothrow {
+		char[] s = new char[str.length];
+		
+		for (uint i = 0; i < str.length; i++) {
+			s[i] = toLower(str[i]);
+		}
+		
+		return s;
+	}
 }
 
 /**
@@ -85,7 +101,7 @@ struct Channel {
 	}
 }
 
-struct ALChunk {
+private struct ALChunk {
 	ALuint source;
 	ALuint buffer;
 	
@@ -144,8 +160,8 @@ private:
 	float _volume;
 	bool _looping;
 	
-	vec3f _sourcePos;
-	vec3f _sourceVel;
+	Vector3f _sourcePos;
+	Vector3f _sourceVel;
 	
 	Status _status;
 	Channel _channel;
@@ -201,7 +217,6 @@ final:
 		assert(soundfile !is null, "Soundfile is null.");
 	} body {
 		const string filename = soundfile.getFilename();
-		
 		if (Sound* s = filename in _soundInstances)
 			return *s;
 		
@@ -287,14 +302,17 @@ final:
 	BaseSoundFile loadFromFile(string filename) {
 		BaseSoundFile sFile;
 		
+	Lagain:
 		if (filename.endsWith(".ogg") || filename.endsWith(".vorbis"))
 			sFile = new VorbisFile(filename);
 		else if (filename.endsWith(".wav") || filename.endsWith(".wave"))
 			sFile = new WaveFile(filename);
 		else {
 			const string lower = toLower(filename); // for e.g. *.WAVE
-			if (lower != filename)
-				this.loadFromFile(lower);
+			if (lower != filename) {
+				filename = lower;
+				goto Lagain;
+			}
 		}
 		
 		if (sFile !is null)
@@ -316,14 +334,14 @@ final:
 				else
 					this._format = AL_FORMAT_STEREO8;
 				break;
+				
 			case 16:
 				if (ch.type == ChannelType.Mono)
 					this._format = AL_FORMAT_MONO16;
 				else
 					this._format = AL_FORMAT_STEREO16;
 				break;
-			default:
-				Log.error("Switch error.");
+			default: Log.error("Switch error.");
 		}
 		
 		this._frequency = frequency;
@@ -331,19 +349,22 @@ final:
 		
 		alBufferData(this._alChunk.buffer, this._format, buffer, dataSize, this._frequency);
 		
-		this._sourcePos = vec3f(0, 0, 0);
-		this._sourceVel = vec3f(0, 0, 0);
+		this._sourcePos = Vector3f(0, 0, 0);
+		this._sourceVel = Vector3f(0, 0, 0);
 		
 		this._looping = false;
-		this._volume  = 1.0;
+		this._volume  = 1f;
 		this._status  = Status.None;
+		
+		const float[3] pos = this._sourcePos.asArray();
+		const float[3] vel = this._sourceVel.asArray();
 		
 		// Source
 		alSourcei(this._alChunk.source, AL_BUFFER, this._alChunk.buffer);
 		alSourcef(this._alChunk.source, AL_PITCH, 1.0);
 		alSourcef(this._alChunk.source, AL_GAIN, this._volume);
-		alSourcefv(this._alChunk.source, AL_POSITION, &this._sourcePos[0]);
-		alSourcefv(this._alChunk.source, AL_VELOCITY, &this._sourceVel[0]);
+		alSourcefv(this._alChunk.source, AL_POSITION, &pos[0]);
+		alSourcefv(this._alChunk.source, AL_VELOCITY, &vel[0]);
 		alSourcei(this._alChunk.source, AL_LOOPING, this._looping);
 	}
 	
@@ -354,14 +375,23 @@ final:
 		return this._soundfile;
 	}
 	
+	/**
+	 * Returns the current filename.
+	 */
 	string getFilename() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getFilename() : null;
 	}
 	
+	/**
+	 * Returns the length in seconds.
+	 */
 	float getLength() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getLength() : 0f;
 	}
 	
+	/**
+	 * Returns the music type.
+	 */
 	MusicType getType() const pure nothrow {
 		return this._soundfile !is null ? this._soundfile.getType() : MusicType.None;
 	}
@@ -486,46 +516,60 @@ final:
 	/**
 	 * Set the position.
 	 */
-	void setPosition(const vec3f pos) {
-		this._sourcePos = pos;
+	void setPosition(const Vector3f vpos) {
+		this._sourcePos = vpos;
 		
-		alSourcefv(this._alChunk.source, AL_POSITION, &pos[0]);
+		this._updatePosition();
 	}
 	
 	/**
 	 * Set the position.
 	 */
 	void setPosition(float x, float y, float z = 0) {
-		this.setPosition(vec3f(x, y, z));
+		this._sourcePos.set(x, y, z);
+		
+		this._updatePosition();
+	}
+	
+	private void _updatePosition() const {
+		const float[3] pos = this._sourcePos.asArray();
+		alSourcefv(this._alChunk.source, AL_POSITION, &pos[0]);
 	}
 	
 	/**
 	 * Returns the current position.
 	 */
-	ref const(vec3f) getPosition() const pure nothrow {
+	ref const(Vector3f) getPosition() const pure nothrow {
 		return this._sourcePos;
 	}
 	
 	/**
 	 * Set the velocity.
 	 */
-	void setVelocity(const vec3f vel) {
-		this._sourceVel = vel;
+	void setVelocity(ref const Vector3f vvel) {
+		this._sourceVel = vvel;
 		
-		alSourcefv(this._alChunk.source, AL_VELOCITY, &vel[0]);
+		this._updateVelocity();
 	}
 	
 	/**
 	 * Set the velocity.
 	 */
 	void setVelocity(float x, float y, float z = 0) {
-		this.setVelocity(vec3f(x, y, z));
+		this._sourceVel.set(x, y, z);
+		
+		this._updateVelocity();
+	}
+	
+	private void _updateVelocity() const {
+		const float[3] vel = this._sourceVel.asArray();
+		alSourcefv(this._alChunk.source, AL_VELOCITY, &vel[0]);
 	}
 	
 	/**
 	 * Returns the current velocity.
 	 */
-	ref const(vec3f) getVelocity() const pure nothrow {
+	ref const(Vector3f) getVelocity() const pure nothrow {
 		return this._sourceVel;
 	}
 }

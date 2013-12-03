@@ -1,31 +1,42 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Audio.Listener;
 
-private {
-	import Dgame.Audio.Internal.core;
-	import Dgame.Math.VecN;
+private import derelict.openal.al;
+
+/**
+ * A 3 dimensional float vector.
+ */
+float[3] vec3f(float x, float y, float z) pure nothrow {
+	return [x, y, z];
+}
+
+/**
+ * A 6 dimensional float vector.
+ */
+float[6] vec6f(float x, float y, float z, float u, float v, float w) pure nothrow {
+	return [x, y, z, u, v, w];
 }
 
 static this() {
@@ -42,26 +53,12 @@ static this() {
  * Author: rschuett
  */
 final abstract class Listener {
-private:
-	static vec3f _listenerPos;
-	static vec3f _listenerVel;
-	static vec6f _listenerOri;
-	
 public:
 	/**
-	 * Set the position with a vec3f
+	 * Set the position
 	 */
-	static void setPosition(ref const vec3f pos) {
-		Listener._listenerPos = pos;
-		
+	static void setPosition(float[3] pos) {
 		alListenerfv(AL_POSITION, &pos[0]);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	static void setPosition(const vec3f pos) {
-		Listener.setPosition(pos);
 	}
 	
 	/**
@@ -74,24 +71,18 @@ public:
 	/**
 	 * Returns the current position.
 	 */
-	static ref const(vec3f) getPosition() {
-		return Listener._listenerPos;
+	static float[3] getPosition() {
+		float[3] pos = void;
+		alGetListenerfv(AL_POSITION, &pos[0]);
+		
+		return pos;
 	}
 	
 	/**
 	 * Set the celocity with a vec3f.
 	 */
-	static void setVelocity(ref const vec3f vel) {
-		_listenerVel = vel;
-		
+	static void setVelocity(float[3] vel) {
 		alListenerfv(AL_VELOCITY, &vel[0]);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	static void setVelocity(const vec3f vel) {
-		Listener.setVelocity(vel);
 	}
 	
 	/**
@@ -104,30 +95,27 @@ public:
 	/**
 	 * Returns the current velocity.
 	 */
-	static ref const(vec3f) getVelocity() {
-		return _listenerVel;
+	static float[3] getVelocity() {
+		float[3] vel = void;
+		alGetListenerfv(AL_VELOCITY, &vel[0]);
+		
+		return vel;
 	}
 	
 	/**
 	 * Set the orientation.
 	 */
-	static void setOrientation(ref const vec6f ori) {
-		Listener._listenerOri = ori;
-		
+	static void setOrientation(float[6] ori) {
 		alListenerfv(AL_ORIENTATION, &ori[0]);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	static void setOrientation(const vec6f ori) {
-		Listener.setOrientation(ori);
 	}
 	
 	/**
 	 * Returns the current orientation.
 	 */
-	static ref const(vec6f) getOrientation() {
-		return Listener._listenerOri;
+	static float[6] getOrientation() {
+		float[6] ori = void;
+		alGetListenerfv(AL_ORIENTATION, &ori[0]);
+		
+		return ori;
 	}
 }
