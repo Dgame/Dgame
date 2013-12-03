@@ -1,34 +1,32 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Math.Vector2;
 
 private {
 	debug import std.stdio : writeln;
 	import std.math : pow, sqrt, acos, PI;
 	import std.traits : isNumeric;
-	
-	import Dgame.Internal.util : equals;
 }
 
 /**
@@ -64,6 +62,13 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
+	this(U)(U[2] pos) if (isNumeric!U) {
+		this(pos[0], pos[1]);
+	}
+	
+	/**
+	 * CTor
+	 */
 	this(U)(ref const Vector2!U vec) {
 		this(vec.x, vec.y);
 	}
@@ -73,14 +78,6 @@ struct Vector2(T) if (isNumeric!T) {
 		writeln("Postblit Vector2");
 	}
 	
-	/**
-	 * opAssign
-	 */
-	void opAssign(ref const Vector2!T rhs) {
-		debug writeln("opAssign Vector2");
-		this.set(rhs.x, rhs.y);
-	}
-
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
@@ -162,11 +159,11 @@ struct Vector2(T) if (isNumeric!T) {
 	 */
 	Vector2!T opBinary(string op)(T number) {
 		switch (op) {
-			case "+": return Vector2!T(this.x + number, this.y + number);
-			case "-": return Vector2!T(this.x - number, this.y - number);
-			case "*": return Vector2!T(this.x * number, this.y * number);
-			case "/": return Vector2!T(this.x / number, this.y / number);
-			case "%": return Vector2!T(this.x % number, this.y % number);
+			case "+": return Vector2!T(number + this.x, number + this.y);
+			case "-": return Vector2!T(number - this.x, number - this.y);
+			case "*": return Vector2!T(number * this.x, number * this.y);
+			case "/": return Vector2!T(number / this.x, number / this.y);
+			case "%": return Vector2!T(number % this.x, number % this.y);
 			default: throw new Exception("Unsupported operator " ~ op);
 		}
 	}
@@ -206,7 +203,7 @@ struct Vector2(T) if (isNumeric!T) {
 	bool isEmpty() const pure nothrow {
 		return this.x == 0 && this.y == 0;
 	}
-
+	
 	/**
 	 * Calculate the scalar product.
 	 */
@@ -248,7 +245,7 @@ struct Vector2(T) if (isNumeric!T) {
 	 * Calculate the diff between two vectors.
 	 */
 	float diff(ref const Vector2!T vec) const pure nothrow {
-		return sqrt(pow((this.x - vec.x), 2f) + pow((this.y - vec.y), 2f));
+		return sqrt(pow(this.x - vec.x, 2f) + pow(this.y - vec.y, 2f));
 	}
 	
 	/**
@@ -256,7 +253,7 @@ struct Vector2(T) if (isNumeric!T) {
 	 */
 	ref Vector2!T normalize() pure nothrow {
 		const float len = this.length;
-		if (!equals(len, 0)) {
+		if (len != 0) {
 			this.x /= len;
 			this.y /= len;
 		}
@@ -279,7 +276,7 @@ struct Vector2(T) if (isNumeric!T) {
 		this.x += x;
 		this.y += y;
 	}
-
+	
 	/**
 	 * Returns the Vector as static array.
 	 */

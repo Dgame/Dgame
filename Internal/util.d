@@ -29,7 +29,7 @@ private {
 }
 
 struct CircularBuffer(T, const size_t Limit = 16) {
-	private T[Limit] _store; /// TODO: = void?
+	private T[Limit] _store = void;
 	private uint _length;
 	
 	T* get() {

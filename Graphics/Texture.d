@@ -1,31 +1,31 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphics.Texture;
 
 private {
 	import derelict.opengl3.gl;
-
+	
 	import Dgame.Internal.Log;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
@@ -45,7 +45,7 @@ private {
  * assert(formatToBits(Texture.Format.BGR) == 24);
  * ---
  */
-ubyte formatToBits(Texture.Format fmt) pure {
+ubyte formatToBits(Texture.Format fmt) pure nothrow {
 	switch (fmt) {
 		case Texture.Format.RGB:
 		case Texture.Format.BGR:
@@ -74,7 +74,7 @@ ubyte formatToBits(Texture.Format fmt) pure {
  * assert(bitsToFormat(24, true) == Texture.Format.BGR);
  * ---
  */
-Texture.Format bitsToFormat(ubyte bits, bool reverse = false) pure {
+Texture.Format bitsToFormat(ubyte bits, bool reverse = false) pure nothrow {
 	switch (bits) {
 		case 32: return !reverse ? Texture.Format.RGBA : Texture.Format.BGRA;
 		case 24: return !reverse ? Texture.Format.RGB : Texture.Format.BGR;
@@ -98,7 +98,7 @@ Texture.Format bitsToFormat(ubyte bits, bool reverse = false) pure {
  * assert(switchFormat(Texture.Format.RGBA, true) == Texture.Format.BGRA);
  * ---
  */
-Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
+Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure nothrow {
 	switch (fmt) {
 		case Texture.Format.RGB:
 			if (alpha) goto case Texture.Format.RGBA;
@@ -117,7 +117,7 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure {
  *
  * See: Texture.Format enum
  */
-Texture.Format compressFormat(Texture.Format fmt) pure {
+Texture.Format compressFormat(Texture.Format fmt) pure nothrow {
 	switch (fmt) {
 		case Texture.Format.RGB:  return Texture.Format.CompressedRGB;
 		case Texture.Format.RGBA: return Texture.Format.CompressedRGBA;
@@ -151,14 +151,14 @@ package struct Viewport {
 		Normal,
 		Reverse
 	}
-
+	
 	const Mode mode;
 	const(ShortRect)* dest;
 	const(ShortRect)* view;
-
+	
 	@disable
 	this();
-
+	
 	this(const(ShortRect)* dest, const(ShortRect)* view, Mode mode = Mode.Normal) {
 		this.dest = dest;
 		this.view = view;
@@ -189,7 +189,7 @@ public:
 		CompressedRGB = GL_COMPRESSED_RGB,	/// Compressed RGB
 		CompressedRGBA = GL_COMPRESSED_RGBA /// Compressed RGBA
 	}
-
+	
 	/**
 	 * Compression modes
 	 */
@@ -199,7 +199,7 @@ public:
 		Fastest  = GL_FASTEST, /// Fastest compression
 		Nicest   = GL_NICEST /// Nicest but slowest mode of compression
 	}
-
+	
 private:
 	GLuint _texId;
 	
@@ -212,96 +212,96 @@ private:
 	
 	Format _format;
 	Compression _comp = Compression.None;
-
+	
 	Blend _blend;
-
+	
 package:
 	void _render(const Viewport* vp) const {
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
-
+		
 		float tx = 0f;
 		float ty = 0f;
 		float tw = 1f;
 		float th = 1f;
-
+		
 		if (vp !is null && vp.view !is null && !vp.view.isZero()) {
 			tx = (0f + vp.view.x) / this._width;
 			ty = (0f + vp.view.y) / this._height;
-
+			
 			if (!vp.view.isEmpty()) {
 				tw = (0f + vp.view.width) / this._width;
 				th = (0f + vp.view.height) / this._height;
 			}
 		}
-
+		
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
-
+		
 		// apply blending
 		if (this._blend !is null)
 			this._blend.applyBlending();
-
+		
 		const Viewport.Mode mode = vp !is null ? vp.mode : Viewport.Mode.Normal;
-
+		
 		float[8] texCoords = void;
 		final switch (mode) {
 			case Viewport.Mode.Normal:
 				texCoords = [tx,      ty,
-							 tx + tw, ty,
-							 tx + tw, ty + th,
-							 tx,      ty + th];
+					tx + tw, ty,
+					tx + tw, ty + th,
+					tx,      ty + th];
 				break;
 			case Viewport.Mode.Reverse:
 				texCoords = [tx,      ty + th,
-							 tx + tw, ty + th,
-							 tx + tw, ty,
-							 tx,      ty];
+					tx + tw, ty + th,
+					tx + tw, ty,
+					tx,      ty];
 				break;
 		}
-
+		
 		float dx = 0f;
 		float dy = 0f;
 		float dw = this._width;
 		float dh = this._height;
-
+		
 		if (vp !is null && vp.dest !is null) {
 			dx = vp.dest.x;
 			dy = vp.dest.y;
-
+			
 			if (!vp.dest.isEmpty()) {
 				dw = vp.dest.width;
 				dh = vp.dest.height;
 			}
 		}
-
+		
 		float[12] vertices = [dx,	   dy,      0f,
-							  dx + dw, dy,      0f,
-							  dx + dw, dy + dh, 0f,
-							  dx,      dy + dh, 0f];
-
+			dx + dw, dy,      0f,
+			dx + dw, dy + dh, 0f,
+			dx,      dy + dh, 0f];
+		
 		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
-
+		
 		scope(exit) {
 			VertexRenderer.disableAllStates();
-
+			
 			this.unbind();
 		}
-
+		
 		this.bind();
-
+		
 		VertexRenderer.drawArrays(Primitive.Type.TriangleFan, vertices.length);
 	}
-
+	
 	void _render(ref const Viewport vp) const {
 		this._render(&vp);
 	}
-
+	
 	void _render(const Viewport vp) const {
 		this._render(&vp);
 	}
-
+	
 public:
 final:
 	/**
@@ -314,7 +314,7 @@ final:
 		
 		this.bind();
 	}
-
+	
 	/**
 	 * Postblit
 	 */
@@ -362,7 +362,7 @@ final:
 	GLuint Id() const pure nothrow {
 		return this._texId;
 	}
-
+	
 	/**
 	 * Returns if the texture is used.
 	 */
@@ -446,14 +446,14 @@ final:
 	void setRepeat(bool repeat) {
 		if (repeat != this._isRepeated) {
 			this._isRepeated = repeat;
-
+			
 			if (this._texId != 0) {
 				this.bind();
-
+				
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-								this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+				                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-								this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+				                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 			}
 		}
 	}
@@ -464,16 +464,16 @@ final:
 	bool isRepeated() const pure nothrow {
 		return this._isRepeated;
 	}
-
+	
 	/**
 	 * (Re)Set the compression mode.
 	 * 
 	 * See: Compression enum
-	*/
+	 */
 	void setCompression(Compression comp) {
 		this._comp = comp;
 	}
-
+	
 	/**
 	 * Returns the current Compression mode.
 	 *
@@ -482,33 +482,33 @@ final:
 	Compression getCompression() const pure nothrow {
 		return this._comp;
 	}
-
+	
 	/**
 	 * Checks whether the current Texture is compressed or not.
 	 */
 	bool isCompressed() const {
 		this.bind();
-
+		
 		GLint compressed;
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &compressed);
-
+		
 		return compressed != 1;
 	}
-
+	
 	/**
 	 * Set (or reset) the current Blend instance.
 	 */
 	void setBlend(Blend blend) {
 		this._blend = blend;
 	}
-
+	
 	/**
 	 * Returns the current Blend instance
 	 */
 	inout(Blend) getBlend() inout pure nothrow {
 		return this._blend;
 	}
-
+	
 	/**
 	 * Checks whether this Texture has a Blend instance.
 	 */
@@ -536,9 +536,9 @@ final:
 		this._format = fmt == Format.None ? bitsToFormat(depth) : fmt;
 		assert(this._format != Format.None, "Missing format.");
 		depth = depth < 8 ? formatToBits(this._format) : depth;
-
+		
 		this.bind();
-
+		
 		Format format = Format.None;
 		// Compression
 		if (this._comp != Compression.None) {
@@ -547,8 +547,8 @@ final:
 		}
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, 
-					 format == Format.None ? depth / 8 : format,
-					 width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
+		             format == Format.None ? depth / 8 : format,
+		             width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
@@ -558,7 +558,7 @@ final:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 		                this._isSmooth ? GL_LINEAR : GL_NEAREST);
 		glGenerateMipmap(GL_TEXTURE_2D); // We want MipMaps
-
+		
 		debug {
 			if (format != Format.None) {
 				if (!this.isCompressed())
@@ -578,10 +578,10 @@ final:
 		// Get the pixel memory
 		void* memory = this.getMemory();
 		assert(memory !is null);
-
+		
 		if (this._depth < 8)
 			return;
-
+		
 		const uint size = this._width * this._height * (this._depth / 8);
 		// Go through pixels
 		for (uint i = 0; i < size; ++i) {
@@ -590,9 +590,9 @@ final:
 			
 			// Color matches
 			if (colors[0] == colorkey.red
-			    && colors[1] == colorkey.green
-			    && colors[2] == colorkey.blue
-			    && (0 == colorkey.alpha || colors[3] == colorkey.alpha))
+			&& colors[1] == colorkey.green
+			&& colors[2] == colorkey.blue
+			&& (0 == colorkey.alpha || colors[3] == colorkey.alpha))
 			{
 				// Make transparent
 				colors[0] = 255;

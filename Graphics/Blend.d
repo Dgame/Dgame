@@ -1,37 +1,37 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphics.Blend;
 
 private {
 	import derelict.opengl3.gl;
-
+	
 	import Dgame.Graphics.Color;
 }
 
 /**
  * Enable blending
-*/
+ */
 interface Blendable {
 	/**
 	 * Set (or reset) the current Blend instance.
@@ -58,15 +58,15 @@ interface Blendable {
 class Blend {
 public:
 	/**
-	* Supported BlendModes
-	*/
-	enum Mode {
+	 * Supported BlendModes
+	 */
+	enum Mode : ubyte {
 		None,      /// No blending.
 		Alpha,     /// Pixel = Src * a + Dest * (1 - a)
 		Add,       /// Pixel = Src + Dest
 		Multiply   /// Pixel = Src * Dest
 	}
-
+	
 private:
 	Mode _mode;
 	Color _color;
@@ -81,19 +81,19 @@ public:
 	void applyBlending() const {
 		if (!this._isBlending)
 			return;
-
+		
 		if (!glIsEnabled(GL_BLEND))
 			glEnable(GL_BLEND);
-
+		
 		if (this._isBlendColor) {
 			const float[4] col = this._color.asGLColor();
-
+			
 			version(all)
 				glBlendColor(col[0], col[1], col[2], col[3]);
 			else
 				glColor4f(col[0], col[1], col[2], col[3]);
 		}
-
+		
 		final switch (this._mode) {
 			case Mode.Alpha: // Alpha blending
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -109,7 +109,7 @@ public:
 				break;
 		}
 	}
-
+	
 final:
 	/**
 	 * CTor
@@ -120,7 +120,7 @@ final:
 		if (col !is null)
 			this.setBlendColor(*col);
 	}
-
+	
 	/**
 	 * Enable or Disable blending
 	 */
@@ -134,17 +134,17 @@ final:
 	bool isBlendingEnabled() const pure nothrow {
 		return this._isBlending;
 	}
-
+	
 	/**
-	* Activate or deactivate the using of the blend color.
-	*/
+	 * Activate or deactivate the using of the blend color.
+	 */
 	void enableBlendColor(bool enable) {
 		this._isBlendColor = enable;
 	}
-
+	
 	/**
-	* Returns, if using blend color is activated, or not.
-	*/
+	 * Returns, if using blend color is activated, or not.
+	 */
 	bool isBlendColorEnabled() const pure nothrow {
 		return this._isBlendColor;
 	}

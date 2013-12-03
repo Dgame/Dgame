@@ -24,8 +24,14 @@
 module Dgame.Internal.Scoped;
 
 private {
-	debug import std.stdio : writeln, writefln;
+	debug import std.stdio : writefln;
 	import core.memory : GC;
+}
+
+private void gc_free(T)(ref T[] arr) {
+	GC.free(arr.ptr);
+	arr = null;
+	GC.minimize();
 }
 
 struct scoped(A : T[], T)
@@ -35,19 +41,17 @@ struct scoped(A : T[], T)
 	void function(ref T[]) _deleter;
 	
 	@disable
+	this();
+	
+	@disable
+	this(typeof(null));
+	
+	@disable
 	this(this);
 	
 	this(T[] arr, void function(ref T[]) del = null) {
 		this.arr = arr;
-		if (del !is null)
-			this._deleter = del;
-		else {
-			this._deleter = (ref T[] arr) {
-				GC.free(arr.ptr);
-				arr = null;
-				GC.minimize();
-			};
-		}
+		this._deleter = del;
 		
 		debug writefln("Allocate %d %s's (ptr = %x)", arr.length, T.stringof, arr.ptr);
 	}
@@ -63,6 +67,9 @@ struct scoped(A : T[], T)
 			}
 		}
 		
-		this._deleter(this.arr);
+		if (this._deleter is null)
+			gc_free(this.arr);
+		else
+			this._deleter(this.arr);
 	}
 }

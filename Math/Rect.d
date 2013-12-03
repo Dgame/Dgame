@@ -110,14 +110,6 @@ struct Rect(T) if (isNumeric!T) {
 		writeln("Postblit");
 	}
 	
-	/**
-	 * opAssign
-	 */
-	void opAssign(ref const Rect!T rhs) {
-		debug writeln("opAssign Rect");
-		this.set(rhs.x, rhs.y, rhs.width, rhs.height);
-	}
-	
 	debug(Dgame)
 	~this() {
 		debug writeln("DTor Rect");

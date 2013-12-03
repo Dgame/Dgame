@@ -70,7 +70,7 @@ public:
 	 * The Window syncronisation mode.
 	 * Default Syncronisation is <code>Sync.Enable</code>.
 	 */
-	enum Sync {
+	enum Sync : byte {
 		Enable  = 1,	/** Sync is enabled */
 		Disable = 0,	/** Sync is disabled */
 		LateSwapTearing = -1	/** For late swap tearing */

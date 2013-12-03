@@ -48,7 +48,7 @@ pragma(msg, Vertex.sizeof);
 pragma(msg, Vertex.sizeof);
 pragma(msg, FloatRect.sizeof);
 pragma(msg, Vector2f.sizeof);
-pragma(msg, vec2f.sizeof);
+pragma(msg, Vector3f.sizeof);
 
 void main() {
 	const ushort width = 1024;
@@ -216,7 +216,7 @@ void main() {
 	Color[4] colors = [Color.Red, Color.Magenta, Color.White, Color.Blue];
 	ubyte cidx = 0;
 	
-	TileMap tm = new TileMap("map2.tmx");
+	TiledMap tm = new TiledMap("map2.tmx");
 	
 	Unit tof = new Unit(new Image("samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
