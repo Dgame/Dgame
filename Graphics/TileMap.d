@@ -28,10 +28,11 @@ private {
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
-	
+
+	import Dgame.Internal.Log;
+
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
-	import Dgame.Internal.Log;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
@@ -97,11 +98,6 @@ struct Tile {
 	 * The layer of the tile, if any
 	 */
 	string layer;
-}
-
-private struct SubSurface {
-	Surface clip;
-	ushort gid;
 }
 
 ushort roundToNext2Pot(ushort dim) {
@@ -179,120 +175,117 @@ protected:
 	 * The read method must be overriden by any specialized TileMap.
 	 */
 	abstract void _readTileMap();
-	
+
 	void _loadTileset() in {
 		assert(this._tmi.tileWidth == this._tmi.tileHeight, "Tile dimensions must be equal.");
 	} body {
-		SubSurface[] subs;
-		
-		short[2][ushort] used;
-		short[2]*[] coordinates;
-		
+		ShortRect[ushort] used;
 		uint doubly = 0;
-		
+
 		Surface tileset = Surface(this._tmi.source);
-		ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
-		
+
 		/// Sammeln der Tiles, die wirklich benötigt werden
 		foreach (ref const Tile t; this._tiles) {
 			if (t.gid !in used) {
 				const short[2] pos = calcPos(t.gid, tileset.width, this._tmi.tileWidth, this._tmi.tileHeight);
-				used[t.gid] = pos;
-				
-				if (this._doCompress) {
-					src.setPosition(pos[0], pos[1]);
-					subs ~= SubSurface(tileset.subSurface(src), t.gid);
-				}
-			} else doubly++;
-			
-			coordinates ~= &used[t.gid];
+				used[t.gid] = ShortRect(pos[0], pos[1], this._tmi.tileWidth, this._tmi.tileHeight);
+			} else
+				doubly++;
 		}
 		
-		Log.info("%d are double used and we need %d tiles and have %d.", doubly, used.length, subs.length);
-		
-		this._compress(tileset, used, subs);
-		this._loadTexCoords(coordinates);
-	}
-	
-	void _compress(ref Surface tileset, short[2][ushort] used, SubSurface[] subs) {
-		if (this._doCompress) {
-			const ushort dim = calcDim(used.length, this._tmi.tileWidth);
-			
-			Surface newTileset = Surface.make(dim, dim, 32);
-			ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
-			
-			ushort row = 0;
-			ushort col = 0;
-			
-			/// Anpassen der Tile Koordinaten
-			foreach (ref SubSurface sub; subs) {
-				if (!newTileset.blit(sub.clip, null, &src)) {
-					Log.error("An error occured by blitting the tile on the new tileset: " ~ to!string(SDL_GetError()));
-				}
-				
-				used[sub.gid] = [col, row];
-				
-				col += this._tmi.tileWidth;
-				if (col >= dim) {
-					col = 0;
-					row += this._tmi.tileHeight;
-				}
-				
-				sub.clip.free(); // Free subsurface
-				src.setPosition(col, row);
-			}
-			
-			//newTileset.saveToFile("new_tilset.png");
-			
-			Texture.Format t_fmt = Texture.Format.None;
-			if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
-				t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
-			
-			this._tex.loadFromMemory(newTileset.getPixels(), newTileset.width,
-			                         newTileset.height, newTileset.countBits(), t_fmt);
-		} else {
-			//tileset.saveToFile("new_tilset.png");
+		debug Log.info("%d are double used and we need %d tiles.", doubly, used.length);
+
+		if (this._doCompress)
+			this._compress(tileset, used);
+		else {
+			tileset.saveToFile("new_tilset.png");
 			
 			Texture.Format t_fmt = Texture.Format.None;
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(tileset.getPixels(), tileset.width,
-			                         tileset.height, tileset.countBits(), t_fmt);
+			this._tex.loadFromMemory(tileset.getPixels(),
+			                         tileset.width, tileset.height,
+			                         tileset.countBits(), t_fmt);
 		}
+
+		this._loadTexCoords(used);
 	}
-	
-	void _loadTexCoords(short[2]*[] coordinates) {
+
+	private void _compress(ref Surface tileset, ShortRect[ushort] used) {
+		debug Log.info("Start compress");
+
+		const ushort dim = calcDim(used.length, this._tmi.tileWidth);
+		Surface newTileset = Surface.make(dim, dim, 32);
+		
+		ShortRect src = ShortRect(0, 0, this._tmi.tileWidth, this._tmi.tileHeight);
+		ushort row = 0;
+		ushort col = 0;
+		
+//		ushort c = 0;
+		/// Anpassen der Tile Koordinaten
+		foreach (ref ShortRect dst; used) {
+			Surface clip = tileset.subSurface(dst);
+//			clip.saveToFile("tile_" ~ to!string(c++) ~ ".png");
+			if (!newTileset.blit(clip, null, &src)) {
+				Log.error("An error occured by blitting the tile on the new tileset: " ~ to!string(SDL_GetError()));
+			}
+			
+			dst.setPosition(col, row);
+			
+			col += this._tmi.tileWidth;
+			if (col >= dim) {
+				col = 0;
+				row += this._tmi.tileHeight;
+			}
+			
+			src.setPosition(col, row);
+		}
+		
+//		newTileset.saveToFile("new_tilset.png");
+		
+		Texture.Format t_fmt = Texture.Format.None;
+		if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
+			t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+		
+		this._tex.loadFromMemory(newTileset.getPixels(),
+		                         newTileset.width, newTileset.height,
+		                         newTileset.countBits(), t_fmt);
+
+		debug Log.info("End compress");
+	}
+
+	void _loadTexCoords(ShortRect[ushort] used) {
 		/// Sammeln der Textur Koordinaten
-		
+
 		Vector2f[] texCoords;
-		texCoords.reserve(coordinates.length * 4);
+		const size_t cap = texCoords.reserve(this._tiles.length * 4);
 		
-		debug Log.info("TileMap: Reserve %d texCoords (%d).", texCoords.capacity, coordinates.length * 4);
-		
+		debug Log.info("TileMap: Reserve %d texCoords (Needed %d).", cap, this._tiles.length * 4);
+
 		const float tsw = this._tex.width;
 		const float tsh = this._tex.height;
-		const float tw = this._tmi.tileWidth;
-		const float th = this._tmi.tileHeight;
+		const float tw  = this._tmi.tileWidth;
+		const float th  = this._tmi.tileHeight;
 		
-		foreach (nr, const short[2]* tc; coordinates) {
-			float tx = (*tc)[0];
-			float ty = (*tc)[1];
+		foreach (ref const Tile t; this._tiles) {
+			const ShortRect* src = &used[t.gid];
+
+			float tx = src.x;
+			float ty = src.y;
 			
 			texCoords ~= Vector2f(tx > 0 ? (tx / tsw) : tx, ty > 0 ? (ty / tsh) : ty); /// #1
 			texCoords ~= Vector2f((tx + tw) / tsw,  ty > 0 ? (ty / tsh) : ty); /// #2
 			texCoords ~= Vector2f(tx > 0 ? (tx / tsw) : tx, (ty + th) / tsh); /// #3
 			texCoords ~= Vector2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
-		
-		debug Log.info("TileMap: Needed %d texCoords.", texCoords.length);
-		
+
 		this._vbo.bind(Primitive.Target.TexCoords);
 		
 		if (!this._vbo.isCurrentEmpty())
-			this._vbo.modify(&texCoords.ptr[0], texCoords.length * Vector2f.sizeof);
+			this._vbo.modify(&texCoords[0], texCoords.length * Vector2f.sizeof);
 		else
-			this._vbo.cache(&texCoords.ptr[0], texCoords.length * Vector2f.sizeof);
+			this._vbo.cache(&texCoords[0], texCoords.length * Vector2f.sizeof);
 		
 		this._vbo.unbind();
 	}

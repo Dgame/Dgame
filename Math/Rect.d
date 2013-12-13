@@ -30,7 +30,6 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Internal.util : CircularBuffer;
-	import Dgame.Internal.Scoped;
 	import Dgame.Math.Vector2;
 }
 
@@ -179,10 +178,11 @@ struct Rect(T) if (isNumeric!T) {
 	}
 	
 	/**
-	 * Checks if this Rect is collapsed (empty).
+	 * Checks if this Rect is collapsed, which means
+	 * that the width and/or the height are <= 0.
 	 * This is a pure and nothrow variant of isEmpty.
 	 */
-	bool hasArea() const pure nothrow {
+	bool isCollapsed() const pure nothrow {
 		return this.width <= 0 || this.height <= 0;
 	}
 	
@@ -266,14 +266,17 @@ struct Rect(T) if (isNumeric!T) {
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
-		scoped!(SDL_Point[]) sdl_points = new SDL_Point[points.length];
-		
+		import Dgame.Internal.Allocator : New, Delete;
+
+		SDL_Point* sdl_points = New!SDL_Point[points.length];
+		scope(exit) Delete(sdl_points);
+
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 		
 		Rect!T rect = void;
-		SDL_EnclosePoints(sdl_points.ptr, cast(int)(points.length), null, rect.ptr);
+		SDL_EnclosePoints(sdl_points, cast(int) points.length, null, rect.ptr);
 		rect.adaptToPtr();
 		
 		return rect;
@@ -285,6 +288,13 @@ struct Rect(T) if (isNumeric!T) {
 	void setSize(T width, T height) pure nothrow {
 		this.width  = width;
 		this.height = height;
+	}
+
+	/**
+	 * Returns the current size as Vector2
+	 */
+	Vector2!T getSize() const pure nothrow {
+		return Vector2!T(this.width, this.height);
 	}
 	
 	/**
@@ -308,6 +318,13 @@ struct Rect(T) if (isNumeric!T) {
 	 */
 	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
+	}
+
+	/**
+	 * Returns the current position as Vector2
+	 */
+	Vector2!T getPosition() const pure nothrow {
+		return Vector2!T(this.x, this.y);
 	}
 	
 	/**

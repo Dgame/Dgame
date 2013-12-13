@@ -25,7 +25,7 @@ module Dgame.Math.Vector3;
 
 private {
 	debug import std.stdio : writeln;
-	import std.math : pow, sqrt, acos, PI;
+	import std.math : pow, sqrt;
 	import std.traits : isNumeric;
 }
 

@@ -80,7 +80,9 @@ private:
 		assert(this._tex !is null, "No Texture!");
 		assert(rhs !is null, "No Surface!");
 	} body {
-		this._tex.loadFromMemory(rhs.pixels, cast(ushort) rhs.w, cast(ushort) rhs.h, rhs.format.BitsPerPixel, fmt);
+		this._tex.loadFromMemory(rhs.pixels,
+		                         cast(ushort) rhs.w, cast(ushort) rhs.h,
+		                         rhs.format.BitsPerPixel, fmt);
 	}
 	
 	void _update() in {

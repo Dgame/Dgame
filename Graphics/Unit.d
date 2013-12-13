@@ -46,11 +46,10 @@ protected:
 	byte _swap = 1;
 	byte _update = 0;
 
-	static immutable ubyte Update = 10;
+	enum ubyte Update = 10;
 
 public:
 final:
-
 	/**
 	* CTor
 	*/
@@ -139,8 +138,8 @@ final:
 	* 
 	* See: slide
 	*/
-	void setDirection(ref const Vector2f vec) {
-		this.setDirection(vec.x, vec.y);
+	void setDirection(ref const Vector2f dir) {
+		this._direction = dir;
 	}
 
 	/**
@@ -164,34 +163,20 @@ final:
 		return this._direction;
 	}
 
-	@property {
-		/**
-		* Returns only the x coordinate of the current direction
-		*/
-		float dirX() const pure nothrow {
-			return this._direction.x;
-		}
-
-		/**
-		* Returns only the y coordinate of the current direction
-		*/
-		float dirY() const pure nothrow {
-			return this._direction.y;
-		}
-
-		/**
-		* Set only the x coordinate of the current direction
-		*/
-		void dirX(float dx) {
-			this._direction.x = dx;
-		}
-
-		/**
-		* Set only the y coordinate of the current direction
-		*/
-		void dirY(float dy) {
-			this._direction.y = dy;
-		}
+	/**
+	 * Fetch the current direction
+	 * 
+	 * Example:
+	 * ----
+	 * Unit u = new Unit(your_texture);
+	 * // ...
+	 * if (u.dir.x == 1)
+	 *     u.dir.x = 0;
+	 * ----
+	 */
+	@property
+	Vector2f* dir() pure nothrow {
+		return &this._direction;
 	}
 
 	/**

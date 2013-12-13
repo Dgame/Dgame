@@ -26,8 +26,7 @@ module Dgame.Window.Window;
 private {
 	import derelict.sdl2.sdl;
 	import derelict.opengl3.gl;
-	
-	import Dgame.Internal.Scoped;
+
 	import Dgame.Internal.Log;
 	
 	import Dgame.Graphics.Color;
@@ -288,9 +287,11 @@ final:
 		
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
-		
-		scoped!(ubyte[]) tmpLine = new ubyte[lineWidth];
-		debug Log.info("Screenshot alloc: %d : %d", tmpLine.length, lineWidth);
+
+		import Dgame.Internal.Allocator : New, Delete;
+
+		ubyte* tmpLine = New!ubyte[lineWidth];
+		scope(exit) Delete(tmpLine);
 		
 		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
@@ -299,11 +300,11 @@ final:
 			const uint switchIdx1 = hlw - tmpIdx2;
 			const uint switchIdx2 = hlw - tmpIdx1;
 			
-			tmpLine[] = pixels[tmpIdx1 .. tmpIdx2];
+			tmpLine[0 .. lineWidth] = pixels[tmpIdx1 .. tmpIdx2];
 			ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
 			
 			pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
-			pixels[switchIdx1 .. switchIdx2] = tmpLine[];
+			pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
 		}
 		
 		return mycapture;
@@ -402,7 +403,7 @@ final:
 		
 		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
 			Clock.wait(1000 / this._fpsLimit);
-		
+
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
 				SDL_GL_MakeCurrent(this._window, this._glContext);

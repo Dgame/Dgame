@@ -99,9 +99,9 @@ struct Smooth {
 		Nicest  = GL_NICEST	     /** Nicest but slowest kind of smooth. */
 	}
 	
-	Target target;
-	Mode mode;
-	GLenum hint;
+	Target target; /// The Target
+	Mode mode; /// The Mode
+	GLenum hint; /// The GL Hint
 	
 	this(Target trg, Mode mode) {
 		this.target = target;
@@ -301,7 +301,7 @@ protected:
 			v.ty = ((v.y - mm[1].min) / diff_y);
 		}
 
-		if (!this._texRect.hasArea()) {
+		if (!this._texRect.isCollapsed()) {
 			const float tx = (0f + this._texRect.x) / this._tex.width;
 			const float ty = (0f + this._texRect.y) / this._tex.height;
 			const float tw = (0f + this._texRect.width) / this._tex.width;

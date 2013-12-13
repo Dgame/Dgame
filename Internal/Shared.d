@@ -124,6 +124,8 @@ struct shared_ptr(T)
 	void release() {
 		if (this.isValid()) {
 			if (this._share.deleter !is null) {
+				debug writefln("\tShared: Destroy type %s (ptr = %X)",
+				               __traits(identifier, T), this.ptr);
 				this._share.deleter(this._share.ptr);
 				
 				this._share.ptr = null;

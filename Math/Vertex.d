@@ -27,6 +27,7 @@ public {
 	debug import std.stdio : writeln;
 	
 	import Dgame.Math.Vector2;
+	import Dgame.Math.Vector3;
 	import Dgame.Graphics.Color;
 }
 
@@ -133,10 +134,10 @@ struct Vertex {
 	}
 	
 	/**
-	 * Create a Vector2f from the position data (the z coordinate is ignored).
+	 * Create a Vector3f from the position data.
 	 */
-	Vector2f getPositionAsVector() const pure nothrow {
-		return Vector2f(this.x, this.y);
+	Vector3f getPositionAsVector() const pure nothrow {
+		return Vector3f(this.x, this.y, this.z);
 	}
 	
 	/**
