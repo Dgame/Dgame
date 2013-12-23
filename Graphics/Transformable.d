@@ -83,7 +83,7 @@ final:
 	/**
 	 * Set a (new) rotation.
 	 */
-	void setRotation(short rotAngle) {
+	void setRotation(short rotAngle) pure nothrow {
 		this._rotAngle = rotAngle;
 		
 		if (this._rotAngle > 360 || this._rotAngle < -360)
@@ -93,7 +93,7 @@ final:
 	/**
 	 * Increase/Decrease the rotation.
 	 */
-	void rotate(short rotAngle) {
+	void rotate(short rotAngle) pure nothrow {
 		this._rotAngle += rotAngle;
 	}
 	
@@ -107,14 +107,14 @@ final:
 	/**
 	 * Set a new scale.
 	 */
-	void setScale(float zoom) {
+	void setScale(float zoom) pure nothrow {
 		this._zoom = zoom;
 	}
 	
 	/**
 	 * Increase/Decrease the scale/zoom.
 	 */
-	void scale(float zoom) {
+	void scale(float zoom) pure nothrow {
 		if (isNaN(this._zoom))
 			return this.setScale(zoom);
 		

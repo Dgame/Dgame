@@ -484,7 +484,7 @@ final:
 	}
 	
 	int[2] getSize() {
-		int[2] size;
+		int[2] size = void;
 		this.fetchSize(&size[0], &size[1]);
 		
 		return size;

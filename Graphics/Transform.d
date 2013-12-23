@@ -89,7 +89,7 @@ public:
 	/**
 	 * Attach a Formable to observe it.
 	 */
-	void attach(Formable f) {
+	void attach(Formable f) pure nothrow {
 		this._child = f;
 	}
 	
@@ -121,7 +121,7 @@ public:
 	/**
 	 * Activate/Deactivate the usage of the viewport.
 	 */
-	void activateView(bool vActive) {
+	void activateView(bool vActive) pure nothrow {
 		this._viewActive = vActive;
 	}
 	
@@ -135,14 +135,14 @@ public:
 	/**
 	 * Fetch the viewport pointer so that it can modified outside.
 	 */
-	inout(ShortRect*) fetchView() inout {
+	inout(ShortRect*) fetchView() inout pure nothrow {
 		return &this._view;
 	}
 	
 	/**
 	 * Set a new view.
 	 */
-	void setView(short x, short y, short w, short h) {
+	void setView(short x, short y, short w, short h) pure nothrow {
 		this._view.set(x, y, w, h);
 	}
 	
@@ -163,7 +163,7 @@ public:
 	/**
 	 * Reset the viewport.
 	 */
-	void resetView() {
+	void resetView() pure nothrow {
 		this._view.collapse();
 	}
 	

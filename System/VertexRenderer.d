@@ -78,7 +78,7 @@ public:
 	static void pointTo(Primitive.Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
 		VertexRenderer.enableState(trg);
 		
-		if (ptr)
+		if (ptr !is null)
 			ptr += offset;
 		else if (offset != 0)
 			ptr = cast(void*)(offset);

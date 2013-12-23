@@ -75,7 +75,6 @@ final:
 	 */
 	void setPosition(ref const Vector2f vec) {
 		this._position = vec;
-		
 		this._positionReset(vec.x, vec.y);
 	}
 	
@@ -84,7 +83,6 @@ final:
 	 */
 	void setPosition(float x, float y) {
 		this._position.set(x, y);
-		
 		this._positionReset(x, y);
 	}
 	
@@ -107,7 +105,6 @@ final:
 	 */
 	void move(ref const Vector2f vec) {
 		this._position += vec;
-		
 		this._positionMoved(vec.x, vec.y);
 	}
 	
@@ -116,7 +113,6 @@ final:
 	 */
 	void move(float x, float y) {
 		this._position.move(x, y);
-		
 		this._positionMoved(x, y);
 	}
 	
