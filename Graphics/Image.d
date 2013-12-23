@@ -97,9 +97,7 @@ final:
 	 */
 	void loadFromFile(string filename, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
-		if (img.pixels is null)
-			throw new Exception("Cannot load image with no memory.");
-
+		enforce(img.pixels !is null, "Cannot load image with no memory.");
 		super.loadFromMemory(img.pixels, img.width, img.height, img.bits, t_fmt);
 	}
 	
@@ -108,8 +106,7 @@ final:
 	 */
 	void saveToFile(string filename) {
 		void* mem = super.getMemory();
-		if (mem is null)
-			throw new Exception("Cannot save image with no memory.");
+		enforce(mem !is null, "Cannot save image with no memory.");
 
 		Surface img = Surface.make(mem, super.width, super.height, super.depth);
 		img.saveToFile(filename);
