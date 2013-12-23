@@ -25,6 +25,7 @@ module Dgame.Window.all;
 
 private {
 	debug import std.stdio : writeln;
+	import std.exception : enforce;
 	import std.conv : to;
 	
 	import derelict.sdl2.sdl;
@@ -60,7 +61,7 @@ shared static this() {
 	if (TTF_Init() < 0)
 		throw new Exception("TTF konnte nicht gestartet werden.");
 	
-	assert(TTF_WasInit() == 1, "SDL TTF wurde nicht korrekt initialisiert.");
+	enforce(TTF_WasInit() == 1, "SDL TTF wurde nicht korrekt initialisiert.");
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);

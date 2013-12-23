@@ -117,7 +117,7 @@ ushort calcDim(size_t tileNum, ubyte tileDim) {
 	if (tileNum == 1)
 		return tileDim;
 	
-	assert(tileNum < ubyte.max, "Too large dimension.");
+	enforce(tileNum < ubyte.max, "Too large dimension.");
 	
 	ubyte dim1 = cast(ubyte) tileNum;
 	ubyte dim2 = 1;
@@ -202,11 +202,11 @@ protected:
 			
 			Texture.Format t_fmt = Texture.Format.None;
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
-				t_fmt = tileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+				t_fmt = tileset.bits == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 			
-			this._tex.loadFromMemory(tileset.getPixels(),
+			this._tex.loadFromMemory(tileset.pixels,
 			                         tileset.width, tileset.height,
-			                         tileset.countBits(), t_fmt);
+			                         tileset.bits, t_fmt);
 		}
 
 		this._loadTexCoords(used);
@@ -246,11 +246,11 @@ protected:
 		
 		Texture.Format t_fmt = Texture.Format.None;
 		if (!newTileset.isMask(Surface.Mask.Red, 0x000000ff))
-			t_fmt = newTileset.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+			t_fmt = newTileset.bits == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 		
-		this._tex.loadFromMemory(newTileset.getPixels(),
+		this._tex.loadFromMemory(newTileset.pixels,
 		                         newTileset.width, newTileset.height,
-		                         newTileset.countBits(), t_fmt);
+		                         newTileset.bits, t_fmt);
 
 		debug Log.info("End compress");
 	}

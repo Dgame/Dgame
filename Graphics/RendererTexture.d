@@ -190,7 +190,7 @@ public:
 		if (rect is null)
 			rect = &clipRect;
 		
-		this.update(srfc.getPixels(), rect, srfc.ptr.pitch);
+		this.update(srfc.pixels, rect, srfc.ptr.pitch);
 	}
 	
 	/**

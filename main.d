@@ -61,7 +61,7 @@ void main() {
 	
 	{
 		writeln("<>");
-		Surface test = Surface("samples/img/wiki.png");
+		Surface test = Surface("../samples/img/wiki.png");
 		Surface test2 = test;
 		test2 = test;
 		writeln("</>");
@@ -69,12 +69,12 @@ void main() {
 	writeln("====");
 	
 	Sound[2] sound;
-	//sound[0] = new Sound(new VorbisFile("samples/audio/orchestral.ogg"));
-	//sound[1] = new Sound(new WaveFile("samples/audio/step.wav"));
-	//sound[0] = new Sound("samples/audio/orchestral.ogg");
-	//sound[1] = new Sound("samples/audio/step.wav");
-	sound[0] = Sound.loadOnce("samples/audio/orchestral.ogg");
-	sound[1] = Sound.loadOnce("samples/audio/step.wav");
+	//sound[0] = new Sound(new VorbisFile("../samples/audio/orchestral.ogg"));
+	//sound[1] = new Sound(new WaveFile("../samples/audio/step.wav"));
+	//sound[0] = new Sound("../samples/audio/orchestral.ogg");
+	//sound[1] = new Sound("../samples/audio/step.wav");
+	sound[0] = Sound.loadOnce("../samples/audio/orchestral.ogg");
+	sound[1] = Sound.loadOnce("../samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
 	writefln("Green Color: %d,%d,%d,%d",
@@ -114,36 +114,36 @@ void main() {
 		Vertex(40, 45)]);
 	many.setVertexColor(Color.Red);
 	
-	Surface wiki = Surface("samples/img/wiki.png"); // <
+	Surface wiki = Surface("../samples/img/wiki.png"); // <
 	
 	Color col = wiki.getColorAt(82, 33);
 	writefln("color: at (%d:%d) is %d, %d, %d", 82, 33, col.red, col.green, col.blue);
 	
 	Surface copy = wiki.subSurface(ShortRect(0, 0, 50, 50)); // <
-	copy.saveToFile("samples/img/wiki_sub.png");
+	copy.saveToFile("../samples/img/wiki_sub.png");
 	copy.setColorkey(Color(254, 200, 88));
 	copy.setBlendMode(Surface.BlendMode.Add);
 	copy.setAlphaMod(150);
 	
 	ShortRect dst = ShortRect(5, 5, 0, 0);
 	wiki.blit(copy, null, &dst);
-	wiki.saveToFile("samples/img/wiki_copy.png");
+	wiki.saveToFile("../samples/img/wiki_copy.png");
 	
-	Surface wiki2 = Surface("samples/img/wiki.png");
+	Surface wiki2 = Surface("../samples/img/wiki.png");
 	///
-	writefln("Bits: %d, Bytes: %d", wiki2.countBits(), wiki2.countBytes());
+	writefln("Bits: %d, Bytes: %d", wiki2.bits, wiki2.bytes);
 	
 	Texture tex = new Texture();
-	tex.loadFromMemory(wiki2.getPixels(), wiki2.width, wiki2.height, wiki2.countBits());
+	tex.loadFromMemory(wiki2.pixels, wiki2.width, wiki2.height, wiki2.bits);
 	Texture copy_tex = new Texture();
-	copy_tex.loadFromMemory(copy.getPixels(), copy.width, copy.height, copy.countBits());
+	copy_tex.loadFromMemory(copy.pixels, copy.width, copy.height, copy.bits);
 	
 	ShortRect dst_copy = ShortRect(65, 25, copy.width, copy.height);
 	
 	Texture tex3 = tex.subTexture(dst_copy);
 	writefln("\ttex3 -> w: %d, h: %d", tex3.width, tex3.height);
 	Surface texToSrfc2 = Surface.make(tex3.getMemory(), tex3.width, tex3.height, tex3.getFormat().formatToBits());
-	texToSrfc2.saveToFile("samples/img/wiki_sub.png");
+	texToSrfc2.saveToFile("../samples/img/wiki_sub.png");
 	
 	tex.copy(copy_tex, &dst_copy);
 	writeln(" => ", tex);
@@ -151,7 +151,7 @@ void main() {
 	writeln(" => ", mem);
 	//
 	Surface texToSrfc = Surface.make(tex.getMemory(), tex.width, tex.height, tex.getFormat().formatToBits());
-	texToSrfc.saveToFile("samples/img/wiki_copy_tex.png");
+	texToSrfc.saveToFile("../samples/img/wiki_copy_tex.png");
 	
 	//	tex.setViewport(FloatRect(15, 15, 25, 25));
 	
@@ -198,13 +198,13 @@ void main() {
 		wnd.setIcon(icon);
 	}
 	
-	Spritesheet sp = new Spritesheet(new Image("samples/img/tileset.png"), ShortRect(119, 0, 16, 16));
+	Spritesheet sp = new Spritesheet(new Image("../samples/img/tileset.png"), ShortRect(119, 0, 16, 16));
 	sp.setPosition(50, 200);
 	
-	Spritesheet sp2 = new Spritesheet(new Image("samples/img/tofte.png"), ShortRect(0, 0, 16, 16));
+	Spritesheet sp2 = new Spritesheet(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 16, 16));
 	sp2.setPosition(200, 50);
 	
-	Font font = Font("samples/font/arial.ttf", 14, Font.Mode.Blended);
+	Font font = Font("../samples/font/arial.ttf", 14, Font.Mode.Blended);
 	font.setHint(Font.Hint.Mono);
 	Text text = new Text(font);
 	text.setColor(Color.Blue);
@@ -218,7 +218,7 @@ void main() {
 	
 	TiledMap tm = new TiledMap("map2.tmx");
 	
-	Unit tof = new Unit(new Image("samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
+	Unit tof = new Unit(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
 	
 	float[12] pos = [
@@ -229,12 +229,12 @@ void main() {
 	
 	Blend blend = new Blend(Blend.Mode.Multiply, &Color.Blue);
 	
-	Image trans_img = new Image("samples/img/wiki.png");
+	Image trans_img = new Image("../samples/img/wiki.png");
 	trans_img.setBlend(blend);
 	Sprite trans_sprite = new Sprite(trans_img);
 	trans_sprite.setPosition(500, 400);
 	
-	Image img = new Image("samples/img/wiki.png");//, Texture.Format.RGB);
+	Image img = new Image("../samples/img/wiki.png");//, Texture.Format.RGB);
 	
 	Shape circle3 = Shape.makeCircle(50, Vector2f(180, 380), 30);
 	circle3.bindTexture(img);
@@ -247,7 +247,7 @@ void main() {
 	va.setVertexColor(Color.Green.withTransparency(125));
 	va.setRotation(25);
 	
-	Image exploImg = new Image("samples/img/explosion.png");
+	Image exploImg = new Image("../samples/img/explosion.png");
 	Spritesheet explosion = new Spritesheet(exploImg, ShortRect(0, 0, 256, 256));
 	
 	writeln("====");
@@ -284,8 +284,8 @@ void main() {
 		45, 45, 0f,
 		40, 45, 0f];
 	
-	Image fbo_img1 = new Image("samples/img/wiki.png");
-	Image fbo_img2 = new Image("samples/img/wiki.png");
+	Image fbo_img1 = new Image("../samples/img/wiki.png");
+	Image fbo_img2 = new Image("../samples/img/wiki.png");
 	
 	Shape circle2 = Shape.makeCircle(25, Vector2f(60, 60));
 	circle2.setSmooth(Smooth.Target.Line);
@@ -305,10 +305,17 @@ void main() {
 	fbo_s2.setPosition(680, 50);
 	
 	Clock myclock = new Clock();
+
+	Image bg_img = new Image("../samples/img/chessboard.png");
+	Sprite bg = new Sprite(bg_img);
 	
 	Event event;
 	
 	while (wnd.isOpen()) {
+		wnd.clear();
+
+//		wnd.draw(bg);
+
 		/*
 		 if (Keyboard.isPressed(Keyboard.Code.Left))
 		 writeln("Left");
@@ -442,12 +449,10 @@ void main() {
 				default: break;
 			}
 		}
-		
-		wnd.clear();
-		
 		//writefln("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
 		
-		text.format("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
+		text.format("Current Fps: %d <=> %d",
+		            myclock.getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
 		
 		wnd.draw(tm);

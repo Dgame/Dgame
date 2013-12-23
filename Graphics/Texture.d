@@ -24,6 +24,8 @@
 module Dgame.Graphics.Texture;
 
 private {
+	import std.exception : enforce;
+
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Log;
@@ -238,7 +240,7 @@ package:
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
 		
-		// apply blending
+//		// apply blending
 		if (this._blend !is null)
 			this._blend.applyBlending();
 		
@@ -247,16 +249,20 @@ package:
 		float[8] texCoords = void;
 		final switch (mode) {
 			case Viewport.Mode.Normal:
-				texCoords = [tx,      ty,
+				texCoords = [
+					tx,      ty,
 					tx + tw, ty,
 					tx + tw, ty + th,
-					tx,      ty + th];
+					tx,      ty + th
+				];
 				break;
 			case Viewport.Mode.Reverse:
-				texCoords = [tx,      ty + th,
+				texCoords = [
+					tx,      ty + th,
 					tx + tw, ty + th,
 					tx + tw, ty,
-					tx,      ty];
+					tx,      ty
+				];
 				break;
 		}
 		
@@ -275,17 +281,18 @@ package:
 			}
 		}
 		
-		float[12] vertices = [dx,	   dy,      0f,
+		float[12] vertices = [
+			dx,	     dy,      0f,
 			dx + dw, dy,      0f,
 			dx + dw, dy + dh, 0f,
-			dx,      dy + dh, 0f];
+			dx,      dy + dh, 0f
+		];
 		
 		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
 		
 		scope(exit) {
 			VertexRenderer.disableAllStates();
-			
 			this.unbind();
 		}
 		
@@ -319,9 +326,8 @@ final:
 	 * Postblit
 	 */
 	this(const Texture tex, Format t_fmt = Format.None) {
-		this.loadFromMemory(tex.getMemory(),
-		                    tex.width, tex.height, tex.depth,
-		                    t_fmt ? t_fmt : tex.getFormat());
+		this.loadFromMemory(tex.getMemory(), tex.width, tex.height,
+		                    tex.depth, t_fmt ? t_fmt : tex.getFormat());
 	}
 	
 	/**
@@ -525,16 +531,16 @@ final:
 	} body {
 		/// Possible speedup because 'glTexSubImage2D'
 		/// is often faster than 'glTexImage2D'.
-		if (width == this.width && height == this.height) {
-			if (!fmt || fmt == this._format) {
-				this.updateMemory(memory, null);
-				
-				return;
-			}
+		if (width == this.width
+		    && height == this.height
+		    && (fmt == Format.None || fmt == this._format))
+		{
+			this.updateMemory(memory, null);
+			return;
 		}
-		
+
 		this._format = fmt == Format.None ? bitsToFormat(depth) : fmt;
-		assert(this._format != Format.None, "Missing format.");
+		enforce(this._format != Format.None, "Need Texture.Format or depth > 24");
 		depth = depth < 8 ? formatToBits(this._format) : depth;
 		
 		this.bind();
@@ -546,8 +552,7 @@ final:
 			format = compressFormat(this._format);
 		}
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, 
-		             format == Format.None ? depth / 8 : format,
+		glTexImage2D(GL_TEXTURE_2D, 0, format == Format.None ? depth / 8 : format,
 		             width, height, 0, this._format, GL_UNSIGNED_BYTE, memory);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 		                this._isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
@@ -577,11 +582,8 @@ final:
 	void setColorkey(ref const Color colorkey) {
 		// Get the pixel memory
 		void* memory = this.getMemory();
-		assert(memory !is null);
-		
-		if (this._depth < 8)
-			return;
-		
+		enforce(memory !is null, "Cannot set a colorkey for an empty Texture.");
+
 		const uint size = this._width * this._height * (this._depth / 8);
 		// Go through pixels
 		for (uint i = 0; i < size; ++i) {
@@ -618,19 +620,14 @@ final:
 	 * Note: This method <b>allocates</b> GC memory.
 	 */
 	void* getMemory() const {
-		if (this._format == Format.None
-		    || (this._depth < 24 || this._height == 0 || this._width == 0)) 
-		{
+		const uint msize = this._width * this._height * (this._depth / 8);
+		if (msize == 0) {
 			debug Log.info("@Texture.GetPixels: Null Pixel");
 			return null;
 		}
-		
-		const uint msize = this._width * this._height * (this._depth / 8);
+
 		void[] memory = new void[msize];
-		
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
+
 		this.bind();
 		
 		glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr);
@@ -645,10 +642,7 @@ final:
 	Texture subTexture(ref const ShortRect rect) {
 		if (this._format == Format.None)
 			return null;
-		
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
+
 		Texture tex = new Texture();
 		debug Log.info("Format switch: %s.", .switchFormat(this._format, true));
 		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
@@ -734,9 +728,9 @@ final:
 		short x, y;
 		
 		if (rect !is null) {
-			assert(rect.width <= this._width && rect.height <= this._height, 
+			enforce(rect.width <= this._width && rect.height <= this._height, 
 			       "Rect is greater as the Texture.");
-			assert(rect.x < this._width && rect.y < this._height, 
+			enforce(rect.x < this._width && rect.y < this._height, 
 			       "x or y of the Rect is greater as the Texture.");
 			
 			width  = rect.width;
@@ -753,13 +747,11 @@ final:
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
-		
-		//		GLuint previous_texture = Texture.currentlyBound();
-		//		scope(exit) Texture._reBind(previous_texture);
-		
+
 		this.bind();
-		
-		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height,
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0,
+		                x, y, width, height,
 		                (fmt == Format.None ? this._format : fmt),
 		                GL_UNSIGNED_BYTE, memory);
 	}

@@ -24,7 +24,6 @@
 module Dgame.Internal.core;
 
 private {
-	import std.stdio : writeln;
 	import std.string : format;
 	
 	import derelict.opengl3.gl;
@@ -50,14 +49,8 @@ string getDgVersion() {
  *
  */
 void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __LINE__) {
-	try {
-		Func();
-	} catch (Throwable e) {
-		writeln("GL Error for ", filename, " @ line ", line_number, ':');
-		GLCheckError(filename, line_number);
-		
-		throw e;
-	}
+	Func();
+	scope(exit) GLCheckError(filename, line_number);
 }
 
 /**

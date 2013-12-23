@@ -112,7 +112,7 @@ private:
 				break;
 		}
 		
-		assert(srfc !is null, "Surface is null.");
+		enforce(srfc !is null, "Surface is null.");
 		
 		if (fmode != Font.Mode.Blended) {
 			/// Adapt PixelFormat
@@ -122,8 +122,8 @@ private:
 			SDL_Surface* opt = SDL_ConvertSurface(srfc, &fmt, 0);
 			scope(exit) SDL_FreeSurface(opt);
 			
-			assert(opt !is null, "Optimized is null.");
-			assert(opt.pixels !is null, "Optimized pixels is null.");
+			enforce(opt !is null, "Optimized is null.");
+			enforce(opt.pixels !is null, "Optimized pixels is null.");
 			
 			Texture.Format t_fmt = Texture.Format.None;
 			if (opt.format.Rmask != 0x000000ff)

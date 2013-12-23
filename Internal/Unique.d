@@ -23,6 +23,8 @@
  */
 module Dgame.Internal.Unique;
 
+private import std.exception : enforce;
+
 struct unique_ptr(T)
 	if (!is(T : U*, U) && !is(T == class) && !is(T : U[], U))
 {
@@ -79,7 +81,7 @@ struct unique_ptr(T)
 	alias ptr this;
 	
 	typeof(this) move() {
-		assert(this.isValid());
+		enforce(this.isValid());
 		
 		scope(exit) {
 			delete this._unique;

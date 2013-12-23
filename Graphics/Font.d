@@ -28,6 +28,7 @@ private {
 	import std.file : exists;
 	import std.conv : to;
 	import std.string : toStringz;
+	import std.exception : enforce;
 	
 	import derelict.sdl2.ttf;
 	
@@ -146,7 +147,7 @@ public:
 		this._filename = fontFile;
 		
 		this._fontSize = fontSize == 0 ? this._fontSize : fontSize;
-		assert(this._fontSize != 0, "No size for this font.");
+		enforce(this._fontSize != 0, "No valid size for this font.");
 		
 		if (!exists(fontFile))
 			Log.error("Font File does not exists.");
@@ -246,7 +247,7 @@ public:
 	writeln("<Font unittest>");
 	
 	{
-		Font f1 = Font("samples/font/arial.ttf", 14);
+		Font f1 = Font("../samples/font/arial.ttf", 14);
 		
 		assert(f1.useCount() == 1, to!string(f1.useCount()));
 		{

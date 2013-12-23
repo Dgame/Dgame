@@ -282,7 +282,7 @@ final:
 		
 		glReadBuffer(GL_FRONT);
 		
-		ubyte* pixels = cast(ubyte*) mycapture.getPixels();
+		ubyte* pixels = cast(ubyte*) mycapture.pixels;
 		glReadPixels(0, 0, this.width, this.height, fmt, GL_UNSIGNED_BYTE, pixels);
 		
 		const uint lineWidth = this.width * 4;

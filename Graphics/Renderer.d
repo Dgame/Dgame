@@ -232,7 +232,7 @@ public:
 		}
 		
 		RendererTexture hw = this.createSoftTexture(srfc.width, srfc.height, access);
-		hw.update(srfc.getPixels(), null);
+		hw.update(srfc.pixels, null);
 		
 		return hw;
 	}

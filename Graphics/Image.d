@@ -41,14 +41,20 @@ public import Dgame.Graphics.Texture;
 class Image : Texture {
 public:
 final:
-	
 	/**
 	 * CTor
 	 */
 	this() {
 		super();
 	}
-	
+
+	/**
+	 * CTor
+	 */
+	this(string filename, Texture.Format t_fmt = Texture.Format.None) {
+		this.loadFromFile(filename, t_fmt);
+	}
+
 	/**
 	 * CTor
 	 */
@@ -61,59 +67,52 @@ final:
 	 */
 	this(ref Surface srfc, Texture.Format t_fmt = Texture.Format.None) {
 		if (t_fmt == Texture.Format.None
-		    && !srfc.isMask(Surface.Mask.Red, 0x000000ff))
+	   		&& !srfc.isMask(Surface.Mask.Red, 0x000000ff))
 		{
-			t_fmt = srfc.countBits() == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
+			t_fmt = srfc.bits == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
 		}
-		
-		super.loadFromMemory(srfc.getPixels(), srfc.width, srfc.height,
-		                     srfc.countBits(), t_fmt);
-	}
 	
-	/**
-	 * CTor
-	 */
-	this(string filename, Texture.Format t_fmt = Texture.Format.None) {
-		this.loadFromFile(filename, t_fmt);
+		super.loadFromMemory(srfc.pixels, srfc.width, srfc.height, srfc.bits, t_fmt);
 	}
 	
 	/**
 	 * Load the image from filename with a colorkey.
 	 */
-	void loadFromFile(string filename, ref const Color colorkey,
-	                  Texture.Format t_fmt = Texture.Format.None)
-	{
+	void loadFromFile(string filename, ref const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
 		img.setColorkey(colorkey);
-		
-		super.loadFromMemory(img.getPixels(), img.width, img.height, img.countBits(), t_fmt);
+	
+		super.loadFromMemory(img.pixels, img.width, img.height, img.bits, t_fmt);
 	}
 	
 	/**
 	 * Rvalue version
 	 */
-	void loadFromFile(string filename, const Color colorkey,
-	                  Texture.Format t_fmt = Texture.Format.None)
-	{
+	void loadFromFile(string filename, const Color colorkey, Texture.Format t_fmt = Texture.Format.None) {
 		this.loadFromFile(filename, colorkey, t_fmt);
 	}
 	
 	/**
 	 * Load the image from filename.
 	 */
-	void loadFromFile(string filename,
-	                  Texture.Format t_fmt = Texture.Format.None)
-	{
+	void loadFromFile(string filename, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
-		
-		super.loadFromMemory(img.getPixels(), img.width, img.height, img.countBits(), t_fmt);
+		if (img.pixels is null)
+			throw new Exception("Cannot load image with no memory.");
+
+		super.loadFromMemory(img.pixels, img.width, img.height, img.bits, t_fmt);
 	}
 	
 	/**
 	 * Save the (current) image into filename.
 	 */
 	void saveToFile(string filename) {
-		Surface.make(super.getMemory(), super.width, super.height, super.depth).saveToFile(filename);
+		void* mem = super.getMemory();
+		if (mem is null)
+			throw new Exception("Cannot save image with no memory.");
+
+		Surface img = Surface.make(mem, super.width, super.height, super.depth);
+		img.saveToFile(filename);
 	}
 	
 	/**
@@ -121,3 +120,4 @@ final:
 	 */
 	alias subImage = subTexture;
 }
+

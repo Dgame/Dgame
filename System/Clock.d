@@ -53,7 +53,7 @@ ushort asHours(uint n) pure nothrow {
 /**
  * The Time struct converts ticks to msecs, seconds, minutes and hours.
  */
-const struct Time {
+struct Time {
 	/// Milliseconds = Ticks
 	uint msecs;
 	/// Seconds = Milliseconds / 1000
@@ -85,6 +85,7 @@ private:
 	uint _startTime;
 	uint _numFrames;
 	uint _currentFps;
+	float _fpsTime;
 	
 public:
 	/**
@@ -121,8 +122,11 @@ public:
 	 * Returns the current framerate per seconds.
 	 */
 	uint getCurrentFps() {
-		if (this.getElapsedTicks() >= 1000) {
+		const uint elapsed_ticks = this.getElapsedTicks();
+
+		if (elapsed_ticks >= 1000) {
 			this._currentFps = this._numFrames;
+			this._fpsTime = (0f + elapsed_ticks) / this._numFrames;
 			
 			this._numFrames = 0;
 			this.reset();
@@ -132,7 +136,14 @@ public:
 		
 		return this._currentFps;
 	}
-	
+
+	/**
+	 * Returns the Time since the last Frame.
+	 */
+	float getFpsTime() const pure nothrow {
+		return this._fpsTime;
+	}
+
 	/**
 	 * Returns the milliseconds since the application was started.
 	 */
