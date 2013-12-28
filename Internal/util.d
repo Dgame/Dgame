@@ -32,7 +32,7 @@ struct CircularBuffer(T, const size_t Limit = 16) {
 	private T[Limit] _store = void;
 	private uint _length;
 	
-	T* get() {
+	T* get() pure nothrow {
 		T* ptr = &this._store[this._length];
 		this._length = (this._length + 1) % Limit;
 		
@@ -47,7 +47,7 @@ struct List(T...) {
 	
 	Type*[12] ptrs = void;
 	
-	void opAssign(Type[] values) {
+	void opAssign(Type[] values) pure nothrow {
 		foreach (index, ptr; ptrs) {
 			//writeln(" -> ", index, "::", values);
 			if (index >= values.length)
@@ -58,7 +58,7 @@ struct List(T...) {
 	}
 }
 
-List!U list(U = T[0], T...)(auto ref T vars) {
+List!U list(U = T[0], T...)(auto ref T vars) pure nothrow {
 	List!U tmpList;
 	
 	foreach (i, ref U var; vars) {

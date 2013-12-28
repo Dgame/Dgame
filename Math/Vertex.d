@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Math.Vertex;
 
 public {
@@ -59,44 +59,46 @@ struct Vertex {
 	/**
 	 * CTor
 	 */
-	this(float x, float y, float z = 0f, float tx = 0f, float ty = 0f) {
+	this(float x, float y, float z = 0f, float tx = 0f, float ty = 0f) pure nothrow {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-
+		
 		this.tx = tx;
 		this.ty = ty;
-
+		
 		this.setColor(Color.White);
 	}
-
+	
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2f position) {
+	this(ref const Vector2f position) pure nothrow {
 		this(position.x, position.y);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2f position, ref const Vector2f texcoord, ref const Color col) {
+	this(ref const Vector2f position, ref const Vector2f texcoord,
+	     ref const Color col) pure nothrow
+	{
 		this.setPosition(position);
 		this.setTexCoord(texcoord);
 		this.setColor(col);
 	}
-
+	
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2f position, ref const Color col) {
+	this(ref const Vector2f position, ref const Color col) pure nothrow {
 		this.setPosition(position);
 		this.setColor(col);
-
+		
 		this.tx = 0f;
 		this.ty = 0f;
 	}
-
+	
 	/**
 	 * Set a (new) position
 	 */
@@ -125,11 +127,11 @@ struct Vertex {
 		this.tx = texcoord.x;
 		this.ty = texcoord.y;
 	}
-
+	
 	/**
 	 * Create a Color from the color data
 	 */
-	Color getAsColor() const {
+	Color getAsColor() const pure nothrow {
 		return Color(this.r, this.g, this.b, this.a);
 	}
 	

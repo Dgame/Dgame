@@ -86,7 +86,9 @@ public:
 	/**
 	 * CTor
 	 */
-	this(string filename, ubyte size, Mode mode = Mode.Solid, Style style = Style.Normal) {
+	this(string filename, ubyte size, Mode mode = Mode.Solid,
+	     Style style = Style.Normal)
+	{
 		this._mode  = mode;
 		this._style = style;
 		
@@ -99,28 +101,6 @@ public:
 	debug(Dgame)
 	this(this) {
 		debug Log.info("Font Postblit");
-	}
-	
-	/**
-	 * opAssign
-	 */
-	void opAssign(ref Font fnt) {
-		debug Log.info("Font opAssign");
-		
-		this._fontSize = fnt._fontSize;
-		
-		this._mode = fnt._mode;
-		this._style = fnt._style;
-		this._hint = fnt._hint;
-		
-		this._target = fnt._target;
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void opAssign(Font fnt) {
-		this.opAssign(fnt);
 	}
 	
 	/**
@@ -191,7 +171,7 @@ public:
 	 *
 	 * See: Font.Mode enum
 	 */
-	void setMode(Mode mode) {
+	void setMode(Mode mode) pure nothrow {
 		this._mode = mode;
 	}
 	
@@ -211,7 +191,6 @@ public:
 	 */
 	void setHint(Hint hint) {
 		this._hint = hint;
-		
 		TTF_SetFontHinting(this._target, hint);
 	}
 	
@@ -233,7 +212,7 @@ public:
 	 * Returns a TTFthis._target pointer.
 	 */
 	@property
-	inout(TTF_Font)* ptr() inout {
+	inout(TTF_Font)* ptr() inout pure nothrow {
 		return this._target.ptr;
 	}
 	

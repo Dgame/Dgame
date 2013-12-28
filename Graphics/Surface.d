@@ -135,7 +135,7 @@ public:
 	this(this) {
 		writeln("Postblit Surface: ", this._target.usage, ':', this.filename);
 	}
-
+	
 	debug(Dgame)
 	~this() {
 		writeln("DTor Surface", ':', this.filename, "::",this._target.usage);
@@ -188,17 +188,18 @@ public:
 	bool isValid() const pure nothrow {
 		return this._target.isValid() && this._target.pixels !is null;
 	}
-
+	
 	/**
 	 * Load from filename. If any data is already stored, the data will be freed.
 	 */
 	void loadFromFile(string filename) {
-		enforce(filename.length >= 4 && exists(filename), "The file " ~ filename ~ " does not exist.");
+		enforce(filename.length >= 4 && exists(filename),
+		        "The file " ~ filename ~ " does not exist.");
 		
 		debug writefln("Load Image: %s", filename);
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
 		debug writefln("Image %s loaded :: %X", filename, srfc);
-
+		
 		if (srfc is null) {
 			const string err = to!string(SDL_GetError());
 			throw new Exception(.format("Could not load image %s. Error: %s.", filename, err));
@@ -218,7 +219,7 @@ public:
 		SDL_Surface* srfc = SDL_CreateRGBSurfaceFrom(memory, width, height, depth,
 		                                             (depth / 8) * width,
 		                                             RMask, GMask, BMask, AMask);
-
+		
 		if (srfc is null) {
 			const string err = to!string(SDL_GetError());
 			throw new Exception("Could not load image. Error: " ~ err);
@@ -226,13 +227,13 @@ public:
 		
 		this._target = make_shared(srfc, (SDL_Surface* ptr) => SDL_FreeSurface(ptr));
 	}
-
+	
 	/**
 	 * Save the current pixel data to the file.
 	 */
 	void saveToFile(string filename) {
 		enforce(filename.length >= 4, "File name is too short.");
-
+		
 		if (SDL_SaveBMP(this.ptr, toStringz(filename)) != 0) {
 			const string err = to!string(SDL_GetError());
 			throw new Exception(.format("Could not save image %s. Error: %s.", filename, err));
@@ -295,6 +296,7 @@ public:
 	bool lock() {
 		if (SDL_LockSurface(this._target) == 0)
 			return true;
+		
 		return false;
 	}
 	
@@ -444,67 +446,67 @@ public:
 	void setClipRect(const ShortRect clip) {
 		this.setClipRect(clip);
 	}
-
-@property {
-	/**
-	 * Returns the current filename, if any
-	 */
-	string filename() const pure nothrow {
-		return this._filename;
+	
+	@property {
+		/**
+		 * Returns the current filename, if any
+		 */
+		string filename() const pure nothrow {
+			return this._filename;
+		}
+		
+		/**
+		 * Returns the width.
+		 */
+		ushort width() const pure nothrow {
+			return this._target.isValid() ? cast(ushort) this._target.w : 0;
+		}
+		
+		/**
+		 * Returns the height.
+		 */
+		ushort height() const pure nothrow {
+			return this._target.isValid() ? cast(ushort) this._target.h : 0;
+		}
+		
+		/**
+		 * Returns the pixel data of this surface.
+		 */
+		inout(void*) pixels() inout {
+			return this._target.isValid() ? this._target.pixels : null;
+		}
+		
+		/**
+		 * Count the bits of this surface.
+		 * Could be 32, 24, 16, 8, 0.
+		 */
+		ubyte bits() const pure nothrow {
+			return this._target.isValid() ? this._target.format.BitsPerPixel : 0;
+		}
+		
+		/**
+		 * Count the bytes of this surface.
+		 * Could be 4, 3, 2, 1, 0. (countBits / 8)
+		 */
+		ubyte bytes() const pure nothrow {
+			return this._target.isValid() ? this._target.format.BytesPerPixel : 0;
+		}
+		
+		/**
+		 * Returns the Surface pitch or 0.
+		 */
+		int pitch() const pure nothrow {
+			return this._target.isValid() ? this._target.pitch : 0;
+		}
+		
+		/**
+		 * Returns the PixelFormat
+		 */
+		const(SDL_PixelFormat*) pixelFormat() const pure nothrow {
+			return this._target.format;
+		}
 	}
 	
-	/**
-	 * Returns the width.
-	 */
-	ushort width() const pure nothrow {
-		return this._target.isValid() ? cast(ushort) this._target.w : 0;
-	}
-	
-	/**
-	 * Returns the height.
-	 */
-	ushort height() const pure nothrow {
-		return this._target.isValid() ? cast(ushort) this._target.h : 0;
-	}
-	
-	/**
-	 * Returns the pixel data of this surface.
-	 */
-	inout(void*) pixels() inout {
-		return this._target.isValid() ? this._target.pixels : null;
-	}
-	
-	/**
-	 * Count the bits of this surface.
-	 * Could be 32, 24, 16, 8, 0.
-	 */
-	ubyte bits() const pure nothrow {
-		return this._target.isValid() ? this._target.format.BitsPerPixel : 0;
-	}
-	
-	/**
-	 * Count the bytes of this surface.
-	 * Could be 4, 3, 2, 1, 0. (countBits / 8)
-	 */
-	ubyte bytes() const pure nothrow {
-		return this._target.isValid() ? this._target.format.BytesPerPixel : 0;
-	}
-	
-	/**
-	 * Returns the Surface pitch or 0.
-	 */
-	int pitch() const pure nothrow {
-		return this._target.isValid() ? this._target.pitch : 0;
-	}
-	
-	/**
-	 * Returns the PixelFormat
-	 */
-	const(SDL_PixelFormat*) pixelFormat() const pure nothrow {
-		return this._target.format;
-	}
-}
-
 	/**
 	 * Returns if the given color match the color of the given mask of the surface.
 	 *
@@ -512,7 +514,7 @@ public:
 	 */
 	bool isMask(Mask mask, ref const Color col) const {
 		const uint map = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
-
+		
 		return this.isMask(mask, map);
 	}
 	
@@ -562,7 +564,7 @@ public:
 	uint getPixelAt(ushort x, ushort y) const {
 		uint* pixels = cast(uint*) this.pixels;
 		enforce(pixels !is null, "No pixel at this point.");
-
+		
 		return pixels[(y * this._target.w) + x];
 	}
 	
@@ -579,7 +581,7 @@ public:
 	void putPixelAt(ushort x, ushort y, uint pixel) {
 		uint* pixels = cast(uint*) this.pixels;
 		enforce(pixels !is null, "No pixel at this point.");
-
+		
 		pixels[(y * this._target.w) + x] = pixel;
 	}
 	
@@ -595,7 +597,7 @@ public:
 	 */
 	Color getColorAt(ushort x, ushort y) const {
 		const uint len = this.width * this.height;
-
+		
 		if ((x * y) <= len) {
 			const uint pixel = this.getPixelAt(x, y);
 			

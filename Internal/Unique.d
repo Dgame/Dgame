@@ -55,6 +55,8 @@ struct unique_ptr(T)
 	}
 	
 	void opAssign(typeof(this) un) {
+		this.release();
+		
 		this._unique = un._unique;
 		un._unique = null;
 	}
@@ -74,7 +76,7 @@ struct unique_ptr(T)
 	}
 	
 	@property
-	inout(T*) ptr() inout {
+	inout(T*) ptr() inout pure nothrow {
 		return this.isValid() ? this._unique.ptr : null;
 	}
 	

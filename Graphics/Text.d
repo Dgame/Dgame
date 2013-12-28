@@ -208,7 +208,7 @@ final:
 	/**
 	 * Returns the bounding box, the area which will be drawn on the screen.
 	 */
-	FloatRect getBoundingBox() const in {
+	FloatRect getBoundingBox() const pure nothrow in {
 		assert(this._tex !is null);
 	} body {
 		return FloatRect(super.getPosition(), this._tex.width, this._tex.height);
@@ -233,7 +233,7 @@ final:
 	/**
 	 * Set (or reset) the current Blend instance.
 	 */
-	void setBlend(Blend blend) in {
+	void setBlend(Blend blend) pure nothrow in {
 		assert(this._tex !is null, "Texture is null.");
 	} body {
 		this._tex.setBlend(blend);
@@ -292,7 +292,7 @@ final:
 	 * In most cases, this happens automatically,
 	 * but sometimes it is usefull.
 	 */
-	void forceUpdate() {
+	void forceUpdate() pure nothrow {
 		this._needUpdate = true;
 	}
 	
@@ -318,7 +318,7 @@ final:
 	 * t("My new string");
 	 * ---
 	 */
-	void opCall(string text) {
+	void opCall(string text) pure nothrow {
 		if (text != this._text) {
 			this._text = text;
 			this._needUpdate = true;
@@ -337,7 +337,7 @@ final:
 	 * t2(t1); // now both t's draw 'My new string' on screen.
 	 * ---
 	 */
-	void opCall(ref const Text t) {
+	void opCall(ref const Text t) pure nothrow {
 		return this.opCall(t.getString());
 	}
 	
@@ -357,7 +357,9 @@ final:
 	 * ---
 	 * Both operators (~ and +) are allowed.
 	 */
-	ref Text opBinary(string op)(string text) if (op == "~" || op == "+") {
+	ref Text opBinary(string op)(string text) pure nothrow
+		if (op == "~" || op == "+")
+	{
 		this._text ~= text;
 		this._needUpdate = true;
 		
@@ -367,7 +369,9 @@ final:
 	/**
 	 * Concatenate the current string with another.
 	 */
-	ref Text opBinary(string op)(ref const Text t) if (op == "~" || op == "+") {
+	ref Text opBinary(string op)(ref const Text t) pure nothrow 
+		if (op == "~" || op == "+")
+	{
 		return this.opBinary!(op)(t.getString());
 	}
 	
@@ -381,7 +385,7 @@ final:
 	/**
 	 * Set the (foreground) color.
 	 */
-	void setColor(ref const Color col) {
+	void setColor(ref const Color col) pure nothrow {
 		this._needUpdate = true;
 		this._fg = col;
 	}
@@ -389,7 +393,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setColor(const Color col) {
+	void setColor(const Color col) pure nothrow {
 		this.setColor(col);
 	}
 	
@@ -404,7 +408,7 @@ final:
 	 * Set the background color.
 	 * Only needed if your Font.Mode is not Font.Mode.Solid.
 	 */
-	void setBackgroundColor(ref const Color col) {
+	void setBackgroundColor(ref const Color col) pure nothrow {
 		this._needUpdate = true;
 		this._bg = col;
 	}
@@ -412,7 +416,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setBackgroundColor(const Color col) {
+	void setBackgroundColor(const Color col) pure nothrow {
 		this.setBackgroundColor(col);
 	}
 	

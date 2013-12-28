@@ -47,7 +47,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(T x, T y) {
+	this(T x, T y) pure nothrow {
 		this.x = x;
 		this.y = y;
 	}
@@ -55,21 +55,21 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(U)(U x, U y) if (isNumeric!U && !is(U : T)) {
+	this(U)(U x, U y) pure nothrow if (isNumeric!U && !is(U : T)) {
 		this(cast(T) x, cast(T) y);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(U)(U[2] pos) if (isNumeric!U) {
+	this(U)(U[2] pos) pure nothrow if (isNumeric!U) {
 		this(pos[0], pos[1]);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(U)(ref const Vector2!U vec) {
+	this(U)(ref const Vector2!U vec) pure nothrow {
 		this(vec.x, vec.y);
 	}
 	
@@ -81,7 +81,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op)(ref const Vector2!T vec) {
+	ref Vector2!T opOpAssign(string op)(ref const Vector2!T vec) pure {
 		switch (op) {
 			case "+":
 				this.x += vec.x;
@@ -112,7 +112,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op)(T number) {
+	ref Vector2!T opOpAssign(string op)(T number) pure {
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -143,7 +143,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op)(ref const Vector2!T vec) {
+	Vector2!T opBinary(string op)(ref const Vector2!T vec) pure {
 		switch (op) {
 			case "+": return Vector2!T(vec.x + this.x, vec.y + this.y);
 			case "-": return Vector2!T(vec.x - this.x, vec.y - this.y);
@@ -157,7 +157,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op)(T number) {
+	Vector2!T opBinary(string op)(T number) pure {
 		switch (op) {
 			case "+": return Vector2!T(number + this.x, number + this.y);
 			case "-": return Vector2!T(number - this.x, number - this.y);
@@ -171,7 +171,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Returns a negated copy of this Vector.
 	 */
-	Vector2!T opNeg() const {
+	Vector2!T opNeg() const pure nothrow {
 		return Vector2!T(-this.x, -this.y);
 	}
 	
@@ -193,7 +193,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * opCast: cast this vector to another type.
 	 */
-	Vector2!U opCast(V : Vector2!U, U)() const {
+	Vector2!U opCast(V : Vector2!U, U)() const pure nothrow {
 		return Vector2!U(cast(U) this.x, cast(U) this.y);
 	}
 	

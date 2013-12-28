@@ -51,7 +51,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(T x, T y, T z = 0) {
+	this(T x, T y, T z = 0) pure nothrow {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -60,21 +60,21 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(U)(U x, U y, U z = 0) if (isNumeric!U && !is(U : T)) {
+	this(U)(U x, U y, U z = 0) pure nothrow if (isNumeric!U && !is(U : T)) {
 		this(cast(T) x, cast(T) y, cast(T) z);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(U)(U[3] pos) if (isNumeric!U) {
+	this(U)(U[3] pos) pure nothrow if (isNumeric!U) {
 		this(pos[0], pos[1], pos[2]);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(U)(ref const Vector3!U vec) {
+	this(U)(ref const Vector3!U vec) pure nothrow {
 		this(vec.x, vec.y, vec.z);
 	}
 	
@@ -86,7 +86,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector3 opOpAssign(string op)(ref const Vector3 vec) {
+	ref Vector3 opOpAssign(string op)(ref const Vector3 vec) pure {
 		switch (op) {
 			case "+":
 				this.x += vec.x;
@@ -122,7 +122,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector3 opOpAssign(string op)(T number) {
+	ref Vector3 opOpAssign(string op)(T number) pure {
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -158,7 +158,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector3 opBinary(string op)(ref const Vector3 vec) {
+	Vector3 opBinary(string op)(ref const Vector3 vec) pure {
 		switch (op) {
 			case "+": return Vector3(vec.x + this.x, vec.y + this.y, vec.z + this.z);
 			case "-": return Vector3(vec.x - this.x, vec.y - this.y, vec.z - this.z);
@@ -172,7 +172,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector3 opBinary(string op)(T number) {
+	Vector3 opBinary(string op)(T number) pure {
 		switch (op) {
 			case "+": return Vector3(number + this.x, number + this.y, number + this.z);
 			case "-": return Vector3(number - this.x, number - this.y, number - this.z);
@@ -186,7 +186,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Returns a negated copy of this Vector.
 	 */
-	Vector3 opNeg() const {
+	Vector3 opNeg() const pure nothrow {
 		return Vector3(-this.x, -this.y, -this.z);
 	}
 	
@@ -209,7 +209,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * opCast: cast this vector to another type.
 	 */
-	Vector3!U opCast(V : Vector3!U, U)() const {
+	Vector3!U opCast(V : Vector3!U, U)() const pure nothrow {
 		return Vector3!U(cast(U) this.x, cast(U) this.y, cast(U) this.z);
 	}
 	
@@ -253,7 +253,7 @@ struct Vector3(T) if (isNumeric!T) {
 	/**
 	 * Returns the cross product of this and another Vector.
 	 */
-	Vector3 cross(ref const Vector3 vec) {
+	Vector3 cross(ref const Vector3 vec) const pure nothrow {
 		return Vector3(this.y * vec.z - this.z * vec.y,
 		               this.z * vec.x - this.x * vec.z,
 		               this.x * vec.y - this.y * vec.x);

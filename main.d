@@ -28,14 +28,16 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
+enum Disc = 'C';
+
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
 
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictSDL2.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictUtil.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictGL3.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictAL.lib");
-pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictOGG.lib");
+pragma(lib, Disc ~ ":\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictSDL2.lib");
+pragma(lib, Disc ~ ":\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictUtil.lib");
+pragma(lib, Disc ~ ":\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictGL3.lib");
+pragma(lib, Disc ~ ":\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictAL.lib");
+pragma(lib, Disc ~ ":\\D\\dmd2\\src\\ext\\derelict\\lib\\dmd\\DerelictOGG.lib");
 
 import Dgame.Internal.core : getDgVersion;
 
@@ -216,7 +218,7 @@ void main() {
 	Color[4] colors = [Color.Red, Color.Magenta, Color.White, Color.Blue];
 	ubyte cidx = 0;
 	
-	TiledMap tm = new TiledMap("map2.tmx");
+	//	TiledMap tm = new TiledMap("map2.tmx");
 	
 	Unit tof = new Unit(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
@@ -252,11 +254,11 @@ void main() {
 	
 	writeln("====");
 	
-	Transform tf = tm.getTransform();
+	//	Transform tf = tm.getTransform();
 	//tf.setView(90, 90, 60, 60);
-	tf.setRotation(45);
+	//	tf.setRotation(45);
 	
-	tm.setTransform(tf);
+	//	tm.setTransform(tf);
 	
 	//va.setIndices([0, 1, 2, 3]);
 	
@@ -305,17 +307,14 @@ void main() {
 	fbo_s2.setPosition(680, 50);
 	
 	Clock myclock = new Clock();
-
-	Image bg_img = new Image("../samples/img/chessboard.png");
-	Sprite bg = new Sprite(bg_img);
 	
 	Event event;
 	
 	while (wnd.isOpen()) {
 		wnd.clear();
-
-//		wnd.draw(bg);
-
+		
+		//		wnd.draw(bg);
+		
 		/*
 		 if (Keyboard.isPressed(Keyboard.Code.Left))
 		 writeln("Left");
@@ -366,7 +365,7 @@ void main() {
 						//    qs.getVertexAt(3).color = Color.Magenta;
 						//    qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Space) {
-						tm.load("../level_1.tmx");
+						//						tm.load("../level_1.tmx");
 						//Keyboard.startTextInput();
 					} else if (event.keyboard.key == Keyboard.Code.KP_Enter) {
 						//Keyboard.stopTextInput();
@@ -455,7 +454,7 @@ void main() {
 		            myclock.getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text);
 		
-		wnd.draw(tm);
+		//		wnd.draw(tm);
 		
 		//tf.setPosition(250, 50);
 		//tf.setScale(0.5f);

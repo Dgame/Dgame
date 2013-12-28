@@ -55,14 +55,12 @@ struct shared_ptr(T)
 		               __traits(identifier, T), ptr);
 		
 		this._share = new Shared(ptr, 0, deleter);
-		
 		this.addRef();
 	}
 	
 	this(this) {
 		debug writefln("\tShared Postblit for type %s (ptr = %X) with usage = %d",
 		               __traits(identifier, T), this.ptr, this.usage);
-		
 		this.addRef();
 	}
 	
@@ -77,14 +75,12 @@ struct shared_ptr(T)
 		this.releaseRef();
 		
 		this._share = new Shared(ptr);
-		
 		this.addRef();
 	}
 	
 	~this() {
 		debug writefln("\tShared DTor for type %s (ptr = %X) with usage = %d",
 		               __traits(identifier, T), this.ptr, this.usage);
-		
 		this.releaseRef();
 	}
 	
@@ -96,7 +92,7 @@ struct shared_ptr(T)
 		return this.isValid() ? this._share.usage : -1;
 	}
 	
-	void addRef() {
+	void addRef() pure nothrow {
 		if (!this.isValid())
 			return;
 		
@@ -127,10 +123,9 @@ struct shared_ptr(T)
 				debug writefln("\tShared: Destroy type %s (ptr = %X)",
 				               __traits(identifier, T), this.ptr);
 				this._share.deleter(this._share.ptr);
-				
 				this._share.ptr = null;
-				
 				delete this._share;
+				this._share = null;
 			}
 		}
 	}

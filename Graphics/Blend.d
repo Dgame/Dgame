@@ -124,7 +124,7 @@ final:
 	/**
 	 * Enable or Disable blending
 	 */
-	void enableBlending(bool enable) {
+	void enableBlending(bool enable) pure nothrow {
 		this._isBlending = enable;
 	}
 	
@@ -138,7 +138,7 @@ final:
 	/**
 	 * Activate or deactivate the using of the blend color.
 	 */
-	void enableBlendColor(bool enable) {
+	void enableBlendColor(bool enable) pure nothrow {
 		this._isBlendColor = enable;
 	}
 	
@@ -152,7 +152,7 @@ final:
 	/**
 	 * Set the Blendmode.
 	 */
-	void setBlendMode(Mode mode) {
+	void setBlendMode(Mode mode) pure nothrow {
 		this._mode = mode;
 		this._isBlending = true;
 	}
@@ -167,7 +167,7 @@ final:
 	/**
 	 * Set the Blend Color.
 	 */
-	void setBlendColor(ref const Color col) {
+	void setBlendColor(ref const Color col) pure nothrow {
 		this._isBlendColor = true;
 		this._color = col;
 	}
@@ -175,7 +175,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setBlendColor(const Color col) {
+	void setBlendColor(const Color col) pure nothrow {
 		this.setBlendColor(col);
 	}
 	

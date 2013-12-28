@@ -149,14 +149,14 @@ public:
 	/**
 	 * Set a new view.
 	 */
-	void setView(ref const ShortRect view) {
+	void setView(ref const ShortRect view) pure nothrow {
 		this._view = view;
 	}
 	
 	/**
 	 * Rvalue version.
 	 */
-	void setView(const ShortRect view) {
+	void setView(const ShortRect view) pure nothrow {
 		this.setView(view);
 	}
 	

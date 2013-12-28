@@ -34,7 +34,7 @@ private {
 private struct ColorCBuffer {
 	CircularBuffer!(SDL_Color) _buf;
 	
-	SDL_Color* put(ref const Color col) {
+	SDL_Color* put(ref const Color col) pure nothrow {
 		SDL_Color* pcol = this._buf.get();
 		
 		pcol.r = col.red;
@@ -84,7 +84,8 @@ struct Color {
 	 * CTor
 	 * Expect that every component is in range 0.0 .. 1.0
 	 */
-	this(float red, float green, float blue, float alpha = 1f) pure nothrow in {
+	this(float red, float green, float blue, float alpha = 1f) pure nothrow
+	in {
 		assert(red   >= 0f && red   <= 1f);
 		assert(green >= 0f && green <= 1f);
 		assert(blue  >= 0f && blue  <= 1f);
@@ -107,25 +108,6 @@ struct Color {
 	}
 	
 	/**
-	 * opAssign
-	 */
-	void opAssign(ref const Color rhs) {
-		debug writeln("opAssign Color (L)");
-		
-		this.red   = rhs.red;
-		this.green = rhs.green;
-		this.blue  = rhs.blue;
-		this.alpha = rhs.alpha;
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void opAssign(const Color rhs) {
-		this.opAssign(rhs);
-	}
-	
-	/**
 	 * Returns a copy of the current Color with a given transpareny.
 	 * 
 	 * Example:
@@ -133,7 +115,7 @@ struct Color {
 	 * Color(current.red, current.green, current.blue, alpha);
 	 * ----
 	 */
-	Color withTransparency(ubyte alpha = 0) const {
+	Color withTransparency(ubyte alpha = 0) const pure nothrow {
 		return Color(this.red, this.green, this.blue, alpha);
 	}
 	
@@ -159,7 +141,8 @@ struct Color {
 	 * Set all color components to new values
 	 * Expect that every component is in range 0.0 .. 1.0
 	 */
-	void set(float red, float green, float blue, float alpha = 1f) pure nothrow in {
+	void set(float red, float green, float blue, float alpha = 1f) pure nothrow
+	in {
 		assert(red   >= 0f && red   <= 1f);
 		assert(green >= 0f && green <= 1f);
 		assert(blue  >= 0f && blue  <= 1f);

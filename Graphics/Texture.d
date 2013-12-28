@@ -25,7 +25,7 @@ module Dgame.Graphics.Texture;
 
 private {
 	import std.exception : enforce;
-
+	
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Log;
@@ -240,7 +240,7 @@ package:
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
 		
-//		// apply blending
+		//		// apply blending
 		if (this._blend !is null)
 			this._blend.applyBlending();
 		
@@ -435,7 +435,7 @@ final:
 	/**
 	 * Set smooth filter for the (next) load.
 	 */
-	void setSmooth(bool enable) {
+	void setSmooth(bool enable) pure nothrow {
 		this._isSmooth = enable;
 	}
 	
@@ -476,7 +476,7 @@ final:
 	 * 
 	 * See: Compression enum
 	 */
-	void setCompression(Compression comp) {
+	void setCompression(Compression comp) pure nothrow {
 		this._comp = comp;
 	}
 	
@@ -504,7 +504,7 @@ final:
 	/**
 	 * Set (or reset) the current Blend instance.
 	 */
-	void setBlend(Blend blend) {
+	void setBlend(Blend blend) pure nothrow {
 		this._blend = blend;
 	}
 	
@@ -538,7 +538,7 @@ final:
 			this.updateMemory(memory, null);
 			return;
 		}
-
+		
 		this._format = fmt == Format.None ? bitsToFormat(depth) : fmt;
 		enforce(this._format != Format.None, "Need Texture.Format or depth > 24");
 		depth = depth < 8 ? formatToBits(this._format) : depth;
@@ -583,7 +583,7 @@ final:
 		// Get the pixel memory
 		void* memory = this.getMemory();
 		enforce(memory !is null, "Cannot set a colorkey for an empty Texture.");
-
+		
 		const uint size = this._width * this._height * (this._depth / 8);
 		// Go through pixels
 		for (uint i = 0; i < size; ++i) {
@@ -625,9 +625,9 @@ final:
 			debug Log.info("@Texture.GetPixels: Null Pixel");
 			return null;
 		}
-
+		
 		void[] memory = new void[msize];
-
+		
 		this.bind();
 		
 		glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr);
@@ -642,7 +642,7 @@ final:
 	Texture subTexture(ref const ShortRect rect) {
 		if (this._format == Format.None)
 			return null;
-
+		
 		Texture tex = new Texture();
 		debug Log.info("Format switch: %s.", .switchFormat(this._format, true));
 		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
@@ -729,9 +729,9 @@ final:
 		
 		if (rect !is null) {
 			enforce(rect.width <= this._width && rect.height <= this._height, 
-			       "Rect is greater as the Texture.");
+			        "Rect is greater as the Texture.");
 			enforce(rect.x < this._width && rect.y < this._height, 
-			       "x or y of the Rect is greater as the Texture.");
+			        "x or y of the Rect is greater as the Texture.");
 			
 			width  = rect.width;
 			height = rect.height;
@@ -747,9 +747,9 @@ final:
 		
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
-
+		
 		this.bind();
-
+		
 		glTexSubImage2D(GL_TEXTURE_2D, 0,
 		                x, y, width, height,
 		                (fmt == Format.None ? this._format : fmt),

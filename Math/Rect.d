@@ -24,7 +24,7 @@
 module Dgame.Math.Rect;
 
 private {
-	debug import std.stdio : writeln;
+	debug import std.stdio;
 	import std.traits : isNumeric;
 	
 	import derelict.sdl2.sdl;
@@ -36,7 +36,7 @@ private {
 private struct RectCBuffer {
 	CircularBuffer!(SDL_Rect) _buf;
 	
-	SDL_Rect* put(T)(ref const Rect!T rect) {
+	SDL_Rect* put(T)(ref const Rect!T rect) pure nothrow {
 		SDL_Rect* rptr = this._buf.get();
 		
 		static if (is(T : int)) {
@@ -55,7 +55,7 @@ private struct RectCBuffer {
 	}
 }
 
-static RectCBuffer _cbuf;
+private static RectCBuffer _cbuf;
 
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
@@ -77,7 +77,7 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(T x, T y, T width, T height) {
+	this(T x, T y, T width, T height) pure nothrow {
 		this.x = x;
 		this.y = y;
 		
@@ -88,14 +88,14 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2!T vec, T width, T height) {
+	this(ref const Vector2!T vec, T width, T height) pure nothrow {
 		this(vec.x, vec.y, width, height);
 	}
 	
 	/**
 	 * CTor
 	 */
-	this(U)(ref const Rect!U rect) {
+	this(U)(ref const Rect!U rect) pure nothrow {
 		static if (is(U : T)) {
 			this(rect.x, rect.y, rect.width, rect.height);
 		} else {
@@ -122,9 +122,9 @@ struct Rect(T) if (isNumeric!T) {
 		return _cbuf.put(this);
 	}
 	
-	void adaptToPtr() {
-		this.set(cast(T) this.ptr.x, cast(T) this.ptr.y,
-		         cast(T) this.ptr.w, cast(T) this.ptr.h);
+	void adaptTo(ref const SDL_Rect rect) pure nothrow {
+		this.set(cast(T) rect.x, cast(T) rect.y,
+		         cast(T) rect.w, cast(T) rect.h);
 	}
 	
 	/**
@@ -199,8 +199,9 @@ struct Rect(T) if (isNumeric!T) {
 	Rect!T getUnion(ref const Rect!T rect) const {
 		Rect!T union_rect = void;
 		
-		SDL_UnionRect(this.ptr, rect.ptr, union_rect.ptr);
-		union_rect.adaptToPtr();
+		SDL_Rect* uptr = union_rect.ptr;
+		SDL_UnionRect(this.ptr, rect.ptr, uptr);
+		union_rect.adaptTo(*uptr);
 		
 		return union_rect;
 	}
@@ -252,8 +253,9 @@ struct Rect(T) if (isNumeric!T) {
 	bool intersects(ref const Rect!T rect, Rect!(T)* overlap = null) const {
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
 			if (overlap !is null) {
-				SDL_IntersectRect(this.ptr, rect.ptr, overlap.ptr);
-				overlap.adaptToPtr();
+				SDL_Rect* optr = overlap.ptr;
+				SDL_IntersectRect(this.ptr, rect.ptr, optr);
+				overlap.adaptTo(*optr);
 			}
 			
 			return true;
@@ -267,17 +269,18 @@ struct Rect(T) if (isNumeric!T) {
 	 */
 	static Rect!T enclosePoints(const Vector2!T[] points) {
 		import Dgame.Internal.Allocator : New, Delete;
-
+		
 		SDL_Point* sdl_points = New!SDL_Point[points.length];
 		scope(exit) Delete(sdl_points);
-
+		
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 		
 		Rect!T rect = void;
-		SDL_EnclosePoints(sdl_points, cast(int) points.length, null, rect.ptr);
-		rect.adaptToPtr();
+		SDL_Rect* rptr = rect.ptr;
+		SDL_EnclosePoints(sdl_points, cast(uint) points.length, null, rptr);
+		rect.adaptTo(*rptr);
 		
 		return rect;
 	}
@@ -289,7 +292,7 @@ struct Rect(T) if (isNumeric!T) {
 		this.width  = width;
 		this.height = height;
 	}
-
+	
 	/**
 	 * Returns the current size as Vector2
 	 */
@@ -319,7 +322,7 @@ struct Rect(T) if (isNumeric!T) {
 	void setPosition(ref const Vector2!T position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
-
+	
 	/**
 	 * Returns the current position as Vector2
 	 */
