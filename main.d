@@ -28,7 +28,7 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-enum Disc = 'C';
+enum Disc = 'D';
 
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
@@ -217,8 +217,8 @@ void main() {
 	
 	Color[4] colors = [Color.Red, Color.Magenta, Color.White, Color.Blue];
 	ubyte cidx = 0;
-	
-	//	TiledMap tm = new TiledMap("map2.tmx");
+
+	TiledMap tm = new TiledMap("map2.tmx");
 	
 	Unit tof = new Unit(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
@@ -254,8 +254,8 @@ void main() {
 	
 	writeln("====");
 	
-	//	Transform tf = tm.getTransform();
-	//tf.setView(90, 90, 60, 60);
+	Transform tf = tm.getTransform();
+	tf.setView(90, 90, 60, 60);
 	//	tf.setRotation(45);
 	
 	//	tm.setTransform(tf);
@@ -452,15 +452,15 @@ void main() {
 		
 		text.format("Current Fps: %d <=> %d",
 		            myclock.getCurrentFps(), wnd.getFpsLimit());
-		wnd.draw(text);
-		
-		//		wnd.draw(tm);
+		wnd.draw(text); 
+
+		wnd.draw(tm);
 		
 		//tf.setPosition(250, 50);
 		//tf.setScale(0.5f);
 		////tf.activateView(true);
 		//
-		//wnd.draw(tm);
+		wnd.draw(tm);
 		//
 		////tf.activateView(false);
 		//tf.resetTranslation();

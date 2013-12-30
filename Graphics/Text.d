@@ -385,7 +385,7 @@ final:
 	/**
 	 * Set the (foreground) color.
 	 */
-	void setColor(ref const Color col) pure nothrow {
+	void setColor(ref const Color col) {
 		this._needUpdate = true;
 		this._fg = col;
 	}
@@ -393,7 +393,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setColor(const Color col) pure nothrow {
+	void setColor(const Color col) {
 		this.setColor(col);
 	}
 	
@@ -408,7 +408,7 @@ final:
 	 * Set the background color.
 	 * Only needed if your Font.Mode is not Font.Mode.Solid.
 	 */
-	void setBackgroundColor(ref const Color col) pure nothrow {
+	void setBackgroundColor(ref const Color col) {
 		this._needUpdate = true;
 		this._bg = col;
 	}
@@ -416,7 +416,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setBackgroundColor(const Color col) pure nothrow {
+	void setBackgroundColor(const Color col) {
 		this.setBackgroundColor(col);
 	}
 	

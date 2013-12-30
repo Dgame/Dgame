@@ -131,7 +131,7 @@ struct Vertex {
 	/**
 	 * Create a Color from the color data
 	 */
-	Color getAsColor() const pure nothrow {
+	Color getAsColor() const {
 		return Color(this.r, this.g, this.b, this.a);
 	}
 	

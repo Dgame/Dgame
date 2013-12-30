@@ -167,7 +167,7 @@ final:
 	/**
 	 * Set the Blend Color.
 	 */
-	void setBlendColor(ref const Color col) pure nothrow {
+	void setBlendColor(ref const Color col) {
 		this._isBlendColor = true;
 		this._color = col;
 	}
@@ -175,7 +175,7 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setBlendColor(const Color col) pure nothrow {
+	void setBlendColor(const Color col) {
 		this.setBlendColor(col);
 	}
 	

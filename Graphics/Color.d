@@ -115,7 +115,7 @@ struct Color {
 	 * Color(current.red, current.green, current.blue, alpha);
 	 * ----
 	 */
-	Color withTransparency(ubyte alpha = 0) const pure nothrow {
+	Color withTransparency(ubyte alpha = 0) const {
 		return Color(this.red, this.green, this.blue, alpha);
 	}
 	
