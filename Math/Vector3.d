@@ -205,14 +205,7 @@ struct Vector3(T) if (isNumeric!T) {
 	bool opEquals(ref const Vector3 vec) const pure nothrow {
 		return vec.x == this.x && vec.y == this.y && vec.z == this.z;
 	}
-	
-	/**
-	 * opCast: cast this vector to another type.
-	 */
-	Vector3!U opCast(V : Vector3!U, U)() const pure nothrow {
-		return Vector3!U(cast(U) this.x, cast(U) this.y, cast(U) this.z);
-	}
-	
+
 	/**
 	 * Checks if this vector is empty. This means that his coordinates are 0.
 	 */

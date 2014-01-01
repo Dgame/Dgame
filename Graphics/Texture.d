@@ -209,11 +209,11 @@ private:
 	ushort _height;
 	ubyte _depth;
 	
-	bool _isSmooth = false;
-	bool _isRepeated = false;
+	bool _isSmooth;
+	bool _isRepeated;
 	
 	Format _format;
-	Compression _comp = Compression.None;
+	Compression _comp;
 	
 	Blend _blend;
 	

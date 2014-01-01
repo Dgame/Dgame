@@ -81,7 +81,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op)(ref const Vector2!T vec) pure {
+	ref Vector2 opOpAssign(string op)(ref const Vector2 vec) pure {
 		switch (op) {
 			case "+":
 				this.x += vec.x;
@@ -112,7 +112,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
 	 */
-	ref Vector2!T opOpAssign(string op)(T number) pure {
+	ref Vector2 opOpAssign(string op)(T number) pure {
 		switch (op) {
 			case "+":
 				this.x += number;
@@ -143,13 +143,13 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op)(ref const Vector2!T vec) pure {
+	Vector2 opBinary(string op)(ref const Vector2 vec) pure {
 		switch (op) {
-			case "+": return Vector2!T(vec.x + this.x, vec.y + this.y);
-			case "-": return Vector2!T(vec.x - this.x, vec.y - this.y);
-			case "*": return Vector2!T(vec.x * this.x, vec.y * this.y);
-			case "/": return Vector2!T(vec.x / this.x, vec.y / this.y);
-			case "%": return Vector2!T(vec.x % this.x, vec.y % this.y);
+			case "+": return Vector2(vec.x + this.x, vec.y + this.y);
+			case "-": return Vector2(vec.x - this.x, vec.y - this.y);
+			case "*": return Vector2(vec.x * this.x, vec.y * this.y);
+			case "/": return Vector2(vec.x / this.x, vec.y / this.y);
+			case "%": return Vector2(vec.x % this.x, vec.y % this.y);
 			default: throw new Exception("Unsupported operator " ~ op);
 		}
 	}
@@ -157,13 +157,13 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2!T opBinary(string op)(T number) pure {
+	Vector2 opBinary(string op)(T number) pure {
 		switch (op) {
-			case "+": return Vector2!T(number + this.x, number + this.y);
-			case "-": return Vector2!T(number - this.x, number - this.y);
-			case "*": return Vector2!T(number * this.x, number * this.y);
-			case "/": return Vector2!T(number / this.x, number / this.y);
-			case "%": return Vector2!T(number % this.x, number % this.y);
+			case "+": return Vector2(number + this.x, number + this.y);
+			case "-": return Vector2(number - this.x, number - this.y);
+			case "*": return Vector2(number * this.x, number * this.y);
+			case "/": return Vector2(number / this.x, number / this.y);
+			case "%": return Vector2(number % this.x, number % this.y);
 			default: throw new Exception("Unsupported operator " ~ op);
 		}
 	}
@@ -171,8 +171,8 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Returns a negated copy of this Vector.
 	 */
-	Vector2!T opNeg() const pure nothrow {
-		return Vector2!T(-this.x, -this.y);
+	Vector2 opNeg() const pure nothrow {
+		return Vector2(-this.x, -this.y);
 	}
 	
 	/**
@@ -186,17 +186,10 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Compares two vectors by checking whether the coordinates are equals.
 	 */
-	bool opEquals(ref const Vector2!T vec) const pure nothrow {
+	bool opEquals(ref const Vector2 vec) const pure nothrow {
 		return vec.x == this.x && vec.y == this.y;
 	}
-	
-	/**
-	 * opCast: cast this vector to another type.
-	 */
-	Vector2!U opCast(V : Vector2!U, U)() const pure nothrow {
-		return Vector2!U(cast(U) this.x, cast(U) this.y);
-	}
-	
+
 	/**
 	 * Checks if this vector is empty. This means that his coordinates are 0.
 	 */
@@ -207,7 +200,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Calculate the scalar product.
 	 */
-	float scalar(ref const Vector2!T vec) const pure nothrow {
+	float scalar(ref const Vector2 vec) const pure nothrow {
 		return this.x * vec.x + this.y * vec.y;
 	}
 	
@@ -232,7 +225,7 @@ struct Vector2(T) if (isNumeric!T) {
 	 * If the second paramter is true, the return value is converted to degrees.
 	 * Otherwise, radiant is used.
 	 */
-	float angle(ref const Vector2!T vec, bool degrees = true) const pure nothrow {
+	float angle(ref const Vector2 vec, bool degrees = true) const pure nothrow {
 		float angle = acos(this.scalar(vec) / (this.length * vec.length));
 		
 		if (degrees)
@@ -244,14 +237,14 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Calculate the diff between two vectors.
 	 */
-	float diff(ref const Vector2!T vec) const pure nothrow {
+	float diff(ref const Vector2 vec) const pure nothrow {
 		return sqrt(pow(this.x - vec.x, 2f) + pow(this.y - vec.y, 2f));
 	}
 	
 	/**
 	 * Normalize the vector in which the coordinates are divided by the length.
 	 */
-	ref Vector2!T normalize() pure nothrow {
+	ref Vector2 normalize() pure nothrow {
 		const float len = this.length;
 		if (len != 0) {
 			this.x /= len;
