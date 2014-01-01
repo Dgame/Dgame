@@ -270,50 +270,44 @@ protected:
 			VertexRenderer.disableAllStates();
 		}
 		
-		super.applyTranslation();
+		super._applyTranslation();
 		
 		Type type = !this.filled() && this._tex is null ? Type.Unfilled : this._type;
 		VertexRenderer.drawArrays(shapeToPrimitive(type), this._vertices.length);
 	}
 
-	override int[2] _getAreaSize() const pure nothrow {
-		const MinMax[2] mm = minmax(this._vertices);
-
-		return [cast(int) mm[0].max, cast(int) mm[1].max];
-	}
-
 	final void _updateTexCoords() pure nothrow {
 		if (this._vertices.length == 0)
 			return;
-
+		
 		const MinMax[2] mm = minmax(this._vertices);
-
+		
 		//debug writefln("min_x = %f, max_x = %f", mm[0].min, mm[0].max);
 		//debug writefln("min_y = %f, max_y = %f", mm[1].min, mm[1].max);
-
+		
 		const float diff_x = abs(mm[0].min - mm[0].max);
 		const float diff_y = abs(mm[1].min - mm[1].max);
-
+		
 		//debug writefln("diff_x = %f, diff_y = %f", diff_x, diff_y);
-
+		
 		foreach (ref Vertex v; this._vertices) {
 			v.tx = ((v.x - mm[0].min) / diff_x);
 			v.ty = ((v.y - mm[1].min) / diff_y);
 		}
-
+		
 		if (!this._texRect.isCollapsed()) {
 			const float tx = (0f + this._texRect.x) / this._tex.width;
 			const float ty = (0f + this._texRect.y) / this._tex.height;
 			const float tw = (0f + this._texRect.width) / this._tex.width;
 			const float th = (0f + this._texRect.height) / this._tex.height;
-
+			
 			foreach (ref Vertex v; this._vertices) {
 				v.tx = (v.tx * tw) + tx;
 				v.ty = (v.ty * th) + ty;
 			}
 		}
 	}
-	
+
 public:
 final:
 	/**
@@ -324,6 +318,16 @@ final:
 		this._smooth = Smooth(Smooth.Target.None, Smooth.Mode.Fastest);
 
 		this.bindTexture(tex);
+	}
+
+	/**
+	 * Calculate, store and return the center point.
+	 */
+	override ref const(Vector2s) calculateCenter() pure nothrow {
+		const MinMax[2] mm = minmax(this._vertices);
+		super.setCenter(cast(short)(mm[0].max / 2), cast(short)(mm[1].max / 2));
+
+		return super.getCenter();
 	}
 
 	/**

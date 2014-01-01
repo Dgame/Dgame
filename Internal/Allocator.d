@@ -9,7 +9,7 @@ enum Init : ubyte {
 	Yes
 }
 
-struct New(T, Init init = Init.Yes) if (!is(T : U[], U)) {
+struct New(T, Init init = Init.No) if (!is(T : U[], U)) {
 	static T* opIndex(size_t size) {
 		import core.stdc.stdlib : malloc, calloc;
 		

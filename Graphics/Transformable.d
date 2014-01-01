@@ -27,7 +27,8 @@ private {
 	import std.math : isNaN;
 	
 	import derelict.opengl3.gl;
-	
+
+	import Dgame.Math.Vector2;
 	import Dgame.Graphics.Moveable;
 }
 
@@ -40,46 +41,67 @@ abstract class Transformable : Moveable {
 private:
 	short _rotAngle;
 	float _zoom = 1f;
+	Vector2s _rotCenter;
 
 protected:
-	int[2] _getAreaSize() const pure nothrow {
-		return [0, 0];
+	/**
+	* Apply translation to the object.
+	*/
+	override void _applyTranslation() const {
+		super._applyTranslation();
+		
+		if (this._rotAngle != 0) {
+			if (!this._rotCenter.isEmpty())
+				glTranslatef(this._rotCenter.x, this._rotCenter.y, 0f);
+			
+			glRotatef(this._rotAngle, 0f, 0f, 1f);
+			
+			if (!this._rotCenter.isEmpty())
+				glTranslatef(this._rotCenter.x, this._rotCenter.y, 0f);
+		}
+		
+		if (!isNaN(this._zoom) && this._zoom != 1f)
+			glScalef(this._zoom, this._zoom, 0f);
 	}
-	
-public:
+
 	/**
 	 * Reset the translation.
 	 */
-	override void resetTranslation() {
-		super.resetTranslation();
+	override void _resetTranslation() {
+		super._resetTranslation();
 		
 		this.setRotation(0);
 		this.setScale(1);
 	}
 
+public:
 	/**
-	* Apply translation to the object.
-	*/
-	override void applyTranslation() const {
-		super.applyTranslation();
-
-		if (this._rotAngle != 0) {
-			const int[2] area_size = this._getAreaSize();
-
-			if (area_size[0] != 0 && area_size[1] != 0)
-				glTranslatef(area_size[0] / 2, area_size[1] / 2, 0);
-
-			glRotatef(this._rotAngle, 0f, 0f, 1f);
-
-			if (area_size[0] != 0 && area_size[1] != 0)
-				glTranslatef(-(area_size[0] / 2), -(area_size[1] / 2), 0);
-		}
-
-		if (!isNaN(this._zoom) && this._zoom != 1f)
-			glScalef(this._zoom, this._zoom, 0f);
-	}
+	 * Calculate, store and return the center point.
+	 */
+	abstract ref const(Vector2s) calculateCenter() pure nothrow;
 
 final:
+	/**
+	 * Set the rotation center.
+	 */
+	void setCenter(ref const Vector2s center) {
+		this._rotCenter = center;
+	}
+
+	/**
+	 * Set the rotation center.
+	 */
+	void setCenter(short x, short y) pure nothrow {
+		this._rotCenter.set(x, y);
+	}
+
+	/**
+	 * Returns the rotation center.
+	 */
+	ref const(Vector2s) getCenter() const pure nothrow {
+		return this._rotCenter;  
+	}
+
 	/**
 	 * Set a (new) rotation.
 	 */

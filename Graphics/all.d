@@ -26,7 +26,6 @@ module Dgame.Graphics.all;
 public {
 	import Dgame.Graphics.Blend;
 	import Dgame.Graphics.Color;
-	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Image;
 	import Dgame.Graphics.Shape;
@@ -40,7 +39,6 @@ public {
 	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.TileMap;
 	import Dgame.Graphics.TiledMap;
-	import Dgame.Graphics.Transform;
 	
 	import Dgame.Math.all;
 }

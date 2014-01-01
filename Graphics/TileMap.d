@@ -34,9 +34,9 @@ private {
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Drawable;
+	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.Transform;
 	import Dgame.System.VertexBufferObject;
 }
 
@@ -169,7 +169,7 @@ short[2] calcPos(ushort gid, ushort width, ushort tw, ushort th) pure nothrow {
  *
  * Author: rschuett
  */
-class TileMap : Drawable, Formable {
+class TileMap : Transformable, Drawable {
 protected:
 	/**
 	 * The read method must be overriden by any specialized TileMap.
@@ -289,6 +289,22 @@ protected:
 		
 		this._vbo.unbind();
 	}
+
+	void _applyViewport() const {
+		if (!this._view.isEmpty()) {
+			if (!glIsEnabled(GL_SCISSOR_TEST))
+				glEnable(GL_SCISSOR_TEST);
+			
+			const int vx = this._view.x + cast(int) super.X;
+			const int vy = this._view.y + this._view.height + cast(int) super.Y;
+			
+			SDL_Window* wnd = SDL_GL_GetCurrentWindow();
+			int w, h;
+			SDL_GetWindowSize(wnd, &w, &h);
+			
+			glScissor(vx, h - vy, this._view.width, this._view.height);
+		}
+	}
 	
 	void _render() in {
 		assert(this._transform !is null, "Transform is null.");
@@ -305,8 +321,8 @@ protected:
 		glDisable(GL_BLEND);
 		scope(exit) glEnable(GL_BLEND);
 		
-		this._transform.applyViewport();
-		this._transform.applyTranslation();
+		this._applyViewport();
+		super._applyTranslation();
 		
 		this._vbo.bindTexture(this._tex);
 		this._vbo.drawArrays(Primitive.Type.TriangleStrip, this._tiles.length * 4);
@@ -314,15 +330,11 @@ protected:
 		this._vbo.disableAllStates();
 		this._vbo.unbind();
 	}
-	
-	int[2] getAreaSize() const pure nothrow {
-		return [this._tmi.width, this._tmi.height];
-	}
-	
+
 protected:
+	ShortRect _view;
 	TileMapInfo _tmi;
 	Texture _tex;
-	Transform _transform;
 	
 	Tile[] _tiles;
 	
@@ -343,25 +355,61 @@ final:
 	this(string filename, bool compress = true) {
 		this._tex = new Texture();
 		this._vbo = new VertexBufferObject(Primitive.Target.Vertex | Primitive.Target.TexCoords);
-		
-		this._transform = new Transform();
-		this._transform.attach(this);
-		
+
 		this.load(filename, compress);
 	}
-	
+
 	/**
-	 * Returns the Transformation for this TileMap
+	 * Calculate, store and return the center point.
 	 */
-	inout(Transform) getTransform() inout pure nothrow {
-		return this._transform;
+	override ref const(Vector2s) calculateCenter() pure nothrow {
+		super.setCenter(this._tmi.width / 2, this._tmi.height / 2);
+		
+		return super.getCenter();
+	}
+
+	/**
+	 * Fetch the viewport pointer so that it can modified outside.
+	 */
+	inout(ShortRect*) fetchView() inout pure nothrow {
+		return &this._view;
 	}
 	
 	/**
-	 * Set a (new) Trandformation.
+	 * Set a new view.
 	 */
-	void setTransform(Transform tf) {
-		this._transform = tf;
+	void setView(short x, short y, short w, short h) pure nothrow {
+		this._view.set(x, y, w, h);
+	}
+	
+	/**
+	 * Set a new view.
+	 */
+	void setView(ref const ShortRect view) {
+		this._view = view;
+	}
+	
+	/**
+	 * Rvalue version.
+	 */
+	void setView(const ShortRect view) {
+		this.setView(view);
+	}
+	
+	/**
+	 * Reset the viewport.
+	 */
+	void resetView() pure nothrow {
+		this._view.collapse();
+	}
+	
+	/**
+	 * Adjust the viewport.
+	 * The position is shifted about <code>view.x * -1</code> and <code>view.y - 1</code>
+	 * so that the left upper corner of the current view is in the left upper corner of the Window.
+	 */
+	void adjustView() {
+		super.setPosition(this._view.x * -1, this._view.y * -1);
 	}
 	
 	/**

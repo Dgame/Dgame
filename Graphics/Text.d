@@ -37,6 +37,7 @@ private {
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.Blend;
+	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
 }
 
@@ -146,7 +147,7 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		super.applyTranslation();
+		super._applyTranslation();
 		
 		if (this._needUpdate)
 			this._update();
@@ -154,14 +155,7 @@ protected:
 		// we need nothing to render the text, so null is given
 		this._tex._render(null);
 	}
-	
-	override int[2] _getAreaSize() const pure nothrow {
-		if (this._tex is null)
-			return super._getAreaSize();
-		
-		return [this._tex.width, this._tex.height];
-	}
-	
+
 public:
 	/**
 	 * CTor
@@ -180,7 +174,19 @@ public:
 	this(Font font, string text = null) {
 		this(font, text);
 	}
-	
+
+	/**
+	 * Calculate, store and return the center point.
+	 */
+	override ref const(Vector2s) calculateCenter() pure nothrow {
+		if (this._tex is null)
+			return super.getCenter();
+
+		super.setCenter(this._tex.width / 2, this._tex.height / 2);
+
+		return super.getCenter();
+	}
+
 	/**
 	 * Check whether the bounding box of this Text collide
 	 * with the bounding box of another Text
@@ -238,14 +244,14 @@ final:
 	} body {
 		this._tex.setBlend(blend);
 	}
+
 	/**
 	 * Returns the current Blend instance
 	 */
 	inout(Blend) getBlend() inout pure nothrow {
 		return this._tex !is null ? this._tex.getBlend() : null;
 	}
-	
-	
+
 	/**
 	 * Checks whether this Texture has a Blend instance.
 	 */

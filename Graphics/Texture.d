@@ -148,7 +148,7 @@ static ~this() {
 	debug Log.info(" >> Texture Finalized");
 }
 
-package struct Viewport {
+struct Viewport {
 	enum Mode : ubyte {
 		Normal,
 		Reverse

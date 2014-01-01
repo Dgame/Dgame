@@ -253,9 +253,8 @@ void main() {
 	Spritesheet explosion = new Spritesheet(exploImg, ShortRect(0, 0, 256, 256));
 	
 	writeln("====");
-	
-	Transform tf = tm.getTransform();
-	tf.setView(90, 90, 60, 60);
+
+	tm.setView(90, 90, 60, 60);
 	//	tf.setRotation(45);
 	
 	//	tm.setTransform(tf);

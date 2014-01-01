@@ -29,11 +29,10 @@ module Dgame.Graphics.Drawable;
  * Author: rschuett
  */
 interface Drawable {
+	void _render();
 	/**
 	 * Render method
 	 */
-	void _render();
-	
 	final void render() {
 		this._render();
 	}

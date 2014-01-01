@@ -29,6 +29,7 @@ private {
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Texture;
+	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
 }
 
@@ -53,15 +54,11 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 
-		this.applyTranslation();
+		super._applyTranslation();
 
 		this._tex._render(&this._tview);
 	}
 
-	override int[2] _getAreaSize() const pure nothrow {
-		return [this._clipRect.width, this._clipRect.height];
-	}
-	
 public:
 	/**
 	 * CTor
@@ -78,7 +75,16 @@ public:
 
 		this._tview = Viewport(&this._clipRect, &this._texView);
 	}
-	
+
+	/**
+	 * Calculate, store and return the center point.
+	 */
+	override ref const(Vector2s) calculateCenter() pure nothrow {
+		super.setCenter(this._clipRect.width / 2, this._clipRect.height / 2);
+
+		return super.getCenter();
+	}
+
 	/**
 	 * Check whether the bounding box of this Sprite collide
 	 * with the bounding box of another Sprite

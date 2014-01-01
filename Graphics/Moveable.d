@@ -43,32 +43,32 @@ protected:
 	 * Overloadable method if the position is moved.
 	 */
 	void _positionMoved(float dx, float dy) {
-		
+	
 	}
 	
 	/**
 	 * Overloadable method if the position is reset.
 	 */
 	void _positionReset(float nx, float ny) {
-		
-	}
 	
-public:
+	}
+
 	/**
 	 * Overloadable method to reset the position.
 	 * The position is set to 0|0.
 	 */
-	void resetTranslation() {
+	void _resetTranslation() {
 		this.setPosition(0, 0);
 	}
 
 	/**
 	* Apply translation to the object.
 	*/
-	void applyTranslation() const {
+	void _applyTranslation() const {
 		glTranslatef(this._position.x, this._position.y, 0f);
 	}
-	
+
+public:	
 final:
 	/**
 	 * Setting a new position.
@@ -99,6 +99,22 @@ final:
 	ref const(Vector2f) getPosition() const pure nothrow {
 		return this._position;
 	}
+
+	/**
+	 * Returns inout reference to the x coordinate.
+	 */
+	@property
+	ref inout(float) X() inout pure nothrow {
+		return this._position.x;
+	}
+
+	/**
+	 * Returns inout reference to the y coordinate.
+	 */
+	@property
+	ref inout(float) Y() inout pure nothrow {
+		return this._position.y;
+	}
 	
 	/**
 	 * Move the current position by vec.
@@ -115,44 +131,11 @@ final:
 		this._position.move(x, y);
 		this._positionMoved(x, y);
 	}
-	
+
 	/**
 	 * Move the position by pos.
 	 */
 	void move(float[2] pos) {
 		this.move(pos[0], pos[1]);
-	}
-	
-@property:
-	/**
-	 * Returns the x coordinate of the current position.
-	 */
-	float X() const pure nothrow {
-		return this._position.x;
-	}
-	
-	/**
-	 * Returns the y coordinate of the current position.
-	 */
-	float Y() const pure nothrow {
-		return this._position.y;
-	}
-	
-	/**
-	 * Sets a new x coordinate to the current position.
-	 */
-	void X(float x) {
-		this._position.x = x;
-		
-		this._positionReset(x, this._position.y);
-	}
-	
-	/**
-	 * Sets a new y coordinate to the current position.
-	 */
-	void Y(float y) {
-		this._position.y = y;
-		
-		this._positionReset(this._position.x, y);
 	}
 }
