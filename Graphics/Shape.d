@@ -101,7 +101,7 @@ struct Smooth {
 	
 	Target target; /// The Target
 	Mode mode; /// The Mode
-	GLenum hint; /// The GL Hint
+	GLenum hint; /// The GL Hint (is automatically set)
 	
 	this(Target trg, Mode mode) {
 		this.target = target;
@@ -210,7 +210,7 @@ public:
 	
 protected:
 	ubyte _lineWidth;
-	bool _filled = true;
+	bool _isFilled = true;
 	bool _needUpdate = false;
 	
 	Type _type;
@@ -272,7 +272,7 @@ protected:
 		
 		super._applyTranslation();
 		
-		Type type = !this.filled() && this._tex is null ? Type.Unfilled : this._type;
+		Type type = !this.isFilled() && this._tex is null ? Type.Unfilled : this._type;
 		VertexRenderer.drawArrays(shapeToPrimitive(type), this._vertices.length);
 	}
 
@@ -434,8 +434,7 @@ final:
 	 * Note: This method does not need an update call.
 	 */
 	void fill(bool fill) pure nothrow {
-		this._filled = fill;
-
+		this._isFilled = fill;
 		if (this._type == Type.LineLoop)
 			this._type = Type.Polygon;
 	}
@@ -443,8 +442,8 @@ final:
 	/**
 	 * Returns if the fill mode is active or not.
 	 */
-	bool filled() const pure nothrow {
-		return this._filled;
+	bool isFilled() const pure nothrow {
+		return this._isFilled;
 	}
 	
 	/**
