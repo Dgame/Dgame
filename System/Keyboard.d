@@ -1,26 +1,26 @@
 /*
-*******************************************************************************************
-* Dgame (a D game framework) - Copyright (c) Randy Schütt
-* 
-* This software is provided 'as-is', without any express or implied warranty.
-* In no event will the authors be held liable for any damages arising from
-* the use of this software.
-* 
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-* 
-* 1. The origin of this software must not be misrepresented; you must not claim
-*    that you wrote the original software. If you use this software in a product,
-*    an acknowledgment in the product documentation would be appreciated but is
-*    not required.
-* 
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 
-* 3. This notice may not be removed or altered from any source distribution.
-*******************************************************************************************
-*/
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.System.Keyboard;
 
 private {
@@ -38,16 +38,21 @@ private:
 	static ubyte* _Keys;
 	
 public:
+	static this() {
+		_Keys = SDL_GetKeyboardState(null);
+	}
+	
 	/**
 	 * Returns the pointer to the Keyboard state.
 	 * With that you can check if some key is pressed without using a event queue.
+	 * A value of 1 means that the key is pressed and a value of 0 means that it is not.
+	 * The pointer will be valid for the whole lifetime of the application and should not be freed by the caller.
 	 * 
-	 * Note: The state is probably not up to date. If you want the current state, 
-	 * you should take a look at the update method.
-	 * <b>You have to call Keyboard.update at least once, otherwise you will get a null pointer exception.</b>
+	 * Note: This function gives you the current state after all events have been processed, 
+	 * so if a key or button has been pressed and released before you process events, 
+	 * then the pressed state will never show up in the update calls.
+	 * Note: This function doesn't take into account whether shift has been pressed or not.
 	 * 
-	 * See: update
-	 *
 	 * Examples:
 	 * ---
 	 * ubyte* keyStates = Keyboard.getState();
@@ -58,25 +63,6 @@ public:
 	static ubyte* getState() in {
 		assert(_Keys !is null, "You have to call Keyboard.update first.");
 	} body {
-		return _Keys;
-	}
-	
-	/**
-	 * Update the current Keyboard state and returns a pointer to the current state.
-	 * A value of 1 means that the key is pressed and a value of 0 means that it is not.
-	 * The pointer will be valid for the whole lifetime of the application and should not be freed by the caller.
-	 * 
-	 * Note: This function gives you the current state after all events have been processed, 
-	 * so if a key or button has been pressed and released before you process events, 
-	 * then the pressed state will never show up in the update calls.
-	 * <b>You have to call Keyboard.update at least once to use e.g. <code>Keyboard.getState</code>,
-	 * otherwise you will get a null pointer exception.</b>
-	 * 
-	 * Note: This function doesn't take into account whether shift has been pressed or not. 
-	 */
-	static ubyte* update() {
-		_Keys = SDL_GetKeyboardState(null);
-		
 		return _Keys;
 	}
 	
@@ -110,18 +96,14 @@ public:
 	
 	/**
 	 * Returns if the given Keyboard.Code is pressed.
-	 * If update is true, the keyboard state is updated before the check is executed.
-	 *
+	 * 
 	 * Examples:
 	 * ---
 	 * if (Keyboard.isPressed(Keyboard.Code.Escape))
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(Code code, bool update = false) {
-		if (update)
-			Keyboard.update();
-		
+	static bool isPressed(Code code) {
 		int scancode = SDL_GetScancodeFromKey(code);
 		
 		return _Keys[scancode] == 1;
@@ -129,18 +111,14 @@ public:
 	
 	/**
 	 * Returns if the given Keyboard.ScanCode is pressed.
-	 * If update is true, the keyboard state is updated before the check is executed.
-	 *
+	 * 
 	 * Examples:
 	 * ---
 	 * if (Keyboard.isPressed(Keyboard.ScanCode.Escape))
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(ScanCode scancode, bool update = false) {
-		if (update)
-			Keyboard.update();
-		
+	static bool isPressed(ScanCode scancode) {
 		return _Keys[scancode] == 1;
 	}
 	

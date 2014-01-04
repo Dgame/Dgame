@@ -97,7 +97,7 @@ final:
 		
 		ShortRect* rect = &super._texView;
 		
-		if (!(grid & Grid.Column)) {
+		if ((grid & Grid.Column) == 0) {
 			// to avoid a cast...
 			rect.y = this.row;
 			rect.y *= h;

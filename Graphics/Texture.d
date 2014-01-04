@@ -80,9 +80,13 @@ Texture.Format bitsToFormat(ubyte bits, bool reverse = false) pure nothrow {
 	switch (bits) {
 		case 32: return !reverse ? Texture.Format.RGBA : Texture.Format.BGRA;
 		case 24: return !reverse ? Texture.Format.RGB : Texture.Format.BGR;
+		case 16: return Texture.Format.RGBA16;
+		case  8: return Texture.Format.RGBA8;
 		default: return Texture.Format.None;
 	}
 } unittest {
+	assert(bitsToFormat(8) == Texture.Format.RGBA8);
+	assert(bitsToFormat(16) == Texture.Format.RGBA16);
 	assert(bitsToFormat(24) == Texture.Format.RGB);
 	assert(bitsToFormat(32) == Texture.Format.RGBA);
 	assert(bitsToFormat(24, true) == Texture.Format.BGR);
@@ -185,6 +189,8 @@ public:
 		RGBA  = GL_RGBA,					/// Alias for GL_RGBA
 		BGR   = GL_BGR,						/// Alias for GL_BGR
 		BGRA  = GL_BGRA,					/// Alias for GL_BGRA
+		RGBA16 = GL_RGBA16,
+		RGBA8  = GL_RGBA8,
 		Alpha = GL_ALPHA,					/// Alias for GL_ALPHA
 		Luminance = GL_LUMINANCE,			/// Alias for GL_LUMINANCE
 		LuminanceAlpha = GL_LUMINANCE_ALPHA, /// Alias for GL_LUMINANCE_ALPHA
@@ -326,8 +332,9 @@ final:
 	 * Postblit
 	 */
 	this(const Texture tex, Format t_fmt = Format.None) {
-		this.loadFromMemory(tex.getMemory(), tex.width, tex.height,
-		                    tex.depth, t_fmt ? t_fmt : tex.getFormat());
+		void[] mem = tex.getMemory();
+		enforce(mem !is null, "Cannot a texture with no memory.");
+		this.loadFromMemory(&mem[0], tex.width, tex.height, tex.depth, t_fmt ? t_fmt : tex.getFormat());
 	}
 	
 	/**
@@ -581,30 +588,29 @@ final:
 	 */
 	void setColorkey(ref const Color colorkey) {
 		// Get the pixel memory
-		void* memory = this.getMemory();
+		void[] memory = this.getMemory();
 		enforce(memory !is null, "Cannot set a colorkey for an empty Texture.");
 		
-		const uint size = this._width * this._height * (this._depth / 8);
+		//const uint size = this._width * this._height * (this._depth / 8);
 		// Go through pixels
-		for (uint i = 0; i < size; ++i) {
+		for (uint i = 0; i < memory.length; ++i) {
 			// Get pixel colors
-			ubyte* colors = cast(ubyte*) &memory[i];
-			
+			uint* color = cast(uint*) &memory[i];
 			// Color matches
-			if (colors[0] == colorkey.red
-			&& colors[1] == colorkey.green
-			&& colors[2] == colorkey.blue
-			&& (0 == colorkey.alpha || colors[3] == colorkey.alpha))
+			if (color[0] == colorkey.red
+			&& color[1] == colorkey.green
+			&& color[2] == colorkey.blue
+			&& (0 == colorkey.alpha || color[3] == colorkey.alpha))
 			{
 				// Make transparent
-				colors[0] = 255;
-				colors[1] = 255;
-				colors[2] = 255;
-				colors[3] = 0;
+				color[0] = 255;
+				color[1] = 255;
+				color[2] = 255;
+				color[3] = 0;
 			}
 		}
 		
-		this.updateMemory(memory);
+		this.updateMemory(&memory[0]);
 	}
 	
 	/**
@@ -619,20 +625,19 @@ final:
 	 *
 	 * Note: This method <b>allocates</b> GC memory.
 	 */
-	void* getMemory() const {
+	void[] getMemory() const {
 		const uint msize = this._width * this._height * (this._depth / 8);
 		if (msize == 0) {
 			debug Log.info("@Texture.GetPixels: Null Pixel");
 			return null;
 		}
 		
-		void[] memory = new void[msize];
-		
 		this.bind();
 		
+		void[] memory = new void[msize];
 		glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr);
 		
-		return memory.ptr;
+		return memory;
 	}
 	
 	/**
@@ -647,7 +652,7 @@ final:
 		debug Log.info("Format switch: %s.", .switchFormat(this._format, true));
 		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
 		
-		int[4] vport;
+		int[4] vport = void;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
 		
 		glPushAttrib(GL_VIEWPORT_BIT);
@@ -694,7 +699,7 @@ final:
 			rh = rect.height;
 		}
 		
-		int[4] vport;
+		int[4] vport = void;
 		glGetIntegerv(GL_VIEWPORT, &vport[0]);
 		
 		///

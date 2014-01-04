@@ -193,13 +193,11 @@ public:
 	 * Load from filename. If any data is already stored, the data will be freed.
 	 */
 	void loadFromFile(string filename) {
+		debug writefln("Load Image: %s", filename);
 		enforce(filename.length >= 4 && exists(filename),
 		        "The file " ~ filename ~ " does not exist.");
-		
-		debug writefln("Load Image: %s", filename);
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
 		debug writefln("Image %s loaded :: %X", filename, srfc);
-		
 		if (srfc is null) {
 			const string err = to!string(SDL_GetError());
 			throw new Exception(.format("Could not load image %s. Error: %s.", filename, err));

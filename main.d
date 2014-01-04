@@ -28,7 +28,7 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-enum Disc = 'D';
+enum Disc = 'C';
 
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
@@ -144,24 +144,45 @@ void main() {
 	
 	Texture tex3 = tex.subTexture(dst_copy);
 	writefln("\ttex3 -> w: %d, h: %d", tex3.width, tex3.height);
-	Surface texToSrfc2 = Surface.make(tex3.getMemory(), tex3.width, tex3.height, tex3.getFormat().formatToBits());
+	Surface texToSrfc2 = Surface.make(tex3.getMemory().ptr, tex3.width, tex3.height, tex3.getFormat().formatToBits());
 	texToSrfc2.saveToFile("../samples/img/wiki_sub.png");
 	
 	tex.copy(copy_tex, &dst_copy);
 	writeln(" => ", tex);
-	void* mem = tex.getMemory();
-	writeln(" => ", mem);
-	//
-	Surface texToSrfc = Surface.make(tex.getMemory(), tex.width, tex.height, tex.getFormat().formatToBits());
+	void[] mem = tex.getMemory();
+	//writeln(" => ", mem);
+	Surface texToSrfc = Surface.make(&mem[0], tex.width, tex.height, tex.getFormat().formatToBits());
 	texToSrfc.saveToFile("../samples/img/wiki_copy_tex.png");
 	
 	//	tex.setViewport(FloatRect(15, 15, 25, 25));
+	
+	uint[256] xpixels = [
+		255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
+		0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
+		0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
+		0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0,
+		0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0,
+		0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0,
+		0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
+		0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
+		255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
+	];
+	
+	Surface xs = Surface.make(&xpixels[0], 16, 16);
+	xs.saveToFile("XS.png");
 	
 	Sprite wiki_sprite = new Sprite(tex);
 	wiki_sprite.setPosition(50, 100);
 	wiki_sprite.setTextureRect(ShortRect(15, 15, 25, 25));
 	
-	uint[16 * 16] pixels = [
+	uint[256] pixels = [
 		0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 
 		0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 
 		0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 
@@ -197,10 +218,11 @@ void main() {
 	
 	{
 		Surface icon = Surface.make(pixels.ptr, 16, 16, 32);
+		icon.saveToFile("icon.png");
 		wnd.setIcon(icon);
 	}
 	
-	Spritesheet sp = new Spritesheet(new Image("../samples/img/tileset.png"), ShortRect(119, 0, 16, 16));
+	Spritesheet sp = new Spritesheet(new Image("../samples/Map/tileset.png"), ShortRect(119, 0, 16, 16));
 	sp.setPosition(50, 200);
 	
 	Spritesheet sp2 = new Spritesheet(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 16, 16));
@@ -217,8 +239,8 @@ void main() {
 	
 	Color[4] colors = [Color.Red, Color.Magenta, Color.White, Color.Blue];
 	ubyte cidx = 0;
-
-	TiledMap tm = new TiledMap("map2.tmx");
+	
+	TiledMap tm = new TiledMap("../samples/Map/map2.tmx");
 	
 	Unit tof = new Unit(new Image("../samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
 	tof.setPosition(400, 0);
@@ -253,7 +275,7 @@ void main() {
 	Spritesheet explosion = new Spritesheet(exploImg, ShortRect(0, 0, 256, 256));
 	
 	writeln("====");
-
+	
 	tm.setView(90, 90, 60, 60);
 	//	tf.setRotation(45);
 	
@@ -314,13 +336,12 @@ void main() {
 		
 		//		wnd.draw(bg);
 		
-		/*
-		 if (Keyboard.isPressed(Keyboard.Code.Left))
-		 writeln("Left");
-		 
-		 if (Keyboard.isPressed(Keyboard.Code.Right))
-		 writeln("Right");
-		 */
+		if (Keyboard.isPressed(Keyboard.Code.Left))
+			writeln("Left");
+		
+		if (Keyboard.isPressed(Keyboard.Code.Right))
+			writeln("Right");
+		
 		while (EventHandler.poll(&event)) {
 			switch (event.type) { /* Process the appropriate event type */
 				case Event.Type.KeyDown:  /* Handle a KEYDOWN event */
@@ -417,14 +438,13 @@ void main() {
 					
 					//tm.move(5, 5);
 					
-					/*
-					 if (event.keyboard.key == Keyboard.Code.Space) {
-					 Image img = new Image("../new_tilset.png");
-					 tm.exchangeTileset(img);
-					 } else {
-					 tm.reload(Vector2s(1, 0), Vector2s(9, 4));
-					 }
-					 */
+					
+					if (event.keyboard.key == Keyboard.Code.Space) {
+						/*img = new Image("../samples/Map/new_tilset.png");
+						 tm.exchangeTileset(img);
+						 } else {*/
+						tm.reload(Vector2s(1, 0), Vector2s(9, 4));
+					}
 					
 					tof.row = 1;
 					
@@ -452,7 +472,7 @@ void main() {
 		text.format("Current Fps: %d <=> %d",
 		            myclock.getCurrentFps(), wnd.getFpsLimit());
 		wnd.draw(text); 
-
+		
 		wnd.draw(tm);
 		
 		//tf.setPosition(250, 50);
