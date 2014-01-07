@@ -25,6 +25,7 @@ module Dgame.Audio.Sound;
 
 private {
 	import std.algorithm : endsWith;
+	import std.exception : enforce;
 	
 	import derelict.openal.al;
 	
@@ -216,14 +217,7 @@ final:
 	static Sound loadOnce(BaseSoundFile soundfile) in {
 		assert(soundfile !is null, "Soundfile is null.");
 	} body {
-		const string filename = soundfile.getFilename();
-		if (Sound* s = filename in _soundInstances)
-			return *s;
-		
-		Sound s = new Sound(soundfile);
-		_soundInstances[filename] = s;
-		
-		return s;
+		return Sound.loadOnce(soundfile.getFilename());
 	}
 	
 	/**
@@ -300,6 +294,8 @@ final:
 	 * See: WaveFile
 	 */
 	BaseSoundFile loadFromFile(string filename) {
+		enforce(exists(filename), "Soundfile " ~ filename ~ " does not exist.");
+
 		BaseSoundFile sFile;
 		
 	Lagain:

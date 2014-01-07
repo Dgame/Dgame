@@ -67,7 +67,7 @@ protected:
 		super._sFile.dataSize = cast(uint) ov_pcm_total(&oggFile, -1) * super._sFile.bytes * pInfo.channels;
 		super._sFile.channels = cast(ubyte) pInfo.channels;
 		
-		debug Log.info("Allocate %d memory for Vorbis.", _sFile.dataSize);
+		debug Log.info("Allocate %d memory for Vorbis file %s.", _sFile.dataSize, filename);
 		super._buffer = new byte[super._sFile.dataSize];
 
 		import Dgame.Internal.Allocator : New, Delete;

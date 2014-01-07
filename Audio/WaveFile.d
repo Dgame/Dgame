@@ -68,16 +68,25 @@ protected:
 		Header header = void;
 		fread(&header, Header.sizeof, 1, fp);
 		
-		debug Log.info("Allocate %d memory for Wave.", header.data_size);
-		
+		if (header.riff != "RIFF")
+			throw new Exception("No RIFF: " ~ header.riff.idup);
+		if (header.wave != "WAVE")
+			throw new Exception("No WAVE: " ~ header.wave.idup);
+		if (header.fmt[0 .. 3] != "fmt")
+			throw new Exception("No fmt: " ~ header.fmt.idup);
+		if (header.data != "data")
+			throw new Exception("No data: " ~ header.data.idup);
+
 		super._buffer = new byte[header.data_size];
 		fread(super._buffer.ptr, byte.sizeof, header.data_size, fp);
-		
+
 		super._sFile.rate = header.sample_rate;
 		super._sFile.dataSize = header.data_size;
-		super._sFile.channels = cast(ubyte) header.channels;
-		super._sFile.bits = cast(ubyte) header.bits_per_sample;
-		super._sFile.bytes = cast(ubyte)(header.bits_per_sample / 8);
+		super._sFile.channels = header.channels;
+		super._sFile.bits =  header.bits_per_sample;
+		super._sFile.bytes = header.bits_per_sample / 8;
+		
+		debug Log.info("Allocate %d memory for Wave file %s.", header.data_size, filename);
 	}
 	
 public:
