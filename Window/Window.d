@@ -164,7 +164,7 @@ final:
 			
 			glOrtho(0, vMode.width, vMode.height, 0, 1, -1);
 			
-			this.useVerticalSync(Sync.Enable);
+			this.setVerticalSync(Sync.Enable);
 			this.setClearColor(Color.White);
 			
 			SDL_GL_MakeCurrent(this._window, this._glContext);
@@ -226,7 +226,7 @@ final:
 	 *
 	 * Returns if the sync mode is supported.
 	 */
-	bool useVerticalSync(Sync sync) const {
+	bool setVerticalSync(Sync sync) const {
 		if (sync == Sync.Enable || sync == Sync.Disable)
 			return SDL_GL_SetSwapInterval(sync) == 0;
 		else
@@ -234,7 +234,7 @@ final:
 		
 		return false;
 	}
-	
+
 	/**
 	 * Returns the current syncronisation mode.
 	 *
