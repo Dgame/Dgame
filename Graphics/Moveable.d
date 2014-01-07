@@ -54,14 +54,6 @@ protected:
 	}
 
 	/**
-	 * Overloadable method to reset the position.
-	 * The position is set to 0|0.
-	 */
-	void _resetTranslation() {
-		this.setPosition(0, 0);
-	}
-
-	/**
 	* Apply translation to the object.
 	*/
 	void _applyTranslation() const {
@@ -69,6 +61,14 @@ protected:
 	}
 
 public:	
+	/**
+	 * Overloadable method to reset the position.
+	 * The position is set to 0|0.
+	 */
+	void resetTranslation() {
+		this.setPosition(0, 0);
+	}
+
 final:
 	/**
 	 * Setting a new position.

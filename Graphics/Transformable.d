@@ -57,21 +57,11 @@ protected:
 			glRotatef(this._rotAngle, 0f, 0f, 1f);
 			
 			if (!this._rotCenter.isEmpty())
-				glTranslatef(this._rotCenter.x, this._rotCenter.y, 0f);
+				glTranslatef(-this._rotCenter.x, -this._rotCenter.y, 0f);
 		}
 		
 		if (!isNaN(this._zoom) && this._zoom != 1f)
 			glScalef(this._zoom, this._zoom, 0f);
-	}
-
-	/**
-	 * Reset the translation.
-	 */
-	override void _resetTranslation() {
-		super._resetTranslation();
-		
-		this.setRotation(0);
-		this.setScale(1);
 	}
 
 public:
@@ -79,6 +69,16 @@ public:
 	 * Calculate, store and return the center point.
 	 */
 	abstract ref const(Vector2s) calculateCenter() pure nothrow;
+
+	/**
+	 * Reset the translation.
+	 */
+	override void resetTranslation() {
+		super.resetTranslation();
+		
+		this.setRotation(0);
+		this.setScale(1);
+	}
 
 final:
 	/**

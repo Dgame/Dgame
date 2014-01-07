@@ -196,6 +196,7 @@ public:
 		debug writefln("Load Image: %s", filename);
 		enforce(filename.length >= 4 && exists(filename),
 		        "The file " ~ filename ~ " does not exist.");
+
 		SDL_Surface* srfc = IMG_Load(toStringz(filename));
 		debug writefln("Image %s loaded :: %X", filename, srfc);
 		if (srfc is null) {
