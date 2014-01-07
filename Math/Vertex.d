@@ -67,7 +67,7 @@ struct Vertex {
 		this.tx = tx;
 		this.ty = ty;
 		
-		this.setColor(Color.White);
+		this.setColor(Color.Black);
 	}
 	
 	/**
