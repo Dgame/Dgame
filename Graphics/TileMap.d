@@ -35,6 +35,7 @@ private {
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
+	import Dgame.Graphics.Shape;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Texture;
 	import Dgame.System.VertexBufferObject;
@@ -280,7 +281,7 @@ protected:
 			texCoords ~= Vector2f((tx + tw) / tsw, (ty + th) / tsh); /// #4
 		}
 
-		this._vbo.bind(Primitive.Target.TexCoords);
+		this._vbo.bind(Target.TexCoords);
 		
 		if (!this._vbo.isCurrentEmpty())
 			this._vbo.modify(&texCoords[0], texCoords.length * Vector2f.sizeof);
@@ -325,7 +326,7 @@ protected:
 		super._applyTranslation();
 		
 		this._vbo.bindTexture(this._tex);
-		this._vbo.drawArrays(Primitive.Type.TriangleStrip, this._tiles.length * 4);
+		this._vbo.drawArrays(Shape.Type.TriangleStrip, this._tiles.length * 4);
 		
 		this._vbo.disableAllStates();
 		this._vbo.unbind();
@@ -354,7 +355,7 @@ final:
 	 */
 	this(string filename, bool compress = true) {
 		this._tex = new Texture();
-		this._vbo = new VertexBufferObject(Primitive.Target.Vertex | Primitive.Target.TexCoords);
+		this._vbo = new VertexBufferObject(Target.Vertex | Target.TexCoords);
 
 		this.load(filename, compress);
 	}
@@ -525,7 +526,7 @@ final:
 	void reload(const Vector2s[] coords, const Vector2s[] newCoords) in {
 		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
 	} body {
-		this._vbo.bind(Primitive.Target.TexCoords);
+		this._vbo.bind(Target.TexCoords);
 		scope(exit) this._vbo.unbind();
 		
 		float* buffer = cast(float*) this._vbo.map(VertexBufferObject.Access.Read);
@@ -567,7 +568,7 @@ final:
 	 * is replaced with the tile (and the tile surface) on the coordinates newCoord
 	 */
 	void reload(ref const Vector2s coord, ref const Vector2s newCoord) {
-		this._vbo.bind(Primitive.Target.TexCoords);
+		this._vbo.bind(Target.TexCoords);
 		scope(exit) this._vbo.unbind();
 		
 		float* buffer = cast(float*) this._vbo.map(VertexBufferObject.Access.Read);

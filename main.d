@@ -28,7 +28,7 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-enum Disc = 'C';
+enum Disc = 'D';
 
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictGL.lib");
 //pragma(lib, "D:\\D\\dmd2\\src\\ext\\derelict2\\lib\\dmd\\DerelictUtil.lib");
@@ -57,7 +57,7 @@ void main() {
 	const ushort height = 640;
 	
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
-	wnd.useVerticalSync(Window.Sync.Disable);
+	wnd.setVerticalSync(Window.Sync.Disable);
 	//wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	
@@ -70,13 +70,14 @@ void main() {
 	}
 	writeln("====");
 	
-	Sound[2] sound;
+	Sound[3] sound;
 	//sound[0] = new Sound(new VorbisFile("../samples/audio/orchestral.ogg"));
 	//sound[1] = new Sound(new WaveFile("../samples/audio/step.wav"));
-	//sound[0] = new Sound("../samples/audio/orchestral.ogg");
-	//sound[1] = new Sound("../samples/audio/step.wav");
-	sound[0] = Sound.loadOnce("../samples/audio/orchestral.ogg");
-	sound[1] = Sound.loadOnce("../samples/audio/step.wav");
+	sound[0] = new Sound("../samples/audio/orchestral.ogg");
+	sound[1] = new Sound("../samples/audio/collect.wav");
+	sound[2] = new Sound("../samples/audio/expl.wav");
+	//sound[0] = Sound.loadOnce("../samples/audio/orchestral.ogg");
+	//sound[1] = Sound.loadOnce("../samples/audio/step.wav");
 	
 	Color ccol = Color(0.7, 0.7, 0.7);
 	writefln("Green Color: %d,%d,%d,%d",
@@ -89,13 +90,14 @@ void main() {
 		Vertex(75, 275)]);
 	
 	//qs.setSmooth(Shape.SmoothTarget.Line, Shape.SmoothHint.Nicest);
-	qs.setVertexColor(Color.Blue);
+	qs.setColor(Color.Blue);
 	//qs.setType(Shape.Type.Triangle);
 	//	qs.rotate(-25);
 	qs.setPosition(500, 300);
 	
 	Shape circle = Shape.makeCircle(25, Vector2f(225, 425));
 	circle.setSmooth(Smooth.Target.Line);
+	circle.setColor(Color.White);
 	
 	Shape many = Shape.make(Shape.Type.Quad, [
 		Vertex(55, 55),
@@ -114,7 +116,7 @@ void main() {
 		Vertex(45, 40),
 		Vertex(45, 45),
 		Vertex(40, 45)]);
-	many.setVertexColor(Color.Red);
+	many.setColor(Color.Red);
 	
 	Surface wiki = Surface("../samples/img/wiki.png"); // <
 	
@@ -268,7 +270,7 @@ void main() {
 	
 	Shape va = Shape.make(Shape.Type.Quad, pos);
 	va.bindTexture(img);
-	va.setVertexColor(Color.Green.withTransparency(125));
+	va.setColor(Color.Green.withTransparency(125));
 	va.setRotation(25);
 	
 	Image exploImg = new Image("../samples/img/explosion.png");
@@ -312,7 +314,7 @@ void main() {
 	
 	Shape circle2 = Shape.makeCircle(25, Vector2f(60, 60));
 	circle2.setSmooth(Smooth.Target.Line);
-	circle2.setVertexColor(Color.Red);
+	circle2.setColor(Color.Red);
 	circle2.fill(false);
 	
 	Shape va_many = Shape.make(Shape.Type.Quad, mat);
@@ -348,18 +350,7 @@ void main() {
 					writeln("Oh! Key press: ", event.keyboard.code);
 					Time time = Clock.getTime();
 					writefln("Game Loop runs now for %d ms - %f secs - %f min", time.msecs, time.seconds, time.minutes);
-					
-					//uint[] va_indices = va.fetchIndices();
-					//if (va_indices[0] == 1) {
-					//    foreach (i; 0 .. 4) {
-					//        va_indices[i] -= 1;
-					//    }
-					//} else {
-					//    foreach (i; 0 .. 4) {
-					//        va_indices[i] += 1;
-					//    }
-					//}
-					
+
 					sp.slideTextureRect();
 					
 					if (event.keyboard.key == Keyboard.Code.Esc) {
@@ -377,6 +368,8 @@ void main() {
 						//    qs.getVertexAt(1).color = Color.Cyan;
 						//    qs.update();
 					} else if (event.keyboard.key == Keyboard.Code.Num3) {
+						writefln("Sound #2 (type = %s) is %f seconds long.", sound[2].getType(), sound[2].getLength());
+						sound[2].play();
 						//    writeln("set color");
 						//    qs.getVertexAt(2).color = Color.Yellow;
 						//    qs.update();
@@ -433,7 +426,7 @@ void main() {
 					         powI.seconds, powI.percent, powI.state);
 					writefln("Available RAM: %d.", System.getRAM());
 					
-					qs.setVertexColor(colors[cidx++ % colors.length]);
+					qs.setColor(colors[cidx++ % colors.length]);
 					qs.setType(Shape.Type.LineLoop);
 					
 					//tm.move(5, 5);

@@ -123,66 +123,6 @@ struct Smooth {
 }
 
 /**
- * Converts a PrimitiveType of the StaticBuffer into a valid Shape Type.
- * 
- * See: Shape.Type enum
- * See: PrimitiveType enum in StaticBuffer
- */
-@safe
-Shape.Type primitiveToShape(Primitive.Type ptype) pure nothrow {
-	final switch (ptype) with (Primitive.Type) {
-		case Quad:
-			return Shape.Type.Quad;
-		case QuadStrip:
-			return Shape.Type.QuadStrip;
-		case Triangle:
-			return Shape.Type.Triangle;
-		case TriangleStrip:
-			return Shape.Type.TriangleStrip;
-		case TriangleFan:
-			return Shape.Type.TriangleFan;
-		case Lines:
-			return Shape.Type.Lines;
-		case LineStrip:
-			return Shape.Type.LineStrip;
-		case LineLoop:
-			return Shape.Type.LineLoop;
-		case Polygon:
-			return Shape.Type.Polygon;
-	}
-}
-
-/**
- * Converts a Shape Type into a valid PrimitiveType of the StaticBuffer 
- * 
- * See: Shape.Type enum
- * See: PrimitiveType enum in StaticBuffer
- */
-@safe
-Primitive.Type shapeToPrimitive(Shape.Type stype) pure nothrow {
-	final switch (stype) with (Shape.Type) {
-		case Quad:
-			return Primitive.Type.Quad;
-		case QuadStrip:
-			return Primitive.Type.QuadStrip;
-		case Triangle:
-			return Primitive.Type.Triangle;
-		case TriangleStrip:
-			return Primitive.Type.TriangleStrip;
-		case TriangleFan:
-			return Primitive.Type.TriangleFan;
-		case Lines:
-			return Primitive.Type.Lines;
-		case LineStrip:
-			return Primitive.Type.LineStrip;
-		case LineLoop:
-			return Primitive.Type.LineLoop;
-		case Polygon:
-			return Primitive.Type.Polygon;
-	}
-}
-
-/**
  * Shape defines a drawable convex shape.
  * It also defines helper functions to draw simple shapes like lines, rectangles, circles, etc.
  *
@@ -256,13 +196,13 @@ protected:
 
 		Vertex* ptr = &this._vertices[0];
 
-		VertexRenderer.pointTo(Primitive.Target.Vertex,    ptr, Vertex.sizeof,  0);
-		VertexRenderer.pointTo(Primitive.Target.Color,     ptr, Vertex.sizeof, 12);
-		VertexRenderer.pointTo(Primitive.Target.TexCoords, ptr, Vertex.sizeof, 28);
+		VertexRenderer.pointTo(Target.Vertex,    ptr, Vertex.sizeof,  0);
+		VertexRenderer.pointTo(Target.Color,     ptr, Vertex.sizeof, 12);
+		VertexRenderer.pointTo(Target.TexCoords, ptr, Vertex.sizeof, 28);
 
 		if (this._tex !is null)
 			this._tex.bind();
-		
+
 		scope(exit) {
 			if (this._tex !is null)
 				this._tex.unbind();
@@ -272,8 +212,8 @@ protected:
 		
 		super._applyTranslation();
 		
-		Type type = !this.isFilled() && this._tex is null ? Type.Unfilled : this._type;
-		VertexRenderer.drawArrays(shapeToPrimitive(type), this._vertices.length);
+		const Type type = !this.isFilled() && this._tex is null ? Type.Unfilled : this._type;
+		VertexRenderer.drawArrays(type, this._vertices.length);
 	}
 
 	final void _updateTexCoords() pure nothrow {
@@ -334,8 +274,9 @@ final:
 	* Bind (or unbind) a Texture.
 	*/
 	void bindTexture(Texture tex) {
-		this._tex = tex;
+		this.setColor(Color.White);
 
+		this._tex = tex;
 		if (tex !is null && this._type == Type.LineLoop)
 			this._type = Type.Polygon;
 	}
@@ -414,7 +355,7 @@ final:
 	 * 
 	 * Note: This method does not need an update call.
 	 */
-	void setVertexColor(ref const Color col) {
+	void setColor(ref const Color col) {
 		foreach (ref Vertex v; this._vertices) {
 			v.setColor(col);
 		}
@@ -423,8 +364,8 @@ final:
 	/**
 	 * Rvalue version
 	 */
-	void setVertexColor(const Color col) {
-		this.setVertexColor(col);
+	void setColor(const Color col) {
+		this.setColor(col);
 	}
 	
 	/**

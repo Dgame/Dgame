@@ -27,36 +27,17 @@ private {
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Log;
+	import Dgame.Graphics.Shape;
 }
 
 /**
- * Primitive Types and targets
+ * Declare which data is stored. Possible are Vertices, Colors or Texture coordinates.
  */
-final abstract class Primitive {
-	/**
-	 * Primitive Types for the draw methods
-	 */
-	enum Type {
-		Quad		= GL_QUADS,				/** Declare that the stored vertices are Quads. */
-		QuadStrip	= GL_QUAD_STRIP,		/** Declare that the stored vertices are Quad Strips*/
-		Triangle	= GL_TRIANGLES,			/** Declare that the stored vertices are Triangles. */
-		TriangleStrip = GL_TRIANGLE_STRIP,	/** Declare that the stored vertices are Triangles Strips */
-		TriangleFan = GL_TRIANGLE_FAN,		/** Declare that the stored vertices are Triangles Fans. */
-		Lines		= GL_LINES,				/** Declare that the stored vertices are Lines. */
-		LineStrip	= GL_LINE_STRIP,		/** Declare that the stored vertices are Line Strips. */
-		LineLoop	= GL_LINE_LOOP,			/** Declare that the stored vertices are Line Loops. */
-		Polygon		= GL_POLYGON			/** Declare that the stored vertices are Polygons. */
-	}
-	
-	/**
-	 * Declare which data is stored. Possible are Vertices, Colors or Texture coordinates.
-	 */
-	enum Target {
-		None   = 0,		/** Declare that the data consist of nothing relevant. */
-		Vertex = 1, 	/** Declare that the data consist of vertices. */
-		Color  = 2, 	/** Declare that the data consist of colors. */
-		TexCoords = 4 	/** Declare that the data consist of texture coordinates. */
-	}
+enum Target {
+	None   = 0,		/** Declare that the data consist of nothing relevant. */
+	Vertex = 1, 	/** Declare that the data consist of vertices. */
+	Color  = 2, 	/** Declare that the data consist of colors. */
+	TexCoords = 4 	/** Declare that the data consist of texture coordinates. */
 }
 
 /**
@@ -68,14 +49,14 @@ final abstract class Primitive {
 final abstract class VertexRenderer {
 public:
 	/**
-	 * Points to a specific Primitive.Target.
+	 * Points to a specific Target.
 	 * 
 	 * See: glVertexPointer
 	 * See: glColorPointer
 	 * See: glTexCoordPointer
-	 * See: Primitive.Target enum.
+	 * See: Target enum.
 	 */
-	static void pointTo(Primitive.Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
+	static void pointTo(Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
 		VertexRenderer.enableState(trg);
 		
 		if (ptr !is null)
@@ -84,16 +65,16 @@ public:
 			ptr = cast(void*)(offset);
 		
 		final switch (trg) {
-			case Primitive.Target.None:
-				Log.error("Invalid Primitive.Target");
+			case Target.None:
+				Log.error("Invalid Target");
 				break;
-			case Primitive.Target.Vertex:
+			case Target.Vertex:
 				glVertexPointer(3, GL_FLOAT, stride, ptr);
 				break;
-			case Primitive.Target.Color:
+			case Target.Color:
 				glColorPointer(4, GL_FLOAT, stride, ptr);
 				break;
-			case Primitive.Target.TexCoords:
+			case Target.TexCoords:
 				glTexCoordPointer(2, GL_FLOAT, stride, ptr);
 				break;
 		}
@@ -102,19 +83,19 @@ public:
 	/**
 	 * Enable a specific client state (with glEnableClientState)
 	 * like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
-	 * with the corresponding Primitive.Target.
+	 * with the corresponding Target.
 	 */
-	static void enableState(Primitive.Target trg) {
-		if (trg & Primitive.Target.None)
-			Log.error("Invalid Primitive.Target");
+	static void enableState(Target trg) {
+		if (trg & Target.None)
+			Log.error("Invalid Target");
 		
-		if (trg & Primitive.Target.Vertex)
+		if (trg & Target.Vertex)
 			glEnableClientState(GL_VERTEX_ARRAY);
 		
-		if (trg & Primitive.Target.Color)
+		if (trg & Target.Color)
 			glEnableClientState(GL_COLOR_ARRAY);
 		
-		if (trg & Primitive.Target.TexCoords)
+		if (trg & Target.TexCoords)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	
@@ -122,30 +103,30 @@ public:
 	 * Enable all client states
 	 */
 	static void enableAllStates() {
-		VertexRenderer.enableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
+		VertexRenderer.enableState(Target.Vertex | Target.Color | Target.TexCoords);
 	}
 	
 	/**
 	 * Disable all client states
 	 */
 	static void disableAllStates() {
-		VertexRenderer.disableState(Primitive.Target.Vertex | Primitive.Target.Color | Primitive.Target.TexCoords);
+		VertexRenderer.disableState(Target.Vertex | Target.Color | Target.TexCoords);
 	}
 	
 	/**
 	 * Disable a specific client state (with glDisableClientState)
 	 */
-	static void disableState(Primitive.Target trg) {
-		if (trg & Primitive.Target.None)
-			Log.error("Invalid Primitive.Target");
+	static void disableState(Target trg) {
+		if (trg & Target.None)
+			Log.error("Invalid Target");
 		
-		if (trg & Primitive.Target.Vertex)
+		if (trg & Target.Vertex)
 			glDisableClientState(GL_VERTEX_ARRAY);
 		
-		if (trg & Primitive.Target.Color)
+		if (trg & Target.Color)
 			glDisableClientState(GL_COLOR_ARRAY);
 		
-		if (trg & Primitive.Target.TexCoords)
+		if (trg & Target.TexCoords)
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	
@@ -155,7 +136,7 @@ public:
 	 *
 	 * See: pointTo
 	 */
-	static void drawArrays(Primitive.Type ptype, size_t count, size_t start = 0) {
+	static void drawArrays(Shape.Type ptype, size_t count, size_t start = 0) {
 		glDrawArrays(ptype, cast(uint) start, cast(uint) count);
 	}
 	
@@ -165,7 +146,7 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawElements(Primitive.Type ptype, size_t count, uint[] indices) {
+	static void drawElements(Shape.Type ptype, size_t count, uint[] indices) {
 		if (indices.length == 0)
 			return;
 		
@@ -180,7 +161,7 @@ public:
 	 * 
 	 * See: pointTo
 	 */
-	static void drawRangeElements(Primitive.Type ptype, size_t count, uint[] indices, uint start = 0, uint end = 0) {
+	static void drawRangeElements(Shape.Type ptype, size_t count, uint[] indices, uint start = 0, uint end = 0) {
 		if (indices.length == 0)
 			return;
 		

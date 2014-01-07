@@ -9,7 +9,7 @@ private {
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Vector3;
 	import Dgame.Graphics.TileMap;
-	import Dgame.System.VertexBufferObject : Primitive;
+	import Dgame.System.VertexRenderer : Target;
 }
 
 class TiledMap : TileMap {
@@ -81,7 +81,7 @@ protected:
 		super._tmi.width *= super._tmi.tileWidth;
 		super._tmi.height *= super._tmi.tileHeight;
 		
-		super._vbo.bind(Primitive.Target.Vertex);
+		super._vbo.bind(Target.Vertex);
 		
 		if (!super._vbo.isCurrentEmpty())
 			super._vbo.modify(&vertices[0], vertices.length * Vector3f.sizeof);

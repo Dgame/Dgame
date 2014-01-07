@@ -32,6 +32,7 @@ private {
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Blend;
+	import Dgame.Graphics.Shape;
 	import Dgame.System.VertexRenderer;
 }
 
@@ -294,8 +295,8 @@ package:
 			dx,      dy + dh, 0f
 		];
 		
-		VertexRenderer.pointTo(Primitive.Target.Vertex, &vertices[0]);
-		VertexRenderer.pointTo(Primitive.Target.TexCoords, &texCoords[0]);
+		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
+		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
 		
 		scope(exit) {
 			VertexRenderer.disableAllStates();
@@ -304,7 +305,7 @@ package:
 		
 		this.bind();
 		
-		VertexRenderer.drawArrays(Primitive.Type.TriangleFan, vertices.length);
+		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
 	}
 	
 	void _render(ref const Viewport vp) const {

@@ -28,10 +28,12 @@ private {
 	
 	import Dgame.Internal.Log;
 	import Dgame.Internal.core;
+	import Dgame.System.VertexRenderer;
 	import Dgame.Graphics.Texture;
+	import Dgame.Graphics.Shape;
 }
 
-package import Dgame.System.VertexRenderer;
+public import Dgame.System.VertexRenderer : Target;
 
 /**
  * Usage methods
@@ -128,42 +130,41 @@ public:
 		/** The currently bound buffer object stores index values ​​for vertex arrays. */
 		Element = GL_ELEMENT_ARRAY_BUFFER
 	}
-	
-public:
+
 	const Type type;
-	const Primitive.Target targets;
+	const Target targets;
 	const ubyte numTargets;
 	
 private:
 	GLuint[3] _vboId;
-	Primitive.Target _curTarget;
-	ubyte[Primitive.Target] _targetIds;
-	bool[Primitive.Target] _dataAssigned;
+	Target _curTarget;
+	ubyte[Target] _targetIds;
+	bool[Target] _dataAssigned;
 	
 public:
 	/**
 	 * CTor
 	 */
-	this(Primitive.Target trg, Type type = Type.Array) {
-		if (trg == Primitive.Target.None)
+	this(Target trg, Type type = Type.Array) {
+		if (trg == Target.None)
 			Log.error("Invalid PointerTarget.");
 		
 		ubyte num_targets = 0;
-		if (Primitive.Target.Vertex & trg)
-			this._targetIds[Primitive.Target.Vertex] = num_targets++;
-		if (Primitive.Target.Color & trg)
-			this._targetIds[Primitive.Target.Color] = num_targets++;
-		if (Primitive.Target.TexCoords & trg)
-			this._targetIds[Primitive.Target.TexCoords] = num_targets++;
+		if (Target.Vertex & trg)
+			this._targetIds[Target.Vertex] = num_targets++;
+		if (Target.Color & trg)
+			this._targetIds[Target.Color] = num_targets++;
+		if (Target.TexCoords & trg)
+			this._targetIds[Target.TexCoords] = num_targets++;
 		
 		this.type = type;
 		this.targets = trg;
 		this.numTargets = num_targets;
-		this._curTarget = Primitive.Target.None;
+		this._curTarget = Target.None;
 		
 		glGenBuffers(this.numTargets, &this._vboId[0]);
 		
-		foreach (Primitive.Target id, _; this._targetIds) {
+		foreach (Target id, _; this._targetIds) {
 			this.bind(id);
 			
 			this._dataAssigned[id] = false;
@@ -179,7 +180,7 @@ public:
 	 * 
 	 * See: PointerTarget enum
 	 */
-	void bind(Primitive.Target trg) {
+	void bind(Target trg) {
 		if ((trg & this.targets) == 0)
 			return;
 		
@@ -193,7 +194,7 @@ public:
 	 * Unbind the current VBO.
 	 */
 	void unbind() {
-		this._curTarget = Primitive.Target.None;
+		this._curTarget = Target.None;
 		
 		glBindBuffer(this.type, 0);
 	}
@@ -203,7 +204,7 @@ public:
 	 * 
 	 * See: PointerTarget enum
 	 */
-	Primitive.Target getBound() const pure nothrow {
+	Target getBound() const pure nothrow {
 		return this._curTarget;
 	}
 	
@@ -211,7 +212,7 @@ public:
 	 * Returns if some PointerTarget is currently bound
 	 */
 	bool isSomethingBound() const pure nothrow {
-		return this._curTarget != Primitive.Target.None;
+		return this._curTarget != Target.None;
 	}
 	
 	/**
@@ -229,7 +230,7 @@ public:
 	 * If the target is invalid (because no such buffer exist)
 	 * an Exception is thrown.
 	 */
-	bool isEmpty(Primitive.Target trg) const {
+	bool isEmpty(Target trg) const {
 		if ((trg & this.targets) == 0)
 			Log.error("%s is not a valid target of this buffer.", trg);
 		
@@ -254,7 +255,7 @@ public:
 	 * See: isEmpty
 	 */
 	void depleteAll() {
-		foreach (Primitive.Target id, _; this._targetIds) {
+		foreach (Target id, _; this._targetIds) {
 			this.bind(id);
 			this.deplete();
 		}
@@ -309,7 +310,7 @@ public:
 	 * See: glTexCoordPointer
 	 * See: PointerTarget enum.
 	 */
-	void pointTo(Primitive.Target trg, ubyte stride = 0, ubyte offset = 0) {
+	void pointTo(Target trg, ubyte stride = 0, ubyte offset = 0) {
 		this.bind(trg);
 		
 		VertexRenderer.pointTo(trg, null, stride, offset);
@@ -320,7 +321,7 @@ public:
 	 * like GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	 * with the corresponding PointerTarget.
 	 */
-	void enableState(Primitive.Target trg) const {
+	void enableState(Target trg) const {
 		VertexRenderer.enableState(trg);
 	}
 	
@@ -341,7 +342,7 @@ public:
 	/**
 	 * Disable a specific client state (with glDisableClientState)
 	 */
-	void disableState(Primitive.Target trg) const {
+	void disableState(Target trg) const {
 		VertexRenderer.disableState(trg);
 	}
 	
@@ -349,7 +350,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices.
 	 */
-	void drawArrays(Primitive.Type ptype, size_t count, uint start = 0) const {
+	void drawArrays(Shape.Type ptype, size_t count, uint start = 0) const {
 		VertexRenderer.drawArrays(ptype, count, start);
 	}
 	
@@ -357,7 +358,7 @@ public:
 	 * Draw shapes of the specific type from the current VBO data.
 	 * It will use count vertices and indices for the correct index per vertex.
 	 */
-	void drawElements(Primitive.Type ptype, size_t count, uint[] indices) const {
+	void drawElements(Shape.Type ptype, size_t count, uint[] indices) const {
 		VertexRenderer.drawElements(ptype, count, indices);
 	}
 	
@@ -367,7 +368,7 @@ public:
 	 *
 	 * Note: If start or end are -1 or below, 0 and indices.length are used.
 	 */
-	void drawRangeElements(Primitive.Type ptype, size_t count, uint[] indices, int start = -1, int end = -1) const {
+	void drawRangeElements(Shape.Type ptype, size_t count, uint[] indices, int start = -1, int end = -1) const {
 		VertexRenderer.drawRangeElements(ptype, count, indices, start, end);
 	}
 	
@@ -375,8 +376,8 @@ public:
 	 * Bind a texture to this Buffer.
 	 * It's a shortcut for:
 	 * ----
-	 * buf.pointTo(Primitive.Target.TexCoords);
-	 * buf.pointTo(Primitive.Target.Vertex);
+	 * buf.pointTo(Target.TexCoords);
+	 * buf.pointTo(Target.Vertex);
 	 * 
 	 * tex.bind();
 	 * ----
@@ -385,8 +386,8 @@ public:
 	 * tex.unbind(); and buf.disableAllStates();
 	 */
 	void bindTexture(const Texture tex) {
-		this.pointTo(Primitive.Target.TexCoords);
-		this.pointTo(Primitive.Target.Vertex);
+		this.pointTo(Target.TexCoords);
+		this.pointTo(Target.Vertex);
 		
 		tex.bind();
 	}
