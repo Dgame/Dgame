@@ -130,30 +130,30 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Supported operations: +=, -=, *=, /=, %=
 	 */
-	Rect!T opBinary(string op)(ref const Rect!T rect) const pure nothrow {
+	Rect opBinary(string op)(ref const Rect rect) const pure nothrow {
 		switch (op) {
 			case "+":
-				return Rect!T(this.x + rect.x,
+				return Rect(this.x + rect.x,
 				              this.y + rect.y,
 				              this.width + rect.width,
 				              this.height + rect.height);
 			case "-":
-				return Rect!T(this.x - rect.x,
+				return Rect(this.x - rect.x,
 				              this.y - rect.y,
 				              this.width - rect.width,
 				              this.height - rect.height);
 			case "*":
-				return Rect!T(this.x * rect.x,
+				return Rect(this.x * rect.x,
 				              this.y * rect.y,
 				              this.width * rect.width,
 				              this.height * rect.height);
 			case "/":
-				return Rect!T(this.x / rect.x,
+				return Rect(this.x / rect.x,
 				              this.y / rect.y,
 				              this.width / rect.width,
 				              this.height / rect.height);
 			case "%":
-				return Rect!T(this.x % rect.x,
+				return Rect(this.x % rect.x,
 				              this.y % rect.y,
 				              this.width % rect.width,
 				              this.height % rect.height);
@@ -196,8 +196,8 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Returns an union of the given and this Rect.
 	 */
-	Rect!T getUnion(ref const Rect!T rect) const {
-		Rect!T union_rect = void;
+	Rect getUnion(ref const Rect rect) const {
+		Rect union_rect = void;
 		
 		SDL_Rect* uptr = union_rect.ptr;
 		SDL_UnionRect(this.ptr, rect.ptr, uptr);
@@ -233,7 +233,7 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
 	 */
-	bool opEquals(ref const Rect!T rect) const {
+	bool opEquals(ref const Rect rect) const {
 		return SDL_RectEquals(this.ptr, rect.ptr);
 	}
 	
@@ -250,7 +250,7 @@ struct Rect(T) if (isNumeric!T) {
 	 * If, and the parameter 'overlap' isn't null,
 	 * the colliding rectangle is stored there.
 	 */
-	bool intersects(ref const Rect!T rect, Rect!(T)* overlap = null) const {
+	bool intersects(ref const Rect rect, Rect!(T)* overlap = null) const {
 		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
 			if (overlap !is null) {
 				SDL_Rect* optr = overlap.ptr;
@@ -267,7 +267,7 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
-	static Rect!T enclosePoints(const Vector2!T[] points) {
+	static Rect enclosePoints(const Vector2!T[] points) {
 		import Dgame.Internal.Allocator : New, Delete;
 		
 		SDL_Point* sdl_points = New!SDL_Point[points.length];
@@ -277,7 +277,7 @@ struct Rect(T) if (isNumeric!T) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 		
-		Rect!T rect = void;
+		Rect rect = void;
 		SDL_Rect* rptr = rect.ptr;
 		SDL_EnclosePoints(sdl_points, cast(uint) points.length, null, rptr);
 		rect.adaptTo(*rptr);
