@@ -54,21 +54,28 @@ public:
 	 * This only matters, if you slide without Grid.Column.
 	 */
 	ubyte row;
-	
+
+private:
+	short _loopCount;
+	ushort _passedLoops;
+
+public:
 final:
 	/**
 	 * CTor
 	 */
-	this(Texture tex) {
+	this(Texture tex, short lc = -1) {
 		super(tex);
+
+		this.setLoopCount(lc);
 	}
-	
+
 	/**
 	 * CTor
 	 */
-	this(Texture tex, ref const ShortRect texView) {
-		this(tex);
-		
+	this(Texture tex, ref const ShortRect texView, short lc = -1) {
+		this(tex, lc);
+
 		super.setTextureRect(texView);
 	}
 	
@@ -77,8 +84,36 @@ final:
 	 * 
 	 * Rvalue version
 	 */
-	this(Texture tex, const ShortRect texView) {
-		this(tex, texView);
+	this(Texture tex, const ShortRect texView, short lc = -1) {
+		this(tex, texView, lc);
+	}
+
+	/**
+	 * Set the current loop count.
+	 * This specif how often the whole Animation is played.
+	 * A value of < 0 means: infinite playing.
+	 */
+	void setLoopCount(short loopCount) pure nothrow {
+		this._loopCount = loopCount;
+		this._passedLoops = 0;
+	}
+
+	/**
+	 * Get the current loop count.
+	 * This specif how often the whole Animation is played.
+	 * A value of < 0 means: infinite playing.
+	 */
+	short getLoopCount() const pure nothrow {
+		return this._loopCount;
+	}
+
+	/**
+	 * Execute the animation N times where N is the number of the current loop count.
+	 * If N is < 0, the animation runs infinite.
+	 */
+	void execute(Grid grid = Grid.Both) {
+		if (this._loopCount < 0 || this._loopCount > this._passedLoops)
+			this.slideTextureRect(grid);
 	}
 	
 	/**
@@ -106,15 +141,22 @@ final:
 		if (grid & Grid.Row) {
 			if ((rect.x + w) < super._tex.width)
 				rect.x += w;
-			else
+			else {
 				rect.x = 0;
+
+				if ((grid & Grid.Column) == 0)
+					this._passedLoops++;
+			}
 		}
 		
 		if (grid & Grid.Column && rect.x == 0) {
 			if ((rect.y + h) < super._tex.height)
 				rect.y += h;
-			else
+			else {
 				rect.y = 0;
+
+				this._passedLoops++;
+			}
 		}
 	}
 }

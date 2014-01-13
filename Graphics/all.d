@@ -31,7 +31,6 @@ public {
 	import Dgame.Graphics.Shape;
 	import Dgame.Graphics.Sprite;
 	import Dgame.Graphics.Spritesheet;
-	import Dgame.Graphics.Unit;
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Renderer;
 	import Dgame.Graphics.RendererTexture;

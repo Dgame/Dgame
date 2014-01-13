@@ -24,6 +24,7 @@
 module Dgame.Audio.WaveFile;
 
 private {
+	debug import std.stdio;
 	import std.string : toStringz;
 	
 	import derelict.openal.al;
@@ -32,7 +33,7 @@ private {
 	import Dgame.Audio.SoundFile;
 }
 
-struct Header {
+struct WaveHeader {
 	// RIFF - CHUNK
 	char[4] riff; // Enthält den Namen "RIFF"
 	uint riff_length;  // Enthält Länge des Riffchunks
@@ -47,7 +48,10 @@ struct Header {
 	ushort block_align;
 	ushort bits_per_sample;
 	char[4] data;
-	uint data_size;
+}
+
+struct DataHeader {
+	uint chunkSize;
 }
 
 /**
@@ -65,28 +69,38 @@ protected:
 			fp = null;
 		}
 		
-		Header header = void;
-		fread(&header, Header.sizeof, 1, fp);
+		WaveHeader wHeader = void;
+		fread(&wHeader, WaveHeader.sizeof, 1, fp);
 		
-		if (header.riff != "RIFF")
-			throw new Exception("No RIFF: " ~ header.riff.idup);
-		if (header.wave != "WAVE")
-			throw new Exception("No WAVE: " ~ header.wave.idup);
-		if (header.fmt[0 .. 3] != "fmt")
-			throw new Exception("No fmt: " ~ header.fmt.idup);
-		if (header.data != "data")
-			throw new Exception("No data: " ~ header.data.idup);
+		if (wHeader.riff != "RIFF")
+			throw new Exception("No RIFF: " ~ wHeader.riff.idup);
+		if (wHeader.wave != "WAVE")
+			throw new Exception("No WAVE: " ~ wHeader.wave.idup);
+		if (wHeader.fmt[0 .. 3] != "fmt")
+			throw new Exception("No fmt: " ~wHeader.fmt.idup);
 
-		super._buffer = new byte[header.data_size];
-		fread(super._buffer.ptr, byte.sizeof, header.data_size, fp);
+		DataHeader dHeader = void;
+		if (wHeader.data == "data") {
+			fread(&dHeader, DataHeader.sizeof, 1, fp);
+		} else {
+			throw new Exception("Expected data chunk, not: " ~ wHeader.data.idup);
+		}
 
-		super._sFile.rate = header.sample_rate;
-		super._sFile.dataSize = header.data_size;
-		super._sFile.channels = header.channels;
-		super._sFile.bits =  header.bits_per_sample;
-		super._sFile.bytes = header.bits_per_sample / 8;
-		
-		debug Log.info("Allocate %d memory for Wave file %s.", header.data_size, filename);
+		if (dHeader.chunkSize == 0)
+			throw new Exception("Invalid size");
+
+		super._buffer = new byte[dHeader.chunkSize];
+		fread(super._buffer.ptr, byte.sizeof, dHeader.chunkSize, fp);
+
+		super._sFile.rate = wHeader.sample_rate;
+		super._sFile.dataSize = dHeader.chunkSize;
+		super._sFile.channels = wHeader.channels;
+		super._sFile.bits =  wHeader.bits_per_sample;
+		super._sFile.bytes = wHeader.bits_per_sample / 8;
+
+		//writeln(filename, "::", wHeader);
+
+		debug Log.info("Allocate %d memory for Wave file %s.", dHeader.chunkSize, filename);
 	}
 	
 public:

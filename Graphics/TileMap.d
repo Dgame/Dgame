@@ -25,6 +25,8 @@ module Dgame.Graphics.TileMap;
 
 private {
 	import std.math : log2, pow, round, ceil, floor, fmax;
+	import std.file : exists;
+	import std.path : dirName;
 	
 	import derelict.opengl3.gl;
 	import derelict.sdl2.sdl;
@@ -183,6 +185,9 @@ protected:
 		ShortRect[ushort] used;
 		uint doubly = 0;
 
+		if (!.exists(this._tmi.source))
+			this._tmi.source = dirName(this._filename) ~ '/' ~ this._tmi.source;
+
 		Surface tileset = Surface(this._tmi.source);
 
 		/// Sammeln der Tiles, die wirklich benötigt werden
@@ -199,8 +204,7 @@ protected:
 		if (this._doCompress)
 			this._compress(tileset, used);
 		else {
-			tileset.saveToFile("new_tilset.png");
-			
+			//tileset.saveToFile("new_tilset.png");
 			Texture.Format t_fmt = Texture.Format.None;
 			if (!tileset.isMask(Surface.Mask.Red, 0x000000ff))
 				t_fmt = tileset.bits == 24 ? Texture.Format.BGR : Texture.Format.BGRA;
