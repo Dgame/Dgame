@@ -107,8 +107,38 @@ public:
 	bool collideWith(const ShortRect rect) const {
 		return this.collideWith(rect);
 	}
-	
+
 final:
+	/**
+	 * Returns the current width.
+	 * If a TextureRect is present, it returns the width of them,
+	 * otherwise the width of the current texture.
+	 */
+	@property
+	ushort width() const in {
+		assert(this._tex !is null);
+	} body {
+		if (this.hasTextureRect())
+			return this._texView.width;
+
+		return this._tex.width;
+	}
+
+	/**
+	 * Returns the current height.
+	 * If a TextureRect is present, it returns the height of them,
+	 * otherwise the height of the current texture.
+	 */
+	@property
+	ushort height() const in {
+		assert(this._tex !is null);
+	} body {
+		if (this.hasTextureRect())
+			return this._texView.height;
+		
+		return this._tex.height;
+	}
+
 	/**
 	 * Set a Texture Rect.
 	 * This indicates which area of the Texture is drawn.
