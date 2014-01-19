@@ -4,33 +4,25 @@ private {
 	debug import std.stdio : writefln;
 }
 
+T* type_malloc(T)(size_t count) {
+	import core.stdc.stdlib : malloc;
+	
+	return cast(T*) malloc(T.sizeof * count);
+}
+
+T* type_calloc(T)(size_t count) {
+	import core.stdc.stdlib : calloc;
+	
+	return cast(T*) calloc(T.sizeof, count);
+}
+
+void type_free(T)(T* ptr) {
+	import core.stdc.stdlib : free;
+
+	free(ptr);
+}
+
 enum Init : ubyte {
 	No,
 	Yes
-}
-
-struct New(T, Init init = Init.No) if (!is(T : U[], U)) {
-	static T* opIndex(size_t size) {
-		import core.stdc.stdlib : malloc, calloc;
-		
-		static if (init == Init.Yes)
-			T* ptr = cast(T*) calloc(size, T.sizeof);
-		else
-			T* ptr = cast(T*) malloc(size * T.sizeof);
-		
-		debug writefln(" :: Allocate %d %s's. ptr = %x", size, T.stringof, ptr);
-		
-		return ptr;
-	}
-}
-
-struct Delete {
-	static void opCall(void* ptr) {
-		import core.stdc.stdlib : free;
-		
-		debug writefln(" :: Free ptr = %x", ptr);
-		
-		free(ptr);
-		ptr = null;
-	}
 }

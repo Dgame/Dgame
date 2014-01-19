@@ -123,10 +123,11 @@ struct shared_ptr(T)
 				debug writefln("\tShared: Destroy type %s (ptr = %X)",
 				               __traits(identifier, T), this.ptr);
 				this._share.deleter(this._share.ptr);
-				this._share.ptr = null;
-				delete this._share;
-				this._share = null;
 			}
+
+			this._share.ptr = null;
+			delete this._share;
+			this._share = null;
 		}
 	}
 	

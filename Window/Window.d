@@ -28,6 +28,7 @@ private {
 	import derelict.opengl3.gl;
 
 	import Dgame.Internal.Log;
+	import Dgame.Internal.Unique;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -288,10 +289,9 @@ final:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 
-		import Dgame.Internal.Allocator : New, Delete;
+		import Dgame.Internal.Allocator : type_malloc;
 
-		ubyte* tmpLine = New!ubyte[lineWidth];
-		scope(exit) Delete(tmpLine);
+		unique_ptr!(ubyte) tmpLine = type_malloc!(ubyte)(lineWidth);
 		
 		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
