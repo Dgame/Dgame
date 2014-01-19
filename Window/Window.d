@@ -28,7 +28,6 @@ private {
 	import derelict.opengl3.gl;
 
 	import Dgame.Internal.Log;
-	import Dgame.Internal.Unique;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;

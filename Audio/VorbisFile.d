@@ -33,7 +33,6 @@ private {
 	import derelict.ogg.vorbistypes;
 
 	import Dgame.Internal.Log;
-	import Dgame.Internal.Unique;
 	import Dgame.Audio.SoundFile;
 }
 

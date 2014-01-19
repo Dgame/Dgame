@@ -30,7 +30,6 @@ private {
 	import derelict.sdl2.sdl;
 	
 	import Dgame.Internal.util : CircularBuffer;
-	import Dgame.Internal.Unique;
 	import Dgame.Math.Vector2;
 }
 
