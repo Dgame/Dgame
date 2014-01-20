@@ -27,26 +27,19 @@ private {
 	debug import std.stdio : writeln;
 	
 	import derelict.sdl2.sdl;
-	
-	import Dgame.Internal.util : CircularBuffer;
 }
 
-private struct ColorCBuffer {
-	CircularBuffer!(SDL_Color) _buf;
+SDL_Color* transfer(const Color* col, SDL_Color* to) pure nothrow
+in {
+	assert(to !is null);
+} body {
+	if (col is null)
+		return null;
 	
-	SDL_Color* put(ref const Color col) pure nothrow {
-		SDL_Color* pcol = this._buf.get();
-		
-		pcol.r = col.red;
-		pcol.g = col.green;
-		pcol.b = col.blue;
-		pcol.unused = col.alpha;
-		
-		return pcol;
-	}
+	col.transferTo(to);
+	
+	return to;
 }
-
-static ColorCBuffer _cbuf;
 
 /**
  * Color defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
@@ -120,11 +113,16 @@ struct Color {
 	}
 	
 	/**
-	 * Returns a SDL_Color pointer.
+	 * Transfer the internal data to the SDL_Color
 	 */
-	@property
-	SDL_Color* ptr() const {
-		return _cbuf.put(this);
+	void transferTo(SDL_Color* col) const pure nothrow
+	in {
+		assert(col !is null, "Cannot transfer anything to null.");
+	} body {
+		col.r = this.red;
+		col.g = this.green;
+		col.b = this.blue;
+		col.unused = this.alpha;
 	}
 	
 	/**

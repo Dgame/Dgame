@@ -28,34 +28,21 @@ private {
 	import std.traits : isNumeric;
 	
 	import derelict.sdl2.sdl;
-	
-	import Dgame.Internal.util : CircularBuffer;
+
 	import Dgame.Math.Vector2;
 }
 
-private struct RectCBuffer {
-	CircularBuffer!(SDL_Rect) _buf;
-	
-	SDL_Rect* put(T)(ref const Rect!T rect) pure nothrow {
-		SDL_Rect* rptr = this._buf.get();
-		
-		static if (is(T : int)) {
-			rptr.x = rect.x;
-			rptr.y = rect.y;
-			rptr.w = rect.width;
-			rptr.h = rect.height;
-		} else {
-			rptr.x = cast(int) rect.x;
-			rptr.y = cast(int) rect.y;
-			rptr.w = cast(int) rect.width;
-			rptr.h = cast(int) rect.height;
-		}
-		
-		return rptr;
-	}
-}
+SDL_Rect* transfer(T)(const Rect!(T)* rect, SDL_Rect* to) pure nothrow
+in {
+	assert(to !is null);
+} body {
+	if (rect is null)
+		return null;
 
-private static RectCBuffer _cbuf;
+	rect.transferTo(to);
+
+	return to;
+}
 
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
@@ -103,7 +90,12 @@ struct Rect(T) if (isNumeric!T) {
 			     cast(T) rect.width, cast(T) rect.height);
 		}
 	}
-	
+
+	this(ref const SDL_Rect rect) {
+		this(cast(T) rect.x, cast(T) rect.y,
+		     cast(T) rect.w, cast(T) rect.h);
+	}
+
 	debug(Dgame)
 	this(this) {
 		writeln("Postblit");
@@ -115,16 +107,16 @@ struct Rect(T) if (isNumeric!T) {
 	}
 	
 	/**
-	 * Returns a pointer to the inner SDL_Rect.
+	 * Transfer the internal data to the SDL_Rect.
 	 */
-	@property
-	SDL_Rect* ptr() const {
-		return _cbuf.put(this);
-	}
-	
-	void adaptTo(ref const SDL_Rect rect) pure nothrow {
-		this.set(cast(T) rect.x, cast(T) rect.y,
-		         cast(T) rect.w, cast(T) rect.h);
+	void transferTo(SDL_Rect* rect) const pure nothrow
+	in {
+		assert(rect !is null, "Cannot transfer anything to null.");
+	} body {
+		rect.x = cast(int) this.x;
+		rect.y = cast(int) this.y;
+		rect.w = cast(int) this.width;
+		rect.h = cast(int) this.height;
 	}
 	
 	/**
@@ -174,7 +166,10 @@ struct Rect(T) if (isNumeric!T) {
 	 * Checks if this Rect is empty (if it's collapsed) with SDL_RectEmpty.
 	 */
 	bool isEmpty() const {
-		return SDL_RectEmpty(this.ptr) == SDL_TRUE;
+		SDL_Rect a = void;
+		this.transferTo(&a);
+
+		return SDL_RectEmpty(&a) == SDL_TRUE;
 	}
 	
 	/**
@@ -197,21 +192,22 @@ struct Rect(T) if (isNumeric!T) {
 	 * Returns an union of the given and this Rect.
 	 */
 	Rect getUnion(ref const Rect rect) const {
-		Rect union_rect = void;
-		
-		SDL_Rect* uptr = union_rect.ptr;
-		SDL_UnionRect(this.ptr, rect.ptr, uptr);
-		union_rect.adaptTo(*uptr);
-		
-		return union_rect;
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+		SDL_Rect c = void;
+
+		this.transferTo(&a);
+		rect.transferTo(&b);
+
+		SDL_UnionRect(&a, &b, &c);
+
+		return Rect(c);
 	}
 	
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool opBinaryRight(string op)(ref Vector2!T vec) const pure nothrow
-		if (op == "in")
-	{
+	bool opBinaryRight(string op : "in")(ref Vector2!T vec) const pure nothrow {
 		return this.contains(vec);
 	}
 	
@@ -234,7 +230,13 @@ struct Rect(T) if (isNumeric!T) {
 	 * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
 	 */
 	bool opEquals(ref const Rect rect) const {
-		return SDL_RectEquals(this.ptr, rect.ptr);
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		this.transferTo(&a);
+		rect.transferTo(&b);
+
+		return SDL_RectEquals(&a, &b);
 	}
 	
 	/**
@@ -250,12 +252,18 @@ struct Rect(T) if (isNumeric!T) {
 	 * If, and the parameter 'overlap' isn't null,
 	 * the colliding rectangle is stored there.
 	 */
-	bool intersects(ref const Rect rect, Rect!(T)* overlap = null) const {
-		if (SDL_HasIntersection(this.ptr, rect.ptr)) {
+	bool intersects(ref const Rect rect, Rect* overlap = null) const {
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		if (SDL_HasIntersection(&a, &b)) {
 			if (overlap !is null) {
-				SDL_Rect* optr = overlap.ptr;
-				SDL_IntersectRect(this.ptr, rect.ptr, optr);
-				overlap.adaptTo(*optr);
+				SDL_Rect c = void;
+				overlap.transferTo(&c);
+
+				SDL_IntersectRect(&a, &b, &c);
+				overlap.set(cast(T) c.x, cast(T) c.y,
+				            cast(T) c.w, cast(T) c.h);
 			}
 			
 			return true;
@@ -274,13 +282,11 @@ struct Rect(T) if (isNumeric!T) {
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
-		
-		Rect rect = void;
-		SDL_Rect* rptr = rect.ptr;
-		SDL_EnclosePoints(sdl_points, cast(uint) points.length, null, rptr);
-		rect.adaptTo(*rptr);
-		
-		return rect;
+
+		SDL_Rect a = void;
+		SDL_EnclosePoints(sdl_points, cast(uint) points.length, null, &a);
+
+		return Rect(a);
 	}
 	
 	/**
@@ -356,41 +362,6 @@ struct Rect(T) if (isNumeric!T) {
 	 */
 	T[4] asArray() const pure nothrow {
 		return [this.x, this.y, this.width, this.height];
-	}
-	
-	/**
-	 * Calculate and returns the x distance, also called side a.
-	 */
-	T distanceX() const pure nothrow {
-		return cast(T)(this.width - this.x);
-	}
-	
-	/**
-	 * Calculate and returns the y distance, also called side b.
-	 */
-	T distanceY() const pure nothrow {
-		return cast(T)(this.height - this.y);
-	}
-	
-	/**
-	 * Calculate and returns the size of the area.
-	 */
-	T getArea() const pure nothrow {
-		return cast(T)(this.distanceX() * this.distanceY());
-	}
-	
-	/**
-	 * Calculate and return the size of the extent.
-	 */
-	T getExtent() const pure nothrow {
-		return cast(T)((2 * this.distanceX()) + (2 * this.distanceY()));
-	}
-	
-	/**
-	 * Calculate and returns the diagonal distance.
-	 */
-	float diagonal() const pure nothrow {
-		return sqrt(0f + pow(this.distanceX(), 2) + pow(this.distanceY(), 2));
 	}
 }
 

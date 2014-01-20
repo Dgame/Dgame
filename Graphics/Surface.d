@@ -245,7 +245,9 @@ public:
 	 * If it's null, the whole Surface is filled.
 	 */
 	void fill(ref const Color col, const ShortRect* rect = null) {
-		const SDL_Rect* ptr = rect ? rect.ptr : null;
+		SDL_Rect a = void;
+		const SDL_Rect* ptr = transfer(rect, &a);
+
 		const uint key = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
 		
 		SDL_FillRect(this._target, ptr, key);
@@ -262,10 +264,11 @@ public:
 	 * Fills multiple areas of the Surface with the given color.
 	 */
 	void fillAreas(ref const Color col, const ShortRect[] rects) {
-		const SDL_Rect* ptr = (rects.length > 0) ? rects[0].ptr : null;
+		SDL_Rect a = void;
+		const SDL_Rect* ptr_start = (rects.length > 0) ? transfer(&rects[0], &a) : null;
 		const uint key = SDL_MapRGBA(this._target.format, col.red, col.green, col.blue, col.alpha);
 		
-		SDL_FillRects(this._target, ptr, cast(int) rects.length, key);
+		SDL_FillRects(this._target, ptr_start, cast(uint) rects.length, key);
 	}
 	
 	/**
@@ -426,17 +429,20 @@ public:
 	 * The clip rect is the area of the surface which is drawn.
 	 */
 	ShortRect getClipRect() {
-		ShortRect rect;
-		SDL_GetClipRect(this._target, rect.ptr);
-		
-		return rect;
+		SDL_Rect clip = void;
+		SDL_GetClipRect(this._target, &clip);
+
+		return ShortRect(clip);
 	}
 	
 	/**
 	 * Set the clip rect.
 	 */
 	void setClipRect(ref const ShortRect clip) {
-		SDL_SetClipRect(this._target, clip.ptr);
+		SDL_Rect a = void;
+		clip.transferTo(&a);
+
+		SDL_SetClipRect(this._target, &a);
 	}
 	
 	/**
@@ -637,8 +643,11 @@ public:
 	bool blitScaled(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
 		assert(srfc !is null, "Null surface cannot be blit.");
 	} body {
-		const SDL_Rect* src_ptr = src ? src.ptr : null;
-		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		const SDL_Rect* src_ptr = transfer(src, &a);
+		SDL_Rect* dst_ptr = transfer(dst, &b);
 		
 		return SDL_BlitScaled(srfc, src_ptr, this._target, dst_ptr) == 0;
 	}
@@ -656,8 +665,11 @@ public:
 	bool lowerBlit(SDL_Surface* srfc, ShortRect* src = null, ShortRect* dst = null) in {
 		assert(srfc !is null, "Null surface cannot be blit.");
 	} body {
-		SDL_Rect* src_ptr = src ? src.ptr : null;
-		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		SDL_Rect* src_ptr = transfer(src, &a);
+		SDL_Rect* dst_ptr = transfer(dst, &b);
 		
 		return SDL_LowerBlit(srfc, src_ptr, this._target, dst_ptr) == 0;
 	}
@@ -679,8 +691,11 @@ public:
 	bool blit(SDL_Surface* srfc, const ShortRect* src = null, ShortRect* dst = null) in {
 		assert(srfc !is null, "Null surface cannot be blit.");
 	} body {
-		const SDL_Rect* src_ptr = src ? src.ptr : null;
-		SDL_Rect* dst_ptr = dst ? dst.ptr : null;
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		const SDL_Rect* src_ptr = transfer(src, &a);
+		SDL_Rect* dst_ptr = transfer(dst, &b);
 		
 		return SDL_BlitSurface(srfc, src_ptr, this._target, dst_ptr) == 0;
 	}
@@ -692,8 +707,11 @@ public:
 	Surface subSurface(ref const ShortRect rect) {
 		SDL_Surface* sub = this.create(rect.width, rect.height);
 		enforce(sub !is null, "Failed to construct a sub surface.");
-		
-		if (SDL_BlitSurface(this._target, rect.ptr, sub, null) != 0)
+
+		SDL_Rect clip = void;
+		rect.transferTo(&clip);
+
+		if (SDL_BlitSurface(this._target, &clip, sub, null) != 0)
 			throw new Exception("An error occured by blitting the subsurface.");
 		
 		return Surface(sub);

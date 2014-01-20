@@ -266,8 +266,11 @@ public:
 	 * Use this function to copy a portion of the texture to the current rendering target.
 	 */
 	bool copy(ref RendererTexture hw, const ShortRect* src = null, const ShortRect *dst = null) {
-		const SDL_Rect* _src = src ? src.ptr : null;
-		const SDL_Rect* _dst = dst ? dst.ptr : null;
+		SDL_Rect a = void;
+		SDL_Rect b = void;
+
+		const SDL_Rect* _src = transfer(src, &a);
+		const SDL_Rect* _dst = transfer(dst, &b);
 		
 		return SDL_RenderCopy(this._target, hw.ptr, _src, _dst) == 0;
 	}
@@ -283,7 +286,10 @@ public:
 	 * Use this function to set the drawing area for rendering on the current target.
 	 */
 	void setViewport(ref const ShortRect view) {
-		SDL_RenderSetViewport(this._target, view.ptr);
+		SDL_Rect a = void;
+		view.transferTo(&a);
+
+		SDL_RenderSetViewport(this._target, &a);
 	}
 	
 	/**
@@ -297,10 +303,10 @@ public:
 	 * Use this function to get the drawing area for the current target.
 	 */
 	ShortRect getViewport() {
-		ShortRect rect;
-		SDL_RenderGetViewport(this._target, rect.ptr);
+		SDL_Rect a = void;
+		SDL_RenderGetViewport(this._target, &a);
 		
-		return rect;
+		return ShortRect(a);
 	}
 	
 	/**
@@ -312,7 +318,11 @@ public:
 	 */
 	void* readPixels(const ShortRect* rect) {
 		void[] pixels = new void[rect.width * rect.height * 4];
-		SDL_RenderReadPixels(this._target, rect ? rect.ptr : null, 0, &pixels[0], this._width * 4);
+
+		SDL_Rect a = void;
+		const SDL_Rect* area = transfer(rect, &a);
+
+		SDL_RenderReadPixels(this._target, area, 0, &pixels[0], this._width * 4);
 		
 		return &pixels[0];
 	}

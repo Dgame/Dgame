@@ -95,21 +95,24 @@ private:
 		scope(exit) SDL_FreeSurface(srfc);
 		
 		immutable char* cstr = toStringz(this._text);
-		
-		SDL_Color* fg = this._fg.ptr;
-		SDL_Color* bg = this._bg.ptr;
+
+		SDL_Color fg = void;
+		SDL_Color bg = void;
+
+		this._fg.transferTo(&fg);
+		this._bg.transferTo(&bg);
 		
 		const Font.Mode fmode = this._font.getMode();
 		
 		final switch (fmode) {
 			case Font.Mode.Solid:
-				srfc = TTF_RenderUTF8_Solid(this._font.ptr, cstr, *fg);
+				srfc = TTF_RenderUTF8_Solid(this._font.ptr, cstr, fg);
 				break;
 			case Font.Mode.Shaded:
-				srfc = TTF_RenderUTF8_Shaded(this._font.ptr, cstr, *fg, *bg);
+				srfc = TTF_RenderUTF8_Shaded(this._font.ptr, cstr, fg, bg);
 				break;
 			case Font.Mode.Blended:
-				srfc = TTF_RenderUTF8_Blended(this._font.ptr, cstr, *fg);
+				srfc = TTF_RenderUTF8_Blended(this._font.ptr, cstr, fg);
 				break;
 		}
 		

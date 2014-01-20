@@ -55,7 +55,7 @@ enum ushort height = 640;
 void main() {
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
 	wnd.setVerticalSync(Window.Sync.Disable);
-	wnd.setFpsLimit(15);
+//	wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	
 	{

@@ -84,7 +84,10 @@ public:
 	 * Use this function to set the rectangle used to type Unicode text inputs.
 	 */
 	static void setTextInputRect(ref ShortRect rect) {
-		SDL_SetTextInputRect(rect.ptr);
+		SDL_Rect input = void;
+		rect.transferTo(&input);
+
+		SDL_SetTextInputRect(&input);
 	}
 	
 	/**

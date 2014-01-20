@@ -127,8 +127,9 @@ public:
 	void* lock(out int pitch, const ShortRect* area = null) {
 		if (this.access & Access.Static)
 			return null;
-		
-		const SDL_Rect* rect_ptr = area ? area.ptr : null;
+
+		SDL_Rect a = void;
+		const SDL_Rect* rect_ptr = transfer(area, &a);
 		
 		void* pixels;
 		SDL_LockTexture(this._target, rect_ptr, &pixels, &pitch);
@@ -161,8 +162,9 @@ public:
 	/**
 	 * Use this function to update the given texture rectangle with new pixel data.
 	 */
-	void update(const void* pixels, const ShortRect* rect, int pitch = -1) {
-		const SDL_Rect* dst_ptr = rect ? rect.ptr : null;
+	void update(const void* pixels, const ShortRect* rect = null, int pitch = -1) {
+		SDL_Rect a = void;
+		const SDL_Rect* dst_ptr = transfer(rect, &a);
 		
 		SDL_UpdateTexture(this._target, dst_ptr, pixels, !pitch ? this.width * 4 : pitch);
 	}
