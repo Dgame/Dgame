@@ -288,10 +288,11 @@ final:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 
-		import Dgame.Internal.Allocator : auto_ptr, type_malloc;
+		import Dgame.Internal.Allocator : type_malloc, type_free;
 
-		auto_ptr!(ubyte) tmpLine = type_malloc!ubyte(lineWidth);
-		
+		ubyte* tmpLine = type_malloc!ubyte(lineWidth);
+		scope(exit) type_free(tmpLine);
+
 		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
 			const uint tmpIdx2 = (i + 1) * lineWidth;

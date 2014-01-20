@@ -70,9 +70,10 @@ protected:
 		debug Log.info("Allocate %d memory for Vorbis file %s.", _sFile.dataSize, filename);
 		super._buffer = new byte[super._sFile.dataSize];
 
-		import Dgame.Internal.Allocator : auto_ptr, type_malloc;
+		import Dgame.Internal.Allocator : type_malloc, type_free;
 		
-		auto_ptr!(byte) tmpBuf = type_malloc!byte(ushort.max);
+		byte* tmpBuf = type_malloc!byte(ushort.max);
+		scope(exit) type_free(tmpBuf);
 
 		uint inserted = 0;
 		while (true) {

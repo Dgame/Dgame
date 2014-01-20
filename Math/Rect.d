@@ -276,8 +276,10 @@ struct Rect(T) if (isNumeric!T) {
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
 	static Rect enclosePoints(const Vector2!T[] points) {
-		import Dgame.Internal.Allocator : auto_ptr, type_malloc;
-		auto_ptr!(SDL_Point) sdl_points = type_malloc!(SDL_Point)(points.length);
+		import Dgame.Internal.Allocator : type_malloc, type_free;
+
+		SDL_Point* sdl_points = type_malloc!(SDL_Point)(points.length);
+		scope(exit) type_free(sdl_points);
 
 		foreach (i, ref const Vector2!T p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
