@@ -4,13 +4,13 @@ private {
 	debug import std.stdio : writefln;
 }
 
-T* type_malloc(T)(size_t count) {
+T* type_malloc(T = void)(size_t count) {
 	import core.stdc.stdlib : malloc;
 	
 	return cast(T*) malloc(T.sizeof * count);
 }
 
-T* type_calloc(T)(size_t count) {
+T* type_calloc(T = void)(size_t count) {
 	import core.stdc.stdlib : calloc;
 	
 	return cast(T*) calloc(T.sizeof, count);

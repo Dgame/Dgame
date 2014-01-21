@@ -29,6 +29,8 @@ private {
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Log;
+	import Dgame.Internal.Allocator : type_malloc, type_free;
+
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Blend;
@@ -190,8 +192,8 @@ public:
 		RGBA  = GL_RGBA,					/// Alias for GL_RGBA
 		BGR   = GL_BGR,						/// Alias for GL_BGR
 		BGRA  = GL_BGRA,					/// Alias for GL_BGRA
-		RGBA16 = GL_RGBA16,
-		RGBA8  = GL_RGBA8,
+		RGBA16 = GL_RGBA16,					/// 16 Bit RGBA Format
+		RGBA8  = GL_RGBA8,					/// 8 Bit RGBA Format
 		Alpha = GL_ALPHA,					/// Alias for GL_ALPHA
 		Luminance = GL_LUMINANCE,			/// Alias for GL_LUMINANCE
 		LuminanceAlpha = GL_LUMINANCE_ALPHA, /// Alias for GL_LUMINANCE_ALPHA
@@ -223,7 +225,7 @@ private:
 	Compression _comp;
 	
 	Blend _blend;
-	
+
 package:
 	void _render(const Viewport* vp) const {
 		if (!glIsEnabled(GL_TEXTURE_2D))
@@ -289,7 +291,7 @@ package:
 		}
 		
 		float[12] vertices = [
-			dx,	     dy,      0f,
+			dx,	     dy,      0f,	
 			dx + dw, dy,      0f,
 			dx + dw, dy + dh, 0f,
 			dx,      dy + dh, 0f
@@ -315,7 +317,7 @@ package:
 	void _render(const Viewport vp) const {
 		this._render(&vp);
 	}
-	
+
 public:
 final:
 	/**
@@ -543,7 +545,7 @@ final:
 		    && height == this.height
 		    && (fmt == Format.None || fmt == this._format))
 		{
-			this.updateMemory(memory, null);
+			this.update(memory, null);
 			return;
 		}
 		
@@ -611,7 +613,7 @@ final:
 			}
 		}
 		
-		this.updateMemory(&memory[0]);
+		this.update(&memory[0]);
 	}
 	
 	/**
@@ -623,101 +625,98 @@ final:
 	
 	/**
 	 * Returns the pixel of this Texture or null if this Texture isn't valid.
-	 *
-	 * Note: This method <b>allocates</b> GC memory.
+	 * If memory is not null and has the same width and height as the Texture,
+	 * it is used to store the pixel data.
+	 * Otherwise it <b>allocates</b> GC memory.
 	 */
-	void[] getMemory() const {
+	void[] getMemory(void[] memory = null) const {
 		const uint msize = this._width * this._height * (this._depth / 8);
 		if (msize == 0) {
 			debug Log.info("@Texture.GetPixels: Null Pixel");
+
 			return null;
 		}
 		
 		this.bind();
-		
-		void[] memory = new void[msize];
+
+		if (memory is null)
+			memory = new void[msize];
+		else if (memory.length < msize)
+			throw new Exception("Your given memory is to short.");
+
 		glGetTexImage(GL_TEXTURE_2D, 0, this._format, GL_UNSIGNED_BYTE, memory.ptr);
 		
 		return memory;
 	}
-	
-	/**
-	 * Returns a subTexture of this Texture.
-	 * This isn't similar to partial.
-	 */
-	Texture subTexture(ref const ShortRect rect) {
-		if (this._format == Format.None)
-			return null;
-		
-		Texture tex = new Texture();
-		debug Log.info("Format switch: %s.", .switchFormat(this._format, true));
-		tex.loadFromMemory(null, rect.width, rect.height, this._depth, this._format.switchFormat(true));
-		
-		int[4] vport = void;
-		glGetIntegerv(GL_VIEWPORT, &vport[0]);
-		
-		glPushAttrib(GL_VIEWPORT_BIT);
-		scope(exit) glPopAttrib();
-		
-		glViewport(0, 0, rect.width, rect.height);
-		
-		if (!glIsEnabled(GL_TEXTURE_2D))
-			glEnable(GL_TEXTURE_2D);
-		
-		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
-		this._render(Viewport(&dest, &rect, Viewport.Mode.Reverse));
-		
-		tex.bind();
-		
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, rect.width, rect.height);
-		
-		return tex;
-	}
-	
+
 	/**
 	 * Rvalue version
 	 */
-	Texture subTexture(const ShortRect rect) {
+	Texture subTexture(const ShortRect rect) const {
 		return this.subTexture(rect);
 	}
-	
+
+	/**
+	 * Returns a subTexture of this Texture.
+	 */
+	Texture subTexture(ref const ShortRect rect) const in {
+		assert(rect.x <= this._width, "rect.x is out of range.");
+		assert(rect.y <= this._height, "rect.y is out of range.");
+		assert(rect.width <= this._width, "rect.width is out of range.");
+		assert(rect.height <= this._height, "rect.height is out of range.");
+		assert(rect.x >= 0, "rect.x is negative");
+		assert(rect.y >= 0, "rect.y is negative.");
+		assert(rect.width >= 0, "rect.width is negative.");
+		assert(rect.height >= 0, "rect.height is negative.");
+	} body {
+		if (this._format == Format.None)
+			return null;
+
+		const ubyte bits = this._depth / 8;
+		const uint msize = this._width * this._height * bits;
+		void* mem = type_malloc(msize);
+		scope(exit) type_free(mem);
+
+		void[] memory = this.getMemory(mem[0 .. msize]);
+
+		const uint[2] pitch = [this._width * bits, rect.width * bits];
+		const uint diff = pitch[0] - pitch[1];
+
+		uint from = pitch[0] * rect.y + rect.x * bits;
+		uint too = from + (rect.height * pitch[0]);
+
+		ubyte* buf = type_malloc!ubyte(msize);
+		scope(exit) type_free(buf);
+
+		ubyte[] buffer = buf[0 .. msize];
+		for (uint i = from, j = 0; i < too - pitch[1]; i += pitch[1], j += pitch[1]) {
+			buffer[j .. j + pitch[1]] = cast(ubyte[]) memory[i .. i + pitch[1]];
+			i += diff;
+		}
+
+		Texture tex = new Texture();
+		tex.loadFromMemory(buffer.ptr, rect.width, rect.height, 0, this._format);
+
+		return tex;
+	}
+
 	/**
 	 * Copy another Texture to this.
 	 * The second parameter is a pointer to the destination rect.
 	 * Is it is null this means the whole tex is copied.
 	 */
-	void copy(const Texture tex, const ShortRect* rect = null) in {
+	void copy(const Texture tex, const ShortRect* rect = null) const in {
 		assert(tex !is null, "Cannot copy null Texture.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
-		short rx = 0, ry = 0;
-		ushort rw = tex.width, rh = tex.height;
-		
-		if (rect !is null) {
-			rx = rect.x;
-			ry = rect.y;
-			rw = rect.width;
-			rh = rect.height;
-		}
-		
-		int[4] vport = void;
-		glGetIntegerv(GL_VIEWPORT, &vport[0]);
-		
-		///
-		glPushAttrib(GL_VIEWPORT_BIT);
-		scope(exit) glPopAttrib();
-		
-		glViewport(0, 0, rw, rh);
-		
-		if (!glIsEnabled(GL_TEXTURE_2D))
-			glEnable(GL_TEXTURE_2D);
-		
-		const ShortRect dest = ShortRect(0, 0, cast(ushort) vport[2], cast(ushort) vport[3]);
-		tex._render(Viewport(&dest, rect, Viewport.Mode.Reverse));
-		
-		this.bind();
-		
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, rx, ry, 0, 0, rw, rh);
+		const ubyte bits = tex.depth / 8;
+		const uint msize = tex.width * tex.height * bits;
+
+		void* mem = type_malloc(msize); 
+		scope(exit) type_free(mem);
+		void[] memory = tex.getMemory(mem[0 .. msize]);
+
+		this.update(memory.ptr, rect, tex.getFormat());
 	}
 	
 	/**
@@ -726,7 +725,7 @@ final:
 	 * If it is null (default) the whole Texture will be updated.
 	 * The third parameter is the format of the pixels.
 	 */
-	void updateMemory(const void* memory, const ShortRect* rect = null,  Format fmt = Format.None) in {
+	void update(const void* memory, const ShortRect* rect = null,  Format fmt = Format.None) const in {
 		assert(memory !is null, "Pixels is null.");
 		assert(this._width != 0 && this._height != 0, "width or height is 0.");
 	} body {
@@ -750,10 +749,7 @@ final:
 			
 			x = y = 0;
 		}
-		
-		if (!glIsEnabled(GL_TEXTURE_2D))
-			glEnable(GL_TEXTURE_2D);
-		
+
 		this.bind();
 		
 		glTexSubImage2D(GL_TEXTURE_2D, 0,

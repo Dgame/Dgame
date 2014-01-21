@@ -55,7 +55,7 @@ enum ushort height = 640;
 void main() {
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
 	wnd.setVerticalSync(Window.Sync.Disable);
-//	wnd.setFpsLimit(15);
+	wnd.setFpsLimit(15);
 	wnd.setClearColor(Color.Green);
 	
 	{
@@ -138,6 +138,9 @@ void main() {
 	tex.loadFromMemory(wiki2.pixels, wiki2.width, wiki2.height, wiki2.bits);
 	Texture copy_tex = new Texture();
 	copy_tex.loadFromMemory(copy.pixels, copy.width, copy.height, copy.bits);
+
+	Surface copy_tex_srfc  = Surface.make(&copy_tex.getMemory()[0], copy_tex.width, copy_tex.height);
+	copy_tex_srfc.saveToFile("../../samples/img/wiki_copy.png");
 	
 	ShortRect dst_copy = ShortRect(65, 25, copy.width, copy.height);
 	
@@ -147,14 +150,12 @@ void main() {
 	texToSrfc2.saveToFile("../../samples/img/wiki_sub.png");
 	
 	tex.copy(copy_tex, &dst_copy);
-	writeln(" => ", tex);
+//	writeln(" => ", tex);
 	void[] mem = tex.getMemory();
 	//writeln(" => ", mem);
 	Surface texToSrfc = Surface.make(&mem[0], tex.width, tex.height, tex.getFormat().formatToBits());
 	texToSrfc.saveToFile("../../samples/img/wiki_copy_tex.png");
-	
-	//	tex.setViewport(FloatRect(15, 15, 25, 25));
-	
+
 	uint[256] xpixels = [
 		255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
 		0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
