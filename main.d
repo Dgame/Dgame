@@ -178,7 +178,7 @@ void main() {
 	Surface xs = Surface.make(&xpixels[0], 16, 16);
 	xs.saveToFile("XS.png");
 	
-	Sprite wiki_sprite = new Sprite(tex);
+	Spritesheet wiki_sprite = new Spritesheet(tex);
 	wiki_sprite.setPosition(50, 100);
 	wiki_sprite.setTextureRect(ShortRect(15, 15, 25, 25));
 	
@@ -254,7 +254,7 @@ void main() {
 	Blend blend = new Blend(Blend.Mode.Multiply, &Color.Blue);
 	
 	Image trans_img = new Image("../../samples/img/wiki.png");
-	trans_img.setBlend(blend);
+	//trans_img.setBlend(blend);
 	Sprite trans_sprite = new Sprite(trans_img);
 	trans_sprite.setPosition(500, 400);
 	

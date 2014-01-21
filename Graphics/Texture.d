@@ -33,9 +33,6 @@ private {
 
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
-	import Dgame.Graphics.Blend;
-	import Dgame.Graphics.Shape;
-	import Dgame.System.VertexRenderer;
 }
 
 /**
@@ -155,45 +152,25 @@ static ~this() {
 	debug Log.info(" >> Texture Finalized");
 }
 
-struct Viewport {
-	enum Mode : ubyte {
-		Normal,
-		Reverse
-	}
-	
-	const Mode mode;
-	const(ShortRect)* dest;
-	const(ShortRect)* view;
-	
-	@disable
-	this();
-	
-	this(const(ShortRect)* dest, const(ShortRect)* view, Mode mode = Mode.Normal) {
-		this.dest = dest;
-		this.view = view;
-		this.mode = mode;
-	}
-}
-
 /**
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
  *
  * Author: rschuett
  */
-class Texture : Blendable {
+class Texture {
 public:
 	/**
 	 * Supported Texture Format
 	 */
 	enum Format {
-		None  = 0,							/// Take this if you want to declare that you give no Format.
-		RGB   = GL_RGB,						/// Alias for GL_RGB
-		RGBA  = GL_RGBA,					/// Alias for GL_RGBA
-		BGR   = GL_BGR,						/// Alias for GL_BGR
-		BGRA  = GL_BGRA,					/// Alias for GL_BGRA
+		None = 0,							/// Take this if you want to declare that you give no Format.
+		RGB = GL_RGB,						/// Alias for GL_RGB
+		RGBA = GL_RGBA,					/// Alias for GL_RGBA
+		BGR = GL_BGR,						/// Alias for GL_BGR
+		BGRA = GL_BGRA,					/// Alias for GL_BGRA
 		RGBA16 = GL_RGBA16,					/// 16 Bit RGBA Format
-		RGBA8  = GL_RGBA8,					/// 8 Bit RGBA Format
+		RGBA8 = GL_RGBA8,					/// 8 Bit RGBA Format
 		Alpha = GL_ALPHA,					/// Alias for GL_ALPHA
 		Luminance = GL_LUMINANCE,			/// Alias for GL_LUMINANCE
 		LuminanceAlpha = GL_LUMINANCE_ALPHA, /// Alias for GL_LUMINANCE_ALPHA
@@ -207,8 +184,8 @@ public:
 	enum Compression {
 		None, /// No compression
 		DontCare = GL_DONT_CARE, /// The OpenGL implementation decide on their own
-		Fastest  = GL_FASTEST, /// Fastest compression
-		Nicest   = GL_NICEST /// Nicest but slowest mode of compression
+		Fastest = GL_FASTEST, /// Fastest compression
+		Nicest = GL_NICEST /// Nicest but slowest mode of compression
 	}
 	
 private:
@@ -223,100 +200,6 @@ private:
 	
 	Format _format;
 	Compression _comp;
-	
-	Blend _blend;
-
-package:
-	void _render(const Viewport* vp) const {
-		if (!glIsEnabled(GL_TEXTURE_2D))
-			glEnable(GL_TEXTURE_2D);
-		
-		float tx = 0f;
-		float ty = 0f;
-		float tw = 1f;
-		float th = 1f;
-		
-		if (vp !is null && vp.view !is null && !vp.view.isZero()) {
-			tx = (0f + vp.view.x) / this._width;
-			ty = (0f + vp.view.y) / this._height;
-			
-			if (!vp.view.isEmpty()) {
-				tw = (0f + vp.view.width) / this._width;
-				th = (0f + vp.view.height) / this._height;
-			}
-		}
-		
-		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
-		scope(exit) glPopAttrib();
-		
-		//		// apply blending
-		if (this._blend !is null)
-			this._blend.applyBlending();
-		
-		const Viewport.Mode mode = vp !is null ? vp.mode : Viewport.Mode.Normal;
-		
-		float[8] texCoords = void;
-		final switch (mode) {
-			case Viewport.Mode.Normal:
-				texCoords = [
-					tx,      ty,
-					tx + tw, ty,
-					tx + tw, ty + th,
-					tx,      ty + th
-				];
-				break;
-			case Viewport.Mode.Reverse:
-				texCoords = [
-					tx,      ty + th,
-					tx + tw, ty + th,
-					tx + tw, ty,
-					tx,      ty
-				];
-				break;
-		}
-		
-		float dx = 0f;
-		float dy = 0f;
-		float dw = this._width;
-		float dh = this._height;
-		
-		if (vp !is null && vp.dest !is null) {
-			dx = vp.dest.x;
-			dy = vp.dest.y;
-			
-			if (!vp.dest.isEmpty()) {
-				dw = vp.dest.width;
-				dh = vp.dest.height;
-			}
-		}
-		
-		float[12] vertices = [
-			dx,	     dy,      0f,	
-			dx + dw, dy,      0f,
-			dx + dw, dy + dh, 0f,
-			dx,      dy + dh, 0f
-		];
-		
-		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
-		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
-		
-		scope(exit) {
-			VertexRenderer.disableAllStates();
-			this.unbind();
-		}
-		
-		this.bind();
-		
-		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
-	}
-	
-	void _render(ref const Viewport vp) const {
-		this._render(&vp);
-	}
-	
-	void _render(const Viewport vp) const {
-		this._render(&vp);
-	}
 
 public:
 final:
@@ -335,9 +218,13 @@ final:
 	 * Postblit
 	 */
 	this(const Texture tex, Format t_fmt = Format.None) {
-		void[] mem = tex.getMemory();
-		enforce(mem !is null, "Cannot a texture with no memory.");
-		this.loadFromMemory(&mem[0], tex.width, tex.height, tex.depth, t_fmt ? t_fmt : tex.getFormat());
+		const uint msize = tex.width * tex.height * (tex.depth / 8);
+		void* mem = type_malloc(msize);
+		scope(exit) type_free(mem);
+
+		void[] memory = tex.getMemory(mem[0 .. msize]);
+		enforce(memory !is null, "Cannot a texture with no memory.");
+		this.loadFromMemory(&memory[0], tex.width, tex.height, tex.depth, t_fmt ? t_fmt : tex.getFormat());
 	}
 	
 	/**
@@ -510,28 +397,7 @@ final:
 		
 		return compressed != 1;
 	}
-	
-	/**
-	 * Set (or reset) the current Blend instance.
-	 */
-	void setBlend(Blend blend) pure nothrow {
-		this._blend = blend;
-	}
-	
-	/**
-	 * Returns the current Blend instance
-	 */
-	inout(Blend) getBlend() inout pure nothrow {
-		return this._blend;
-	}
-	
-	/**
-	 * Checks whether this Texture has a Blend instance.
-	 */
-	bool hasBlend() const pure nothrow {
-		return this._blend !is null;
-	}
-	
+
 	/**
 	 * Load from memory.
 	 */

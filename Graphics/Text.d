@@ -36,9 +36,10 @@ private {
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
-	import Dgame.Graphics.Blend;
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
+	import Dgame.Graphics.Shape;
+	import Dgame.System.VertexRenderer;
 }
 
 private Font*[] _FontFinalizer;
@@ -65,7 +66,7 @@ static ~this() {
  *
  * Author: rschuett
  */
-class Text : Transformable, Blendable, Drawable {
+class Text : Transformable, Drawable {
 protected:
 	string _text;
 	bool _needUpdate;
@@ -154,9 +155,38 @@ protected:
 		
 		if (this._needUpdate)
 			this._update();
+
+		if (!glIsEnabled(GL_TEXTURE_2D))
+			glEnable(GL_TEXTURE_2D);
 		
-		// we need nothing to render the text, so null is given
-		this._tex._render(null);
+		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+		scope(exit) glPopAttrib();
+
+		float dx = 0f;
+		float dy = 0f;
+		float dw = this._tex.width;
+		float dh = this._tex.height;
+
+		float[12] vertices = [
+			dx,      dy,      0f,
+			dx + dw, dy,      0f,
+			dx + dw, dy + dh, 0f,
+			dx,      dy + dh, 0f
+		];
+
+		float[8] texCoords = [0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f];
+
+		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
+		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
+		
+		scope(exit) {
+			VertexRenderer.disableAllStates();
+			this._tex.unbind();
+		}
+		
+		this._tex.bind();
+		
+		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
 	}
 
 public:
@@ -238,32 +268,7 @@ final:
 	ushort height() const pure nothrow {
 		return this._tex !is null ? this._tex.height : 0;
 	}
-	
-	/**
-	 * Set (or reset) the current Blend instance.
-	 */
-	void setBlend(Blend blend) pure nothrow in {
-		assert(this._tex !is null, "Texture is null.");
-	} body {
-		this._tex.setBlend(blend);
-	}
 
-	/**
-	 * Returns the current Blend instance
-	 */
-	inout(Blend) getBlend() inout pure nothrow {
-		return this._tex !is null ? this._tex.getBlend() : null;
-	}
-
-	/**
-	 * Checks whether this Texture has a Blend instance.
-	 */
-	bool hasBlend() const pure nothrow in {
-		assert(this._tex !is null, "Texture is null.");
-	} body {
-		return this._tex.hasBlend();
-	}
-	
 	/**
 	 * Replace the current Font.
 	 */

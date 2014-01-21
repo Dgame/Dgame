@@ -59,6 +59,28 @@ private:
 	short _loopCount;
 	ushort _passedLoops;
 
+	ShortRect _texView;
+
+protected:
+	override float[8] _calculateTextureCoordinates() const pure nothrow {
+		float tx = 0f;
+		float ty = 0f;
+		float tw = 1f;
+		float th = 1f;
+		
+		if (!this._texView.isZero()) {
+			tx = (0f + this._texView.x) / super._tex.width;
+			ty = (0f + this._texView.y) / super._tex.height;
+			
+			if (!this._texView.isCollapsed()) {
+				tw = (0f + this._texView.width) / this._tex.width;
+				th = (0f + this._texView.height) / this._tex.height;
+			}
+		}
+
+		return [tx, ty, tx + tw, ty, tx + tw, ty + th, tx, ty + th];
+	}
+
 public:
 final:
 	/**
@@ -76,7 +98,7 @@ final:
 	this(Texture tex, ref const ShortRect texView, short lc = -1) {
 		this(tex, lc);
 
-		super.setTextureRect(texView);
+		this.setTextureRect(texView);
 	}
 	
 	/**
@@ -86,6 +108,38 @@ final:
 	 */
 	this(Texture tex, const ShortRect texView, short lc = -1) {
 		this(tex, texView, lc);
+	}
+
+	/**
+	 * Set a Texture Rect.
+	 * This indicates which area of the Texture is drawn.
+	 */
+	void setTextureRect(ref const ShortRect texView) {
+		this._texView = texView;
+		
+		super._clipRect.setSize(texView.width, texView.height);
+	}
+
+	/**
+	 * Rvalue version
+	 */
+	void setTextureRect(const ShortRect texView) {
+		this.setTextureRect(texView);
+	}
+	
+	/**
+	 * Returns a pointer to the Texture Rect.
+	 * With this you can change the existing Rect without setting a new one.
+	 * You can e.g. collapse the Rect with this method.
+	 * Example:
+	 * ---
+	 * Spritesheet s = new Spritesheet(...);
+	 * // A lot of code
+	 * s.fetchTextureRect().collapse();
+	 * ---
+	 */
+	inout(ShortRect*) fetchTextureRect() inout pure nothrow {
+		return &this._texView;
 	}
 
 	/**
@@ -110,6 +164,8 @@ final:
 	/**
 	 * Execute the animation N times where N is the number of the current loop count.
 	 * If N is < 0, the animation runs infinite.
+	 * 
+	 * See: Grid
 	 */
 	void execute(Grid grid = Grid.Both) {
 		if (this._loopCount < 0 || this._loopCount > this._passedLoops)
@@ -127,33 +183,31 @@ final:
 	void slideTextureRect(Grid grid = Grid.Both) in {
 		assert(this._tex !is null, "No Texture.");
 	} body {
-		const short w = super._texView.width;
-		const short h = super._texView.height;
-		
-		ShortRect* rect = &super._texView;
-		
+		const short w = this._texView.width;
+		const short h = this._texView.height;
+
 		if ((grid & Grid.Column) == 0) {
 			// to avoid a cast...
-			rect.y = this.row;
-			rect.y *= h;
+			this._texView.y = this.row;
+			this._texView.y *= h;
 		}
 		
 		if (grid & Grid.Row) {
-			if ((rect.x + w) < super._tex.width)
-				rect.x += w;
+			if ((this._texView.x + w) < super._tex.width)
+				this._texView.x += w;
 			else {
-				rect.x = 0;
+				this._texView.x = 0;
 
 				if ((grid & Grid.Column) == 0)
 					this._passedLoops++;
 			}
 		}
 		
-		if (grid & Grid.Column && rect.x == 0) {
-			if ((rect.y + h) < super._tex.height)
-				rect.y += h;
+		if (grid & Grid.Column && this._texView.x == 0) {
+			if ((this._texView.y + h) < super._tex.height)
+				this._texView.y += h;
 			else {
-				rect.y = 0;
+				this._texView.y = 0;
 
 				this._passedLoops++;
 			}

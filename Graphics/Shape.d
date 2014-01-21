@@ -29,7 +29,7 @@ private {
 	import core.stdc.string : memcpy;
 	
 	import derelict.opengl3.gl;
-
+	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
@@ -46,7 +46,7 @@ struct MinMax {
 float abs(float a) pure nothrow {
 	if (a >= 0)
 		return a;
-
+	
 	return a * -1;
 }
 
@@ -62,15 +62,15 @@ MinMax[2] minmax(const Vertex[] vertices) pure nothrow {
 	MinMax[2] mm = void;
 	mm[0] = MinMax(vertices[0].x, vertices[0].x);
 	mm[1] = MinMax(vertices[0].y, vertices[0].y);
-
+	
 	for (size_t i = 1; i < vertices.length; i++) {
 		mm[0].min = min(mm[0].min, vertices[i].x);
 		mm[0].max = max(mm[0].max, vertices[i].x);
-
+		
 		mm[1].min = min(mm[1].min, vertices[i].y);
 		mm[1].max = max(mm[1].max, vertices[i].y);
 	}
-
+	
 	return mm;
 }
 
@@ -106,7 +106,7 @@ struct Smooth {
 	this(Target trg, Mode mode) {
 		this.target = target;
 		this.mode = mode;
-
+		
 		final switch (this.target) {
 			case Target.None: break;
 			case Target.Point:
@@ -143,7 +143,7 @@ public:
 		LineStrip = GL_LINE_STRIP,	/** Declare that the stored vertices are Line Strips. */
 		LineLoop = GL_LINE_LOOP,	/** Declare that the stored vertices are Line Loops. */
 		Polygon = GL_POLYGON,		/** Declare that the stored vertices are Polygons. */
-
+		
 		Unfilled = LineLoop,		/** Unfilled Type. It is identical to LineLoop. */
 		Circle = TriangleFan		/** Circle Type. It is identical to TriangleFan. */
 	}
@@ -159,54 +159,51 @@ protected:
 	Vertex[] _vertices;
 	Texture _tex;
 	ShortRect _texRect;
-
+	
 protected:
 	void _render() {
 		if (this._vertices.length == 0)
 			return;
-
+		
 		glPushAttrib(GL_ENABLE_BIT);
 		scope(exit) glPopAttrib();
-
+		
 		const bool texEnabled = glIsEnabled(GL_TEXTURE_2D) == GL_TRUE;
-
 		if (this._tex is null && texEnabled)
 			glDisable(GL_TEXTURE_2D);
 		else if (this._tex !is null && !texEnabled)
 			glEnable(GL_TEXTURE_2D);
-
+		
 		if (this._smooth.target != Smooth.Target.None) {
 			if (!glIsEnabled(this._smooth.target))
 				glEnable(this._smooth.target);
-			
 			glHint(this._smooth.hint, this._smooth.mode);
 		}
-
+		
 		if (this._lineWidth > 1)
 			glLineWidth(this._lineWidth);
 		
 		glPushMatrix();
 		scope(exit) glPopMatrix();
-
+		
 		if (this._needUpdate && this._tex !is null) {
 			this._needUpdate = false;
-
 			this._updateTexCoords();
 		}
 
-		Vertex* ptr = &this._vertices[0];
-
-		VertexRenderer.pointTo(Target.Vertex,    ptr, Vertex.sizeof,  0);
-		VertexRenderer.pointTo(Target.Color,     ptr, Vertex.sizeof, 12);
-		VertexRenderer.pointTo(Target.TexCoords, ptr, Vertex.sizeof, 28);
-
+		Vertex* vptr = &this._vertices[0];
+		
+		VertexRenderer.pointTo(Target.Vertex,    vptr, Vertex.sizeof,  0);
+		VertexRenderer.pointTo(Target.Color,     vptr, Vertex.sizeof, 12);
+		VertexRenderer.pointTo(Target.TexCoords, vptr, Vertex.sizeof, 28);
+		
 		if (this._tex !is null)
 			this._tex.bind();
-
+		
 		scope(exit) {
 			if (this._tex !is null)
 				this._tex.unbind();
-
+			
 			VertexRenderer.disableAllStates();
 		}
 		
@@ -215,7 +212,7 @@ protected:
 		const Type type = !this.isFilled() && this._tex is null ? Type.Unfilled : this._type;
 		VertexRenderer.drawArrays(type, this._vertices.length);
 	}
-
+	
 	final void _updateTexCoords() pure nothrow {
 		if (this._vertices.length == 0)
 			return;
@@ -247,7 +244,7 @@ protected:
 			}
 		}
 	}
-
+	
 public:
 final:
 	/**
@@ -256,45 +253,45 @@ final:
 	this(Type type, Texture tex = null) {
 		this._type = type;
 		this._smooth = Smooth(Smooth.Target.None, Smooth.Mode.Fastest);
-
+		
 		this.bindTexture(tex);
 	}
-
+	
 	/**
 	 * Calculate, store and return the center point.
 	 */
 	override ref const(Vector2s) calculateCenter() pure nothrow {
 		const MinMax[2] mm = minmax(this._vertices);
 		super.setCenter(cast(short)(mm[0].max / 2), cast(short)(mm[1].max / 2));
-
+		
 		return super.getCenter();
 	}
-
+	
 	/**
 	* Bind (or unbind) a Texture.
 	*/
 	void bindTexture(Texture tex) {
 		this.setColor(Color.White);
-
+		
 		this._tex = tex;
 		if (tex !is null && this._type == Type.LineLoop)
 			this._type = Type.Polygon;
 	}
-
+	
 	/**
 	 * Set a Texture Rect
 	 */
 	void setTextureRect(ref const ShortRect texRect) {
 		this._texRect = texRect;
 	}
-
+	
 	/**
 	 * Rvalue version
 	 */
 	void setTextureRect(const ShortRect texRect) {
 		this.setTextureRect(texRect);
 	}
-
+	
 	/**
 	 * Returns a pointer to the Texture Rect.
 	 * With this you can change the existing Rect without setting a new one.
@@ -309,7 +306,7 @@ final:
 	inout(ShortRect*) fetchTextureRect() inout pure nothrow {
 		return &this._texRect;
 	}
-
+	
 	/**
 	 * Set target and mode of smoothing.
 	 */
@@ -408,10 +405,10 @@ final:
 	 */
 	void append(ref const Vertex vx) {
 		this._needUpdate = true;
-
+		
 		this._vertices ~= vx;
 	}
-
+	
 	/**
 	 * Rvalue version.
 	 */
@@ -424,7 +421,7 @@ final:
 	 */
 	void append(const Vertex[] vertices) {
 		this._needUpdate = true;
-
+		
 		this._vertices ~= vertices;
 	}
 	
@@ -435,9 +432,9 @@ final:
 	void remove(uint index, Vertex* vp = null) {
 		if (index >= this._vertices.length)
 			return;
-
+		
 		this._needUpdate = true;
-
+		
 		if (vp !is null)
 			.memcpy(vp, &this._vertices[index], Vertex.sizeof);
 		
@@ -469,22 +466,22 @@ final:
 	inout(Vertex)* fetchVertexAt(uint idx) inout {
 		return idx < this._vertices.length ? &this._vertices[idx] : null;
 	}
-
+	
 	/**
 	* Add an array of floats
 	* Note that 3 dimensional coordinate components are expected.
 	*/
 	static Shape make(Type type, const float[] mat) {
 		Shape s = new Shape(type);
-
+		
 		const size_t size = mat.length % 3 == 0 ? mat.length : mat.length - (mat.length % 3);
 		for (size_t i = 0; i < size; i += 3) {
 			s.append(Vertex(mat[i], mat[i + 1], mat[i + 2]));
 		}
-
+		
 		return s;
 	}
-
+	
 	/**
 	 * Make a new Shape object with the given type and vertices.
 	 */
@@ -497,7 +494,7 @@ final:
 		
 		return qs;
 	}
-
+	
 	/**
 	 * Make a new Shape object as Circle.
 	 */
@@ -507,16 +504,16 @@ final:
 		const float Deg2Rad = PIx2 / vecNum;
 		
 		Shape s = new Shape(Type.Circle);
-
+		
 		for (ubyte i = 0; i < vecNum; i++) {
 			const float degInRad = i * Deg2Rad;
 			
 			float x = center.x + cos(degInRad) * radius;
 			float y = center.y + sin(degInRad) * radius;
-
+			
 			s.append(Vertex(x, y));
 		}
-
+		
 		return s;
 	}
 }

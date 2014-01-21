@@ -30,6 +30,7 @@ module Dgame.Graphics.Drawable;
  */
 interface Drawable {
 	void _render();
+
 	/**
 	 * Render method
 	 */

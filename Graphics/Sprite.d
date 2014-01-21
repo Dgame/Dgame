@@ -31,6 +31,8 @@ private {
 	import Dgame.Graphics.Texture;
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
+	import Dgame.Graphics.Shape;
+	import Dgame.System.VertexRenderer;
 }
 
 /**
@@ -41,12 +43,8 @@ private {
 class Sprite : Transformable, Drawable {
 protected:
 	Texture _tex;
-	
 	ShortRect _clipRect;
-	ShortRect _texView;
-	
-	Viewport _tview;
-	
+
 protected:
 	void _render() const in {
 		assert(this._tex !is null, "Sprite couldn't rendered, because the Texture is null.");
@@ -56,7 +54,41 @@ protected:
 		
 		super._applyTranslation();
 		
-		this._tex._render(&this._tview);
+		if (!glIsEnabled(GL_TEXTURE_2D))
+			glEnable(GL_TEXTURE_2D);
+		
+		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+		scope(exit) glPopAttrib();
+		
+		float dx = this._clipRect.x;
+		float dy = this._clipRect.y;
+		float dw = this._clipRect.width  == 0 ? this._tex.width  : this._clipRect.width;
+		float dh = this._clipRect.height == 0 ? this._tex.height : this._clipRect.height;
+		
+		float[12] vertices = [
+			dx,	     dy,      0f,	
+			dx + dw, dy,      0f,
+			dx + dw, dy + dh, 0f,
+			dx,      dy + dh, 0f
+		];
+		
+		float[8] texCoords = this._calculateTextureCoordinates();
+
+		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
+		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
+		
+		scope(exit) {
+			VertexRenderer.disableAllStates();
+			this._tex.unbind();
+		}
+		
+		this._tex.bind();
+		
+		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
+	}
+
+	float[8] _calculateTextureCoordinates() const pure nothrow {
+		return [0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f];
 	}
 	
 public:
@@ -72,12 +104,11 @@ public:
 	 */
 	this(Texture tex) {
 		this.setTexture(tex);
-		
-		this._tview = Viewport(&this._clipRect, &this._texView);
 	}
 	
 	/**
 	 * Calculate, store and return the center point.
+	 * Usefull for e.g. rotate.
 	 */
 	override ref const(Vector2s) calculateCenter() pure nothrow {
 		super.setCenter(this._clipRect.width / 2, this._clipRect.height / 2);
@@ -110,77 +141,25 @@ public:
 
 final:
 	/**
-	 * Returns the current width.
-	 * If a TextureRect is present, it returns the width of them,
-	 * otherwise the width of the current texture.
+	 * Returns the current width (the width of the current texture).
 	 */
 	@property
 	ushort width() const in {
 		assert(this._tex !is null);
 	} body {
-		if (this.hasTextureRect())
-			return this._texView.width;
-
 		return this._tex.width;
 	}
 
 	/**
-	 * Returns the current height.
-	 * If a TextureRect is present, it returns the height of them,
-	 * otherwise the height of the current texture.
+	 * Returns the current height (the height of the current texture).
 	 */
 	@property
 	ushort height() const in {
 		assert(this._tex !is null);
 	} body {
-		if (this.hasTextureRect())
-			return this._texView.height;
-		
 		return this._tex.height;
 	}
 
-	/**
-	 * Set a Texture Rect.
-	 * This indicates which area of the Texture is drawn.
-	 */
-	void setTextureRect(ref const ShortRect texView) {
-		this._texView = texView;
-		
-		this._clipRect.setSize(texView.width, texView.height);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	void setTextureRect(const ShortRect texView) {
-		this.setTextureRect(texView);
-	}
-	
-	/**
-	 * Returns if this Texture has a Texture Rect
-	 */
-	bool hasTextureRect() const {
-		return !this._texView.isEmpty();
-	}
-	
-	/**
-	 * Reset the current Texture Rect with a call to Rect.collapse
-	 */
-	void resetTextureRect() in {
-		assert(this._tex !is null);
-	} body {
-		this._texView.collapse();
-		
-		this._clipRect.setSize(this._tex.width, this._tex.height);
-	}
-	
-	/**
-	 * Returns the current Texture Rect
-	 */
-	ref const(ShortRect) getTextureRect() const pure nothrow {
-		return this._texView;
-	}
-	
 	/**
 	 * Returns the clip rect, the area which will be drawn on the screen.
 	 */
