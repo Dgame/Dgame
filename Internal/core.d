@@ -34,7 +34,7 @@ private {
  */
 enum DgVersion : ubyte {
 	Major = 0,
-	Minor = 2,
+	Minor = 3,
 	PatchLevel = 0
 }
 
