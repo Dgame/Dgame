@@ -407,7 +407,6 @@ final:
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
 				SDL_GL_MakeCurrent(this._window, this._glContext);
-			
 			SDL_GL_SwapWindow(this._window);
 		} else
 			SDL_UpdateWindowSurface(this._window);

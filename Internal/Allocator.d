@@ -22,3 +22,19 @@ void type_free(void* ptr) {
 	free(ptr);
 	ptr = null;
 }
+
+T* construct(T, Args...)(Args args) {
+	T* ptr = type_calloc!T(1);
+	
+	static if (Args.length != 0) {
+		static if (!is(T == struct))
+			static assert(0, "Can only construct structs.");
+		
+		import core.stdc.string : memcpy;
+		
+		T temp = T(args);
+		memcpy(ptr, &temp, T.sizeof);
+	}
+	
+	return ptr;
+}
