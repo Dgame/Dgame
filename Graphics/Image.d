@@ -81,6 +81,7 @@ final:
 	void loadFromFile(string filename, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
 		enforce(img.pixels !is null, "Cannot load image with no memory.");
+
 		super.loadFromMemory(img.pixels, img.width, img.height, img.bits, t_fmt); 
 	}
 	
@@ -90,8 +91,10 @@ final:
 	void loadFromFile(string filename, const Color* col = null, Texture.Format t_fmt = Texture.Format.None) {
 		Surface img = Surface(filename);
 		enforce(img.pixels !is null, "Cannot load image with no memory.");
+
 		if (col !is null)
 			img.setColorkey(*col);
+
 		super.loadFromMemory(img.pixels, img.width, img.height, img.bits, t_fmt); 
 	}
 	
@@ -99,8 +102,14 @@ final:
 	 * Save the (current) image into filename.
 	 */
 	void saveToFile(string filename) {
-		void[] mem = super.getMemory();
-		enforce(mem !is null, "Cannot save image with no memory.");
+		import Dgame.Internal.Allocator : type_malloc, type_free;
+
+		const size_t msize = super.width * super.height * (super.depth / 8);
+		void* mem = type_malloc(msize);
+		scope(exit) type_free(mem);
+
+		void[] memory = super.getMemory(mem[0 .. msize]);
+		enforce(memory !is null, "Cannot save image with no memory.");
 		
 		Surface img = Surface.make(&mem[0], super.width, super.height, super.depth);
 		img.saveToFile(filename);
