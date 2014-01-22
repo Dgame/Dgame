@@ -241,21 +241,13 @@ void main() {
 	ubyte cidx = 0;
 	
 	TiledMap tm = new TiledMap("../../samples/Map/map2.tmx");
-	/*
-	Unit tof = new Unit(new Image("../../samples/img/tofte.png"), ShortRect(0, 0, 32, 32));
-	tof.setPosition(400, 0);
-	*/
-	float[12] pos = [
-		170, 170, 0,
-		310, 170, 0,
-		310, 310, 0,
-		170, 310, 0];
-	
-	Blend blend = new Blend(Blend.Mode.Multiply, &Color.Blue);
+
+	Blend blend = new Blend(Blend.Mode.Multiply, Color.Blue);
 	
 	Image trans_img = new Image("../../samples/img/wiki.png");
-	//trans_img.setBlend(blend);
+
 	Sprite trans_sprite = new Sprite(trans_img);
+	trans_sprite.setBlend(blend);
 	trans_sprite.setPosition(500, 400);
 	
 	Image img = new Image("../../samples/img/wiki.png");//, Texture.Format.RGB);
@@ -265,6 +257,12 @@ void main() {
 	circle3.setTextureRect(ShortRect(25, 25, 100, 100));
 	circle3.move(300, -100);
 	circle3.setRotation(25);
+
+	float[12] pos = [
+		170, 170, 0,
+		310, 170, 0,
+		310, 310, 0,
+		170, 310, 0];
 	
 	Shape va = Shape.make(Shape.Type.Quad, pos);
 	va.bindTexture(img);

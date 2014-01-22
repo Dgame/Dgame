@@ -29,9 +29,10 @@ private {
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Texture;
+	import Dgame.Graphics.Shape;
+	import Dgame.Graphics.Blend;
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
-	import Dgame.Graphics.Shape;
 	import Dgame.System.VertexRenderer;
 }
 
@@ -40,10 +41,10 @@ private {
  *
  * Author: rschuett
  */
-class Sprite : Transformable, Drawable {
+class Sprite : Transformable, Drawable, Blendable {
 protected:
 	Texture _tex;
-	ShortRect _clipRect;
+	Blend _blend;
 
 protected:
 	void _render() const in {
@@ -59,11 +60,16 @@ protected:
 		
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
+
+		if (this._blend !is null)
+			this._blend.applyBlending();
+
+		const ushort[2] clipSize = this._getClipSize();
 		
-		float dx = this._clipRect.x;
-		float dy = this._clipRect.y;
-		float dw = this._clipRect.width  == 0 ? this._tex.width  : this._clipRect.width;
-		float dh = this._clipRect.height == 0 ? this._tex.height : this._clipRect.height;
+		float dx = 0f;
+		float dy = 0f;
+		float dw = clipSize[0];
+		float dh = clipSize[1];
 		
 		float[12] vertices = [
 			dx,	     dy,      0f,	
@@ -90,6 +96,13 @@ protected:
 	float[8] _calculateTextureCoordinates() const pure nothrow {
 		return [0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f];
 	}
+
+	ushort[2] _getClipSize() const pure nothrow
+	in {
+		assert(this._tex !is null);
+	} body {
+		return [this._tex.width, this._tex.height];
+	}
 	
 public:
 	/**
@@ -111,17 +124,18 @@ public:
 	 * Usefull for e.g. rotate.
 	 */
 	override ref const(Vector2s) calculateCenter() pure nothrow {
-		super.setCenter(this._clipRect.width / 2, this._clipRect.height / 2);
-		
+		super.setCenter(this._tex.width / 2, this._tex.height / 2);
 		return super.getCenter();
 	}
-	
+
 	/**
 	 * Check whether the bounding box of this Sprite collide
 	 * with the bounding box of another Sprite
 	 */
 	bool collideWith(const Sprite rhs) const {
-		return this.collideWith(this._clipRect);
+		const ShortRect rhs_clip = ShortRect(cast(short) rhs.X, cast(short) rhs.Y,
+		                                     rhs.width, rhs.height);
+		return this.collideWith(rhs_clip);
 	}
 	
 	/**
@@ -129,7 +143,9 @@ public:
 	 * with the given Rect
 	 */
 	bool collideWith(ref const ShortRect rect) const {
-		return this._clipRect.intersects(rect);
+		const ShortRect lhs_clip = ShortRect(cast(short) super.X, cast(short) super.Y,
+		                                     this._tex.width, this._tex.height);
+		return lhs_clip.intersects(rect);
 	}
 	
 	/**
@@ -141,10 +157,25 @@ public:
 
 final:
 	/**
+	 * Set (or reset) the current Blend instance.
+	 */
+	void setBlend(Blend blend) pure nothrow {
+		this._blend = blend;
+	}
+	
+	/**
+	 * Returns the current Blend instance, or null.
+	 */
+	inout(Blend) getBlend() inout pure nothrow {
+		return this._blend;
+	}
+
+	/**
 	 * Returns the current width (the width of the current texture).
 	 */
 	@property
-	ushort width() const in {
+	ushort width() const pure nothrow
+	in {
 		assert(this._tex !is null);
 	} body {
 		return this._tex.width;
@@ -154,19 +185,13 @@ final:
 	 * Returns the current height (the height of the current texture).
 	 */
 	@property
-	ushort height() const in {
+	ushort height() const pure nothrow
+	in {
 		assert(this._tex !is null);
 	} body {
 		return this._tex.height;
 	}
 
-	/**
-	 * Returns the clip rect, the area which will be drawn on the screen.
-	 */
-	ref const(ShortRect) getClipRect() const pure nothrow {
-		return this._clipRect;
-	}
-	
 	/**
 	 * Check if the current Sprite has already a Texture/Image.
 	 * If not, nothing can be drawn.
@@ -183,13 +208,12 @@ final:
 		assert(tex !is null, "Cannot set a null Texture.");
 	} body {
 		this._tex = tex;
-		this._clipRect.setSize(tex.width, tex.height);
 	}
 	
 	/**
 	 * Returns the current Texture or null if there is none.
 	 */
-	inout(Texture) getTexture() inout {
+	inout(Texture) getTexture() inout pure nothrow {
 		return this._tex;
 	}
 }

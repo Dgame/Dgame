@@ -36,9 +36,10 @@ private {
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Font;
 	import Dgame.Graphics.Texture;
+	import Dgame.Graphics.Shape;
+	import Dgame.Graphics.Blend;
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Rect;
-	import Dgame.Graphics.Shape;
 	import Dgame.System.VertexRenderer;
 }
 
@@ -66,7 +67,7 @@ static ~this() {
  *
  * Author: rschuett
  */
-class Text : Transformable, Drawable {
+class Text : Transformable, Drawable, Blendable {
 protected:
 	string _text;
 	bool _needUpdate;
@@ -76,6 +77,7 @@ protected:
 	
 	Font _font;
 	Texture _tex;
+	Blend _blend;
 	
 private:
 	void _storePixel(SDL_Surface* rhs, Texture.Format fmt) in {
@@ -185,6 +187,9 @@ protected:
 		}
 		
 		this._tex.bind();
+
+		if (this._blend !is null)
+			this._blend.applyBlending();
 		
 		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
 	}
@@ -244,6 +249,20 @@ public:
 	}
 	
 final:
+	/**
+	 * Set (or reset) the current Blend instance.
+	 */
+	void setBlend(Blend blend) pure nothrow {
+		this._blend = blend;
+	}
+
+	/**
+	 * Returns the current Blend instance, or null.
+	 */
+	inout(Blend) getBlend() inout pure nothrow {
+		return this._blend;
+	}
+
 	/**
 	 * Returns the bounding box, the area which will be drawn on the screen.
 	 */

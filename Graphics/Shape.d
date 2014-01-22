@@ -24,8 +24,8 @@
 module Dgame.Graphics.Shape;
 
 private {
-	import std.math : sin, cos;
-	import std.algorithm : remove;
+	import std.math : sin, cos, abs;
+	import std.algorithm : remove, min, max;
 	import core.stdc.string : memcpy;
 	
 	import derelict.opengl3.gl;
@@ -34,44 +34,10 @@ private {
 	import Dgame.Graphics.Drawable;
 	import Dgame.Graphics.Transformable;
 	import Dgame.Graphics.Texture;
+	import Dgame.Graphics.Blend;
 	import Dgame.Math.Vertex;
 	import Dgame.Math.Rect;
 	import Dgame.System.VertexRenderer;
-}
-
-struct MinMax {
-	float min, max;
-}
-
-float abs(float a) pure nothrow {
-	if (a >= 0)
-		return a;
-	
-	return a * -1;
-}
-
-float min(float a, float b) pure nothrow {
-	return a < b ? a : b;
-}
-
-float max(float a, float b) pure nothrow {
-	return a > b ? a : b;
-}
-
-MinMax[2] minmax(const Vertex[] vertices) pure nothrow {
-	MinMax[2] mm = void;
-	mm[0] = MinMax(vertices[0].x, vertices[0].x);
-	mm[1] = MinMax(vertices[0].y, vertices[0].y);
-	
-	for (size_t i = 1; i < vertices.length; i++) {
-		mm[0].min = min(mm[0].min, vertices[i].x);
-		mm[0].max = max(mm[0].max, vertices[i].x);
-		
-		mm[1].min = min(mm[1].min, vertices[i].y);
-		mm[1].max = max(mm[1].max, vertices[i].y);
-	}
-	
-	return mm;
 }
 
 enum PIx2 = 3.14f * 2;
@@ -122,13 +88,36 @@ struct Smooth {
 	}
 }
 
+private struct Range {
+	float min, max;
+}
+
+private struct RangePoint {
+	Range x;
+	Range y;
+}
+
+private RangePoint min_max(const Vertex[] vertices) pure nothrow {
+	RangePoint rpoint = RangePoint(Range(vertices[0].x, vertices[0].x),
+	                               Range(vertices[0].y, vertices[0].y));
+
+	for (size_t i = 1; i < vertices.length; i++) {
+		rpoint.x.min = min(rpoint.x.min, vertices[i].x);
+		rpoint.x.max = max(rpoint.x.max, vertices[i].x);
+		rpoint.y.min = min(rpoint.y.min, vertices[i].y);
+		rpoint.y.max = max(rpoint.y.max, vertices[i].y);
+	}
+
+	return rpoint;
+}
+
 /**
  * Shape defines a drawable convex shape.
  * It also defines helper functions to draw simple shapes like lines, rectangles, circles, etc.
  *
  * Author: rschuett
  */
-class Shape : Transformable, Drawable {
+class Shape : Transformable, Drawable, Blendable {
 public:
 	/**
 	 * Supported shape types.
@@ -151,7 +140,7 @@ public:
 protected:
 	ubyte _lineWidth;
 	bool _isFilled = true;
-	bool _needUpdate = false;
+	bool _needUpdate;
 	
 	Type _type;
 	Smooth _smooth;
@@ -159,13 +148,14 @@ protected:
 	Vertex[] _vertices;
 	Texture _tex;
 	ShortRect _texRect;
+	Blend _blend;
 	
 protected:
 	void _render() {
 		if (this._vertices.length == 0)
 			return;
 		
-		glPushAttrib(GL_ENABLE_BIT);
+		glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
 		
 		const bool texEnabled = glIsEnabled(GL_TEXTURE_2D) == GL_TRUE;
@@ -186,20 +176,24 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		if (this._needUpdate && this._tex !is null) {
+		if (this._needUpdate 
+		    && this._tex !is null)
+		{
 			this._needUpdate = false;
 			this._updateTexCoords();
 		}
 
 		Vertex* vptr = &this._vertices[0];
-		
 		VertexRenderer.pointTo(Target.Vertex,    vptr, Vertex.sizeof,  0);
 		VertexRenderer.pointTo(Target.Color,     vptr, Vertex.sizeof, 12);
 		VertexRenderer.pointTo(Target.TexCoords, vptr, Vertex.sizeof, 28);
 		
 		if (this._tex !is null)
 			this._tex.bind();
-		
+
+		if (this._blend !is null)
+			this._blend.applyBlending();
+
 		scope(exit) {
 			if (this._tex !is null)
 				this._tex.unbind();
@@ -216,20 +210,15 @@ protected:
 	final void _updateTexCoords() pure nothrow {
 		if (this._vertices.length == 0)
 			return;
-		
-		const MinMax[2] mm = minmax(this._vertices);
-		
-		//debug writefln("min_x = %f, max_x = %f", mm[0].min, mm[0].max);
-		//debug writefln("min_y = %f, max_y = %f", mm[1].min, mm[1].max);
-		
-		const float diff_x = abs(mm[0].min - mm[0].max);
-		const float diff_y = abs(mm[1].min - mm[1].max);
-		
-		//debug writefln("diff_x = %f, diff_y = %f", diff_x, diff_y);
-		
+
+		RangePoint rpoint = min_max(this._vertices);
+
+		const float diff_x = abs(rpoint.x.min - rpoint.x.max);
+		const float diff_y = abs(rpoint.y.min - rpoint.y.max);
+
 		foreach (ref Vertex v; this._vertices) {
-			v.tx = ((v.x - mm[0].min) / diff_x);
-			v.ty = ((v.y - mm[1].min) / diff_y);
+			v.tx = ((v.x - rpoint.x.min) / diff_x);
+			v.ty = ((v.y - rpoint.y.min) / diff_y);
 		}
 		
 		if (!this._texRect.isCollapsed()) {
@@ -261,10 +250,24 @@ final:
 	 * Calculate, store and return the center point.
 	 */
 	override ref const(Vector2s) calculateCenter() pure nothrow {
-		const MinMax[2] mm = minmax(this._vertices);
-		super.setCenter(cast(short)(mm[0].max / 2), cast(short)(mm[1].max / 2));
-		
+		const RangePoint rpoint = min_max(this._vertices);
+		super.setCenter(cast(short)(rpoint.x.max / 2), cast(short)(rpoint.y.max / 2));
+
 		return super.getCenter();
+	}
+
+	/**
+	 * Set (or reset) the current Blend instance.
+	 */
+	void setBlend(Blend blend) pure nothrow {
+		this._blend = blend;
+	}
+
+	/**
+	 * Returns the current Blend instance, or null.
+	 */
+	inout(Blend) getBlend() inout pure nothrow {
+		return this._blend;
 	}
 	
 	/**
@@ -314,7 +317,14 @@ final:
 		this._smooth.target = sTarget;
 		this._smooth.mode = sMode;
 	}
-	
+
+	/**
+	 * Set target and mode of smoothing.
+	 */
+	void setSmooth(ref const Smooth smooth) pure nothrow {
+		this.setSmooth(smooth.target, smooth.mode);
+	}
+
 	/**
 	 * Return the current smooth
 	 */
@@ -450,7 +460,7 @@ final:
 	
 	/**
 	 * Returns the Vertex at the given index
-	 * or throws an exception, if the index is out of range.
+	 * or throws an exception, if the index is out of rpoint.
 	 */
 	ref const(Vertex) getVertexAt(uint idx) const {
 		if (idx < this._vertices.length)
@@ -461,7 +471,7 @@ final:
 	
 	/**
 	 * Returns a pointer of the Vertex at the given index
-	 * or null if the index is out of range.
+	 * or null if the index is out of rpoint.
 	 */
 	inout(Vertex)* fetchVertexAt(uint idx) inout {
 		return idx < this._vertices.length ? &this._vertices[idx] : null;

@@ -81,7 +81,48 @@ protected:
 		return [tx, ty, tx + tw, ty, tx + tw, ty + th, tx, ty + th];
 	}
 
+	override ushort[2] _getClipSize() const pure nothrow {
+		if (!this._texView.isCollapsed())
+			return [this._texView.width, this._texView.height];
+		
+		return super._getClipSize();
+	}
+
 public:
+	/**
+	 * Base class collideWith
+	 */
+	alias collideWith = Sprite.collideWith;
+
+	/**
+	 * Check whether the bounding box of this Sprite collide
+	 * with the bounding box of another Sprite
+	 */
+	bool collideWith(const Spritesheet rhs) const {
+		const ushort[2] clipSize = rhs._getClipSize();
+		const ShortRect rhs_clip = ShortRect(cast(short) rhs.X, cast(short) rhs.Y,
+		                                     clipSize[0], clipSize[1]);
+		return this.collideWith(rhs_clip);
+	}
+	
+	/**
+	 * Check whether the bounding box of this Sprite collide
+	 * with the given Rect
+	 */
+	override bool collideWith(ref const ShortRect rect) const {
+		const ushort[2] clipSize = this._getClipSize();
+		const ShortRect lhs_clip = ShortRect(cast(short) super.X, cast(short) super.Y,
+		                                     clipSize[0], clipSize[1]);
+		return lhs_clip.intersects(rect);
+	}
+	
+	/**
+	 * Rvalue version
+	 */
+	override bool collideWith(const ShortRect rect) const {
+		return this.collideWith(rect);
+	}
+
 final:
 	/**
 	 * CTor
@@ -116,8 +157,6 @@ final:
 	 */
 	void setTextureRect(ref const ShortRect texView) {
 		this._texView = texView;
-		
-		super._clipRect.setSize(texView.width, texView.height);
 	}
 
 	/**
@@ -126,19 +165,18 @@ final:
 	void setTextureRect(const ShortRect texView) {
 		this.setTextureRect(texView);
 	}
-	
+
 	/**
-	 * Returns a pointer to the Texture Rect.
-	 * With this you can change the existing Rect without setting a new one.
-	 * You can e.g. collapse the Rect with this method.
+	 * Fetch the current Texture Rect, so that you can modify it, if you want to.
+	 * 
 	 * Example:
-	 * ---
+	 * ----
 	 * Spritesheet s = new Spritesheet(...);
 	 * // A lot of code
 	 * s.fetchTextureRect().collapse();
-	 * ---
+	 * ----
 	 */
-	inout(ShortRect*) fetchTextureRect() inout pure nothrow {
+	inout(ShortRect)* fetchTextureRect() inout pure nothrow {
 		return &this._texView;
 	}
 

@@ -36,18 +36,12 @@ interface Blendable {
 	/**
 	 * Set (or reset) the current Blend instance.
 	 */
-	void setBlend(Blend blend);
+	void setBlend(Blend blend) pure nothrow;
 	/**
 	 * Returns the current Blend instance, or null.
 	 */
 	inout(Blend) getBlend() inout pure nothrow;
-	/**
-	 * Checks whether this Texture has a Blend instance.
-	 */
-	bool hasBlend() const pure nothrow;
 }
-
-// TODO: Is a class really neccessary? Or could a struct do the same job?...
 
 /**
  * The Blend class. If you want that a blendable object get some blend, 
@@ -70,8 +64,6 @@ public:
 private:
 	Mode _mode;
 	Color _color;
-	
-	bool _isBlending;
 	bool _isBlendColor;
 	
 public:
@@ -79,12 +71,8 @@ public:
 	 * Apply the blending
 	 */
 	void applyBlending() const {
-		if (!this._isBlending)
-			return;
-		
-		if (!glIsEnabled(GL_BLEND))
-			glEnable(GL_BLEND);
-		
+		this.enable(true);
+
 		if (this._isBlendColor) {
 			const float[4] col = this._color.asGLColor();
 			
@@ -114,47 +102,50 @@ final:
 	/**
 	 * CTor
 	 */
-	this(Mode mode, const Color* col = null) {
+	this(Mode mode) {
 		this.setBlendMode(mode);
-		
-		if (col !is null)
-			this.setBlendColor(*col);
+	}
+
+	/**
+	 * CTor
+	 */
+	this(Mode mode, ref const Color col) {
+		this(mode);
+
+		this.setBlendColor(col);
+	}
+
+	/**
+	 * Rvalue version
+	 */
+	this(Mode mode, const Color col) {
+		this(mode, col);
 	}
 	
 	/**
 	 * Enable or Disable blending
 	 */
-	void enableBlending(bool enable) pure nothrow {
-		this._isBlending = enable;
-	}
-	
-	/**
-	 * Returns if Blending is enabled
-	 */
-	bool isBlendingEnabled() const pure nothrow {
-		return this._isBlending;
+	void enable(bool enable) const {
+		const bool isEnabled = glIsEnabled(GL_BLEND) == GL_TRUE;
+
+		if (enable && !isEnabled)
+			glEnable(GL_BLEND);
+		else if (!enable && isEnabled)
+			glDisable(GL_BLEND);
 	}
 	
 	/**
 	 * Activate or deactivate the using of the blend color.
 	 */
-	void enableBlendColor(bool enable) pure nothrow {
+	void enableColor(bool enable) pure nothrow {
 		this._isBlendColor = enable;
 	}
-	
-	/**
-	 * Returns, if using blend color is activated, or not.
-	 */
-	bool isBlendColorEnabled() const pure nothrow {
-		return this._isBlendColor;
-	}
-	
+
 	/**
 	 * Set the Blendmode.
 	 */
 	void setBlendMode(Mode mode) pure nothrow {
 		this._mode = mode;
-		this._isBlending = true;
 	}
 	
 	/**
