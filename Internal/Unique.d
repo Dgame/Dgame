@@ -23,76 +23,61 @@
  */
 module Dgame.Internal.Unique;
 
-private import std.exception : enforce;
-
-struct unique_ptr(T)
-	if (!is(T : U*, U) && !is(T == class) && !is(T : U[], U))
-{
-	static struct Unique {
-		T* ptr;
-		void function(T*) deleter;
-	}
+struct unique_ptr(T) {
+	T* ptr;
+	void function(T*) t_del;
+	void function(void*) any_del;
 	
-	Unique* _unique;
+	alias ptr this;
 	
 	@disable
 	this(typeof(null));
 	
+	this(T* ptr) {
+		this.ptr = ptr;
+	}
+	
+	this(T* ptr, void function(T*) t_del) {
+		this.ptr = ptr;
+		this.t_del = t_del;
+	}
+	
+	this(T* ptr, void function(void*) any_del) {
+		this.ptr = ptr;
+		this.any_del = any_del;
+	}
+	
 	@disable
 	this(this);
 	
-	this(T* ptr, void function(T*) deleter = null) {
-		this(ptr, deleter);
-	}
+	@disable
+	void opAssign(typeof(this));
 	
-	this(ref T* ptr, void function(T*) deleter = null) {
-		this._unique = new Unique(ptr, deleter);
-		ptr = null;
+	bool isValid() const pure nothrow {
+		return this.ptr !is null;
 	}
 	
 	~this() {
-		this.release();
-	}
-	
-	void opAssign(typeof(this) un) {
-		this.release();
-		
-		this._unique = un._unique;
-		un._unique = null;
-	}
-	
-	void release() {
-		if (this.isValid()) {
-			if (this._unique.deleter !is null)
-				this._unique.deleter(this._unique.ptr);
+		if (this.ptr is null)
+			return;
 			
-			delete this._unique;
-			this._unique = null;
-		}
+		if (this.t_del !is null)
+			this.t_del(this.ptr);
+		else if (this.any_del !is null)
+			this.any_del(this.ptr);
 	}
+}
+
+unique_ptr!T move(T)(ref unique_ptr!T rhs) {
+	T* ptr = rhs.ptr;
+	rhs.ptr = null;
 	
-	bool isValid() const pure nothrow {
-		return this._unique !is null;
-	}
-	
-	@property
-	inout(T*) ptr() inout pure nothrow {
-		return this.isValid() ? this._unique.ptr : null;
-	}
-	
-	alias ptr this;
-	
-	typeof(this) move() {
-		enforce(this.isValid());
-		
-		scope(exit) {
-			delete this._unique;
-			this._unique = null;
-		}
-		
-		return typeof(this)(this._unique.ptr, this._unique.deleter);
-	}
-} unittest {
+	if (rhs.t_del !is null)
+		return unique_ptr!T(ptr, rhs.t_del);
+	return unique_ptr!T(ptr, rhs.any_del);
+}
+
+unittest {
 	struct A {
 		int id;
 	}
@@ -101,7 +86,7 @@ struct unique_ptr(T)
 		assert(rhs.isValid());
 		assert(rhs.id == 42);
 		
-		return rhs.move();
+		return move(rhs);
 	}
 	
 	unique_ptr!A as = new A(42);
@@ -109,17 +94,17 @@ struct unique_ptr(T)
 	assert(as.isValid());
 	assert(as.id == 42);
 	
-	typeof(as) as2 = as.move();
+	unique_ptr!A as2 = move(as);
 	
 	assert(!as.isValid());
 	assert(as2.isValid());
 	assert(as2.id == 42);
 	
-	as = test(as2.move());
+	unique_ptr!A as3 = test(move(as2));
 	
 	assert(!as2.isValid());
-	assert(as.isValid());
-	assert(as.id == 42);
+	assert(as3.isValid());
+	assert(as3.id == 42);
 }
 
 unique_ptr!T make_unique(T)(T* ptr, void function(T*) df) {

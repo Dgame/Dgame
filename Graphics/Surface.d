@@ -146,7 +146,7 @@ public:
 	 */
 	void free() {
 		debug writeln("Free Surface:", this.filename);
-		this._target.dissolve();
+		this._target.release();
 	}
 	
 	/**

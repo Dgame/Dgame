@@ -76,7 +76,7 @@ public:
 	 * Destroy the RendererTexture <b>and all</b> which are linked to this.
 	 */
 	void free() {
-		this._target.dissolve();
+		this._target.release();
 	}
 	
 	/**

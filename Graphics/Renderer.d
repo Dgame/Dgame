@@ -138,13 +138,6 @@ public:
 	void opAssign(Renderer rhs);
 	
 	/**
-	 * Use this function to destroy the rendering context for a window and free associated textures.
-	 */
-	void free() {
-		this._target.release();
-	}
-	
-	/**
 	 * Returns the width
 	 */
 	@property
