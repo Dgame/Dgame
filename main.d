@@ -275,9 +275,9 @@ void main() {
 	
 	writeln("====");
 	
-	tm.setView(90, 90, 60, 60);
-	//	tf.setRotation(45);
-	//	tm.setTransform(tf);
+//	tm.setView(90, 90, 60, 60);
+	tm.setCenter(100, 100);
+	tm.setRotation(45);
 
 	//wnd.clear();
 	//wnd.display();
@@ -322,6 +322,7 @@ void main() {
 	fbo_s1.setPosition(500, 50);
 	Sprite fbo_s2 = new Sprite(fbo_img2);
 	fbo_s2.setPosition(680, 50);
+//	fbo_s2.rotate(30);
 	
 	Clock myclock = new Clock();
 	
