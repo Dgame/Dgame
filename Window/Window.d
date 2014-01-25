@@ -104,7 +104,7 @@ private:
 	Style _style;
 	
 	string _title;
-	ubyte _fpsLimit;
+	ubyte _framerateLimit;
 	
 	static int _winCount;
 	
@@ -178,7 +178,7 @@ final:
 		
 		_winCount += 1;
 	}
-	
+
 	/**
 	 * Close and destroy this window.
 	 */
@@ -327,15 +327,15 @@ final:
 	/**
 	 * Set the framerate limit for this window.
 	 */
-	void setFpsLimit(ubyte fps) pure nothrow {
-		this._fpsLimit = fps;
+	void setFramerateLimit(ubyte fps) pure nothrow {
+		this._framerateLimit = fps;
 	}
 	
 	/**
 	 * Returns the framerate limit for this window.
 	 */
-	ubyte getFpsLimit() const pure nothrow {
-		return this._fpsLimit;
+	ubyte getFramerateLimit() const pure nothrow {
+		return this._framerateLimit;
 	}
 	
 	/**
@@ -401,8 +401,8 @@ final:
 		if (!this.isOpen())
 			return;
 		
-		if (this._fpsLimit != 0 && this.getVerticalSync() != Sync.Enable)
-			Clock.wait(1000 / this._fpsLimit);
+		if (this._framerateLimit != 0 && this.getVerticalSync() != Sync.Enable)
+			Clock.wait(1000 / this._framerateLimit);
 
 		if (this._style & Style.OpenGL) {
 			if (_winCount > 1)
