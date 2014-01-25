@@ -64,12 +64,12 @@ protected:
 		if (this._blend !is null)
 			this._blend.applyBlending();
 
-		const ushort[2] clipSize = this._getClipSize();
+		const ShortRect clipRect = this.getClipRect();
 		
 		float dx = 0f;
 		float dy = 0f;
-		float dw = clipSize[0];
-		float dh = clipSize[1];
+		float dw = clipRect.width;
+		float dh = clipRect.height;
 		
 		float[12] vertices = [
 			dx,	     dy,      0f,	
@@ -78,7 +78,7 @@ protected:
 			dx,      dy + dh, 0f
 		];
 		
-		float[8] texCoords = this._calculateTextureCoordinates();
+		float[8] texCoords = this._getTextureCoordinates();
 
 		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
@@ -93,15 +93,8 @@ protected:
 		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
 	}
 
-	float[8] _calculateTextureCoordinates() const pure nothrow {
+	float[8] _getTextureCoordinates() const pure nothrow {
 		return [0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f];
-	}
-
-	ushort[2] _getClipSize() const pure nothrow
-	in {
-		assert(this._tex !is null);
-	} body {
-		return [this._tex.width, this._tex.height];
 	}
 	
 public:
@@ -133,8 +126,8 @@ public:
 	 * with the bounding box of another Sprite
 	 */
 	bool collideWith(const Sprite rhs) const {
-		const ShortRect rhs_clip = ShortRect(cast(short) rhs.X, cast(short) rhs.Y,
-		                                     rhs.width, rhs.height);
+		const ShortRect rhs_clip = rhs.getClipRect();
+
 		return this.collideWith(rhs_clip);
 	}
 	
@@ -143,9 +136,7 @@ public:
 	 * with the given Rect
 	 */
 	bool collideWith(ref const ShortRect rect) const {
-		const ShortRect lhs_clip = ShortRect(cast(short) super.X, cast(short) super.Y,
-		                                     this._tex.width, this._tex.height);
-		return lhs_clip.intersects(rect);
+		return this.getClipRect().intersects(rect);
 	}
 	
 	/**
@@ -153,6 +144,15 @@ public:
 	 */
 	bool collideWith(const ShortRect rect) const {
 		return this.collideWith(rect);
+	}
+
+	/**
+	 * Returns the current Clip Rect, the area,
+	 * where the Sprite lies with the same size as the Sprite.
+	 */
+	ShortRect getClipRect() const pure nothrow {
+		return ShortRect(cast(short) super.X, cast(short) super.Y,
+		                 this._tex.width, this._tex.height);
 	}
 
 final:

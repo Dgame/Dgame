@@ -1,4 +1,4 @@
-/*
+ /*
  *******************************************************************************************
  * Dgame (a D game framework) - Copyright (c) Randy Schütt
  * 
@@ -62,7 +62,7 @@ private:
 	ShortRect _texView;
 
 protected:
-	override float[8] _calculateTextureCoordinates() const pure nothrow {
+	override float[8] _getTextureCoordinates() const pure nothrow {
 		float tx = 0f;
 		float ty = 0f;
 		float tw = 1f;
@@ -81,46 +81,20 @@ protected:
 		return [tx, ty, tx + tw, ty, tx + tw, ty + th, tx, ty + th];
 	}
 
-	override ushort[2] _getClipSize() const pure nothrow {
-		if (!this._texView.isCollapsed())
-			return [this._texView.width, this._texView.height];
-		
-		return super._getClipSize();
-	}
-
 public:
 	/**
-	 * Base class collideWith
+	 * Returns the current Clip Rect
 	 */
-	alias collideWith = Sprite.collideWith;
+	override ShortRect getClipRect() const pure nothrow {
+		ushort[2] clipSize = void;
 
-	/**
-	 * Check whether the bounding box of this Sprite collide
-	 * with the bounding box of another Sprite
-	 */
-	bool collideWith(const Spritesheet rhs) const {
-		const ushort[2] clipSize = rhs._getClipSize();
-		const ShortRect rhs_clip = ShortRect(cast(short) rhs.X, cast(short) rhs.Y,
-		                                     clipSize[0], clipSize[1]);
-		return this.collideWith(rhs_clip);
-	}
-	
-	/**
-	 * Check whether the bounding box of this Sprite collide
-	 * with the given Rect
-	 */
-	override bool collideWith(ref const ShortRect rect) const {
-		const ushort[2] clipSize = this._getClipSize();
-		const ShortRect lhs_clip = ShortRect(cast(short) super.X, cast(short) super.Y,
-		                                     clipSize[0], clipSize[1]);
-		return lhs_clip.intersects(rect);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	override bool collideWith(const ShortRect rect) const {
-		return this.collideWith(rect);
+		if (this._texView.isCollapsed())
+			clipSize = [super._tex.width, super._tex.height];
+		else
+			clipSize = [this._texView.width, this._texView.height];
+
+		return ShortRect(cast(short) super.X, cast(short) super.Y,
+		                 clipSize[0], clipSize[1]);
 	}
 
 final:
@@ -203,11 +177,18 @@ final:
 	 * Execute the animation N times where N is the number of the current loop count.
 	 * If N is < 0, the animation runs infinite.
 	 * 
+	 * Returns if the loop is still running.
+	 * 
 	 * See: Grid
 	 */
-	void execute(Grid grid = Grid.Both) {
-		if (this._loopCount < 0 || this._loopCount > this._passedLoops)
+	bool execute(Grid grid = Grid.Both) {
+		if (this._loopCount < 0 || this._loopCount > this._passedLoops) {
 			this.slideTextureRect(grid);
+
+			return true;
+		}
+
+		return false;
 	}
 	
 	/**

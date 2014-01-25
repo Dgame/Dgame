@@ -28,7 +28,10 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-static immutable string Path = "E:\\D\\dub\\packages\\derelict-master";
+version (none)
+	static immutable string Path = "E:\\D\\dub\\packages\\derelict-master";
+else
+	static immutable string Path = "D:\\D\\dmd2\\src\\ext\\derelict";
 
 pragma(lib, Path ~ "\\lib\\dmd\\DerelictSDL2.lib");
 pragma(lib, Path ~ "\\lib\\dmd\\DerelictUtil.lib");
@@ -55,7 +58,7 @@ enum ushort height = 640;
 void main() {
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
 	wnd.setVerticalSync(Window.Sync.Disable);
-//	wnd.setFpsLimit(15);
+	wnd.setFramerateLimit(15);
 	wnd.setClearColor(Color.Green);
 	
 	{
@@ -458,7 +461,7 @@ void main() {
 		//writefln("Current Fps: %d <=> %d", myclock.getCurrentFps(), wnd.getFpsLimit());
 		
 		text.format("Current Fps: %d <=> %d",
-		            myclock.getCurrentFps(), wnd.getFpsLimit());
+		            myclock.getCurrentFps(), wnd.getFramerateLimit());
 		wnd.draw(text); 
 		
 		wnd.draw(tm);
