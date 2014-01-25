@@ -73,10 +73,10 @@ struct Vector2(T) if (isNumeric!T) {
 		this(vec.x, vec.y);
 	}
 	
-	debug(Dgame)
-	this(this) {
-		writeln("Postblit Vector2");
-	}
+//	debug(Dgame)
+//	this(this) {
+//		writeln("Postblit Vector2");
+//	}
 	
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=
@@ -143,7 +143,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2 opBinary(string op)(ref const Vector2 vec) pure {
+	Vector2 opBinary(string op)(ref const Vector2 vec) const pure {
 		switch (op) {
 			case "+": return Vector2(vec.x + this.x, vec.y + this.y);
 			case "-": return Vector2(vec.x - this.x, vec.y - this.y);
@@ -157,7 +157,7 @@ struct Vector2(T) if (isNumeric!T) {
 	/**
 	 * Supported operation: +, -, *, / and %
 	 */
-	Vector2 opBinary(string op)(T number) pure {
+	Vector2 opBinary(string op)(T number) const pure {
 		switch (op) {
 			case "+": return Vector2(number + this.x, number + this.y);
 			case "-": return Vector2(number - this.x, number - this.y);

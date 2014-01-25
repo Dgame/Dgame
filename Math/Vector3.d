@@ -78,10 +78,10 @@ struct Vector3(T) if (isNumeric!T) {
 		this(vec.x, vec.y, vec.z);
 	}
 	
-	debug(Dgame)
-	this(this) {
-		writeln("Postblit Vector3");
-	}
+//	debug(Dgame)
+//	this(this) {
+//		writeln("Postblit Vector3");
+//	}
 	
 	/**
 	 * Supported operation: +=, -=, *=, /= and %=

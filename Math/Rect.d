@@ -96,15 +96,15 @@ struct Rect(T) if (isNumeric!T) {
 		     cast(T) rect.w, cast(T) rect.h);
 	}
 
-	debug(Dgame)
-	this(this) {
-		writeln("Postblit");
-	}
-	
-	debug(Dgame)
-	~this() {
-		debug writeln("DTor Rect");
-	}
+//	debug(Dgame)
+//	this(this) {
+//		writeln("Postblit");
+//	}
+//	
+//	debug(Dgame)
+//	~this() {
+//		debug writeln("DTor Rect");
+//	}
 	
 	/**
 	 * Transfer the internal data to the SDL_Rect.
@@ -256,20 +256,19 @@ struct Rect(T) if (isNumeric!T) {
 		SDL_Rect a = void;
 		SDL_Rect b = void;
 
-		if (SDL_HasIntersection(&a, &b)) {
-			if (overlap !is null) {
-				SDL_Rect c = void;
-				overlap.transferTo(&c);
+		this.transferTo(&a);
+		rect.transferTo(&b);
 
-				SDL_IntersectRect(&a, &b, &c);
-				overlap.set(cast(T) c.x, cast(T) c.y,
-				            cast(T) c.w, cast(T) c.h);
-			}
-			
-			return true;
-		}
-		
-		return false;
+		if (overlap is null)
+			return SDL_HasIntersection(&a, &b) == SDL_TRUE;
+
+		SDL_Rect c = void;
+
+		const bool intersects = SDL_IntersectRect(&a, &b, &c) == SDL_TRUE;
+		overlap.set(cast(T) c.x, cast(T) c.y,
+		            cast(T) c.w, cast(T) c.h);
+
+		return intersects;
 	}
 	
 	/**
@@ -358,7 +357,7 @@ struct Rect(T) if (isNumeric!T) {
 		this.setPosition(x, y);
 		this.setSize(w, h);
 	}
-	
+
 	/**
 	 * Returns the coordinates as static array
 	 */
