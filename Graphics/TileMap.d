@@ -233,7 +233,8 @@ protected:
 			Surface clip = tileset.subSurface(dst);
 //			clip.saveToFile("tile_" ~ to!string(c++) ~ ".png");
 			if (!newTileset.blit(clip, null, &src)) {
-				Log.error("An error occured by blitting the tile on the new tileset: " ~ to!string(SDL_GetError()));
+				Log.error("An error occured by blitting the tile on the new tileset: %s",
+				          to!string(SDL_GetError()));
 			}
 			
 			dst.setPosition(col, row);
@@ -450,75 +451,53 @@ final:
 	/**
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
-	short[2] convertCoords(T)(T cx, T cy) const {
+	Vector2s convertCoords(float cx, float cy) const {
 		short x = cx >= this._tmi.tileWidth  ? cast(short) .round(cx / this._tmi.tileWidth)  : 0;
 		short y = cy >= this._tmi.tileHeight ? cast(short) .floor(cy / this._tmi.tileHeight) : 0;
 		
-		return [x, y];
+		return Vector2s(x, y);
 	}
 	
 	/**
 	 * Convert from pixel coordinates to tile coordinates.
 	 */
-	short[2] convertCoords(T)(ref const Vector2!T vec) const {
+	Vector2s convertCoords(ref const Vector2f vec) const {
 		return this.convertCoords(vec.x, vec.y);
 	}
 	
 	/**
-	 * Convert from pixel coordinates to tile coordinates.
-	 */
-	short[2] convertCoords(T)(T[2] coords) const {
-		return this.convertCoords(coords[0], coords[1]);
-	}
-	
-	/**
 	 * Convert from tile coordinates to pixel coordinates.
 	 */
-	short[2] reconvertCoords(T)(T cx, T cy) const {
+	Vector2s reconvertCoords(float cx, float cy) const {
 		short x = cx != 0 ? cast(short) round(cx * this._tmi.tileWidth)  : 0;
 		short y = cy != 0 ? cast(short) floor(cy * this._tmi.tileHeight) : 0;
 		
-		return [x, y];
+		return Vector2s(x, y);
 	}
 	
 	/**
 	 * Convert from tile coordinates to pixel coordinates.
 	 */
-	short[2] reconvertCoords(T)(ref const Vector2!T vec) const {
+	Vector2s reconvertCoords(ref const Vector2f vec) const {
 		return this.reconvertCoords(vec.x, vec.y);
-	}
-	
-	/**
-	 * Convert from tile coordinates to pixel coordinates.
-	 */
-	short[2] reconvertCoords(T)(T[2] coords) const {
-		return this.reconvertCoords(coords[0], coords[1]);
 	}
 	
 	/**
 	 * Adjusted pixel coordinates so that they lie on valid pixel
 	 * coordinates based on tile coordinates.
 	 */
-	short[2] adjustCoords(T)(T cx, T cy) const {
-		short[2] convCoords = this.convertCoords(cx, cy);
+	Vector2s adjustCoords(float cx, float cy) const {
+		const Vector2s convCoords = this.convertCoords(cx, cy);
 		
-		return this.reconvertCoords(convCoords);
+		return this.reconvertCoords(convCoords.x, convCoords.y);
 	}
 	
 	/**
 	 * Adjusted pixel coordinates so that they lie on valid pixel coordinates
 	 * based on tile coordinates.
 	 */
-	short[2] adjustCoords(T)(ref const Vector2!T vec) const {
+	Vector2s adjustCoords(ref const Vector2f vec) const {
 		return this.adjustCoords(vec.x, vec.y);
-	}
-	
-	/**
-	 * Adjusted pixel coordinates so that they lie 
-	 * on valid pixel coordinates based on tile coordinates.
-	 */
-	short[2] adjustCoords(T)(T[2] coords) const {
-		return this.adjustCoords(coords[0], coords[1]);
 	}
 	
 	/**
@@ -528,7 +507,8 @@ final:
 	 * See: reload for one tile
 	 */
 	void reload(const Vector2s[] coords, const Vector2s[] newCoords) in {
-		assert(coords.length == newCoords.length, "Koordinaten Arrays must have a equal length.");
+		assert(coords.length == newCoords.length,
+		       "Koordinaten Arrays must have a equal length.");
 	} body {
 		this._vbo.bind(Target.TexCoords);
 		scope(exit) this._vbo.unbind();
@@ -559,7 +539,7 @@ final:
 			this.replaceTileAt(coord, tile);
 		}
 	}
-	
+
 	/**
 	 * Rvalue version
 	 */
@@ -587,7 +567,7 @@ final:
 		
 		this.replaceTileAt(coord, this.getTileAt(newCoord));
 	}
-	
+
 	/**
 	 * Rvalue version
 	 */
@@ -605,7 +585,7 @@ final:
 	/**
 	 * Returns all containing tiles
 	 */
-	inout(Tile[]) getTiles() inout {
+	inout(Tile[]) getTiles() inout pure nothrow {
 		return this._tiles;
 	}
 	
@@ -617,16 +597,6 @@ final:
 	 */
 	bool isTileAt(ref const Vector2s vec, uint* idx = null) const pure nothrow {
 		return this.isTileAt(vec.x, vec.y, idx);
-	}
-	
-	/**
-	 * Check whether a tile exist on the given Coordinates.
-	 * If idx isn't null, the calculated index of the Tile at the given position is stored there.
-	 * 
-	 * Note: The position must be in tile coordinates, not pixel coordinates.
-	 */
-	bool isTileAt(short[2] tilePos, uint* idx = null) const pure nothrow {
-		return this.isTileAt(tilePos[0], tilePos[1], idx);
 	}
 	
 	/**
@@ -661,17 +631,6 @@ final:
 	 * Note: This method is designated as helper method for reload
 	 * Note: The position must be in tile coordinates, not pixel coordinates.
 	 */
-	void replaceTileAt(short[2] tilePos, Tile newTile, Tile* oldTile = null) {
-		this.replaceTileAt(tilePos[0], tilePos[1], newTile, oldTile);
-	}
-	
-	/**
-	 * Replace the tile at the given position with the given new Tile.
-	 * If oldtile is not null, the former Tile is stored there.
-	 * 
-	 * Note: This method is designated as helper method for reload
-	 * Note: The position must be in tile coordinates, not pixel coordinates.
-	 */
 	void replaceTileAt(short x, short y, ref Tile newTile, Tile* oldTile = null) {
 		uint index = 0;
 		
@@ -689,16 +648,6 @@ final:
 	 */
 	Tile getTileAt(ref const Vector2s vec) const {
 		return this.getTileAt(vec.x, vec.y);
-	}
-	
-	/**
-	 * Returns the tile at the given position, or throw an Exception
-	 * 
-	 * Note: The position must be in tile coordinates, not pixel coordinates.
-	 * Note: This function is fast and takes ~ O(1) for a lookup.
-	 */
-	Tile getTileAt(short[2] tilePos) const {
-		return this.getTileAt(tilePos[0], tilePos[1]);
 	}
 	
 	/**
