@@ -47,10 +47,9 @@ public:
 	}
 	
 private:
-	static bool _process(Event* event, ref const SDL_Event sdl_event) {
-		if (event is null)
-			Log.error("Null Event");
-		
+	static bool _process(Event* event, ref const SDL_Event sdl_event) in {
+		assert(event !is null, "Null Event");
+	} body {
 		switch (sdl_event.type) {
 			case Event.Type.KeyDown:
 			case Event.Type.KeyUp:
@@ -159,7 +158,9 @@ public:
 	 * 
 	 * Returns: true, if there was a valid event and false if not.
 	 */
-	static bool poll(Event* event) {
+	static bool poll(Event* event) in {
+		assert(event !is null, "Null Event");
+	} body {
 		SDL_Event sdl_event;
 		SDL_PollEvent(&sdl_event);
 		

@@ -130,11 +130,12 @@ public:
 		enforce(this._fontSize != 0, "No valid size for this font.");
 		
 		if (!exists(fontFile))
-			Log.error("Font File does not exists.");
+			Log.error("Font File %s does not exists.", fontFile);
 		
 		TTF_Font* font = TTF_OpenFont(toStringz(fontFile), this._fontSize);
 		if (font is null) {
-			Log.error("Could not load font " ~ fontFile ~ ". TTF Error: " ~ to!(string)(TTF_GetError()));
+			Log.error("Could not load font %s. TTF Error: %s.",
+			          fontFile, to!(string)(TTF_GetError()));
 		}
 		
 		this._target = make_shared(font, (TTF_Font* ttf) => (TTF_CloseFont(ttf)));
@@ -226,7 +227,7 @@ public:
 	writeln("<Font unittest>");
 	
 	{
-		Font f1 = Font("../samples/font/arial.ttf", 14);
+		Font f1 = Font("../../samples/font/arial.ttf", 14);
 		
 		assert(f1.useCount() == 1, to!string(f1.useCount()));
 		{
