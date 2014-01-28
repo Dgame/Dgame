@@ -87,13 +87,6 @@ final:
 	}
 	
 	/**
-	 * Setting a new position.
-	 */
-	void setPosition(float[2] pos) {
-		this.setPosition(pos[0], pos[1]);
-	}
-	
-	/**
 	 * Returns the current position.
 	 */
 	ref const(Vector2f) getPosition() const pure nothrow {
