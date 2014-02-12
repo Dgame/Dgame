@@ -281,12 +281,12 @@ struct Vector3(T) if (isNumeric!T) {
 /**
  * Alias for short Vector
  */
-alias Vector3s = Vector3!short;
+alias Vector3s = Vector3!(short);
 /**
  * Alias for float Vector
  */
-alias Vector3f = Vector3!float;
+alias Vector3f = Vector3!(float);
 /**
  * Alias for byte Vector
  */
-alias Vector3b = Vector3!byte;
+alias Vector3b = Vector3!(byte);

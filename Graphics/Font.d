@@ -115,7 +115,7 @@ public:
 	 * Close and release the current font <b>and all</b> which are linked to this Font.
 	 */
 	void free() {
-		this._target.release();
+		this._target.terminate();
 	}
 	
 	/**

@@ -28,6 +28,7 @@ private {
 	import derelict.opengl3.gl;
 
 	import Dgame.Internal.Log;
+	import Dgame.Internal.Unique;
 	
 	import Dgame.Graphics.Color;
 	import Dgame.Graphics.Drawable;
@@ -288,10 +289,8 @@ final:
 		const uint lineWidth = this.width * 4;
 		const uint hlw = this.height * lineWidth;
 
-		import Dgame.Internal.Allocator : type_malloc, type_free;
-
-		ubyte* tmpLine = type_malloc!ubyte(lineWidth);
-		scope(exit) type_free(tmpLine);
+		unique_ptr!(ubyte) tmpLine = allocate_unique!(ubyte)(lineWidth);
+//		ubyte[] tmpLine = new ubyte[lineWidth];
 
 		for (ushort i = 0; i < this.height / 2; ++i) {
 			const uint tmpIdx1 = i * lineWidth;
@@ -374,7 +373,7 @@ final:
 	 * Clears the buffer.
 	 */
 	void clear() const {
-		glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
 	/**

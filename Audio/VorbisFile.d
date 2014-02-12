@@ -33,6 +33,7 @@ private {
 	import derelict.ogg.vorbistypes;
 
 	import Dgame.Internal.Log;
+	import Dgame.Internal.Unique;
 	import Dgame.Audio.SoundFile;
 }
 
@@ -69,16 +70,14 @@ protected:
 		
 		debug Log.info("Allocate %d memory for Vorbis file %s.", _sFile.dataSize, filename);
 		super._buffer = new byte[super._sFile.dataSize];
-
-		import Dgame.Internal.Allocator : type_malloc, type_free;
 		
-		byte* tmpBuf = type_malloc!byte(ushort.max);
-		scope(exit) type_free(tmpBuf);
+		unique_ptr!(byte) tmpBuf = allocate_unique!(byte)(ushort.max);
+//		byte[] tmpBuf = new byte[ushort.max];
 
 		uint inserted = 0;
 		while (true) {
 			// Read up to a buffer's worth of decoded sound data
-			long bytes = ov_read(&oggFile, tmpBuf, ushort.max, 0, 2, 1, null);
+			long bytes = ov_read(&oggFile, &tmpBuf[0], ushort.max, 0, 2, 1, null);
 			if (bytes <= 0)
 				break;
 			// Append to end of buffer

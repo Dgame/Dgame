@@ -124,11 +124,4 @@ final:
 		this._position.move(x, y);
 		this._positionMoved(x, y);
 	}
-
-	/**
-	 * Move the position by pos.
-	 */
-	void move(float[2] pos) {
-		this.move(pos[0], pos[1]);
-	}
 }

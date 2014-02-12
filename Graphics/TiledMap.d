@@ -6,8 +6,10 @@ private {
 	import std.conv : to;
 
 	import Dgame.Internal.Log;
+
 	import Dgame.Math.Vector2;
 	import Dgame.Math.Vector3;
+
 	import Dgame.Graphics.TileMap;
 	import Dgame.System.VertexRenderer : Target;
 }
@@ -17,7 +19,7 @@ protected:
 	override void _readTileMap() {
 		Document doc = new Document(cast(string) .read(super._filename));
 		
-		Vector3f[] vertices;
+		scope Vector3f[] vertices;
 		
 		foreach (const Element elem; doc.elements) {
 			if (elem.tag.name == "tileset") {

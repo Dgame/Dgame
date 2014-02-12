@@ -92,7 +92,7 @@ struct Event {
 		Keyboard.ScanCode scancode;	/** The Key which is released or pressed. */
 		Keyboard.Mod mod;	/** The Key modifier. */
 		
-		alias key = code;
+		alias key = code; /** An alias */
 		
 		bool repeat;	/** true, if this is a key repeat. */
 	}

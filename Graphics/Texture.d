@@ -29,7 +29,8 @@ private {
 	import derelict.opengl3.gl;
 	
 	import Dgame.Internal.Log;
-	import Dgame.Internal.Allocator : type_malloc, type_free;
+	import Dgame.Internal.Unique;
+	import Dgame.Internal.Unique;
 
 	import Dgame.Math.Rect;
 	import Dgame.Graphics.Color;
@@ -219,8 +220,7 @@ final:
 	 */
 	this(const Texture tex, Format t_fmt = Format.None) {
 		const uint msize = tex.width * tex.height * (tex.depth / 8);
-		void* mem = type_malloc(msize);
-		scope(exit) type_free(mem);
+		unique_ptr!(void) mem = allocate_unique!(void)(msize);
 
 		void[] memory = tex.getMemory(mem[0 .. msize]);
 		enforce(memory !is null, "Cannot a texture with no memory.");
@@ -540,9 +540,7 @@ final:
 
 		const ubyte bits = this._depth / 8;
 		const uint msize = this._width * this._height * bits;
-		void* mem = type_malloc(msize);
-		scope(exit) type_free(mem);
-
+		unique_ptr!(void) mem = allocate_unique!(void)(msize);
 		void[] memory = this.getMemory(mem[0 .. msize]);
 
 		const uint[2] pitch = [this._width * bits, rect.width * bits];
@@ -551,10 +549,8 @@ final:
 		uint from = pitch[0] * rect.y + rect.x * bits;
 		uint too = from + (rect.height * pitch[0]);
 
-		ubyte* buf = type_malloc!ubyte(msize);
-		scope(exit) type_free(buf);
-
-		ubyte[] buffer = buf[0 .. msize];
+		unique_ptr!(ubyte) buffer = allocate_unique!(ubyte)(msize);
+//		ubyte[] buffer = new ubyte[msize];
 		for (uint i = from, j = 0; i < too - pitch[1]; i += pitch[1], j += pitch[1]) {
 			buffer[j .. j + pitch[1]] = cast(ubyte[]) memory[i .. i + pitch[1]];
 			i += diff;
@@ -578,8 +574,7 @@ final:
 		const ubyte bits = tex.depth / 8;
 		const uint msize = tex.width * tex.height * bits;
 
-		void* mem = type_malloc(msize); 
-		scope(exit) type_free(mem);
+		unique_ptr!(void) mem = allocate_unique!(void)(msize);
 		void[] memory = tex.getMemory(mem[0 .. msize]);
 
 		this.update(memory.ptr, rect, tex.getFormat());

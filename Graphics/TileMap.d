@@ -217,7 +217,7 @@ protected:
 		this._loadTexCoords(used);
 	}
 
-	private void _compress(ref Surface tileset, ShortRect[ushort] used) {
+	private void _compress(ref Surface tileset, scope ShortRect[ushort] used) {
 		debug Log.info("Start compress");
 
 		const ushort dim = calcDim(used.length, this._tmi.tileWidth);
@@ -261,10 +261,10 @@ protected:
 		debug Log.info("End compress");
 	}
 
-	void _loadTexCoords(ShortRect[ushort] used) {
+	void _loadTexCoords(in ShortRect[ushort] used) {
 		/// Sammeln der Textur Koordinaten
 
-		Vector2f[] texCoords;
+		scope Vector2f[] texCoords;
 		const size_t cap = texCoords.reserve(this._tiles.length * 4);
 		
 		debug Log.info("TileMap: Reserve %d texCoords (Needed %d).", cap, this._tiles.length * 4);

@@ -8,9 +8,9 @@ private {
 }
 
 private {
-	SDL_MessageBoxColorScheme _asSDLColorScheme(const MessageBox.Color[] mcols) {
+	SDL_MessageBoxColorScheme _asSDLColorScheme(in MessageBox.Color[] mcols) {
 		SDL_MessageBoxColorScheme color_scheme;
-		
+
 		foreach (ref const MessageBox.Color mcol; mcols) {
 			SDL_MessageBoxColor sdl_mcol = void;
 			sdl_mcol.r = mcol.color.red;
@@ -23,8 +23,9 @@ private {
 		return color_scheme;
 	}
 	
-	SDL_MessageBoxButtonData[] _asSDLButton(const MessageBox.Button[] mbuttons) {
+	SDL_MessageBoxButtonData[] _asSDLButton(in MessageBox.Button[] mbuttons) {
 		SDL_MessageBoxButtonData[] buttons;
+		buttons.reserve(mbuttons.length);
 		
 		foreach (ref const MessageBox.Button mbtn; mbuttons) {
 			SDL_MessageBoxButtonData button_data = void;

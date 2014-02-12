@@ -146,7 +146,7 @@ public:
 	 */
 	void free() {
 		debug writeln("Free Surface:", this.filename);
-		this._target.release();
+		this._target.terminate();
 	}
 	
 	/**
@@ -298,7 +298,6 @@ public:
 	bool lock() {
 		if (SDL_LockSurface(this._target) == 0)
 			return true;
-		
 		return false;
 	}
 	
@@ -381,7 +380,7 @@ public:
 	 * Returns the current colorkey.
 	 */
 	Color getColorkey() {
-		uint key;
+		uint key = 0;
 		SDL_GetColorKey(this._target, &key);
 		
 		ubyte r, g, b, a;

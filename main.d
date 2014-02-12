@@ -28,7 +28,7 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-version (none)
+version (all)
 	static immutable string Path = "E:\\D\\dub\\packages\\derelict-master";
 else
 	static immutable string Path = "D:\\D\\dmd2\\src\\ext\\derelict";
@@ -58,7 +58,7 @@ enum ushort height = 640;
 void main() {
 	Window wnd = new Window(VideoMode(width, height), "Dgame Demo");
 	wnd.setVerticalSync(Window.Sync.Disable);
-	wnd.setFramerateLimit(15);
+//	wnd.setFramerateLimit(15);
 	wnd.setClearColor(Color.Green);
 	
 	{

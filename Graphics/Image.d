@@ -27,6 +27,8 @@ private {
 	import Dgame.Graphics.Surface;
 	import Dgame.Graphics.Color;
 	import Dgame.Math.Rect;
+
+	import Dgame.Internal.Unique;
 }
 
 public import Dgame.Graphics.Texture;
@@ -102,16 +104,13 @@ final:
 	 * Save the (current) image into filename.
 	 */
 	void saveToFile(string filename) {
-		import Dgame.Internal.Allocator : type_malloc, type_free;
-
 		const size_t msize = super.width * super.height * (super.depth / 8);
-		void* mem = type_malloc(msize);
-		scope(exit) type_free(mem);
+		unique_ptr!(void) mem = allocate_unique!(void)(msize);
 
 		void[] memory = super.getMemory(mem[0 .. msize]);
 		enforce(memory !is null, "Cannot save image with no memory.");
 		
-		Surface img = Surface.make(&mem[0], super.width, super.height, super.depth);
+		Surface img = Surface.make(&memory[0], super.width, super.height, super.depth);
 		img.saveToFile(filename);
 	}
 	

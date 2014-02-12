@@ -90,15 +90,15 @@ struct Color {
 		this.alpha = cast(ubyte)(ubyte.max * alpha);
 	}
 	
-	debug(Dgame)
-	this(this) {
-		debug writeln("Postblit Color");
-	}
-	
-	debug(Dgame)
-	~this() {
-		debug writeln("DTor Color");
-	}
+//	debug(Dgame)
+//	this(this) {
+//		debug writeln("Postblit Color");
+//	}
+//	
+//	debug(Dgame)
+//	~this() {
+//		debug writeln("DTor Color");
+//	}
 	
 	/**
 	 * Returns a copy of the current Color with a given transpareny.

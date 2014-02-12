@@ -1,40 +1,68 @@
 module Dgame.Internal.Allocator;
 
-private {
-	debug import std.stdio : writefln;
+private import cstd = core.stdc.stdlib;
+
+T* make(T)(ref T* p, size_t count = 1)
+	if (!is(T : U[], U))
+in {
+	assert(p is null);
+	assert(count > 0 && count < int.max);
+} body {
+	p = cast(T*) cstd.calloc(count, T.sizeof);
+	return p;
 }
 
-T* type_malloc(T = void)(size_t count) {
-	import core.stdc.stdlib : malloc;
+T* make(T)(auto ref T value, ref T* p, size_t count = 1)
+	if (!is(T : U[], U))
+in {
+	assert(p is null);
+	assert(count > 0 && count < short.max);
+} body {
+	p = cast(T*) cstd.malloc(count * T.sizeof);
 	
-	return cast(T*) malloc(T.sizeof * count);
-}
-
-T* type_calloc(T = void)(size_t count) {
-	import core.stdc.stdlib : calloc;
-	
-	return cast(T*) calloc(T.sizeof, count);
-}
-
-void type_free(void* ptr) {
-	import core.stdc.stdlib : free;
-
-	free(ptr);
-	ptr = null;
-}
-
-T* construct(T, Args...)(Args args) {
-	T* ptr = type_calloc!T(1);
-	
-	static if (Args.length != 0) {
-		static if (!is(T == struct))
-			static assert(0, "Can only construct structs.");
-		
-		import core.stdc.string : memcpy;
-		
-		T temp = T(args);
-		memcpy(ptr, &temp, T.sizeof);
+	for (size_t i = 0; i < count; i++) {
+		p[i] = value;
 	}
 	
-	return ptr;
+	return p;
+}
+
+T* alloc_new(T = void)(size_t count)
+	if (!is(T : U[], U))
+in {
+	assert(count > 0);
+} body {
+	T* p;
+	return make(p, count);
+}
+
+T* make_new(T = void)(auto ref T value, size_t count = 1)
+	if (!is(T : U[], U))
+in {
+	assert(count > 0);
+} body {
+	T* p = alloc_new!(T)(count);
+	*p = value;
+	
+	return p;
+}
+
+void unmake(T)(ref T* p)
+	if (!is(T : U[], U))
+{
+	static if (!is(T == void))
+		.destroy!T(*p);
+	cstd.free(p);
+	p = null;
+}
+
+T* remake(T)(ref T* p, size_t cap)
+	if (!is(T : U[], U))
+in {
+	assert(p !is null);
+	assert(cap > 0);
+} body {
+	p = cast(T*) cstd.realloc(p, cap * T.sizeof);
+	
+	return p;
 }

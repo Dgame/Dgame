@@ -146,6 +146,7 @@ protected:
 	Smooth _smooth;
 	
 	Vertex[] _vertices;
+
 	Texture _tex;
 	ShortRect _texRect;
 	Blend _blend;

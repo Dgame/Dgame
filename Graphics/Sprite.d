@@ -52,12 +52,12 @@ protected:
 	} body {
 		glPushMatrix();
 		scope(exit) glPopMatrix();
-		
+
 		super._applyTranslation();
-		
+
 		if (!glIsEnabled(GL_TEXTURE_2D))
 			glEnable(GL_TEXTURE_2D);
-		
+
 		glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 		scope(exit) glPopAttrib();
 
@@ -65,31 +65,30 @@ protected:
 			this._blend.applyBlending();
 
 		const ShortRect clipRect = this.getClipRect();
-		
+
 		float dx = 0f;
 		float dy = 0f;
 		float dw = clipRect.width;
 		float dh = clipRect.height;
-		
+
 		float[12] vertices = [
 			dx,	     dy,      0f,	
 			dx + dw, dy,      0f,
 			dx + dw, dy + dh, 0f,
 			dx,      dy + dh, 0f
 		];
-		
+
 		float[8] texCoords = this._getTextureCoordinates();
 
 		VertexRenderer.pointTo(Target.Vertex, &vertices[0]);
 		VertexRenderer.pointTo(Target.TexCoords, &texCoords[0]);
-		
+
 		scope(exit) {
 			VertexRenderer.disableAllStates();
 			this._tex.unbind();
 		}
-		
+
 		this._tex.bind();
-		
 		VertexRenderer.drawArrays(Shape.Type.TriangleFan, vertices.length);
 	}
 

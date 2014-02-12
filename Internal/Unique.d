@@ -23,58 +23,100 @@
  */
 module Dgame.Internal.Unique;
 
+debug import std.stdio;
+private import Dgame.Internal.Allocator;
+private import cstd = core.stdc.stdlib;
+
+@property
+string idOf(T)() {
+	static if (__traits(compiles, { string s = T.stringof; }))
+		return T.stringof;
+	else
+		return __traits(identifier, T);
+}
+
+void _def_del(T = void)(T* p) {
+	cstd.free(p);
+}
+
 struct unique_ptr(T) {
 	T* ptr;
-	void function(T*) t_del;
-	void function(void*) any_del;
+	void function(T*) del_func;
 	
-	alias ptr this;
-	
-	@disable
-	this(typeof(null));
-	
-	this(T* ptr) {
-		this.ptr = ptr;
+	this(T* p, void function(T*) df = &_def_del!(T)) {
+		this.ptr = p;
+		this.del_func = df;
 	}
 	
-	this(T* ptr, void function(T*) t_del) {
-		this.ptr = ptr;
-		this.t_del = t_del;
-	}
-	
-	this(T* ptr, void function(void*) any_del) {
-		this.ptr = ptr;
-		this.any_del = any_del;
+	this(ref T* p, void function(T*) df = &_def_del!(T)) {
+		this.ptr = p;
+		this.del_func = df;
+		
+		p = null;
 	}
 	
 	@disable
 	this(this);
 	
-	@disable
-	void opAssign(typeof(this));
+	~this() {
+		if (this.del_func is null || this.ptr is null) {
+			return;
+		}
+
+		debug writeln("Terminate unique ", idOf!(T));
+
+		this.del_func(this.ptr);
+	}
 	
+	T* release() pure nothrow {
+		scope(exit) this.ptr = null;
+		return this.ptr;
+	}
+
 	bool isValid() const pure nothrow {
 		return this.ptr !is null;
 	}
-	
-	~this() {
-		if (this.ptr is null)
-			return;
-			
-		if (this.t_del !is null)
-			this.t_del(this.ptr);
-		else if (this.any_del !is null)
-			this.any_del(this.ptr);
-	}
+
+	alias ptr this;
 }
 
-unique_ptr!T move(T)(ref unique_ptr!T rhs) {
-	T* ptr = rhs.ptr;
-	rhs.ptr = null;
+unique_ptr!(T) move(T)(ref unique_ptr!(T) uniq) {
+	return unique_ptr!(T)(uniq.release(), uniq.del_func);
+}
+
+unique_ptr!(T) make_unique(T)(auto ref T value, void function(T*) df = &_def_del!(T)) if (!is(T : U*, U)) {
+	T* p;
+	make(value, p);
 	
-	if (rhs.t_del !is null)
-		return unique_ptr!T(ptr, rhs.t_del);
-	return unique_ptr!T(ptr, rhs.any_del);
+	return make_unique(p, df);
+}
+
+unique_ptr!(T) make_unique(T, Args...)(void function(T*) df, Args args) {
+	import std.conv : emplace;
+	
+	T* p = alloc_new!(T)(1);
+	emplace(p, args);
+	
+	return make_unique(p, df);
+}
+
+unique_ptr!(T) make_unique(T, Args...)(Args args) {
+	import std.conv : emplace;
+	
+	T* p = alloc_new!(T)(1);
+	emplace(p, args);
+	
+	return make_unique(p);
+}
+
+unique_ptr!(T) make_unique(T)(auto ref T* p, void function(T*) df = &_def_del!(T)) {
+	return unique_ptr!(T)(p, df);
+}
+
+unique_ptr!(T) allocate_unique(T)(size_t count, void function(T*) df = &_def_del!(T)) {
+	T* p = alloc_new!(T)(count);
+	
+	return make_unique(p, df);
 }
 
 unittest {
@@ -82,31 +124,27 @@ unittest {
 		int id;
 	}
 	
-	unique_ptr!A test(unique_ptr!A rhs) {
+	unique_ptr!(A) test(unique_ptr!(A) rhs) {
 		assert(rhs.isValid());
 		assert(rhs.id == 42);
 		
 		return move(rhs);
 	}
 	
-	unique_ptr!A as = new A(42);
+	unique_ptr!(A) as = new A(42);
 	
 	assert(as.isValid());
 	assert(as.id == 42);
 	
-	unique_ptr!A as2 = move(as);
+	unique_ptr!(A) as2 = move(as);
 	
 	assert(!as.isValid());
 	assert(as2.isValid());
 	assert(as2.id == 42);
 	
-	unique_ptr!A as3 = test(move(as2));
+	unique_ptr!(A) as3 = test(move(as2));
 	
 	assert(!as2.isValid());
 	assert(as3.isValid());
 	assert(as3.id == 42);
-}
-
-unique_ptr!T make_unique(T)(T* ptr, void function(T*) df) {
-	return unique_ptr!T(ptr, df);
 }

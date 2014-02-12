@@ -23,90 +23,118 @@
  */
 module Dgame.Internal.Shared;
 
-debug import std.stdio : writefln;
-private import Dgame.Internal.Allocator : type_calloc, type_free, construct;
+debug import std.stdio;
+private import Dgame.Internal.Allocator;
+private import cstd = core.stdc.stdlib;
+
+@property
+string idOf(T)() {
+	static if (__traits(compiles, { string s = T.stringof; }))
+		return T.stringof;
+	else
+		return __traits(identifier, T);
+}
+
+void _def_del(T = void)(T* p) {
+	cstd.free(p);
+}
 
 struct shared_ptr(T) {
-	struct Shared {
-		T* ptr;
-		int count;
-		void function(T*) t_del;
-		void function(void*) any_del;
-	}
+	T* ptr;
+	int* rc;
+	void function(T*) del_func;
 	
-	private Shared* _shared;
-	
-	this(T* ptr) {
-		this._shared = construct!Shared(ptr, 1);
-	}
-	
-	this(T* ptr, void function(T*) t_del) {
-		this._shared = construct!Shared(ptr, 1, t_del);
-	}
-	
-	this(T* ptr, void function(void*) any_del) {
-		this._shared = construct!Shared(ptr, 1, null, any_del);
+	this(T* p, void function(T*) df = &_def_del!(T)) {
+		this.ptr = p;
+		this.del_func = df;
+		
+		this.retain();
 	}
 	
 	this(this) {
-		if (this._shared !is null)
-			this._shared.count++;
+		this.retain();
 	}
 	
 	~this() {
-		debug writefln("DTor shared_ptr!%s: usage = %d", __traits(identifier, T), this.usage());
+		this.release();
+	}
+	
+	void retain() {
+		import core.stdc.stdlib : calloc;
+		
+		if (this.rc is null)
+			this.rc = alloc_new!(int)(1);
+		(*this.rc)++;
+		
+		debug writeln("Retain: ", this.usage(), "::", idOf!(T));
+	}
+	
+	void release() {
+		if (this.rc is null)
+			return;
+		(*this.rc)--;
 
-		if (this._shared !is null) {
-			this._shared.count--;
-			if (this._shared.count <= 0) {
-				this.release();
-			}
+		debug writeln("Release: ", this.usage(), "::", idOf!(T));
+
+		if (this.usage() <= 0) {
+			this.terminate();
 		}
+	}
+
+	void terminate() {
+		if (this.del_func is null || this.ptr is null) {
+			return;
+		}
+
+		debug writeln("Terminate shared ", idOf!(T));
+
+		this.del_func(this.ptr);
+		unmake(this.rc);
+		this.ptr = null;
+	}
+	
+	int usage() const pure nothrow {
+		if (this.rc is null)
+			return 0;
+		return *this.rc;
 	}
 
 	bool isValid() const pure nothrow {
-		return this._shared !is null;
-	}
-
-	void release() {
-		if (this._shared.t_del !is null)
-			this._shared.t_del(this._shared.ptr);
-		else if (this._shared.any_del !is null)
-			this._shared.any_del(this._shared.ptr);
-
-		type_free(this._shared);
-		this._shared = null;
-	}
-	
-	void dissolve() {
-		if (this._shared is null)
-			return;
-		
-		while (this._shared.count > 1) {
-			this._shared.count--;
-		}
-	}
-	
-	@property
-	inout(T*) ptr() inout pure nothrow {
-		if (this._shared !is null)
-			return this._shared.ptr;
-		
-		return null;
+		return this.ptr !is null;
 	}
 	
 	alias ptr this;
-	
-	int usage() const pure nothrow {
-		if (this._shared !is null)
-			return this._shared.count;
-		
-		return -1;
-	}
 }
 
-shared_ptr!T make_shared(T)(T* ptr, void function(T*) deleter) {
-	return shared_ptr!T(ptr, deleter);
+shared_ptr!(T) make_shared(T)(auto ref T value, void function(T*) df = &_def_del!(T)) if (!is(T : U*, U)) {
+	T* p;
+	make(value, p);
+	
+	return make_shared(p);
+}
+
+shared_ptr!(T) make_shared(T, Args...)(void function(T*) df, Args args) {
+	T* p = alloc_new!(int)(1);
+	emplace(p, args);
+
+	return make_shared(p, df);
+}
+
+shared_ptr!(T) make_shared(T, Args...)(Args args) {
+	T* p = alloc_new!(int)(1);
+	emplace(p, args);
+	
+	return make_shared(p);
+}
+
+shared_ptr!(T) make_shared(T)(T* p, void function(T*) df = &_def_del!(T)) {
+	return shared_ptr!(T)(p, df);
+}
+
+shared_ptr!(T) allocate_shared(T)(size_t count, void function(T*) df = &_def_del!(T)) {
+	T* p = alloc_new!(T)(count);
+	
+	return make_shared(p, df);
 }
 
 unittest {
@@ -117,14 +145,14 @@ unittest {
 	}
 	
 	{
-		void test(shared_ptr!A rhs) {
+		void test(shared_ptr!(A) rhs) {
 			//assert(rhs.isCopy);
 			assert(rhs.id == 42);
 			assert(rhs.isValid());
 			assert(rhs.usage == 2);
 		}
 		
-		shared_ptr!A as = new A(42);
+		shared_ptr!(A) as = new A(42);
 //		assert(_refCount == 1, to!string(_refCount));
 		
 		assert(as.id == 42);
@@ -139,8 +167,8 @@ unittest {
 		assert(as.isValid());
 		//assert(!as.isCopy);
 		
-		shared_ptr!A s1 = new A(111);
-		shared_ptr!A s2 = s1;
+		shared_ptr!(A) s1 = new A(111);
+		shared_ptr!(A) s2 = s1;
 //		assert(_refCount == 3, to!string(_refCount));
 		
 		assert(s1.usage == 2);
@@ -148,7 +176,7 @@ unittest {
 		//assert(s2.isCopy());
 		assert(s1 == s2);
 		
-		s1 = shared_ptr!A(new A(222));
+		s1 = shared_ptr!(A)(new A(222));
 //		assert(_refCount == 3, to!string(_refCount));
 		
 		//debug writeln("\t\t", s1.usage, "::", s2.usage);
@@ -164,14 +192,14 @@ unittest {
 			
 		}
 		
-		void test2(shared_ptr!A rhs, int id) {
+		void test2(shared_ptr!(A) rhs, int id) {
 			//assert(rhs.isCopy);
 			assert(rhs.id == id);
 			assert(rhs.isValid());
 			assert(rhs.usage == 2);
 		}
 		
-		shared_ptr!A s3 = new A(23);
+		shared_ptr!(A) s3 = new A(23);
 //		assert(_refCount == 4, to!string(_refCount));
 		
 		assert(s3.isValid());
@@ -185,7 +213,7 @@ unittest {
 		assert(s3.id == 23);
 		assert(s3.usage == 1);
 		
-		s3 = shared_ptr!A(new A(42));
+		s3 = shared_ptr!(A)(new A(42));
 //		assert(_refCount == 4, to!string(_refCount));
 		
 		assert(s3.isValid());

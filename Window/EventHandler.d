@@ -216,7 +216,7 @@ public:
 	 * If the seconds parameter is greater then -1, it waits maximal timeout seconds.
 	 */
 	static bool wait(Event* event, int timeout = -1) {
-		int result;
+		int result = 0;
 		SDL_Event sdl_event;
 		
 		if (timeout < 0)

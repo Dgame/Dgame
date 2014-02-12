@@ -30,6 +30,7 @@ private {
 	import derelict.sdl2.sdl;
 
 	import Dgame.Math.Vector2;
+	import Dgame.Internal.Unique;
 }
 
 SDL_Rect* transfer(T)(const Rect!(T)* rect, SDL_Rect* to) pure nothrow
@@ -75,7 +76,7 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * CTor
 	 */
-	this(ref const Vector2!T vec, T width, T height) pure nothrow {
+	this(ref const Vector2!(T) vec, T width, T height) pure nothrow {
 		this(vec.x, vec.y, width, height);
 	}
 	
@@ -207,14 +208,14 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool opBinaryRight(string op : "in")(ref Vector2!T vec) const pure nothrow {
+	bool opBinaryRight(string op : "in")(ref Vector2!(T) vec) const pure nothrow {
 		return this.contains(vec);
 	}
 	
 	/**
 	 * Checks whether this Rect contains the given coordinates.
 	 */
-	bool contains(ref const Vector2!T vec) const pure nothrow {
+	bool contains(ref const Vector2!(T) vec) const pure nothrow {
 		return this.contains(vec.x, vec.y);
 	}
 	
@@ -274,18 +275,16 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Use this function to calculate a minimal rectangle enclosing a set of points.
 	 */
-	static Rect enclosePoints(const Vector2!T[] points) {
-		import Dgame.Internal.Allocator : type_malloc, type_free;
+	static Rect enclosePoints(in Vector2!(T)[] points) {
+		unique_ptr!(SDL_Point) sdl_points = allocate_unique!(SDL_Point)(points.length);
+//		SDL_Point[] sdl_points = new SDL_Point[points.length];
 
-		SDL_Point* sdl_points = type_malloc!(SDL_Point)(points.length);
-		scope(exit) type_free(sdl_points);
-
-		foreach (i, ref const Vector2!T p; points) {
+		foreach (i, ref const Vector2!(T) p; points) {
 			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
 		}
 
 		SDL_Rect a = void;
-		SDL_EnclosePoints(sdl_points, cast(uint) points.length, null, &a);
+		SDL_EnclosePoints(&sdl_points[0], cast(uint) points.length, null, &a);
 
 		return Rect(a);
 	}
@@ -301,15 +300,15 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Returns the current size as Vector2
 	 */
-	Vector2!T getSize() const pure nothrow {
-		return Vector2!T(this.width, this.height);
+	Vector2!(T) getSize() const pure nothrow {
+		return Vector2!(T)(this.width, this.height);
 	}
 	
 	/**
 	 * Increase current size.
 	 */
 	void increase(T width, T height) pure nothrow {
-		this.width  += width;
+		this.width += width;
 		this.height += height;
 	}
 	
@@ -324,21 +323,21 @@ struct Rect(T) if (isNumeric!T) {
 	/**
 	 * Set a new position with a vector.
 	 */
-	void setPosition(ref const Vector2!T position) pure nothrow {
+	void setPosition(ref const Vector2!(T) position) pure nothrow {
 		this.setPosition(position.x, position.y);
 	}
 	
 	/**
 	 * Returns the current position as Vector2
 	 */
-	Vector2!T getPosition() const pure nothrow {
-		return Vector2!T(this.x, this.y);
+	Vector2!(T) getPosition() const pure nothrow {
+		return Vector2!(T)(this.x, this.y);
 	}
 	
 	/**
 	 * Move the object.
 	 */
-	void move(ref const Vector2!T vec) pure nothrow {
+	void move(ref const Vector2!(T) vec) pure nothrow {
 		this.move(vec.x, vec.y);
 	}
 	
@@ -369,8 +368,8 @@ struct Rect(T) if (isNumeric!T) {
 /**
  * alias for float
  */
-alias FloatRect = Rect!float;
+alias FloatRect = Rect!(float);
 /**
  * alias for short
  */
-alias ShortRect = Rect!short;
+alias ShortRect = Rect!(short);
