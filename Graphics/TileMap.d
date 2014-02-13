@@ -301,8 +301,8 @@ protected:
 			if (!glIsEnabled(GL_SCISSOR_TEST))
 				glEnable(GL_SCISSOR_TEST);
 			
-			const int vx = this._view.x + cast(int) super.X;
-			const int vy = this._view.y + this._view.height + cast(int) super.Y;
+			const int vx = this._view.x + cast(int) super.position.x;
+			const int vy = this._view.y + this._view.height + cast(int) super.position.y;
 			
 			SDL_Window* wnd = SDL_GL_GetCurrentWindow();
 			int w, h;

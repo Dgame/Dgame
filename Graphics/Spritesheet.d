@@ -27,6 +27,7 @@ private {
 	import Dgame.Graphics.Texture;
 	import Dgame.Graphics.Sprite;
 	import Dgame.Math.Rect;
+	import Dgame.System.Clock;
 }
 
 /**
@@ -58,6 +59,8 @@ public:
 private:
 	short _loopCount;
 	ushort _passedLoops;
+	size_t _lastTick;
+	ushort _tickOffset;
 
 	ShortRect _texView;
 
@@ -93,7 +96,7 @@ public:
 		else
 			clipSize = [this._texView.width, this._texView.height];
 
-		return ShortRect(cast(short) super.X, cast(short) super.Y,
+		return ShortRect(cast(short) super.position.x, cast(short) super.position.y,
 		                 clipSize[0], clipSize[1]);
 	}
 
@@ -165,12 +168,12 @@ final:
 	}
 
 	/**
-	 * Get the current loop count.
-	 * This specif how often the whole Animation is played.
-	 * A value of < 0 means: infinite playing.
+	 * Set the current tick offset.
+	 * This is the offset between each animation / slide.
+	 * Default is 0.
 	 */
-	short getLoopCount() const pure nothrow {
-		return this._loopCount;
+	void setTickOffset(ushort offset) pure nothrow {
+		this._tickOffset = offset;
 	}
 
 	/**
@@ -202,6 +205,11 @@ final:
 	void slideTextureRect(Grid grid = Grid.Both) in {
 		assert(this._tex !is null, "No Texture.");
 	} body {
+		if ((this._lastTick + this._tickOffset) > Clock.getTicks())
+			return;
+
+		this._lastTick = Clock.getTicks();
+
 		const short w = this._texView.width;
 		const short h = this._texView.height;
 

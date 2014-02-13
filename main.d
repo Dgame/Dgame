@@ -420,7 +420,7 @@ void main() {
 					
 					System.Power powI = System.getPowerInfo();
 					
-					writefln("Es verbleiben %d second bei %d %%. Status: %s",
+					writefln("Es verbleiben %d second bei %d %%. Status: %s.",
 					         powI.seconds, powI.percent, powI.state);
 					writefln("Available RAM: %d.", System.getRAM());
 					

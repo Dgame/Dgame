@@ -94,21 +94,16 @@ final:
 	}
 
 	/**
-	 * Returns inout reference to the x coordinate.
+	 * Returns an inout reference to the coordinates.
+	 * It should be used to set or get the x and y coordinates.
+	 * If you (re)set the position herewith,
+	 * it doesn't appear in <b>_positionMoved</b> or <b>_positionReset</b>.
 	 */
 	@property
-	ref inout(float) X() inout pure nothrow {
-		return this._position.x;
+	ref inout(Vector2f) position() inout pure nothrow {
+		return this._position;
 	}
 
-	/**
-	 * Returns inout reference to the y coordinate.
-	 */
-	@property
-	ref inout(float) Y() inout pure nothrow {
-		return this._position.y;
-	}
-	
 	/**
 	 * Move the current position by vec.
 	 */

@@ -150,7 +150,7 @@ public:
 	 * where the Sprite lies with the same size as the Sprite.
 	 */
 	ShortRect getClipRect() const pure nothrow {
-		return ShortRect(cast(short) super.X, cast(short) super.Y,
+		return ShortRect(cast(short) super.position.x, cast(short) super.position.y,
 		                 this._tex.width, this._tex.height);
 	}
 

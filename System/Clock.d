@@ -29,7 +29,7 @@ private import derelict.sdl2.functions;
  * To convert the Clock milliseconds to seconds
  */
 float asSeconds(uint n) pure nothrow {
-	return n >= 1000 ? (n / 1000f) : 0f;
+	return n >= 1000 ? (n / 1000) : 0;
 }
 
 /**
@@ -38,7 +38,7 @@ float asSeconds(uint n) pure nothrow {
 float asMinutes(uint n) pure nothrow {
 	immutable float secs = asSeconds(n);
 	
-	return secs >= 60 ? (secs / 60f) : 0f;
+	return secs >= 60 ? (secs / 60) : 0;
 }
 
 /**
@@ -62,16 +62,47 @@ struct Time {
 	float minutes;
 	/// Hours = Minutes / 60
 	ushort hours;
-	
+
 	/**
 	 * CTor
 	 */
-	this(uint msecs) pure {
+	this(uint msecs) pure nothrow {
 		this.msecs   = msecs;
 		this.seconds = asSeconds(msecs);
 		this.minutes = asMinutes(msecs);
 		this.hours   = asHours(msecs);
 	}
+
+	/**
+	 * Calculate the <b>remaining</b> time.
+	 */
+	static Time remain(Time time) pure nothrow {
+		import std.math : floor;
+
+		const float min = time.minutes;
+		const float sec = time.seconds;
+
+		time.minutes -= floor(time.hours) * 60;
+		time.minutes = floor(time.minutes);
+		time.seconds -= floor(min) * 60;
+		time.msecs -= floor(sec) * 1000;
+
+		return time;
+	}
+} unittest {
+	import std.stdio;
+
+	Time time = Time(65_000);
+
+	assert(time.msecs == 65_000);
+	assert(time.seconds == 65);
+	assert(time.minutes >= 1.08f && time.minutes <= 1.09f);
+
+	time = Time.remain(time);
+
+	assert(time.msecs == 0f);
+	assert(time.seconds == 5f);
+	assert(time.minutes == 1f);
 }
 
 /**

@@ -32,54 +32,43 @@ import std.string : format, toUpper, chop, splitLines, strip;
 import std.exception : enforce;
 
 version(DigitalMars) {
-	enum {
-		DMD = true,
-		GDC = false,
-		LDC = false
-	}
+	enum DMD = true;
+	enum GDC = false;
+	enum LDC = false;
 } else version(GNU) {
-	enum {
-		DMD = false,
-		GDC = true,
-		LDC = false
-	}
+	enum DMD = false;
+	enum GDC = true;
+	enum LDC = false;
 } else version(LDC) {
-	enum {
-		DMD = false,
-		GDC = false,
-		LDC = true
-	}
+	enum DMD = false;
+	enum GDC = false;
+	enum LDC = true;
 }
 
 version(Windows) {
-	enum {
-		Windows = true,
-		Posix = false
-	}
+	enum Windows = true;
+	enum Posix = false;
 } else version(Posix) {
-	enum {
-		Windows = false,
-		Posix = true
-	}
+	enum Windows = false;
+	enum Posix = true;
 } else
 	static assert(false, "Unknown operating system.");
 
-enum {
-	Project = "Dgame",
-	SrcDgame = "../",
-	LibDir  = SrcDgame ~ "lib",
-}
+static immutable string Project = "Dgame";
+static immutable string SrcDgame = "../";
+static immutable string LibDir  = SrcDgame ~ "lib";
 
 // Compiler configuration
 version(DigitalMars) {
 	pragma(msg, "Using the Digital Mars DMD compiler.");
 
 	debug {
-		enum Release = "-debug";
+		static immutable string Release = "-debug";
 	} else {
-		enum Release = "-release -inline";
+		static immutable string Release = "-release -inline";
 	}
-	enum CompilerOptions = "-lib -O " ~ Release ~ " -wi";
+
+	static immutable string CompilerOptions = "-lib -O " ~ Release ~ " -wi";
 
 	string buildCompileString(string files, string libName) {
 		return format("dmd %s -of%s/%s %s -I%s -I../../", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -87,7 +76,7 @@ version(DigitalMars) {
 } else version(GNU) {
 	pragma(msg, "Using the GNU GDC compiler.");
 
-	enum CompilerOptions = "-c -s -O3 -Wall";
+	static immutable string CompilerOptions = "-c -s -O3 -Wall";
 
 	string buildCompileString(string files, string libName) {
 		return format("gdc %s -o %s/%s %s -I%s -I../../", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -95,7 +84,7 @@ version(DigitalMars) {
 } else version(LDC) {
 	pragma(msg, "Using the LDC compiler.");
 
-	enum CompilerOptions = "-lib -O -release -enable-inlining -w -wi";
+	static immutable string CompilerOptions = "-lib -O -release -enable-inlining -w -wi";
 
 	string buildCompileString(string files, string libName) {
 		return format("ldc2 %s -of%s/%s %s -I%s", CompilerOptions, outdir, libName, files, derelictImportDir);
@@ -104,15 +93,11 @@ version(DigitalMars) {
 	static assert(false, "Unknown compiler.");
 
 static if (Windows && DMD) {
-	enum {
-		Prefix = "",
-		Extension = ".lib"
-	}
+	static immutable string Prefix = "";
+	static immutable string Extension = ".lib";
 } else static if (Posix || GDC || LDC) {
-	enum {
-		Prefix = "lib",
-		Extension = ".a"
-	}
+	static immutable string Prefix = "lib";
+	static immutable string Extension = ".a";
 } else
 	static assert(false, "Unknown operating system and compiler.");
 
@@ -180,13 +165,10 @@ void main(string[] args) {
 		writeln("Assume, that the derelict path is in 'external.txt'.");
 		writeln("Verify...\n");
 
-		if (.exists(buildPath ~ "/external.txt"))
-        {
-            foreach(derelictLine; (cast(string) .read(buildPath ~ "/external.txt")).splitLines())
-            {
+		if (.exists(buildPath ~ "/external.txt")) {
+            foreach(derelictLine; (cast(string) .read(buildPath ~ "/external.txt")).splitLines()) {
                 derelictLine = derelictLine.strip();
-                if(derelictLine.length > 0 && derelictLine[0] != '#' && .exists(derelictLine))
-                {
+                if(derelictLine.length > 0 && derelictLine[0] != '#' && .exists(derelictLine)) {
                     derelictImportDir = derelictLine;
                     break;
                 }
