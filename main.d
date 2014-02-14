@@ -28,7 +28,7 @@ import Dgame.Graphics.all;
 import Dgame.Audio.all;
 import Dgame.System.all;
 
-version (all)
+version (none)
 	static immutable string Path = "E:\\D\\dub\\packages\\derelict-master";
 else
 	static immutable string Path = "D:\\D\\dmd2\\src\\ext\\derelict";
