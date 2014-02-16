@@ -74,7 +74,6 @@ public:
 	~this() {
 		if (this._depthBuffer != 0)
 			glDeleteRenderbuffers(1, &this._depthBuffer);
-
 		glDeleteFramebuffers(1, &this._fboId);
 	}
 
@@ -91,7 +90,6 @@ public:
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 			Log.error("Failed to link the target texture to the frame buffer.");
 		}
 

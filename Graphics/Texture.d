@@ -457,19 +457,19 @@ final:
 	 */
 	void setColorkey(ref const Color colorkey) {
 		// Get the pixel memory
-		void[] memory = this.getMemory();
+		const uint msize = this._width * this._height * (this._depth / 8);
+		unique_ptr!(void) mem = allocate_unique!(void)(msize);
+		void[] memory = this.getMemory(mem[0 .. msize]);
 		enforce(memory !is null, "Cannot set a colorkey for an empty Texture.");
-		
-		//const uint size = this._width * this._height * (this._depth / 8);
 		// Go through pixels
 		for (uint i = 0; i < memory.length; ++i) {
 			// Get pixel colors
 			uint* color = cast(uint*) &memory[i];
 			// Color matches
 			if (color[0] == colorkey.red
-			&& color[1] == colorkey.green
-			&& color[2] == colorkey.blue
-			&& (0 == colorkey.alpha || color[3] == colorkey.alpha))
+				&& color[1] == colorkey.green
+				&& color[2] == colorkey.blue
+				&& (0 == colorkey.alpha || color[3] == colorkey.alpha))
 			{
 				// Make transparent
 				color[0] = 255;

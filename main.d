@@ -326,6 +326,11 @@ void main() {
 	Sprite fbo_s2 = new Sprite(fbo_img2);
 	fbo_s2.setPosition(680, 50);
 //	fbo_s2.rotate(30);
+
+	Spritesheet shooter = new Spritesheet(
+		new Image("../../samples/img/starship_sprite.png"),
+		ShortRect(0, 0, 64, 64));
+	shooter.setPosition(250, 450);
 	
 	Clock myclock = new Clock();
 	
@@ -386,6 +391,8 @@ void main() {
 					}
 					
 					if (event.keyboard.mod & Keyboard.Mod.Ctrl) {
+						shooter.row = 1;
+
 						writeln("CTRL");
 					}
 					
@@ -398,6 +405,8 @@ void main() {
 					}
 					
 					if (event.keyboard.mod & Keyboard.Mod.Alt) {
+						shooter.row = 0;
+
 						writeln("ALT");
 					}
 					
@@ -484,6 +493,9 @@ void main() {
 		wnd.draw(sp);
 		wnd.draw(sp2);
 		wnd.draw(explosion);
+
+		shooter.slideTextureRect(Spritesheet.Grid.Row);
+		wnd.draw(shooter);
 		
 		wnd.draw(trans_sprite);
 		

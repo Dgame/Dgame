@@ -224,7 +224,6 @@ final:
 				this._texView.x += w;
 			else {
 				this._texView.x = 0;
-
 				if ((grid & Grid.Column) == 0)
 					this._passedLoops++;
 			}
@@ -235,7 +234,6 @@ final:
 				this._texView.y += h;
 			else {
 				this._texView.y = 0;
-
 				this._passedLoops++;
 			}
 		}
