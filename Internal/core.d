@@ -45,6 +45,13 @@ string getDgVersion() {
 	return format("%d.%d.%d", DgVersion.Major, DgVersion.Minor, DgVersion.PatchLevel);
 }
 
+//struct gl {
+//	static auto ref opDispatch(string name, Args...)(Args args) {
+//		scope (exit) glcheckGLError();
+//		return mixin("gl"~name~"(args)");
+//	}
+//}
+
 /**
  *
  */

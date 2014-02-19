@@ -23,26 +23,35 @@
  */
 module Dgame.Audio.Listener;
 
-private import derelict.openal.al;
+private {
+	import derelict.openal.al;
 
-/**
- * A 3 dimensional float vector.
- */
-float[3] vec3f(float x, float y, float z) pure nothrow {
-	return [x, y, z];
+	import Dgame.Math.Vector3;
 }
 
-/**
- * A 6 dimensional float vector.
- */
-float[6] vec6f(float x, float y, float z, float u, float v, float w) pure nothrow {
-	return [x, y, z, u, v, w];
+@safe
+pure nothrow
+private T[n + m] merge(T, uint n, uint m)(auto ref const T[n] lhs, auto ref const T[m] rhs)
+{
+	T[n + m] result = void;
+
+	size_t i = 0;
+
+	foreach (ref const T val; lhs) {
+		result[i++] = val;
+	}
+
+	foreach (ref const T val; rhs) {
+		result[i++] = val;
+	}
+
+	return result;
 }
 
 static this() {
-	Listener.setPosition(vec3f(0, 0, 0));
-	Listener.setVelocity(vec3f(0, 0, 0));
-	Listener.setOrientation(vec6f(0, 0, -1, 0, 1, 0));
+	Listener.setPosition(0, 0, 0);
+	Listener.setVelocity(0, 0, 0);
+	Listener.setOrientation(0, 0, -1, 0, 1, 0);
 }
 
 /**
@@ -60,22 +69,31 @@ public:
 	static void setPosition(float[3] pos) {
 		alListenerfv(AL_POSITION, &pos[0]);
 	}
+
+	/**
+	 * Set the position
+	 */
+	static void setPosition(ref const Vector3f pos) {
+		Listener.setPosition(pos.asArray());
+	}
 	
 	/**
 	 * Set the position with x, y and z coordinates.
 	 */
 	static void setPosition(float x, float y, float z = 0) {
-		Listener.setPosition(vec3f(x, y, z));
+		const float[3] pos = [x, y, z];
+
+		Listener.setPosition(pos);
 	}
 	
 	/**
 	 * Returns the current position.
 	 */
-	static float[3] getPosition() {
+	static Vector3f getPosition() {
 		float[3] pos = void;
 		alGetListenerfv(AL_POSITION, &pos[0]);
 		
-		return pos;
+		return Vector3f(pos);
 	}
 	
 	/**
@@ -84,22 +102,31 @@ public:
 	static void setVelocity(float[3] vel) {
 		alListenerfv(AL_VELOCITY, &vel[0]);
 	}
-	
+
+	/**
+	 * Set the celocity with a vec3f.
+	 */
+	static void setVelocity(ref const Vector3f vel) {
+		Listener.setVelocity(vel.asArray());
+	}
+
 	/**
 	 * Set the celocity with coordinates.
 	 */
 	static void setVelocity(float x, float y, float z = 0) {
-		Listener.setVelocity(vec3f(x, y, z));
+		const float[3] vel = [x, y, z];
+
+		Listener.setVelocity(vel);
 	}
 	
 	/**
 	 * Returns the current velocity.
 	 */
-	static float[3] getVelocity() {
+	static Vector3f getVelocity() {
 		float[3] vel = void;
 		alGetListenerfv(AL_VELOCITY, &vel[0]);
 		
-		return vel;
+		return Vector3f(vel);
 	}
 	
 	/**
@@ -108,14 +135,32 @@ public:
 	static void setOrientation(float[6] ori) {
 		alListenerfv(AL_ORIENTATION, &ori[0]);
 	}
+
+	/**
+	 * Set the orientation.
+	 */
+	static void setOrientation(ref const Vector3f at, ref const Vector3f up) {
+		const float[6] ori = merge(at.asArray(), up.asArray());
+
+		Listener.setOrientation(ori);
+	}
+
+	/**
+	 * Set the orientation.
+	 */
+	static void setOrientation(float u, float v, float w, float x, float y, float z) {
+		const float[6] ori = [u, v, w, x, y, z];
+
+		Listener.setOrientation(ori);
+	}
 	
 	/**
 	 * Returns the current orientation.
 	 */
-	static float[6] getOrientation() {
+	static Vector3f[2] getOrientation() {
 		float[6] ori = void;
 		alGetListenerfv(AL_ORIENTATION, &ori[0]);
 		
-		return ori;
+		return [Vector3f(ori[0 .. 3]), Vector3f(ori[3 .. 6])];
 	}
 }

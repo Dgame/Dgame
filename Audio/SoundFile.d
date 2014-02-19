@@ -28,6 +28,7 @@ private {
 
 	import Dgame.Internal.Log;
 }
+
 package import core.stdc.stdio : FILE, fopen, fseek, fread, fclose, SEEK_SET;
 
 /**
@@ -69,6 +70,7 @@ protected:
 	abstract void _read(string filename);
 	
 public:
+//final:
 	/**
 	 * CTor
 	 */
@@ -108,7 +110,8 @@ public:
 	float getLength() const pure nothrow {
 		return (0f + 8 * this._sFile.dataSize) / (this._sFile.bits * this._sFile.rate * this._sFile.channels);
 	}
-	
+
+//virtual:
 	/**
 	 * abstract getType method.
 	 */

@@ -36,53 +36,41 @@ private {
 	import Dgame.Audio.WaveFile;
 }
 
-private {
-	@safe
-	char toLower(char ch) pure nothrow { 
-		return ch | 32; 
+@safe
+private char toLower(char ch) pure nothrow { 
+	return ch | 32; 
+}
+
+@safe
+private string toLower(string str) pure nothrow {
+	char[] s = new char[str.length];
+	
+	for (uint i = 0; i < str.length; i++) {
+		s[i] = toLower(str[i]);
 	}
 	
-	@safe
-	string toLower(string str) pure nothrow {
-		char[] s = new char[str.length];
-		
-		for (uint i = 0; i < str.length; i++) {
-			s[i] = toLower(str[i]);
-		}
-		
-		return s;
-	}
-}
-
-/**
- * Represents the current status.
- */
-enum Status : ubyte {
-	Stopped, /** Sound is stopped */
-	Paused,	 /** Sound is paused */
-	Playing, /** Sound is playing */
-	None	 /** No information */
-}
-
-/**
- * The channel type. Mono or Stereo.
- */
-enum ChannelType : ubyte {
-	Mono,	/** Channel type is Mono */
-	Stereo	/** Channel type is Stereo */
+	return s;
 }
 
 /**
  * Channel struct which stores the channel information.
  */
 struct Channel {
-	ubyte bits;			/** How many bits has this channel */
-	ChannelType type;	/** Which type is this channel */
+	/**
+	 * The channel type. Mono or Stereo.
+	 */
+	enum Type : ubyte {
+		Mono,	/** Channel type is Mono */
+		Stereo	/** Channel type is Stereo */
+	}
+
+	ubyte bits;	/** How many bits has this channel */
+	Type type;	/** Which type is this channel */
 	
 	/**
 	 * CTor
 	 */
-	this(ubyte bits, ChannelType type) {
+	this(ubyte bits, Type type) {
 		this.bits = bits;
 		this.type = type;
 	}
@@ -93,10 +81,10 @@ struct Channel {
 	 * Example:
 	 * ---
 	 * Channel ch;
-	 * ch(8, ChannelType.Stereo); // set bits and type for this channel.
+	 * ch(8, Channel.Type.Stereo); // set bits and type for this channel.
 	 * ---
 	 */
-	void opCall(ubyte bits, ChannelType type) {
+	void opCall(ubyte bits, Type type) {
 		this.bits = bits;
 		this.type = type;
 	}
@@ -153,6 +141,16 @@ static ~this() {
  * Author: rschuett
  */
 class Sound {
+	/**
+	 * Represents the current status.
+	 */
+	enum Status : ubyte {
+		None,	 /** No information */
+		Stopped, /** Sound is stopped */
+		Paused,	 /** Sound is paused */
+		Playing  /** Sound is playing */
+	}
+
 private:
 	ALChunk _alChunk;
 	ALenum _format;
@@ -189,7 +187,6 @@ final:
 	 */
 	this(BaseSoundFile soundfile) {
 		this();
-		
 		this.loadFromFile(soundfile);
 	}
 	
@@ -198,7 +195,6 @@ final:
 	 */
 	this(string filename) {
 		this();
-		
 		this.loadFromFile(filename);
 	}
 	
@@ -259,16 +255,16 @@ final:
 		switch (sFile.bits) {
 			case 8:
 				if (sFile.channels == 1)
-					ch(8, ChannelType.Mono);
+					ch(8, Channel.Type.Mono);
 				else
-					ch(8, ChannelType.Stereo);
+					ch(8, Channel.Type.Stereo);
 				break;
 				
 			case 16:
 				if (sFile.channels == 1)
-					ch(16, ChannelType.Mono);
+					ch(16, Channel.Type.Mono);
 				else
-					ch(16, ChannelType.Stereo);
+					ch(16, Channel.Type.Stereo);
 				break;
 				
 			default: 
@@ -325,14 +321,14 @@ final:
 	} body {
 		switch (ch.bits) {
 			case 8:
-				if (ch.type == ChannelType.Mono)
+				if (ch.type == Channel.Type.Mono)
 					this._format = AL_FORMAT_MONO8;
 				else
 					this._format = AL_FORMAT_STEREO8;
 				break;
-				
+
 			case 16:
-				if (ch.type == ChannelType.Mono)
+				if (ch.type == Channel.Type.Mono)
 					this._format = AL_FORMAT_MONO16;
 				else
 					this._format = AL_FORMAT_STEREO16;
@@ -367,7 +363,7 @@ final:
 	/**
 	 * Returns the interal Soundfile which contains the filename, the music type and the length in seconds.
 	 */
-	BaseSoundFile getSoundFile() {
+	BaseSoundFile getSoundFile() pure nothrow {
 		return this._soundfile;
 	}
 	
@@ -469,7 +465,6 @@ final:
 	 */
 	void play(bool enable) {
 		this.setLooping(enable);
-		
 		this.play();
 	}
 	
@@ -478,7 +473,6 @@ final:
 	 */
 	void play() {
 		alSourcePlay(this._alChunk.source);
-		
 		this._status = Status.Playing;
 	}
 	
@@ -487,7 +481,6 @@ final:
 	 */
 	void stop() {
 		alSourceStop(this._alChunk.source);
-		
 		this._status = Status.Stopped;
 	}
 	
@@ -496,7 +489,6 @@ final:
 	 */
 	void rewind() {
 		alSourceRewind(this._alChunk.source);
-		
 		this._status = Status.Playing;
 	}
 	
@@ -505,16 +497,14 @@ final:
 	 */
 	void pause() {
 		alSourcePause(this._alChunk.source);
-		
 		this._status = Status.Paused;
 	}
 	
 	/**
 	 * Set the position.
 	 */
-	void setPosition(const Vector3f vpos) {
+	void setPosition(ref const Vector3f vpos) {
 		this._sourcePos = vpos;
-		
 		this._updatePosition();
 	}
 	
@@ -523,7 +513,6 @@ final:
 	 */
 	void setPosition(float x, float y, float z = 0) {
 		this._sourcePos.set(x, y, z);
-		
 		this._updatePosition();
 	}
 	
@@ -544,7 +533,6 @@ final:
 	 */
 	void setVelocity(ref const Vector3f vvel) {
 		this._sourceVel = vvel;
-		
 		this._updateVelocity();
 	}
 	
@@ -553,7 +541,6 @@ final:
 	 */
 	void setVelocity(float x, float y, float z = 0) {
 		this._sourceVel.set(x, y, z);
-		
 		this._updateVelocity();
 	}
 	
