@@ -23,11 +23,7 @@
  */
 module Dgame.Internal.core;
 
-private {
-	import std.string : format;
-	
-	import derelict.opengl3.gl;
-}
+private import derelict.opengl3.gl;
 
 /**
  * Current Version
@@ -35,13 +31,15 @@ private {
 enum DgVersion : ubyte {
 	Major = 0,
 	Minor = 3,
-	PatchLevel = 2
+	PatchLevel = 3
 }
 
 /**
  * Returns a readable version number.
  */
-string getDgVersion() {
+string getDgVersion() pure {
+	import std.string : format;
+
 	return format("%d.%d.%d", DgVersion.Major, DgVersion.Minor, DgVersion.PatchLevel);
 }
 
@@ -64,6 +62,8 @@ void glCheck(lazy void Func, string filename = __FILE__, size_t line_number = __
  *
  */
 void GLCheckError(string filename, size_t line_number) {
+	import std.string : format;
+
 	// Get the last error
 	GLenum ErrorCode = glGetError();
 	
@@ -112,7 +112,7 @@ void GLCheckError(string filename, size_t line_number) {
 			default: break;
 		}
 		
-		throw new Exception(.format("An internal OpenGL call failed: %s -> %s in file %s on line %d",
+		throw new Exception(format("An internal OpenGL call failed: %s -> %s in file %s on line %d",
 		                            Error, Desc, filename, line_number));
 	}
 }
