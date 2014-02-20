@@ -433,7 +433,7 @@ final:
 	 * Set the volume.
 	 */
 	void setVolume(ubyte volume) {
-		this.setVolume(volume / 255.0);
+		this.setVolume(volume / 255f);
 	}
 	
 	/**
@@ -518,6 +518,7 @@ final:
 	
 	private void _updatePosition() const {
 		const float[3] pos = this._sourcePos.asArray();
+
 		alSourcefv(this._alChunk.source, AL_POSITION, &pos[0]);
 	}
 	
@@ -546,6 +547,7 @@ final:
 	
 	private void _updateVelocity() const {
 		const float[3] vel = this._sourceVel.asArray();
+
 		alSourcefv(this._alChunk.source, AL_VELOCITY, &vel[0]);
 	}
 	
