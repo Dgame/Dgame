@@ -64,14 +64,16 @@ static this() {
 final abstract class Listener {
 public:
 	/**
-	 * Set the position
+	 * Set the position.
+	 * Default is (0, 0, 0)
 	 */
 	static void setPosition(float[3] pos) {
 		alListenerfv(AL_POSITION, &pos[0]);
 	}
 
 	/**
-	 * Set the position
+	 * Set the position.
+	 * Default is (0, 0, 0)
 	 */
 	static void setPosition(ref const Vector3f pos) {
 		Listener.setPosition(pos.asArray());
@@ -79,6 +81,7 @@ public:
 	
 	/**
 	 * Set the position with x, y and z coordinates.
+	 * Default is (0, 0, 0)
 	 */
 	static void setPosition(float x, float y, float z = 0) {
 		const float[3] pos = [x, y, z];
@@ -88,6 +91,7 @@ public:
 	
 	/**
 	 * Returns the current position.
+	 * Default is (0, 0, 0)
 	 */
 	static Vector3f getPosition() {
 		float[3] pos = void;
@@ -97,21 +101,24 @@ public:
 	}
 	
 	/**
-	 * Set the celocity with a vec3f.
+	 * Set the velocity.
+	 * Default is (0, 0, 0)
 	 */
 	static void setVelocity(float[3] vel) {
 		alListenerfv(AL_VELOCITY, &vel[0]);
 	}
 
 	/**
-	 * Set the celocity with a vec3f.
+	 * Set the velocity.
+	 * Default is (0, 0, 0)
 	 */
 	static void setVelocity(ref const Vector3f vel) {
 		Listener.setVelocity(vel.asArray());
 	}
 
 	/**
-	 * Set the celocity with coordinates.
+	 * Set the velocity with x, y and z coordinates.
+	 * Default is (0, 0, 0)
 	 */
 	static void setVelocity(float x, float y, float z = 0) {
 		const float[3] vel = [x, y, z];
@@ -121,6 +128,7 @@ public:
 	
 	/**
 	 * Returns the current velocity.
+	 * Default is (0, 0, 0)
 	 */
 	static Vector3f getVelocity() {
 		float[3] vel = void;
@@ -131,6 +139,7 @@ public:
 	
 	/**
 	 * Set the orientation.
+	 * Default is (0, 0, -1, 0, 1, 0)
 	 */
 	static void setOrientation(float[6] ori) {
 		alListenerfv(AL_ORIENTATION, &ori[0]);
@@ -138,6 +147,7 @@ public:
 
 	/**
 	 * Set the orientation.
+	 * Default is (0, 0, -1) and (0, 1, 0)
 	 */
 	static void setOrientation(ref const Vector3f at, ref const Vector3f up) {
 		const float[6] ori = merge(at.asArray(), up.asArray());
@@ -147,6 +157,7 @@ public:
 
 	/**
 	 * Set the orientation.
+	 * Default is (0, 0, -1, 0, 1, 0)
 	 */
 	static void setOrientation(float u, float v, float w, float x, float y, float z) {
 		const float[6] ori = [u, v, w, x, y, z];
@@ -156,6 +167,7 @@ public:
 	
 	/**
 	 * Returns the current orientation.
+	 * Default s (0, 0, -1, 0, 1, 0)
 	 */
 	static Vector3f[2] getOrientation() {
 		float[6] ori = void;
