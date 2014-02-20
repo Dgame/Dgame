@@ -145,7 +145,7 @@ struct MessageBox {
 			mbd.window = wnd;
 			mbd.title = this.title.ptr;
 			mbd.message = this.msg.ptr;
-			mbd.numbuttons = cast(uint) this.box_buttons.length;
+			mbd.numbuttons = cast(int) this.box_buttons.length;
 			
 			if (this.box_buttons.length != 0)
 				mbd.buttons = _asSDLButton(this.box_buttons).ptr;
