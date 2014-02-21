@@ -32,7 +32,7 @@ private import derelict.sdl2.sdl;
  * 
  * Author: rschuett
  */
-struct System {
+final abstract class System {
 	/**
 	 * This structure provide support for battery lifetime if you are on a laptop etc.
 	 * 

@@ -38,7 +38,7 @@ private {
  *
  * Author: rschuett
  */
-final class FrameBufferObject {
+class FrameBufferObject {
 private:
 	GLuint _fboId;
 	GLuint _depthBuffer;
@@ -46,6 +46,7 @@ private:
 	Texture _tex;
 
 public:
+final:
 	/**
 	 * CTor with a Texture and the boolean flag if you want a depthBuffer
 	 */

@@ -62,7 +62,6 @@ static this() {
  * Author: rschuett
  */
 final abstract class Listener {
-public:
 	/**
 	 * Set the position.
 	 * Default is (0, 0, 0)

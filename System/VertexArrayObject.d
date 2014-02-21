@@ -31,11 +31,12 @@ private import derelict.opengl3.gl;
  *
  * Author: rschuett
  */
-final class VertexArrayObject {
+class VertexArrayObject {
 private:
 	GLuint _vid;
 	
 public:
+final:
 	/**
 	 * CTor
 	 */

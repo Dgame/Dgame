@@ -38,7 +38,6 @@ public import Dgame.Window.Event;
  * Author: rschuett
  */
 final abstract class EventHandler {
-public:
 	enum State {
 		Query   = SDL_QUERY,
 		Ignore  = SDL_IGNORE,

@@ -111,7 +111,7 @@ struct Time {
  *
  * Author: rschuett
  */
-final class Clock {
+struct Clock {
 private:
 	uint _startTime;
 	uint _numFrames;
@@ -120,15 +120,6 @@ private:
 	
 public:
 	/**
-	 * CTor
-	 */
-	this() {
-		this.reset();
-		
-		this._currentFps = 0;
-	}
-	
-	/**
 	 * Reset the clock time
 	 */
 	void reset() {
@@ -136,7 +127,7 @@ public:
 	}
 	
 	/**
-	 * Returns the elapsed Time since the last reset or the CTor was called.
+	 * Returns the elapsed Time since the last reset.
 	 */
 	Time getElapsedTime() const {
 		return Time(this.getElapsedTicks());

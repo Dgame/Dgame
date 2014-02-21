@@ -118,7 +118,6 @@ private RangePoint min_max(const Vertex[] vertices) pure nothrow {
  * Author: rschuett
  */
 class Shape : Transformable, Drawable, Blendable {
-public:
 	/**
 	 * Supported shape types.
 	 */

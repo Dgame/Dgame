@@ -50,7 +50,6 @@ interface Blendable {
  * Author: rschuett
  */
 class Blend {
-public:
 	/**
 	 * Supported BlendModes
 	 */

@@ -31,7 +31,7 @@ private import derelict.opengl3.gl;
 enum DgVersion : ubyte {
 	Major = 0,
 	Minor = 3,
-	PatchLevel = 3
+	PatchLevel = 4
 }
 
 /**

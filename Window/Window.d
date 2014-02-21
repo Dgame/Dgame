@@ -65,7 +65,6 @@ static ~this() {
  * Author: rschuett
  */
 final class Window {
-public:
 	/**
 	 * The Window syncronisation mode.
 	 * Default Syncronisation is <code>Sync.Enable</code>.

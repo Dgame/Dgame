@@ -332,7 +332,7 @@ void main() {
 		ShortRect(0, 0, 64, 64));
 	shooter.setPosition(250, 450);
 	
-	Clock myclock = new Clock();
+	Clock myclock;
 	
 	Event event;
 	

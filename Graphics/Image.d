@@ -41,7 +41,6 @@ public import Dgame.Graphics.Texture;
  * Author: rschuett
  */
 class Image : Texture {
-public:
 final:
 	/**
 	 * CTor

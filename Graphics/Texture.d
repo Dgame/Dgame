@@ -160,7 +160,6 @@ static ~this() {
  * Author: rschuett
  */
 class Texture {
-public:
 	/**
 	 * Supported Texture Format
 	 */

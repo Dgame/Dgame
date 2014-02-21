@@ -110,8 +110,7 @@ public:
  *
  * Author: rschuett
  */
-final class VertexBufferObject {
-public:
+class VertexBufferObject {
 	/**
 	 * The access type.
 	 */
@@ -142,6 +141,7 @@ private:
 	bool[Target] _dataAssigned;
 	
 public:
+final:
 	/**
 	 * CTor
 	 */

@@ -39,7 +39,6 @@ private {
  * Author: rschuett
  */
 class Spritesheet : Sprite {
-public:
 	/**
 	 * The Grid
 	 */

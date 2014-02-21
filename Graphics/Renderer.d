@@ -40,7 +40,6 @@ private {
  * Author: rschuett
  */
 final class Renderer {
-public:
 	/**
 	 * Supported BlendModes
 	 */
