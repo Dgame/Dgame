@@ -47,10 +47,10 @@ pragma(msg, Color.sizeof);
 pragma(msg, Font.sizeof);
 pragma(msg, Surface.sizeof);
 pragma(msg, Vertex.sizeof);
-pragma(msg, Vertex.sizeof);
 pragma(msg, FloatRect.sizeof);
 pragma(msg, Vector2f.sizeof);
 pragma(msg, Vector3f.sizeof);
+pragma(msg, Clock.sizeof);
 
 enum ushort width = 1024;
 enum ushort height = 640;

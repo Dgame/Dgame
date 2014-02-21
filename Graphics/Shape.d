@@ -50,8 +50,8 @@ struct Smooth {
 	 * Supported smooth targets.
 	 */
 	enum Target {
-		None,					 /** No smooth (default). */
-		Point = GL_POINT_SMOOTH, /** Enable smooth for points. */
+		None,                     /** No smooth (default). */
+		Point = GL_POINT_SMOOTH,  /** Enable smooth for points. */
 		Line  = GL_LINE_SMOOTH,   /** Enable smooth for lines. */
 		Polygon = GL_POLYGON_SMOOTH /** Enable smooth for polygons. */
 	}
@@ -62,7 +62,7 @@ struct Smooth {
 	enum Mode {
 		DontCare = GL_DONT_CARE, /** The OpenGL implementation decide on their own. */
 		Fastest = GL_FASTEST,    /** Fastest kind of smooth (default). */
-		Nicest  = GL_NICEST	     /** Nicest but slowest kind of smooth. */
+		Nicest  = GL_NICEST      /** Nicest but slowest kind of smooth. */
 	}
 	
 	Target target; /// The Target
@@ -176,9 +176,7 @@ protected:
 		glPushMatrix();
 		scope(exit) glPopMatrix();
 		
-		if (this._needUpdate 
-		    && this._tex !is null)
-		{
+		if (this._needUpdate && this._tex !is null) {
 			this._needUpdate = false;
 			this._updateTexCoords();
 		}

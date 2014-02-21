@@ -47,7 +47,6 @@ enum Target {
  * Author: rschuett
  */
 final abstract class VertexRenderer {
-public:
 	/**
 	 * Points to a specific Target.
 	 * 
@@ -55,6 +54,8 @@ public:
 	 * See: glColorPointer
 	 * See: glTexCoordPointer
 	 * See: Target enum.
+	 * 
+	 * Note: This method expects a <b>single</b> Target.
 	 */
 	static void pointTo(Target trg, void* ptr = null, ubyte stride = 0, ubyte offset = 0) {
 		VertexRenderer.enableState(trg);
@@ -79,6 +80,37 @@ public:
 				break;
 		}
 	}
+
+	/**
+	 * Points to a specific Target.
+	 * 
+	 * See: glVertexPointer
+	 * See: glColorPointer
+	 * See: glTexCoordPointer
+	 * See: Target enum.
+	 */
+	static void pointTo(Target trg, const ubyte[Target] stride, const ubyte[Target] offset, void* ptr) {
+		if (trg & Target.None)
+			Log.error("Invalid Target");
+
+		@safe
+		ubyte deref(const ubyte* ptr) pure nothrow {
+			return ptr !is null ? *ptr : 0;
+		}
+
+		if (trg & Target.Vertex)
+			VertexRenderer.pointTo(Target.Vertex, ptr,
+			                       deref(Target.Vertex in stride),
+			                       deref(Target.Vertex in offset));
+		if (trg & Target.Color)
+			VertexRenderer.pointTo(Target.Color, ptr,
+			                       deref(Target.Color in stride),
+			                       deref(Target.Color in offset));
+		if (trg & Target.TexCoords)
+			VertexRenderer.pointTo(Target.TexCoords, ptr,
+			                       deref(Target.TexCoords in stride),
+			                       deref(Target.TexCoords in offset));
+	}
 	
 	/**
 	 * Enable a specific client state (with glEnableClientState)
@@ -88,13 +120,11 @@ public:
 	static void enableState(Target trg) {
 		if (trg & Target.None)
 			Log.error("Invalid Target");
-		
+
 		if (trg & Target.Vertex)
 			glEnableClientState(GL_VERTEX_ARRAY);
-		
 		if (trg & Target.Color)
 			glEnableClientState(GL_COLOR_ARRAY);
-		
 		if (trg & Target.TexCoords)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
@@ -119,13 +149,11 @@ public:
 	static void disableState(Target trg) {
 		if (trg & Target.None)
 			Log.error("Invalid Target");
-		
+
 		if (trg & Target.Vertex)
 			glDisableClientState(GL_VERTEX_ARRAY);
-		
 		if (trg & Target.Color)
 			glDisableClientState(GL_COLOR_ARRAY);
-		
 		if (trg & Target.TexCoords)
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
@@ -149,7 +177,7 @@ public:
 	static void drawElements(Shape.Type ptype, size_t count, uint[] indices) {
 		if (indices.length == 0)
 			return;
-		
+
 		glDrawElements(ptype, cast(uint) count, GL_UNSIGNED_INT, &indices[0]); 
 	}
 	
@@ -164,7 +192,7 @@ public:
 	static void drawRangeElements(Shape.Type ptype, size_t count, uint[] indices, uint start = 0, uint end = 0) {
 		if (indices.length == 0)
 			return;
-		
+
 		glDrawRangeElements(ptype, start, end != 0 ? end : cast(uint) indices.length, cast(uint) count, GL_UNSIGNED_INT, &indices[0]);
 	}
 }

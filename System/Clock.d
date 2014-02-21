@@ -90,8 +90,6 @@ struct Time {
 		return time;
 	}
 } unittest {
-	import std.stdio;
-
 	Time time = Time(65_000);
 
 	assert(time.msecs == 65_000);
