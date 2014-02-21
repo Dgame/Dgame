@@ -52,14 +52,20 @@ in {
  */
 struct Rect(T) if (isNumeric!T) {
 	/**
-	 * The x and y coordinates
+	 * The x
 	 */
 	T x = 0;
+	/**
+	 * and y coordinates
+	 */
 	T y = 0;
 	/**
-	 * The width and the height
+	 * The width
 	 */
 	T width = 0;
+	/**
+	 * and the height
+	 */
 	T height = 0;
 	
 	/**

@@ -85,6 +85,7 @@ struct MessageBox {
 	string title; /// The Title of the MessageBox
 	string msg;   /// The Message of the MessageBox
 	int flag;	  /// The MessageBox Flags. See: MessageBox states enum
+
 	/**
 	 * The Window id where the Error/Warning/Information comes from.
 	 * Can be get by
