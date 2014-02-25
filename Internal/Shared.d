@@ -28,8 +28,8 @@ private import Dgame.Internal.Allocator;
 private import cstd = core.stdc.stdlib;
 
 @property
-string idOf(T)() {
-	static if (__traits(compiles, { string s = T.stringof; }))
+string idOf(T)() pure nothrow {
+	static if (is(typeof(T.sizeof)))
 		return T.stringof;
 	else
 		return __traits(identifier, T);
@@ -60,8 +60,6 @@ struct shared_ptr(T) {
 	}
 	
 	void retain() {
-		import core.stdc.stdlib : calloc;
-		
 		if (this.rc is null)
 			this.rc = alloc_new!(int)(1);
 		(*this.rc)++;
