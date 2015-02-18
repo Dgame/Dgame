@@ -14,4 +14,4 @@ However, unlike the other bindings, Dgame is object-oriented (like the SFML)
 and is the only one which is completely written in D.
 
 #Official Website:
-http://dgame-dev.de/
+http://dgame-dev.de/ (http://rswhite.de/dgame4/)
