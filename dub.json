@@ -1,0 +1,32 @@
+{
+    "name":         "Dgame",
+    "description":  "Dgame description",
+    "homepage":     "https://github.com/Dgame/Dgame",
+    "versions":     ["Dgame"],
+    "authors": ["Randy Schütt"],
+    "license":      "Zlib/PNG License",
+    "sourcePaths":["."],
+    "excludedSourceFiles":["build/build.d"],
+    "dependencies":{
+        "derelict-sdl2":">=1.1.9",
+        "derelict-gl3":">=1.0.9",
+        "derelict-al":">=1.0.0",
+        "derelict-vorbis":">=1.0.1",
+        "derelict-ogg":">=1.0.1"
+    },
+    "configurations":[
+        {
+            "name":"lib",
+            "targetType":"sourceLibrary",
+            "excludedSourceFiles":["main.d"]
+        },
+        {
+            "name":"example",
+            "targetName":"dgame-example",
+            "targetType":"executable",
+            "sourceFiles":["main.d"]
+
+                
+        }
+    ]
+}

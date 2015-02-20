@@ -82,7 +82,7 @@ struct Time {
 		const float min = time.minutes;
 		const float sec = time.seconds;
 
-		time.minutes -= floor(time.hours) * 60;
+		time.minutes -= floor(float(time.hours)) * 60;
 		time.minutes = floor(time.minutes);
 		time.seconds -= floor(min) * 60;
 		time.msecs -= floor(sec) * 1000;
