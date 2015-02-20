@@ -26,8 +26,8 @@ module Dgame.Audio.Internal.core;
 package {
 	import derelict.openal.al;
 	import derelict.ogg.ogg;
-	import derelict.ogg.vorbis;
-	import derelict.ogg.vorbisfile;
+	import derelict.vorbis.vorbis;
+	import derelict.vorbis.file;
 	
 	import Dgame.Internal.Log;
 }

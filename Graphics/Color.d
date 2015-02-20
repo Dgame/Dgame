@@ -122,7 +122,7 @@ struct Color {
 		col.r = this.red;
 		col.g = this.green;
 		col.b = this.blue;
-		col.unused = this.alpha;
+		col.a = this.alpha;
 	}
 	
 	/**
