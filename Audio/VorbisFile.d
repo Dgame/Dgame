@@ -27,10 +27,9 @@ private {
 	import std.string : toStringz;
 	
 	import derelict.ogg.ogg;
-	import derelict.ogg.vorbis;
-	import derelict.ogg.vorbisfile;
-	import derelict.ogg.vorbisfiletypes;
-	import derelict.ogg.vorbistypes;
+	import derelict.vorbis.vorbis;
+	import derelict.vorbis.file;
+	//import derelict.vorbis.enc;
 
 	import Dgame.Internal.Log;
 	import Dgame.Internal.Unique;
