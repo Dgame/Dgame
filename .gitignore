@@ -166,3 +166,5 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+.dub/dub.json
+dub.selections.json

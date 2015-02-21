@@ -3,7 +3,7 @@
     "description":  "Dgame description",
     "homepage":     "https://github.com/Dgame/Dgame",
     "versions":     ["Dgame"],
-    "authors": ["Randy Schütt"],
+    "authors":  	["Randy Schütt"],
     "license":      "Zlib/PNG License",
     "sourcePaths":["."],
     "excludedSourceFiles":["build/build.d"],
@@ -25,8 +25,6 @@
             "targetName":"dgame-example",
             "targetType":"executable",
             "sourceFiles":["main.d"]
-
-                
         }
     ]
 }
