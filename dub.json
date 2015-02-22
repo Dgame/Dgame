@@ -15,7 +15,6 @@ and is the only one which is completely written in D.
 #Official Website:
 http://dgame-dev.de/ (http://rswhite.de/dgame4/)",
     "homepage":     "https://github.com/Dgame/Dgame",
-    "versions":     ["0.4.0"],
     "authors":  	["Randy Schütt"],
     "license":      "Zlib/PNG License",
     "sourcePaths":["."],
