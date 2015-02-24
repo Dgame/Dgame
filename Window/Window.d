@@ -121,6 +121,13 @@ final:
 	     Style style = Style.Default,
 	     int x = DefaultXPos, int y = DefaultYPos)
 	{
+		if (style & Style.OpenGL) {
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+		}
+		
 		// Create an application window with the following settings:
 		this._window = SDL_CreateWindow(title.ptr,	// const char* title
 		                                x,	// int x: initial x position
@@ -133,11 +140,6 @@ final:
 			Log.error("Error by creating a SDL2 window: " ~ to!string(SDL_GetError()));
 		
 		if (style & Style.OpenGL) {
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-
 			this._glContext = SDL_GL_CreateContext(this._window);
 			if (this._glContext is null)
 				Log.error("Error while creating gl context: " ~ to!string(SDL_GetError()));
