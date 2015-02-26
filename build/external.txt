@@ -1,3 +1,0 @@
-# Put here your Derelict3\import folder
-# As example,
-D:\Code\D\libs\Derelict3-master\import

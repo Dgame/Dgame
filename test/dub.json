@@ -30,5 +30,6 @@
         "release": {
             "buildOptions": ["releaseMode", "inline", "optimize", "noBoundsCheck", "warnings"]
         }
-    }
+    },
+    "sourcePaths": ["../"]
 }

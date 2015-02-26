@@ -23,26 +23,43 @@
  */
 module Dgame.Math.Rect;
 
-private {
-	debug import std.stdio;
-	import std.traits : isNumeric;
-	
-	import derelict.sdl2.sdl;
+private:
 
-	import Dgame.Math.Vector2;
-	import Dgame.Internal.Unique;
+import derelict.sdl2.sdl;
+
+import Dgame.Math.Vector2;
+
+// @@ FIX @@
+@nogc
+bool SDL_RectEmpty(const SDL_Rect* X) pure nothrow {
+    return !X || ( X.w <= 0 ) || ( X.h <= 0 );
 }
 
-SDL_Rect* transfer(T)(const Rect!(T)* rect, SDL_Rect* to) pure nothrow
-in {
-	assert(to !is null);
-} body {
-	if (rect is null)
-		return null;
+// @@ FIX @@
+@nogc
+bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
+    return A && B &&
+        (A.x == B.x) && (A.y == B.y) &&
+        (A.w == B.w) && (A.h == B.h);
+}
 
-	rect.transferTo(to);
+public: // TODO: FIX?
 
-	return to;
+@nogc
+SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
+    to.x = rect.x;
+    to.y = rect.y;
+    to.w = rect.width;
+    to.h = rect.height;
+
+    return &to;
+}
+
+public:
+
+struct Size {
+  uint width;
+  uint height;
 }
 
 /**
@@ -50,332 +67,270 @@ in {
  *
  * Author: rschuett
  */
-struct Rect(T) if (isNumeric!T) {
-	/**
-	 * The x
-	 */
-	T x = 0;
-	/**
-	 * and y coordinates
-	 */
-	T y = 0;
-	/**
-	 * The width
-	 */
-	T width = 0;
-	/**
-	 * and the height
-	 */
-	T height = 0;
-	
-	/**
-	 * CTor
-	 */
-	this(T x, T y, T width, T height) pure nothrow {
-		this.x = x;
-		this.y = y;
-		
-		this.width  = width;
-		this.height = height;
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(ref const Vector2!(T) vec, T width, T height) pure nothrow {
-		this(vec.x, vec.y, width, height);
-	}
-	
-	/**
-	 * CTor
-	 */
-	this(U)(ref const Rect!U rect) pure nothrow {
-		static if (is(U : T)) {
-			this(rect.x, rect.y, rect.width, rect.height);
-		} else {
-			this(cast(T) rect.x, cast(T) rect.y,
-			     cast(T) rect.width, cast(T) rect.height);
-		}
-	}
+struct Rect {
+    enum Edge : ubyte {
+        Top,
+        Bottom,
+        Left,
+        Right,
+        
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    }
 
-	this(ref const SDL_Rect rect) {
-		this(cast(T) rect.x, cast(T) rect.y,
-		     cast(T) rect.w, cast(T) rect.h);
-	}
+    /**
+     * The x
+     */
+    int x = 0;
+    /**
+     * and y coordinates
+     */
+    int y = 0;
+    /**
+     * The width
+     */
+    uint width = 0;
+    /**
+     * and the height
+     */
+    uint height = 0;
+    
+    /**
+     * CTor
+     */
+    @nogc
+    this(int x, int y, uint width, uint height) pure nothrow {
+        this.x = x;
+        this.y = y;
+        this.width  = width;
+        this.height = height;
+    }
 
-//	debug(Dgame)
-//	this(this) {
-//		writeln("Postblit");
-//	}
-//	
-//	debug(Dgame)
-//	~this() {
-//		debug writeln("DTor Rect");
-//	}
-	
-	/**
-	 * Transfer the internal data to the SDL_Rect.
-	 */
-	void transferTo(SDL_Rect* rect) const pure nothrow
-	in {
-		assert(rect !is null, "Cannot transfer anything to null.");
-	} body {
-		rect.x = cast(int) this.x;
-		rect.y = cast(int) this.y;
-		rect.w = cast(int) this.width;
-		rect.h = cast(int) this.height;
-	}
-	
-	/**
-	 * Supported operations: +=, -=, *=, /=, %=
-	 */
-	Rect opBinary(string op)(ref const Rect rect) const pure nothrow {
-		switch (op) {
-			case "+":
-				return Rect(this.x + rect.x,
-				              this.y + rect.y,
-				              this.width + rect.width,
-				              this.height + rect.height);
-			case "-":
-				return Rect(this.x - rect.x,
-				              this.y - rect.y,
-				              this.width - rect.width,
-				              this.height - rect.height);
-			case "*":
-				return Rect(this.x * rect.x,
-				              this.y * rect.y,
-				              this.width * rect.width,
-				              this.height * rect.height);
-			case "/":
-				return Rect(this.x / rect.x,
-				              this.y / rect.y,
-				              this.width / rect.width,
-				              this.height / rect.height);
-			case "%":
-				return Rect(this.x % rect.x,
-				              this.y % rect.y,
-				              this.width % rect.width,
-				              this.height % rect.height);
-			default:
-				throw new Exception("Unsupported Operation: " ~ op);
-		}
-	}
-	
-	/**
-	 * Collapse this Rect. Means that the coordinates and the size is set to 0.
-	 */
-	void collapse() pure nothrow {
-		this.width = this.height = 0;
-		this.x = this.y = 0;
-	}
-	
-	/**
-	 * Checks if this Rect is empty (if it's collapsed) with SDL_RectEmpty.
-	 */
-	bool isEmpty() const {
-		SDL_Rect a = void;
-		this.transferTo(&a);
+    /**
+     * Supported operations: +, -, *, /, %
+     */
+    @nogc
+    Rect opBinary(string op)(ref const Rect rect) const pure nothrow {
+        switch (op) {
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+            case "%":
+                mixin("return Rect(this.x " ~ op ~ " rect.x,
+                              this.y " ~ op ~ " rect.y,
+                              this.width " ~ op ~ " rect.width,
+                              this.height " ~ op ~ " rect.height);");
+            default:
+                assert(0, "Unsupported Operation: " ~ op);
+        }
+    }
+    
+    /**
+     * Collapse this Rect. Means that the coordinates and the size is set to 0.
+     */
+    @nogc
+    void collapse() pure nothrow {
+        this.width = this.height = this.x = this.y = 0;
+    }
+    
+    /**
+     * Checks if this Rect is empty (if it's collapsed) with SDL_RectEmpty.
+     */
+    @nogc
+    bool isEmpty() const pure nothrow {
+        SDL_Rect a = void;
+        return SDL_RectEmpty(_transfer(this, a)) == SDL_TRUE;
+    }
+    
+    /**
+     * Checks if all corners are zero.
+     */
+    @nogc
+    bool isZero() const pure nothrow {
+        return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
+    }
+    
+    /**
+     * Returns an union of the given and this Rect.
+     */
+    @nogc
+    Rect getUnion(ref const Rect rect) const {
+        SDL_Rect a = void;
+        SDL_Rect b = void;
+        SDL_Rect c = void;
 
-		return SDL_RectEmpty(&a) == SDL_TRUE;
-	}
-	
-	/**
-	 * Checks if this Rect is collapsed, which means
-	 * that the width and/or the height are <= 0.
-	 * This is a pure and nothrow variant of isEmpty.
-	 */
-	bool isCollapsed() const pure nothrow {
-		return this.width <= 0 || this.height <= 0;
-	}
-	
-	/**
-	 * Checks if all corners are zero.
-	 */
-	bool isZero() const pure nothrow {
-		return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
-	}
-	
-	/**
-	 * Returns an union of the given and this Rect.
-	 */
-	Rect getUnion(ref const Rect rect) const {
-		SDL_Rect a = void;
-		SDL_Rect b = void;
-		SDL_Rect c = void;
+        SDL_UnionRect(_transfer(this, a), _transfer(rect, b), &c);
 
-		this.transferTo(&a);
-		rect.transferTo(&b);
+        return Rect(c.x, c.y, c.w, c.h);
+    }
+    
+    /**
+     * Checks whether this Rect contains the given coordinates.
+     */
+    @nogc
+    bool contains(ref const Vector2i vec) const pure nothrow {
+        return this.contains(vec.x, vec.y);
+    }
+    
+    /**
+     * Checks whether this Rect contains the given coordinates.
+     */
+    @nogc
+    bool contains(int x, int y) const pure nothrow {
+        return (x >= this.x) && (x < this.x + this.width)
+            && (y >= this.y) && (y < this.y + this.height);
+    }
+    
+    /**
+     * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
+     */
+    @nogc
+    bool opEquals(ref const Rect rect) const pure nothrow {
+        SDL_Rect a = void;
+        SDL_Rect b = void;
 
-		SDL_UnionRect(&a, &b, &c);
+        return SDL_RectEquals(_transfer(this, a), _transfer(rect, b));
+    }
+    
+    /**
+     * Checks whether this Rect intersects with an other.
+     * If, and the parameter 'overlap' isn't null,
+     * the colliding rectangle is stored there.
+     */
+    @nogc
+    bool intersects(ref const Rect rect, Rect* overlap = null) const {
+        SDL_Rect a = void;
+        SDL_Rect b = void;
 
-		return Rect(c);
-	}
-	
-	/**
-	 * Checks whether this Rect contains the given coordinates.
-	 */
-	bool opBinaryRight(string op : "in")(ref Vector2!(T) vec) const pure nothrow {
-		return this.contains(vec);
-	}
-	
-	/**
-	 * Checks whether this Rect contains the given coordinates.
-	 */
-	bool contains(ref const Vector2!(T) vec) const pure nothrow {
-		return this.contains(vec.x, vec.y);
-	}
-	
-	/**
-	 * Checks whether this Rect contains the given coordinates.
-	 */
-	bool contains(T x, T y) const pure nothrow {
-		return (x >= this.x) && (x < this.x + this.width)
-			&& (y >= this.y) && (y < this.y + this.height);
-	}
-	
-	/**
-	 * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
-	 */
-	bool opEquals(ref const Rect rect) const {
-		SDL_Rect a = void;
-		SDL_Rect b = void;
+        if (overlap is null)
+            return SDL_HasIntersection(_transfer(this, a), _transfer(rect, b)) == SDL_TRUE;
 
-		this.transferTo(&a);
-		rect.transferTo(&b);
+        SDL_Rect c = void;
 
-		return SDL_RectEquals(&a, &b);
-	}
-	
-	/**
-	 * opCast to another Rect type.
-	 */
-	Rect!U opCast(V : Rect!U, U)() const pure nothrow {
-		return Rect!U(cast(U) this.x, cast(U) this.y,
-		              cast(U) this.width, cast(U) this.height);
-	}
-	
-	/**
-	 * Checks whether this Rect intersects with an other.
-	 * If, and the parameter 'overlap' isn't null,
-	 * the colliding rectangle is stored there.
-	 */
-	bool intersects(ref const Rect rect, Rect* overlap = null) const {
-		SDL_Rect a = void;
-		SDL_Rect b = void;
+        immutable bool intersects = SDL_IntersectRect(_transfer(this, a), _transfer(rect, b), &c) == SDL_TRUE;
 
-		this.transferTo(&a);
-		rect.transferTo(&b);
+        overlap.x = c.x;
+        overlap.y = c.y;
+        overlap.width = c.w;
+        overlap.height = c.h;
 
-		if (overlap is null)
-			return SDL_HasIntersection(&a, &b) == SDL_TRUE;
+        return intersects;
+    }
+    
+    /**
+     * Replace current size.
+     */
+    @nogc
+    void setSize(uint width, uint height) pure nothrow {
+        this.width  = width;
+        this.height = height;
+    }
+    
+    /**
+     * Returns the current size as Vector2
+     */
+    @nogc
+    Size getSize() const pure nothrow {
+        return Size(this.width, this.height);
+    }
+    
+    /**
+     * Increase current size.
+     */
+    @nogc
+    void increase(int width, int height) pure nothrow {
+        this.width += width;
+        this.height += height;
+    }
+    
+    /**
+     * Set a new position with coordinates.
+     */
+    @nogc
+    void setPosition(int x, int y) pure nothrow {
+        this.x = x;
+        this.y = y;
+    }
+    
+    /**
+     * Set a new position with a vector.
+     */
+    @nogc
+    void setPosition(ref const Vector2i position) pure nothrow {
+        this.setPosition(position.x, position.y);
+    }
+    
+    /**
+     * Returns the current position as Vector2
+     */
+    @nogc
+    Vector2i getPosition() const pure nothrow {
+        return Vector2i(this.x, this.y);
+    }
+    
+    /**
+     * Move the object.
+     */
+    @nogc
+    void move(ref const Vector2i vec) pure nothrow {
+        this.move(vec.x, vec.y);
+    }
+    
+    /**
+     * Move the object.
+     */
+    @nogc
+    void move(int x, int y) pure nothrow {
+        this.x += x;
+        this.y += y;
+    }
 
-		SDL_Rect c = void;
+    @nogc
+    Vector2i getEdgePosition(Edge edge) const pure nothrow {
+        Vector2i pos;
+        final switch (edge) {
+            case Edge.Top:
+                pos.x = this.x + (this.width / 2);
+                pos.y = this.y;
+            break;
+            case Edge.Bottom:
+                pos.x = this.x + (this.width / 2);
+                pos.y = this.y + this.height;
+            break;
+            case Edge.Left:
+                pos.x = this.x;
+                pos.y = this.y + (this.height / 2);
+            break;
+            case Edge.Right:
+                pos.x = this.x + this.width;
+                pos.y = this.y + (this.height / 2);
+            break;
+            case Edge.TopLeft:
+                pos.x = this.x;
+                pos.y = this.y;
+            break;
+            case Edge.TopRight:
+                pos.x = this.x + this.width;
+                pos.y = this.y;
+            break;
+            case Edge.BottomLeft:
+                pos.x = this.x;
+                pos.y = this.y + this.height;
+            break;
+            case Edge.BottomRight:
+                pos.x = this.x + this.width;
+                pos.y = this.y + this.height;
+            break;
+        }
 
-		const bool intersects = SDL_IntersectRect(&a, &b, &c) == SDL_TRUE;
-		overlap.set(cast(T) c.x, cast(T) c.y,
-		            cast(T) c.w, cast(T) c.h);
+        return pos;
+    }
 
-		return intersects;
-	}
-	
-	/**
-	 * Use this function to calculate a minimal rectangle enclosing a set of points.
-	 */
-	static Rect enclosePoints(in Vector2!(T)[] points) {
-		unique_ptr!(SDL_Point) sdl_points = allocate_unique!(SDL_Point)(points.length);
-//		SDL_Point[] sdl_points = new SDL_Point[points.length];
-
-		foreach (i, ref const Vector2!(T) p; points) {
-			sdl_points[i] = SDL_Point(cast(int) p.x, cast(int) p.y);
-		}
-
-		SDL_Rect a = void;
-		SDL_EnclosePoints(&sdl_points[0], cast(uint) points.length, null, &a);
-
-		return Rect(a);
-	}
-	
-	/**
-	 * Replace current size.
-	 */
-	void setSize(T width, T height) pure nothrow {
-		this.width  = width;
-		this.height = height;
-	}
-	
-	/**
-	 * Returns the current size as Vector2
-	 */
-	Vector2!(T) getSize() const pure nothrow {
-		return Vector2!(T)(this.width, this.height);
-	}
-	
-	/**
-	 * Increase current size.
-	 */
-	void increase(T width, T height) pure nothrow {
-		this.width += width;
-		this.height += height;
-	}
-	
-	/**
-	 * Set a new position with coordinates.
-	 */
-	void setPosition(T x, T y) pure nothrow {
-		this.x = x;
-		this.y = y;
-	}
-	
-	/**
-	 * Set a new position with a vector.
-	 */
-	void setPosition(ref const Vector2!(T) position) pure nothrow {
-		this.setPosition(position.x, position.y);
-	}
-	
-	/**
-	 * Returns the current position as Vector2
-	 */
-	Vector2!(T) getPosition() const pure nothrow {
-		return Vector2!(T)(this.x, this.y);
-	}
-	
-	/**
-	 * Move the object.
-	 */
-	void move(ref const Vector2!(T) vec) pure nothrow {
-		this.move(vec.x, vec.y);
-	}
-	
-	/**
-	 * Move the object.
-	 */
-	void move(T x, T y) pure nothrow {
-		this.x += x;
-		this.y += y;
-	}
-	
-	/**
-	 * The new coordinates <b>and</b> a new size.
-	 */
-	void set(T x, T y, T w, T h) pure nothrow {
-		this.setPosition(x, y);
-		this.setSize(w, h);
-	}
-
-	/**
-	 * Returns the coordinates as static array
-	 */
-	T[4] asArray() const pure nothrow {
-		return [this.x, this.y, this.width, this.height];
-	}
+    @nogc
+    Vector2i getCenter() const pure nothrow {
+        return Vector2i(this.x + (this.width / 2), this.y + (this.height / 2));
+    }
 }
-
-/**
- * alias for float
- */
-alias FloatRect = Rect!(float);
-/**
- * alias for short
- */
-alias ShortRect = Rect!(short);

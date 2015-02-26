@@ -23,12 +23,12 @@
  */
 module Dgame.System.Keyboard;
 
-private {
-	import derelict.sdl2.types;
-	import derelict.sdl2.functions;
-	
-	import Dgame.Math.Rect;
-}
+private:
+
+import derelict.sdl2.types;
+import derelict.sdl2.functions;
+
+public:
 
 /**
  * Represent the Keyboard
@@ -38,10 +38,10 @@ private:
 	static ubyte* _Keys;
 	
 public:
-	static this() {
+	static this() nothrow {
 		_Keys = SDL_GetKeyboardState(null);
 	}
-	
+
 	/**
 	 * Returns the pointer to the Keyboard state.
 	 * With that you can check if some key is pressed without using a event queue.
@@ -60,41 +60,9 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static ubyte* getState() in {
-		assert(_Keys !is null, "You have to call Keyboard.update first.");
-	} body {
+	@nogc
+	static ubyte* getState() nothrow {
 		return _Keys;
-	}
-	
-	/**
-	 * Use this function to start accepting Unicode text input events
-	 */
-	static void startTextInput() {
-		SDL_StartTextInput();
-	}
-	
-	/**
-	 * Use this function to stop receiving any text input events.
-	 */
-	static void stopTextInput() {
-		SDL_StopTextInput();
-	}
-	
-	/**
-	 * Use this function to set the rectangle used to type Unicode text inputs.
-	 */
-	static void setTextInputRect(ref ShortRect rect) {
-		SDL_Rect input = void;
-		rect.transferTo(&input);
-
-		SDL_SetTextInputRect(&input);
-	}
-	
-	/**
-	 * Rvalue version
-	 */
-	static void setTextInputRect(ShortRect rect) {
-		Keyboard.setTextInputRect(rect);
 	}
 	
 	/**
@@ -106,7 +74,8 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(Code code) {
+	@nogc
+	static bool isPressed(Code code) nothrow {
 		int scancode = SDL_GetScancodeFromKey(code);
 		
 		return _Keys[scancode] == 1;
@@ -121,7 +90,8 @@ public:
 	 *     writeln("escape is pressed.");
 	 * ---
 	 */
-	static bool isPressed(ScanCode scancode) {
+	@nogc
+	static bool isPressed(ScanCode scancode) nothrow {
 		return _Keys[scancode] == 1;
 	}
 	
@@ -130,7 +100,8 @@ public:
 	 *
 	 * See: Mod enum
 	 */
-	static Mod getModifier() {
+	@nogc
+	static Mod getModifier() nothrow {
 		return cast(Mod) SDL_GetModState();
 	}
 	
@@ -139,14 +110,16 @@ public:
 	 *
 	 * See: Mod enum
 	 */
-	static void setModifier(Mod mod) {
+	@nogc
+	static void setModifier(Mod mod) nothrow {
 		SDL_SetModState(mod);
 	}
 	
 	/**
 	 * Returns if screen keyboard is supported.
 	 */
-	static bool hasScreenSupport() {
+	@nogc
+	static bool hasScreenSupport() nothrow {
 		return SDL_HasScreenKeyboardSupport() == SDL_TRUE;
 	}
 	
