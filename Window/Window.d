@@ -233,7 +233,7 @@ public:
         ubyte[] tmpLine = m3.m3.make!(ubyte[])(lineWidth);
         scope(exit) m3.m3.destruct(tmpLine);
 
-        for (ushort i = 0; i < size.height / 2; ++i) {
+        for (uint i = 0; i < size.height / 2; ++i) {
             immutable uint tmpIdx1 = i * lineWidth;
             immutable uint tmpIdx2 = (i + 1) * lineWidth;
             

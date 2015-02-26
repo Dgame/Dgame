@@ -43,7 +43,7 @@ bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
         (A.w == B.w) && (A.h == B.h);
 }
 
-public: // TODO: FIX?
+public:
 
 @nogc
 SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
@@ -55,11 +55,9 @@ SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
     return &to;
 }
 
-public:
-
 struct Size {
-  uint width;
-  uint height;
+    uint width;
+    uint height;
 }
 
 /**

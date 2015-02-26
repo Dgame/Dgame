@@ -97,7 +97,7 @@ struct Surface {
     else
         enum uint AMask = 0x000000ff;
 
-package:
+private:
     SDL_Surface* _surface;
 
     @nogc
@@ -114,8 +114,7 @@ package:
 
         return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
     }
-    
-private:
+
     @nogc
     this(SDL_Surface* srfc) pure nothrow {
         assert(srfc, "Invalid SDL_Surface.");
@@ -128,6 +127,7 @@ public:
     /**
      * CTor
      */
+    @nogc
     this(string filename) nothrow {
         this.loadFromFile(filename);
     }
