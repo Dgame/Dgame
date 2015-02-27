@@ -182,11 +182,11 @@ public:
      * Load from filename. If any data is already stored, the data will be freed.
      */
     @nogc
-    void loadFromFile(string filename) nothrow {
+    bool loadFromFile(string filename) nothrow {
         immutable bool ex = accessable(filename);
         if (!ex) {
             printf("File %s does not exists.\n", filename.ptr);
-            assert(0);
+            return false;
         }
 
         SDL_FreeSurface(_surface); // free old surface
@@ -194,17 +194,19 @@ public:
         _surface = IMG_Load(filename.ptr);
         if (!_surface) {
             printf("Could not load image %s. Error: %s.\n", filename.ptr, SDL_GetError());
-            assert(0);
+            return false;
         }
         
         assert(_surface.pixels, "Invalid pixel data.");
+
+        return true;
     }
     
     /**
      * Load from memory.
      */
     @nogc
-    void loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32) nothrow {
+    bool loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32) nothrow {
         assert(memory, "Memory is empty.");
         assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
 
@@ -213,22 +215,26 @@ public:
         _surface = SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
         if (!_surface) {
             printf("Could not load image. Error: %s.\n", SDL_GetError());
-            assert(0);
+            return false;
         }
         
         assert(_surface.pixels, "Invalid pixel data.");
+
+        return true;
     }
     
     /**
      * Save the current pixel data to the file.
      */
     @nogc
-    void saveToFile(string filename) nothrow {
+    bool saveToFile(string filename) nothrow {
         immutable int result = IMG_SavePNG(_surface, filename.ptr);
         if (result != 0) {
             printf("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
-            assert(0);
+            return false;
         }
+
+        return true;
     }
     
     /**
@@ -320,9 +326,9 @@ public:
      * Works like <code>SLD_DisplayFormat</code>.
      */
     @nogc
-    void adaptTo(SDL_PixelFormat* fmt) nothrow {
+    bool adaptTo(SDL_PixelFormat* fmt) nothrow {
         if (!_surface)
-            return;
+            return false;
 
         assert(fmt, "Null format is invalid.");
 
@@ -330,8 +336,13 @@ public:
         if (adapted) {
             SDL_FreeSurface(_surface);
             _surface = adapted;
-        } else
-            printf("Image could not be adapted: %s\n", SDL_GetError());
+
+            return true;
+        }
+
+        printf("Image could not be adapted: %s\n", SDL_GetError());
+
+        return false;
     }
     
     /**

@@ -14,8 +14,11 @@ import Dgame.Math.Vector2;
 import Dgame.Math.Vertex;
 import Dgame.Math.Matrix4;
 
+import Dgame.Audio.Sound;
+
 import Dgame.System.Keyboard;
 import Dgame.System.Font;
+import Dgame.System.StopWatch;
 
 pragma(msg, Color4b.sizeof);
 pragma(msg, Color4f.sizeof);
@@ -130,24 +133,30 @@ void main() {
     Text curFps = new Text(fnt);
     curFps.setPosition(200, 10);
 
+    StopWatch sw;
+
+    Sound explosion_sound = Sound("samples/audio/expl.wav");
+    //explosion_sound.setVolume(75);
+
     Event event;
+
+    //ushort fps = 0;
 
     import derelict.opengl3.gl;
     import derelict.sdl2.sdl;
 
-    uint curTicks = SDL_GetTicks();
-    ushort fps = 0;
-
     bool loop = true;
     while (loop) {
-        if ((SDL_GetTicks() - curTicks) >= 1000) {
-            printf("FPS: %d\n", fps);
-            curFps.format("Current FPS: %d.", fps);
+        //if (sw.getElapsedTime().msecs >= 1000) {
+        //    printf("FPS: %d\n", fps);
+        //    curFps.format("Current FPS: %d.", fps);
 
-            fps = 0;
-            curTicks = SDL_GetTicks();
-        } else
-            fps++;
+        //    fps = 0;
+        //    sw.reset();
+        //} else
+        //    fps++;
+
+        curFps.format("Current FPS: %d.", sw.getCurrentFPS());
 
         while (wnd.poll(&event)) {
             if (event.type == Event.Type.Quit) {
@@ -157,6 +166,8 @@ void main() {
                     wnd.push(Event.Type.Quit);
                 else if (event.keyboard.key == Keyboard.Code.Printscreen)
                     wnd.capture().saveToFile("samples/images/capture.png");
+                else if (event.keyboard.key == Keyboard.Code.Space)
+                    explosion_sound.play();
             }
         }
 

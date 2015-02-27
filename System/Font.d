@@ -61,13 +61,15 @@ public:
     }
 
     @nogc
-    void loadFromFile(string filename, ubyte fontSize) nothrow {
+    bool loadFromFile(string filename, ubyte fontSize) nothrow {
         _fontSize = fontSize == 0 ? DefaultSize : fontSize;
         _ttf = TTF_OpenFont(filename.ptr, _fontSize);
         if (!_ttf) {
             printf("Error by loading TTF_Font: %s\n", TTF_GetError());
-            assert(0);
+            return false;
         }
+
+        return true;
     }
 
     @nogc

@@ -23,16 +23,16 @@ import Dgame.Window.Event;
 shared static this() {
     import derelict.sdl2.ttf;
     import derelict.sdl2.image;
-    //import derelict.sdl2.mixer;
+    import derelict.sdl2.mixer;
 
     DerelictSDL2.load();
     DerelictSDL2Image.load();
     DerelictSDL2ttf.load();
-    //DerelictSDL2Mixer.load();
+    DerelictSDL2Mixer.load();
     DerelictGL.load();
 
     // Initialize SDL2
-    int result = SDL_Init(SDL_INIT_VIDEO);
+    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     bool wasInited = result == 0;
 
     if (!wasInited) {
@@ -54,7 +54,7 @@ shared static this() {
     // Initialize SDL_ttf
     wasInited = TTF_Init() == 0;
     assert(wasInited, "SDL_TTF could not be initialized");
-/+
+
     // Initialize SDL_mixer
     enum uint MIX_FLAGS = MIX_INIT_OGG | MIX_INIT_MP3;
     result = Mix_Init(MIX_FLAGS);
@@ -66,38 +66,36 @@ shared static this() {
     }
 
     wasInited = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) != 0;
+/+
     if (!wasInited) {
-        printf("Could not opend Mix_OpenAudio: %s\n", Mix_GetError());
+        printf("Could not open Mix_OpenAudio: %s\n", Mix_GetError());
         assert(0);
     }
-
++/
     immutable int channels = Mix_AllocateChannels(256);
     if (channels < 256)
         printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
-+/
 }
 
 shared static ~this() {
     import derelict.sdl2.ttf;
     import derelict.sdl2.image;
-    //import derelict.sdl2.mixer;
+    import derelict.sdl2.mixer;
 
     // quit SDL_image
     IMG_Quit();
     // quit SDL_ttf
     TTF_Quit();
     // quit SDL_mixer
-/+
     Mix_ReserveChannels(0);
     Mix_CloseAudio();
     Mix_Quit();
-+/
     // quit SDL
     SDL_Quit();
 
     DerelictSDL2Image.unload();
     DerelictSDL2ttf.unload();
-    //DerelictSDL2Mixer.unload();
+    DerelictSDL2Mixer.unload();
     DerelictSDL2.unload();
     DerelictGL.unload();
 }
