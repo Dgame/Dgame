@@ -8,12 +8,14 @@ import Dgame.Graphic.Surface;
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Sprite;
 import Dgame.Graphic.Shape;
+import Dgame.Graphic.Text;
 
 import Dgame.Math.Vector2;
 import Dgame.Math.Vertex;
 import Dgame.Math.Matrix4;
 
 import Dgame.System.Keyboard;
+import Dgame.System.Font;
 
 pragma(msg, Color4b.sizeof);
 pragma(msg, Color4f.sizeof);
@@ -115,6 +117,19 @@ void main() {
     texQuad.setPosition(175, 425);
     texQuad.setRotation(25);
 
+    Shape tri = new Shape(
+        Geometry.TriangleStrip,
+        [
+            Vertex(Vector2f(100, 100), Vector2f.init, Color4b.Red),
+            Vertex(Vector2f(300, 100), Vector2f.init, Color4b.Green),
+            Vertex(Vector2f(  0, 300), Vector2f.init, Color4b.Blue),
+        ]
+    );
+
+    Font fnt = Font("samples/font/arial.ttf", 22);
+    Text curFps = new Text(fnt);
+    curFps.setPosition(200, 10);
+
     Event event;
 
     import derelict.opengl3.gl;
@@ -127,6 +142,7 @@ void main() {
     while (loop) {
         if ((SDL_GetTicks() - curTicks) >= 1000) {
             printf("FPS: %d\n", fps);
+            curFps.format("Current FPS: %d.", fps);
 
             fps = 0;
             curTicks = SDL_GetTicks();
@@ -145,7 +161,7 @@ void main() {
         }
 
         wnd.clear();
-
+/+
         glBegin(GL_TRIANGLE_STRIP);
             glVertex3f(10, 100, 0);
             glVertex3f(10, 10, 0);
@@ -161,13 +177,16 @@ void main() {
             glColor3f(0, 0, 1);
             glVertex3f(0, 300, 0);
         glEnd();
-
++/
         wnd.draw(wiki);
 
         wnd.draw(qs);
         wnd.draw(circle);
         wnd.draw(many);
         wnd.draw(texQuad);
+        wnd.draw(tri);
+
+        wnd.draw(curFps);
 
         wnd.display();
     }

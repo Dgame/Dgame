@@ -21,11 +21,83 @@ import Dgame.Math.Geometry;
 import Dgame.Window.Event;
 
 shared static this() {
+    import derelict.sdl2.ttf;
+    import derelict.sdl2.image;
+    //import derelict.sdl2.mixer;
+
     DerelictSDL2.load();
+    DerelictSDL2Image.load();
+    DerelictSDL2ttf.load();
+    //DerelictSDL2Mixer.load();
     DerelictGL.load();
+
+    // Initialize SDL2
+    int result = SDL_Init(SDL_INIT_VIDEO);
+    bool wasInited = result == 0;
+
+    if (!wasInited) {
+        printf("SDL init error: %s\n", SDL_GetError());
+        assert(0);
+    }
+
+    // Initialize SDL_image
+    enum uint IMG_FLAGS = IMG_INIT_JPG | IMG_INIT_PNG;
+    
+    result = IMG_Init(IMG_FLAGS);
+    wasInited = (result & IMG_FLAGS) == IMG_FLAGS;
+
+    if (!wasInited) {
+        printf("Failed to init the required jpg and png support: %s\n", IMG_GetError());
+        assert(0);
+    }
+
+    // Initialize SDL_ttf
+    wasInited = TTF_Init() == 0;
+    assert(wasInited, "SDL_TTF could not be initialized");
+/+
+    // Initialize SDL_mixer
+    enum uint MIX_FLAGS = MIX_INIT_OGG | MIX_INIT_MP3;
+    result = Mix_Init(MIX_FLAGS);
+    wasInited = (result & MIX_FLAGS) == MIX_FLAGS;
+ 
+    if (!wasInited) {
+        printf("Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
+        assert(0);
+    }
+
+    wasInited = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) != 0;
+    if (!wasInited) {
+        printf("Could not opend Mix_OpenAudio: %s\n", Mix_GetError());
+        assert(0);
+    }
+
+    immutable int channels = Mix_AllocateChannels(256);
+    if (channels < 256)
+        printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
++/
 }
 
 shared static ~this() {
+    import derelict.sdl2.ttf;
+    import derelict.sdl2.image;
+    //import derelict.sdl2.mixer;
+
+    // quit SDL_image
+    IMG_Quit();
+    // quit SDL_ttf
+    TTF_Quit();
+    // quit SDL_mixer
+/+
+    Mix_ReserveChannels(0);
+    Mix_CloseAudio();
+    Mix_Quit();
++/
+    // quit SDL
+    SDL_Quit();
+
+    DerelictSDL2Image.unload();
+    DerelictSDL2ttf.unload();
+    //DerelictSDL2Mixer.unload();
     DerelictSDL2.unload();
     DerelictGL.unload();
 }
@@ -40,9 +112,10 @@ void _initGL() {
         enum GLVersion NEEDED_GL_VERSION = GLVersion.GL30;
 
     immutable bool glValidateVersion = glver >= NEEDED_GL_VERSION;
-    debug if (!glValidateVersion)
+    if (!glValidateVersion) {
         printf("Your OpenGL version (%d) is too low.", glver);
-    assert(glValidateVersion, "Your OpenGL version is too low.");
+        assert(0);
+    }
 
     glDisable(GL_DITHER);
     glDisable(GL_LIGHTING);

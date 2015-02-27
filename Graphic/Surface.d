@@ -115,6 +115,7 @@ private:
         return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
     }
 
+public:
     @nogc
     this(SDL_Surface* srfc) pure nothrow {
         assert(srfc, "Invalid SDL_Surface.");
@@ -123,7 +124,6 @@ private:
         _surface = srfc;
     }
 
-public:
     /**
      * CTor
      */
@@ -184,17 +184,19 @@ public:
     @nogc
     void loadFromFile(string filename) nothrow {
         immutable bool ex = accessable(filename);
-        debug if (!ex)
+        if (!ex) {
             printf("File %s does not exists.\n", filename.ptr);
-        assert(ex, "No such file.");
+            assert(0);
+        }
 
         SDL_FreeSurface(_surface); // free old surface
 
         _surface = IMG_Load(filename.ptr);
-        debug if (!_surface)
+        if (!_surface) {
             printf("Could not load image %s. Error: %s.\n", filename.ptr, SDL_GetError());
+            assert(0);
+        }
         
-        assert(_surface, "Invalid SDL_Surface.");
         assert(_surface.pixels, "Invalid pixel data.");
     }
     
@@ -209,10 +211,11 @@ public:
         SDL_FreeSurface(_surface); // free old surface
 
         _surface = SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
-        debug if (!_surface)
+        if (!_surface) {
             printf("Could not load image. Error: %s.\n", SDL_GetError());
+            assert(0);
+        }
         
-        assert(_surface, "Invalid SDL_Surface.");
         assert(_surface.pixels, "Invalid pixel data.");
     }
     
@@ -222,9 +225,10 @@ public:
     @nogc
     void saveToFile(string filename) nothrow {
         immutable int result = IMG_SavePNG(_surface, filename.ptr);
-        debug if (result != 0)
+        if (result != 0) {
             printf("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
-        assert(result == 0, "Could not save image.");
+            assert(0);
+        }
     }
     
     /**
@@ -327,7 +331,7 @@ public:
             SDL_FreeSurface(_surface);
             _surface = adapted;
         } else
-            debug printf("Image could not be adapted: %s\n", SDL_GetError());
+            printf("Image could not be adapted: %s\n", SDL_GetError());
     }
     
     /**
@@ -639,7 +643,7 @@ public:
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
         immutable bool result = SDL_BlitSurface(srfc, src_ptr, _surface, dst_ptr) == 0;
-        debug if (!result)
+        if (!result)
             printf("Could not blit surface: %s\n", SDL_GetError());
 
         return result;
@@ -660,9 +664,10 @@ public:
         SDL_Rect clip = void;
 
         immutable int result = SDL_BlitSurface(_surface, _transfer(rect, clip), sub, null);
-        debug if (result == 0)
+        if (result == 0) {
             printf("Could not blit surface: %s\n", SDL_GetError());
-        assert(result != 0, "An error occured by blitting the subsurface.");
+            assert(0);
+        }
         
         return Surface(sub);
     }

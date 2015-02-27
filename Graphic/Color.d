@@ -1,5 +1,21 @@
 module Dgame.Graphic.Color;
 
+private:
+
+import derelict.sdl2.types;
+
+public:
+
+@nogc
+SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {
+    dst.r = src.red;
+    dst.g = src.green;
+    dst.b = src.blue;
+    dst.a = src.alpha;
+
+    return &dst;
+}
+
 struct Color4b {
     static immutable Color4b Black   = Color4b(0,     0,   0); /** Black Color (0, 0, 0) */
     static immutable Color4b White   = Color4b(255, 255, 255); /** White Color (255, 255, 255) */

@@ -174,7 +174,7 @@ struct Vector3(T) if (isNumeric!(T)) {
                        this.x * vec.y - this.y * vec.x);
     }
 
-     Vector3f normalize() const pure nothrow {
+    Vector3f normalize() const pure nothrow {
         immutable float len = this.length;
         if (len > 0)
             return this / len;

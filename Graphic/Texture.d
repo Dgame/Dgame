@@ -283,8 +283,8 @@ public:
      * Load from Surface
      */
     @nogc
-    void loadFrom()(auto ref const Surface srfc) nothrow {
-        this.loadFromMemory(srfc.pixels, srfc.width, srfc.height, srfc.bits);
+    void loadFrom()(auto ref const Surface srfc, Format fmt = Format.None) nothrow {
+        this.loadFromMemory(srfc.pixels, srfc.width, srfc.height, fmt == Format.None ? srfc.bits : 0, fmt);
     }
 
     /**
@@ -305,10 +305,10 @@ public:
         
         Format format = Format.None;
         // Compression
-        //if (_comp != Compression.None) {
-        //  glHint(GL_TEXTURE_COMPRESSION_HINT, _comp);
-        //  format = compressFormat(_format);
-        //}
+        if (_comp != Compression.None) {
+          glHint(GL_TEXTURE_COMPRESSION_HINT, _comp);
+          format = compressFormat(_format);
+        }
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
