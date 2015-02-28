@@ -1,3 +1,26 @@
+/*
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphic.Sprite;
 
 private:
@@ -14,6 +37,11 @@ import Dgame.Graphic.Color;
 
 public:
 
+/**
+ * Sprite represents a drawable object and maintains a Texture
+ *
+ * Author: rschuett
+ */
 class Sprite : Transformable, Drawable {
 protected:
     Texture* _texture;
@@ -62,6 +90,9 @@ protected:
 
 public:
 final:
+    /**
+     * CTor
+     */
     @nogc
     this(ref Texture tex) pure nothrow {
         _texture = &tex;
@@ -72,6 +103,9 @@ final:
         this.setColor(Color4b.White);
     }
 
+    /**
+     * Reset the Texture
+     */
     @nogc
     void setTexture(ref Texture tex) pure nothrow {
         _texture = &tex;
@@ -82,11 +116,17 @@ final:
         _updateVertices();
     }
 
+    /**
+     * Returns a pointer to the current Texture
+     */
     @nogc
     inout(Texture*) getTexture() inout pure nothrow {
         return _texture;
     }
 
+    /**
+     * Set a Color for the Sprite which is painted over the displayed Texture.
+     */
     @nogc
     void setColor()(auto ref const Color4b col) pure nothrow {
         foreach (ref Vertex v; _vertices) {
@@ -94,17 +134,28 @@ final:
         }
     }
 
+    /**
+     * Set the Texture Rect. With this you can define a specific view of the Texture,
+     * so that only this specific view will be drawn.
+     */
     @nogc
     void setTextureRect()(auto ref const Rect texRect) {
         _texRect = texRect;
         _updateVertices();
     }
 
+    /**
+     * Returns the current Texture Rect
+     */
     @nogc
     ref const(Rect) getTextureRect() const pure nothrow {
         return _texRect;
     }
 
+    /**
+     * Returns the Clip Rect.
+     * The Sprite will notice if a Texture Rect is used or not and will therefore adapt the size of the view automatically
+     */
     @nogc
     Rect getClipRect() const pure nothrow {
         uint w = 0, h = 0;

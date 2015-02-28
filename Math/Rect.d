@@ -63,7 +63,7 @@ struct Size {
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
  *
- * Author: rschuett
+ * Author: Randy Schuett
  */
 struct Rect {
     enum Edge : ubyte {
@@ -286,6 +286,9 @@ struct Rect {
         this.y += y;
     }
 
+    /**
+     * Returns the position of the given Edge on this Rect.
+     */
     @nogc
     Vector2i getEdgePosition(Edge edge) const pure nothrow {
         Vector2i pos;
@@ -327,6 +330,9 @@ struct Rect {
         return pos;
     }
 
+    /**
+     * Returns the center position of this Rect
+     */
     @nogc
     Vector2i getCenter() const pure nothrow {
         return Vector2i(this.x + (this.width / 2), this.y + (this.height / 2));

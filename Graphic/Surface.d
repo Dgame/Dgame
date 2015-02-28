@@ -63,9 +63,9 @@ bool accessable(string filename) nothrow {
 public:
 
 /**
- * Surface is a wrapper for a SDL_Surface.
+ * Surface is a wrapper for a SDL_Surface and can load and save images.
  *
- * Author: rschuett
+ * Author: Randy Schuett
  */
 struct Surface {
     /**
@@ -93,9 +93,9 @@ struct Surface {
     enum ubyte BMask = 0; /** Default Blue Mask. */
     
     version(LittleEndian)
-        enum uint AMask = 0xff000000;
+        enum uint AMask = 0xff000000; /// Default Alpha Mask
     else
-        enum uint AMask = 0x000000ff;
+        enum uint AMask = 0x000000ff; /// Default Alpha Mask
 
 private:
     SDL_Surface* _surface;
@@ -158,15 +158,28 @@ public:
         assert(_surface.pixels, "Invalid pixel data.");
     }
     
+    /// Postblit is allowed and increases the internal ref count
     @nogc
     this(this) nothrow {
         if (_surface)
             _surface.refcount++;
     }
     
+    /**
+     * DTor
+     */
     @nogc
     ~this() nothrow {
         SDL_FreeSurface(_surface);
+    }
+
+    /**
+     * Returns the current ref count / usage
+     */
+    @property
+    @nogc
+    int refCount() const pure nothrow {
+        return _surface ? _surface.refcount : 0;
     }
     
     /**
@@ -681,7 +694,7 @@ public:
         
         return Surface(sub);
     }
-
+    
     @nogc
     void setAsIconOf(SDL_Window* wnd) nothrow {
         assert(wnd, "Invalid SDL_Window");

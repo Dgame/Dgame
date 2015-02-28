@@ -39,7 +39,7 @@ public:
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
  *
- * Author: rschuett
+ * Author: Randy Schuett
  */
 struct Texture {
     /**
@@ -92,16 +92,23 @@ private:
     }
 
 public:
+    /**
+     * CTor
+     */
     @nogc
     this(void* memory, uint  width, uint height, ubyte depth, Format fmt = Format.None) nothrow {
         this.loadFromMemory(memory, width, height, depth, fmt);
     }
 
+    /**
+     * CTor
+     */
     @nogc
     this()(auto ref const Surface srfc) nothrow {
         this.loadFrom(srfc);
     }
 
+    /// Postblit is disabled
     @disable
     this(this);
     

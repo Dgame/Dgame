@@ -1,3 +1,26 @@
+/*
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Math.Vector3;
 
 private:
@@ -7,10 +30,15 @@ static import std.math;
 
 public:
 
+/**
+ * Vector3 is a structure that defines a three-dimensional point.
+ *
+ * Author: Randy Schuett
+ */
 struct Vector3(T) if (isNumeric!(T)) {
-    T x = 0;
-    T y = 0;
-    T z = 0;
+    T x = 0; /// The x coordinate
+    T y = 0; /// The y coordinate
+    T z = 0; /// The z coordinate
 
     /**
      * CTor
@@ -174,6 +202,9 @@ struct Vector3(T) if (isNumeric!(T)) {
                        this.x * vec.y - this.y * vec.x);
     }
 
+    /**
+     * Normalize the vector in which the coordinates are divided by the length.
+     */
     Vector3f normalize() const pure nothrow {
         immutable float len = this.length;
         if (len > 0)
@@ -181,6 +212,9 @@ struct Vector3(T) if (isNumeric!(T)) {
         return this;
     }
 
+    /**
+     * Rotate the current Vector by an angle and rotation Vector and returns the result
+     */
     Vector3f rotate(float angle, ref const Vector3!(T) rot) const pure nothrow {
         const Vector3!(T) norm1 = this.normalize();
         const Vector3!(T) norm2 = rot.normalize();
@@ -201,4 +235,4 @@ struct Vector3(T) if (isNumeric!(T)) {
     }
 }
 
-alias Vector3f = Vector3!(float);
+alias Vector3f = Vector3!(float); /// A float representation

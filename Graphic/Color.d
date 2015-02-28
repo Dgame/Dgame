@@ -1,3 +1,26 @@
+/*
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphic.Color;
 
 private:
@@ -16,6 +39,11 @@ SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {
     return &dst;
 }
 
+/**
+ * Color4b defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
+ *
+ * Author: randy schuett
+ */
 struct Color4b {
     static immutable Color4b Black   = Color4b(0,     0,   0); /** Black Color (0, 0, 0) */
     static immutable Color4b White   = Color4b(255, 255, 255); /** White Color (255, 255, 255) */
@@ -61,6 +89,9 @@ struct Color4b {
         this.alpha = cast(ubyte)(ubyte.max * col.alpha);
     }
 
+    /**
+     * Returns a copy of the current Color with a given transpareny.
+     */
     @nogc
     Color4b withTransparency(ubyte alpha) const pure nothrow {
         return Color4b(this.red, this.green, this.blue, alpha);
@@ -94,6 +125,11 @@ struct Color4b {
     }
 }
 
+/**
+ * Color4f defines a structure which contains 4 floats values, each for red, green, blue and alpha.
+ *
+ * Author: randy schuett
+ */
 struct Color4f {
     static immutable Color4f Black   = Color4f(0,     0,   0); /** Black Color (0, 0, 0) */
     static immutable Color4f White   = Color4f(255, 255, 255); /** White Color (255, 255, 255) */
@@ -123,6 +159,7 @@ struct Color4f {
 
     /**
      * CTor
+     * Expect that every component is in range 0.0 .. 1.0
      */
     @nogc
     this(float red, float green, float blue, float alpha = 1) pure nothrow

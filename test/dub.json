@@ -24,10 +24,10 @@
         }
     ],
     "buildTypes": {
-        "debug": {
+        "dg_debug": {
             "buildOptions": ["debugMode", "debugInfoC", "alwaysStackFrame", "warnings"]
         },
-        "release": {
+        "dg_release": {
             "buildOptions": ["releaseMode", "inline", "optimize", "noBoundsCheck", "warnings"]
         }
     },

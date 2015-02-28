@@ -1,3 +1,26 @@
+/*
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.System.Font;
 
 private:
@@ -10,14 +33,23 @@ import Dgame.Graphic.Surface;
 
 public:
 
+/**
+ * Font is the low-level class for loading and manipulating character fonts.
+ * This class is meant to be used by Dgame.Graphic.Text.
+ *
+ * Author: Randy Schuett
+ */
 struct Font {
 private:
     TTF_Font* _ttf;
     ubyte _fontSize;
 
 public:
-    enum ubyte DefaultSize = 10;
+    enum ubyte DefaultSize = 10; /// The default size of every Font
 
+    /**
+     * Available Font styles
+     */
     enum Style {
         /*
         * Used to indicate regular, normal, plain rendering style.
@@ -41,25 +73,44 @@ public:
         StrikeThrough = TTF_STYLE_STRIKETHROUGH
     };
 
+    /**
+     * Available Font modes
+     */
     enum Mode : ubyte {
         Solid,
         Shaded,
         Blended
     };
 
+    /**
+     * CTor
+     */
     @nogc
     this(string filename, ubyte fontSize) nothrow {
         this.loadFromFile(filename, fontSize);
     }
     
+    /// Postblit is disabled
     @disable
     this(this);
 
+    /**
+     * DTor
+     */
     @nogc
     ~this() nothrow {
         TTF_CloseFont(_ttf);
     }
 
+    /**
+     * Load the font from a file.
+     * Returns if the loading was successful.
+     * If not, an error message is shown, which describes the problem.
+     * If the second parameter isn't 0, the current font size will be replaced with that.
+     * If the current size is also 0, the DefaultSize (10) will be used.
+     *
+     * See: DefaultSize
+     */
     @nogc
     bool loadFromFile(string filename, ubyte fontSize) nothrow {
         _fontSize = fontSize == 0 ? DefaultSize : fontSize;
@@ -72,12 +123,22 @@ public:
         return true;
     }
 
+    /**
+     * Set the Font style.
+     *
+     * See: Font.Style enum
+     */
     @nogc
     void setStyle(Style style) nothrow {
         if (_ttf)
             TTF_SetFontStyle(_ttf, style);
     }
 
+    /**
+     * Returns the current Font style.
+     *
+     * See: Font.Style enum
+     */
     @nogc
     Style getStyle() const nothrow {
         if (_ttf)
@@ -85,6 +146,12 @@ public:
         return Style.Normal;
     }
 
+    /**
+     * Draws the text on a Surface by using this Font and the given Mode (default is Mode.Solid)
+     * The text (and the Surface) is colorized by fg / bg Color.
+     *
+     * Returns a Surface with the text or throws an Error
+     */
     @nogc
     Surface render()(string text, auto ref const Color4b fg, auto ref const Color4b bg, Mode mode = Mode.Solid) nothrow {
         assert(_ttf, "Font is invalid");
