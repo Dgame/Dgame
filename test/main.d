@@ -7,12 +7,14 @@ import Dgame.Graphic.Color;
 import Dgame.Graphic.Surface;
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Sprite;
+import Dgame.Graphic.Spritesheet;
 import Dgame.Graphic.Shape;
 import Dgame.Graphic.Text;
 
 import Dgame.Math.Vector2;
 import Dgame.Math.Vertex;
 import Dgame.Math.Matrix4;
+import Dgame.Math.Rect;
 
 import Dgame.Audio.Sound;
 
@@ -138,6 +140,11 @@ void main() {
     Sound explosion_sound = Sound("samples/audio/expl.wav");
     //explosion_sound.setVolume(75);
 
+    Surface explo_srfc = Surface("samples/images/explosion.png");
+    Texture explosion_tex = Texture(explo_srfc);
+    Spritesheet explosion = new Spritesheet(explosion_tex, Rect(0, 0, 256, 256));
+    explosion.setPosition(100, 100);
+
     Event event;
 
     //ushort fps = 0;
@@ -166,8 +173,10 @@ void main() {
                     wnd.push(Event.Type.Quit);
                 else if (event.keyboard.key == Keyboard.Code.Printscreen)
                     wnd.capture().saveToFile("samples/images/capture.png");
-                else if (event.keyboard.key == Keyboard.Code.Space)
+                else if (event.keyboard.key == Keyboard.Code.Space) {
                     explosion_sound.play();
+                    explosion.slideTextureRect();
+                }
             }
         }
 
@@ -196,6 +205,8 @@ void main() {
         wnd.draw(many);
         wnd.draw(texQuad);
         wnd.draw(tri);
+
+        wnd.draw(explosion);
 
         wnd.draw(curFps);
 
