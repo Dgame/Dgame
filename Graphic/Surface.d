@@ -160,9 +160,8 @@ public:
     
     @nogc
     this(this) nothrow {
-        this._surface = _surface;
-        if (this._surface)
-            this._surface.refcount++;
+        if (_surface)
+            _surface.refcount++;
     }
     
     @nogc
