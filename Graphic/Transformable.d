@@ -16,12 +16,12 @@ protected:
     float _rotation = 0;
 
     @nogc
-    void _notifyTransform() pure nothrow {
+    final void _notifyTransform() pure nothrow {
         _was_transformed = true;
     }
 
     @nogc
-    bool _wasTransformed() const pure nothrow {
+    final bool _wasTransformed() const pure nothrow {
         return _was_transformed;
     }
 

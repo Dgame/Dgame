@@ -55,7 +55,7 @@ protected:
     }
 
     @nogc
-    void _init() pure nothrow {
+    final void _init() pure nothrow {
         // #2
         _vertices[1].texCoord.x = 1;
         // #3

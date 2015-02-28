@@ -26,7 +26,7 @@ protected:
     }
 
     @nogc
-    void _updateVertices() pure nothrow {
+    final void _updateVertices() pure nothrow {
         float tx = 0, ty = 0, tw = 1, th = 1;
 
         if (!_texRect.isEmpty()) {
@@ -53,7 +53,7 @@ protected:
     }
 
     @nogc
-    void _adjustTextureRect() pure nothrow {
+    final void _adjustTextureRect() pure nothrow {
         _texRect.x = 0;
         _texRect.y = 0;
         _texRect.width = _texture.width;
