@@ -28,7 +28,7 @@ private:
 import derelict.sdl2.sdl;
 import derelict.sdl2.image;
 
-debug import core.stdc.stdio : printf;
+import core.stdc.stdio : printf;
 
 import Dgame.Math.Rect;
 import Dgame.Math.Vector2;
