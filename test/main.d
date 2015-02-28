@@ -135,7 +135,11 @@ void main() {
     Text curFps = new Text(fnt);
     curFps.setPosition(200, 10);
 
-    StopWatch sw;
+    StopWatch fps_sw;
+    //StopWatch sw;
+
+    //immutable ubyte FPS = 60;
+    //immutable ubyte TicksPerFrame = 1000 / FPS;
 
     Sound explosion_sound = Sound("samples/audio/expl.wav");
     //explosion_sound.setVolume(75);
@@ -154,6 +158,11 @@ void main() {
 
     bool loop = true;
     while (loop) {
+        //if (sw.getElapsedTicks() < TicksPerFrame)
+        //    continue;
+        //else
+        //    sw.reset();
+
         //if (sw.getElapsedTime().msecs >= 1000) {
         //    printf("FPS: %d\n", fps);
         //    curFps.format("Current FPS: %d.", fps);
@@ -163,7 +172,7 @@ void main() {
         //} else
         //    fps++;
 
-        curFps.format("Current FPS: %d.", sw.getCurrentFPS());
+        curFps.format("Current FPS: %d.", fps_sw.getCurrentFPS());
 
         while (wnd.poll(&event)) {
             if (event.type == Event.Type.Quit) {

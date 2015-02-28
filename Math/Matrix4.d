@@ -196,7 +196,7 @@ public:
     /**
      * Calculates a View-Matrix
      *
-     * See: http://3dgep.com/understanding-the-view-matrix/#Look_At_Camera
+     * See: <a href="http://3dgep.com/understanding-the-view-matrix/#Look_At_Camera">here</a>
      */
     @nogc
     void lookAt()(auto ref const Vector3f eye, auto ref const Vector3f look, auto ref const Vector3f up) pure nothrow {
@@ -231,7 +231,7 @@ public:
     /**
      * Calculate a perspective projection
      *
-     * See: http://www.songho.ca/opengl/gl_projectionmatrix.html#perspective
+     * See: <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html#perspective">here</a>
      */
     @nogc
     void perspective(float fov, float ratio, float nearp, float farp) pure nothrow {
@@ -251,7 +251,7 @@ public:
     /**
      * Calculate a prthographic projection
      *
-     * See: http://www.songho.ca/opengl/gl_projectionmatrix.html#ortho
+     * See: <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html#ortho">here</a>
      */
     @nogc
     bool ortho()(auto ref const Rect rect, float zNear = 1, float zFar = -1)/* pure nothrow */{

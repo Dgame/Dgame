@@ -47,6 +47,14 @@ import Dgame.Window.Internal.Init;
 
 public:
 
+/**
+ * Window is the rendering window where all drawable objects are drawn.
+ *
+ * Note that the default clear-color is <code>Color.White</code> and the
+ * default Sync is <code>Window.Sync.Disables</code>, which means the Applications runs with full FPS.
+ *
+ * Author: Randy Schuett
+ */
 struct Window {
     /**
      * The Window syncronisation mode.
@@ -58,6 +66,9 @@ struct Window {
         LateSwapTearing = -1    /** For late swap tearing */
     }
 
+    /**
+     * The specific window styles
+     */
     enum Style {
         Fullscreen = SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
         Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Window has Desktop Fullscreen */
@@ -85,6 +96,9 @@ private:
     static ushort _count = 0;
 
 public:
+    /**
+     * CTor
+     */
     this(uint width, uint height, string title, uint style = Style.Default, int x = 100, int y = 100) {
         // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
         version (OSX) {
@@ -119,13 +133,20 @@ public:
         _count++;
     }
 
+    /**
+     * CTor
+     */
     this(Rect rect, string title, Style style = Style.Default) {
         this(rect.width, rect.height, title, style, rect.x, rect.y);
     }
 
+    /// Postblit is disabled
     @disable
     this(this);
     
+    /**
+     * DTor
+     */
     @nogc
     ~this() nothrow {
         SDL_GL_DeleteContext(_glContext);  
@@ -134,10 +155,18 @@ public:
         _count--;
     }
 
+    /**
+     * Returns the current projection Matrix
+     *
+     * See: Matrix4
+     */
     ref inout(Matrix4) getProjection() inout pure nothrow {
         return _projection;
     }
 
+    /**
+     * Load the projection Matrix, so that any change / transformation of the Matrix will now be visible
+     */
     void loadProjection() const {
         glMatrixMode(GL_PROJECTION);
         glLoadMatrixf(_projection.getValues().ptr);
@@ -145,7 +174,7 @@ public:
     }
 
     /**
-     * Set the color with which this windows clear his buffer.
+     * Set the color which this windows use to clear the buffer.
      * This is also the background color of the window.
      */
     @nogc
@@ -154,6 +183,9 @@ public:
         glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
     }
 
+    /**
+     * Clears the given buffer (or'ed together)
+     */
     @nogc
     void clear(uint flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) const nothrow {
         glClear(flags);
@@ -267,14 +299,24 @@ public:
         return Vector2i(x, y);
     }
 
+    /**
+     * Returns the Window Style.
+     * 
+     * See: Style enum
+     */
     @nogc
     uint getStyle() nothrow {
         return SDL_GetWindowFlags(_window);
     }
 
+    /**
+     * Update the parameter event and set the data of the current event in it.
+     * 
+     * Returns: true, if there was a valid event and false if not.
+     */
     @nogc
     bool poll(Event* event) const nothrow {
-        assert(event);
+        assert(event, "No place to store the event");
 
         SDL_Event sdl_event;
         SDL_PollEvent(&sdl_event);
@@ -282,6 +324,10 @@ public:
         return _translate(event, sdl_event);
     }
 
+    /**
+     * Waits for the given Event.
+     * If the seconds parameter is greater then -1, it waits maximal timeout seconds.
+     */
     @nogc
     bool wait(Event* event, int timeout = -1) const nothrow {
         SDL_Event sdl_event;
@@ -297,6 +343,11 @@ public:
         return false; 
     }
 
+    /**
+     * Push an event of the given type inside the Event queue.
+     * 
+     * Returns: if the push was successfull or not.
+     */
     @nogc
     bool push(Event.Type type) const nothrow {
         SDL_Event sdl_event;
@@ -305,6 +356,25 @@ public:
         return SDL_PushEvent(&sdl_event) == 1;
     }
 
+    /**
+     * Returns: if inside of the Event Queue is an Event of the given type.
+     */
+    @nogc
+    bool hasEvent(Event.Type type) const nothrow {
+        return SDL_HasEvent(type) == SDL_TRUE;
+    }
+    
+    /**
+     * Returns: if the current Event queue has the Quit Event.
+     */
+    @nogc
+    bool hasQuitEvent() const nothrow {
+        return SDL_QuitRequested();
+    }
+
+    /**
+     * Draw a drawable object on screen
+     */
     @nogc
     void draw(Drawable d) const nothrow {
         assert(d, "Drawable is null");
@@ -336,6 +406,9 @@ public:
         }
     }
 
+    /**
+     * Make all changes visible on screen
+     */
     @nogc
     void display() nothrow {
         immutable uint style = this.getStyle();
@@ -380,6 +453,9 @@ public:
         SDL_SetWindowSize(_window, width, height);
     }
     
+    /**
+     * Returns the size (width and height) of the Window
+     */
     @nogc
     Size getSize() nothrow {
         int w, h;
@@ -388,8 +464,55 @@ public:
         return Size(w, h);
     }
 
+    /**
+     * Set an icon for this window.
+     */
     @nogc
     void setIcon(ref Surface srfc) {
         srfc.setAsIconOf(_window);
+    }
+
+    enum uint FullScreenMask = Style.Fullscreen | Style.Desktop;
+
+    /**
+     * Use this function to (re)set Window's fullscreen states.
+     * style may be Style.Fullscreen for "real" fullscreen with a display mode change
+     * or Style.Desktop for "fake" fullscreen that takes the size of the desktop
+     * Use 0 for windowed mode.
+     */
+    @nogc
+    bool setFullscreen(int style) nothrow {
+        if (style & this.getStyle())
+            return true;
+        
+        if (style & FullScreenMask || style == 0) {
+            if (SDL_SetWindowFullscreen(this._window, style) != 0) {
+                printf("Could not enable fullscreen: %s\n", SDL_GetError());
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Toggle between Fullscreen and windowed mode, depending on the current state.
+     */
+    @nogc
+    void toggleFullscreen() nothrow {
+        if (this.getStyle() & FullScreenMask)
+            this.setFullscreen(0);
+        else
+            this.setFullscreen(Style.Fullscreen);
+    }
+    
+    /**
+     * Returns, if this Window is in fullscreen mode.
+     */
+    @nogc
+    bool isFullscreen() nothrow {
+        return (this.getStyle() & FullScreenMask) != 0;
     }
 }

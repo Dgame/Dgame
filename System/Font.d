@@ -45,7 +45,10 @@ private:
     ubyte _fontSize;
 
 public:
-    enum ubyte DefaultSize = 10; /// The default size of every Font
+    /**
+     * The default size of every Font is 10
+     */
+    enum ubyte DefaultSize = 10;
 
     /**
      * Available Font styles
