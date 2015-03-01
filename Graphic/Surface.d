@@ -469,6 +469,7 @@ public:
     /**
      * Returns the pixel data of this surface.
      */
+    @property
     @nogc
     inout(void*) pixels() inout pure nothrow {
         return _surface ? _surface.pixels : null;
@@ -506,6 +507,7 @@ public:
     /**
      * Returns the PixelFormat
      */
+    @property
     @nogc
     const(SDL_PixelFormat*) format() const pure nothrow {
         if (!_surface)
@@ -615,18 +617,8 @@ public:
      */
     @nogc
     bool blitScaled(ref Surface srfc, const Rect* src = null, Rect* dst = null) nothrow {
-        return this.blitScaled(srfc._surface, src, dst);
-    }
-    
-    /**
-     * Same as above, but with a SDL_Surface* instead of a Surface.
-     */
-    @nogc
-    bool blitScaled(SDL_Surface* srfc, const Rect* src = null, Rect* dst = null) nothrow {
-        if (!_surface)
+        if (!srfc.isValid())
             return false;
-
-        assert(srfc, "Null surface cannot be blit.");
 
         SDL_Rect a = void;
         SDL_Rect b = void;
@@ -634,7 +626,11 @@ public:
         const SDL_Rect* src_ptr = src ? _transfer(*src, a) : null;
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
-        return SDL_BlitScaled(srfc, src_ptr, _surface, dst_ptr) == 0;
+        immutable bool result = SDL_BlitScaled(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
+        if (!result)
+            printf("Could not blit surface: %s\n", SDL_GetError());
+
+        return result;
     }
     
     /**
@@ -646,18 +642,8 @@ public:
      */
     @nogc
     bool blit(ref Surface srfc, const Rect* src = null, Rect* dst = null) nothrow {
-        return this.blit(srfc._surface, src, dst);
-    }
-    
-    /**
-     * Same as above, but with a SDL_Surface* instead of a Surface.
-     */
-    @nogc
-    bool blit(SDL_Surface* srfc, const Rect* src = null, Rect* dst = null) nothrow {
-        if (!_surface)
+        if (!srfc.isValid())
             return false;
-
-        assert(srfc, "Null surface cannot be blit.");
 
         SDL_Rect a = void;
         SDL_Rect b = void;
@@ -665,7 +651,7 @@ public:
         const SDL_Rect* src_ptr = src ? _transfer(*src, a) : null;
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
-        immutable bool result = SDL_BlitSurface(srfc, src_ptr, _surface, dst_ptr) == 0;
+        immutable bool result = SDL_BlitSurface(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
         if (!result)
             printf("Could not blit surface: %s\n", SDL_GetError());
 

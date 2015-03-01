@@ -181,8 +181,9 @@ public:
      *
      * See: Format enum.
      */
+    @property
     @nogc
-    Format getFormat() const pure nothrow {
+    Format format() const pure nothrow {
         return _format;
     }
     

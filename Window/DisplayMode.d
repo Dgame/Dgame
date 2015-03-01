@@ -86,7 +86,7 @@ struct DisplayMode {
     @nogc
     static DisplayMode getMode(uint index, ubyte display = 1) nothrow {
         SDL_DisplayMode mode = void;
-        int result = SDL_GetDisplayMode(display, index, &mode);
+        immutable int result = SDL_GetDisplayMode(display, index, &mode);
         if (result != 0)
             printf("An error occured: %s\n", SDL_GetError());
         
