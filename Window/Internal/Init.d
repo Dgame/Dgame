@@ -29,17 +29,47 @@ import core.stdc.stdio : printf;
 
 import derelict.sdl2.sdl;
 import derelict.opengl3.gl;
+import derelict.sdl2.ttf;
+import derelict.sdl2.image;
+import derelict.sdl2.mixer;
 
 shared static this() {
-    import derelict.sdl2.ttf;
-    import derelict.sdl2.image;
-    import derelict.sdl2.mixer;
-
     DerelictSDL2.load();
     DerelictSDL2Image.load();
     DerelictSDL2ttf.load();
     DerelictSDL2Mixer.load();
     DerelictGL.load();
+
+    _initSDL();
+}
+
+shared static ~this() {
+    // quit SDL_image
+    IMG_Quit();
+    // quit SDL_ttf
+    TTF_Quit();
+    // quit SDL_mixer
+    Mix_ReserveChannels(0);
+    Mix_CloseAudio();
+    Mix_Quit();
+    // quit SDL
+    SDL_Quit();
+
+    DerelictSDL2Image.unload();
+    DerelictSDL2ttf.unload();
+    DerelictSDL2Mixer.unload();
+    DerelictSDL2.unload();
+    DerelictGL.unload();
+}
+
+bool _isGLInited = false;
+bool _isSDLInited = false;
+
+void _initSDL() {
+    if (_isSDLInited)
+        return;
+
+    scope(exit) _isSDLInited = true;
 
     // Initialize SDL2
     int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -87,38 +117,13 @@ shared static this() {
         printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
 }
 
-shared static ~this() {
-    import derelict.sdl2.ttf;
-    import derelict.sdl2.image;
-    import derelict.sdl2.mixer;
-
-    // quit SDL_image
-    IMG_Quit();
-    // quit SDL_ttf
-    TTF_Quit();
-    // quit SDL_mixer
-    Mix_ReserveChannels(0);
-    Mix_CloseAudio();
-    Mix_Quit();
-    // quit SDL
-    SDL_Quit();
-
-    DerelictSDL2Image.unload();
-    DerelictSDL2ttf.unload();
-    DerelictSDL2Mixer.unload();
-    DerelictSDL2.unload();
-    DerelictGL.unload();
-}
-
-bool _isGLInited = false;
-
 public:
 
 void _initGL() {
     if (_isGLInited)
         return;
 
-    _isGLInited = true;
+    scope(exit) _isGLInited = true;
 
     immutable GLVersion glver = DerelictGL.reload();
     debug printf("Derelict loaded GL version: %d (%d), available GL version: %s\n", DerelictGL.loadedVersion, glver, glGetString(GL_VERSION));

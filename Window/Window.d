@@ -160,6 +160,7 @@ public:
      *
      * See: Matrix4
      */
+    @nogc
     ref inout(Matrix4) getProjection() inout pure nothrow {
         return _projection;
     }
@@ -167,6 +168,7 @@ public:
     /**
      * Load the projection Matrix, so that any change / transformation of the Matrix will now be visible
      */
+    @nogc
     void loadProjection() const {
         glMatrixMode(GL_PROJECTION);
         glLoadMatrixf(_projection.getValues().ptr);
