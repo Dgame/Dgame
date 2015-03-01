@@ -153,22 +153,22 @@ struct Event {
         //TextInput  = SDL_TEXTINPUT              /**< Keyboard text input */
     }
 
-    Type type;
+    Type type; /// The type of the Event
 
-    uint timestamp; /** Milliseconds since the app is running. */
-    uint windowId;  /** The window which has raised this event. */
+    uint timestamp; /** Milliseconds since the app is running */
+    uint windowId;  /** The window which has raised this event */
 
     union MouseUnion {
-        MouseButtonEvent button; /** Mouse button Event. */
-        MouseMotionEvent motion; /** Mouse motion Event. */
-        MouseWheelEvent  wheel;  /** Mouse wheel Event. */
+        MouseButtonEvent button; /** Mouse button Event */
+        MouseMotionEvent motion; /** Mouse motion Event */
+        MouseWheelEvent  wheel;  /** Mouse wheel Event */
     }
     
     union {
-        KeyboardEvent keyboard; /** Keyboard Event. */
-        WindowEvent   window;   /** Window Event. */
+        KeyboardEvent keyboard; /** Keyboard Event */
+        WindowEvent   window;   /** Window Event */
         
-        MouseUnion mouse;
+        MouseUnion mouse; /** Mouse Event */
 
         /+
         TextEditEvent    textEdit;    /** Text edit Event. */

@@ -55,9 +55,13 @@ SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
     return &to;
 }
 
+/**
+ * Size contains a width and a height property and 
+ * is used to wraps both, the width and the height, in one element.
+ */
 struct Size {
-    uint width;
-    uint height;
+    uint width; /// the width property
+    uint height; /// the height property
 }
 
 /**

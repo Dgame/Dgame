@@ -149,8 +149,7 @@ final:
     void format(Args...)(string text, Args args) pure {
         import std.string : format;
 
-        string formated = format(text, args);
-        
+        immutable string formated = format(text, args);
         if (formated != _text) {
             _text = formated;
             _redraw = true;

@@ -74,7 +74,7 @@ public:
         * Used to indicate strikethrough rendering style.This is used in a bitmask along with other styles.
         */
         StrikeThrough = TTF_STYLE_STRIKETHROUGH
-    };
+    }
 
     /**
      * Available Font modes
@@ -83,7 +83,7 @@ public:
         Solid,
         Shaded,
         Blended
-    };
+    }
 
     /**
      * CTor
