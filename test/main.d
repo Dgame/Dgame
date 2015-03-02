@@ -63,7 +63,7 @@ void main() {
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 
     Texture wiki_tex = Texture(wiki_srfc);
-    writeln(wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.depth, ':', wiki_tex.getFormat());
+    writeln(wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.depth, ':', wiki_tex.format);
 
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);

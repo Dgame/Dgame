@@ -466,7 +466,7 @@ public:
 
         void[] memory = tex.getMemory(mem[0 .. msize]);
 
-        this.update(memory.ptr, rect, tex.getFormat());
+        this.update(memory.ptr, rect, tex.format);
     }
 
     /**
