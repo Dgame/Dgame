@@ -46,26 +46,6 @@ struct KeyboardEvent {
     bool repeat;    /** true, if this is a key repeat. */
 }
 
-/+
-
-/**
- * Keyboard text editing event structure
- */
-struct TextEditEvent {
-    char[TextSize] text = void; /**< The editing text */
-    short start; /**< The start cursor of selected editing text */
-    ushort length; /**< The length of selected editing text */
-}
-
-/**
- * Keyboard text input event structure
- */
-struct TextInputEvent {
-    char[TextSize] text = void; /**< The input text */
-}
-
-+/
-
 /**
  * Specific Window Events.
  */
@@ -175,11 +155,6 @@ struct Event {
         WindowEvent   window;   /** Window Event */
         
         MouseUnion mouse; /** Mouse Event */
-
-        /+
-        TextEditEvent    textEdit;    /** Text edit Event. */
-        TextInputEvent   textInput;   /** Text input Event. */
-        +/
     }
 }
 
