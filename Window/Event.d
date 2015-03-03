@@ -147,14 +147,11 @@ struct Event {
         MouseWheelEvent  wheel;  /** Mouse wheel Event */
     }
     
-    /**
-     *All events as union
-     */
     union {
         KeyboardEvent keyboard; /** Keyboard Event */
         WindowEvent   window;   /** Window Event */
         
-        MouseUnion mouse; /** Mouse Event */
+        MouseUnion mouse; /** Mouse Events */
     }
 }
 
