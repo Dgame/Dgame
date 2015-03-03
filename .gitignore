@@ -168,3 +168,4 @@ pip-log.txt
 .DS_Store
 .dub/dub.json
 dub.selections.json
+test/.dub/dub.json

@@ -220,7 +220,7 @@ whether the call succeeded or not<br><br>
 <dd>Returns the <u>height</u>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.pixels"></a>inout pure nothrow @nogc inout(void*) <u>pixels</u>();
+<dt><big><a name="Surface.pixels"></a>inout pure nothrow @nogc @property inout(void*) <u>pixels</u>();
 </big></dt>
 <dd>Returns the pixel data of this surface.<br><br>
 
@@ -242,7 +242,7 @@ whether the call succeeded or not<br><br>
 <dd>Returns the Surface <u>pitch</u> or 0.<br><br>
 
 </dd>
-<dt><big><a name="Surface.format"></a>const pure nothrow @nogc const(SDL_PixelFormat*) <u>format</u>();
+<dt><big><a name="Surface.format"></a>const pure nothrow @nogc @property const(SDL_PixelFormat*) <u>format</u>();
 </big></dt>
 <dd>Returns the PixelFormat<br><br>
 
@@ -288,11 +288,6 @@ Surface.Mask enum.<br><br>
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
 
 </dd>
-<dt><big><a name="Surface.blitScaled"></a>nothrow @nogc bool <u>blitScaled</u>(SDL_Surface* <i>srfc</i>, const Rect* <i>src</i> = null, Rect* <i>dst</i> = null);
-</big></dt>
-<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
-
-</dd>
 <dt><big><a name="Surface.blit"></a>nothrow @nogc bool <u>blit</u>(ref Surface <i>srfc</i>, const Rect* <i>src</i> = null, Rect* <i>dst</i> = null);
 </big></dt>
 <dd>Use this function to perform a fast <u>blit</u> from the source surface to the this surface.
@@ -300,11 +295,6 @@ Surface.Mask enum.<br><br>
  or <b>null</b> to copy the entire surface.
  <i>dst</i> is a pointer to a Rect structure which represents the rectangle that is copied into.
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
-
-</dd>
-<dt><big><a name="Surface.blit"></a>nothrow @nogc bool <u>blit</u>(SDL_Surface* <i>srfc</i>, const Rect* <i>src</i> = null, Rect* <i>dst</i> = null);
-</big></dt>
-<dd>Same as above, but with a SDL_Surface* instead of a Surface.<br><br>
 
 </dd>
 <dt><big><a name="Surface.subSurface"></a>nothrow @nogc Surface <u>subSurface</u>()(auto ref const Rect <i>rect</i>);

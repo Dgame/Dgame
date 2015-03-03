@@ -365,7 +365,7 @@ public:
     bool hasEvent(Event.Type type) const nothrow {
         return SDL_HasEvent(type) == SDL_TRUE;
     }
-    
+/+
     /**
      * Returns: if the current Event queue has the Quit Event.
      */
@@ -373,7 +373,7 @@ public:
     bool hasQuitEvent() const nothrow {
         return SDL_QuitRequested();
     }
-
++/
     /**
      * Draw a drawable object on screen
      */
