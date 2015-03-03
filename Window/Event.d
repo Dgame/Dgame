@@ -30,6 +30,8 @@ import derelict.sdl2.sdl;
 public import Dgame.System.Mouse;
 public import Dgame.System.Keyboard;
 
+public:
+
 /**
  * The Keyboard Event structure.
  */
@@ -128,8 +130,6 @@ struct MouseWheelEvent {
     int delta_y; /** The amount scrolled vertically. */
 }
 
-public:
-
 /**
  * The Event structure.
  * Event defines a system event and it's parameters
@@ -158,12 +158,18 @@ struct Event {
     uint timestamp; /** Milliseconds since the app is running */
     uint windowId;  /** The window which has raised this event */
 
+    /**
+     * Mouse union
+     */
     union MouseUnion {
         MouseButtonEvent button; /** Mouse button Event */
         MouseMotionEvent motion; /** Mouse motion Event */
         MouseWheelEvent  wheel;  /** Mouse wheel Event */
     }
     
+    /**
+     *All events as union
+     */
     union {
         KeyboardEvent keyboard; /** Keyboard Event */
         WindowEvent   window;   /** Window Event */
