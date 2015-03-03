@@ -35,21 +35,7 @@ import Dgame.Math.Vector2;
 
 import Dgame.Graphic.Color;
 
-shared static this() {
-    DerelictSDL2Image.load();
-}
-
-shared static ~this() {
-    DerelictSDL2Image.unload();
-}
-
-// @@ FIX @@
-@nogc
-bool SDL_MUSTLOCK(const SDL_Surface* S) pure nothrow {
-    return (S.flags & SDL_RLEACCEL) != 0;
-}
-
-// @@ FIX @@
+// @@ std.file.exists FIX @@
 @nogc
 bool accessable(string filename) nothrow {
     import core.stdc.stdio : fopen, fclose;

@@ -29,13 +29,13 @@ import derelict.sdl2.sdl;
 
 import Dgame.Math.Vector2;
 
-// @@ FIX @@
+// @@ pure FIX @@
 @nogc
 bool SDL_RectEmpty(const SDL_Rect* X) pure nothrow {
     return !X || ( X.w <= 0 ) || ( X.h <= 0 );
 }
 
-// @@ FIX @@
+// @@ pure FIX @@
 @nogc
 bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
     return A && B &&

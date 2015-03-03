@@ -28,12 +28,6 @@ private:
 import derelict.sdl2.types;
 import derelict.sdl2.functions;
 
-// @@ FIX @@
-@nogc
-ubyte SDL_BUTTON(ubyte X) pure nothrow {
-    return cast(ubyte)(1 << (X - 1));
-}
-
 public:
 
 /**
