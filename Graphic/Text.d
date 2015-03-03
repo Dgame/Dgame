@@ -27,7 +27,7 @@ private:
 
 import Dgame.Graphic.Drawable;
 import Dgame.Graphic.Transformable;
-import Dgame.Graphic.Surface; // Temp
+import Dgame.Graphic.Surface;
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Color;
 
@@ -40,10 +40,8 @@ public:
 
 /**
  * Text defines a graphical 2D text, that can be drawn on screen.
- *  - The default foreground color is <code>Color.Black</code>
- *  - The default background color is <code>Color.White</code>
  *
- * Author: rschuett
+ * Author: randy schuett
  */
 class Text : Transformable, Drawable {
 private:
@@ -53,6 +51,7 @@ private:
     Font* _font;
 
     string _text;
+
     bool _redraw = true;
 
 protected:
@@ -161,7 +160,6 @@ final:
      */
     void setData(T)(T data) pure nothrow {
         import std.conv : to;
-
         static if (is(T == string))
             immutable string text = data;
         else
@@ -178,7 +176,7 @@ final:
      */
     @nogc
     void clear() pure nothrow {
-        _text = "";
+        _text = null;
         _redraw = true;
     }
 

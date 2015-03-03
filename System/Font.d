@@ -25,6 +25,8 @@ module Dgame.System.Font;
 
 private:
 
+static import m3.m3;
+
 import derelict.sdl2.types;
 import derelict.sdl2.ttf;
 
@@ -158,7 +160,6 @@ public:
     @nogc
     Surface render()(string text, auto ref const Color4b fg, auto ref const Color4b bg, Mode mode = Mode.Solid) nothrow {
         assert(_ttf, "Font is invalid");
-        assert(text.length, "No text to render");
 
         SDL_Color a = void;
         SDL_Color b = void;
@@ -166,16 +167,35 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
+        char[256] buf = void;
+        char* ptr;
+        bool is_m3 = false;
+
+        if (text.length < 256) {
+            buf[0 .. text.length] = text;
+            buf[text.length] = '\0';
+
+            ptr = buf.ptr;
+        } else {
+            is_m3 = true;
+
+            ptr = m3.m3.reserve(ptr, text.length + 1);
+            ptr[0 .. text.length] = text;
+            ptr[text.length] = '\0';
+        }
+
+        scope(exit) if (is_m3) m3.m3.destruct(ptr);
+
         SDL_Surface* srfc;
         final switch (mode) {
             case Mode.Solid:
-                srfc = TTF_RenderUTF8_Solid(_ttf, text.ptr, a);
+                srfc = TTF_RenderUTF8_Solid(_ttf, ptr, a);
                 break;
             case Mode.Shaded:
-                srfc = TTF_RenderUTF8_Shaded(_ttf, text.ptr, a, b);
+                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr, a, b);
                 break;
             case Mode.Blended:
-                srfc = TTF_RenderUTF8_Blended(_ttf, text.ptr, a);
+                srfc = TTF_RenderUTF8_Blended(_ttf, ptr, a);
                 break;
         }
 
@@ -188,10 +208,10 @@ public:
             SDL_PixelFormat fmt;
             fmt.BitsPerPixel = 24;
             
-            Surface result = Surface(srfc);
-            result.adaptTo(&fmt);
+            Surface opt = Surface(srfc);
+            opt.adaptTo(&fmt);
 
-            return result;
+            return opt;
         }
 
         return Surface(srfc);
