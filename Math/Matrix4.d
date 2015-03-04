@@ -319,7 +319,7 @@ public:
      * Compares two Matrices approximately
      */
     @nogc
-    bool opEqual(ref const Matrix4 mat) const pure nothrow {
+    bool opEquals(ref const Matrix4 mat) const pure nothrow {
         for (ubyte i = 0; i < 16; i++) {
             if (!feq(mat[i], _values[i]))
                 return false;

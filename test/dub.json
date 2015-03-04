@@ -7,7 +7,7 @@
     "dependencies": {
         "derelict-sdl2": "~>1.9.3",
         "derelict-gl3": "~>1.0.12",
-        "m3": "~>0.0.5"
+        "m3": "~>0.0.6"
     },
     "configurations": [
         {
