@@ -58,16 +58,6 @@ struct Texture {
         LuminanceAlpha = GL_LUMINANCE_ALPHA /// Alias for GL_LUMINANCE_ALPHA
     }
     
-    /**
-     * Compression modes
-     */
-    enum Compression {
-        None, /// No compression
-        DontCare = GL_DONT_CARE, /// The OpenGL implementation decide on their own
-        Fastest = GL_FASTEST, /// Fastest compression
-        Nicest = GL_NICEST /// Nicest but slowest mode of compression
-    }
-    
 private:
     uint _texId;
     
@@ -79,7 +69,6 @@ private:
     bool _isRepeated;
     
     Format _format;
-    Compression _comp;
 
     @nogc
     void _init() nothrow {
