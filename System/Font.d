@@ -33,6 +33,22 @@ import derelict.sdl2.ttf;
 import Dgame.Graphic.Color;
 import Dgame.Graphic.Surface;
 
+@nogc
+char* toStringz(string text, char[] buf) nothrow {
+    if (text.length < buf.length) {
+        buf[0 .. text.length] = text;
+        buf[text.length] = '\0';
+
+        return buf.ptr;
+    }
+
+    char[] arr = m3.m3.make!(char[])(text.length + 1);
+    arr[0 .. text.length] = text;
+    arr[text.length] = '\0';
+
+    return arr.ptr;
+}
+
 public:
 
 /**
@@ -167,24 +183,9 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
-        char[256] buf = void;
-        char* ptr;
-        bool is_m3 = false;
-
-        if (text.length < 256) {
-            buf[0 .. text.length] = text;
-            buf[text.length] = '\0';
-
-            ptr = buf.ptr;
-        } else {
-            is_m3 = true;
-
-            ptr = m3.m3.reserve(ptr, text.length + 1);
-            ptr[0 .. text.length] = text;
-            ptr[text.length] = '\0';
-        }
-
-        scope(exit) if (is_m3) m3.m3.destruct(ptr);
+        char[512] buf = void;
+        char* ptr = toStringz(text, buf[]);
+        scope(exit) if (ptr !is buf.ptr) m3.m3.destruct(ptr);
 
         SDL_Surface* srfc;
         final switch (mode) {

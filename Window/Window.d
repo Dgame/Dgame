@@ -104,36 +104,9 @@ public:
         uint style = Style.Default,
         int x = 100, int y = 100,
         GLSettings* gl_settings = null)
-    {
-        // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
-        version (OSX) {
-            if (style & Style.OpenGL) {
-                if (gl_settings && gl_settings.majorVersion == 0) {
-                    gl_settings.majorVersion = 2;
-                    gl_settings.minorVersion = 1;
-                } else if (!gl_settings) {
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-                }
-            }
-        }
-
-        if (style & Style.OpenGL) {
-            if (gl_settings) {
-                if (gl_settings.majorVersion != 0) {
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
-                }
-
-                if (gl_settings.antiAliasLevel > 0) {
-                    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-                    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
-                }
-            }
-
-            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-            SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-        }
+    {   
+        if (style & Style.OpenGL)
+            _initGLAttr(gl_settings);
 
         _window = SDL_CreateWindow(title.ptr, x, y, width, height, style);
         assert(_window, "SDL_Window could not be created.");

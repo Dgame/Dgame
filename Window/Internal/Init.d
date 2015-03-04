@@ -33,6 +33,8 @@ import derelict.sdl2.ttf;
 import derelict.sdl2.image;
 import derelict.sdl2.mixer;
 
+import Dgame.Window.GLSettings;
+
 shared static this() {
     DerelictSDL2.load();
     DerelictSDL2Image.load();
@@ -65,6 +67,7 @@ shared static ~this() {
 bool _isGLInited = false;
 bool _isSDLInited = false;
 
+@nogc
 void _initSDL() {
     if (_isSDLInited)
         return;
@@ -118,6 +121,35 @@ void _initSDL() {
 }
 
 public:
+
+@nogc
+void _initGLAttr(GLSettings* gl_settings) {
+    // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
+    version (OSX) {
+        if (gl_settings && gl_settings.majorVersion == 0) {
+            gl_settings.majorVersion = 2;
+            gl_settings.minorVersion = 1;
+        } else if (!gl_settings) {
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        }
+    }
+
+    if (gl_settings) {
+        if (gl_settings.majorVersion != 0) {
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
+        }
+
+        if (gl_settings.antiAliasLevel > 0) {
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
+        }
+    }
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+}
 
 void _initGL() {
     if (_isGLInited)
