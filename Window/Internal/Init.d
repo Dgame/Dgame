@@ -126,7 +126,8 @@ void _initGL() {
     scope(exit) _isGLInited = true;
 
     immutable GLVersion glver = DerelictGL.reload();
-    debug printf("Derelict loaded GL version: %d (%d), available GL version: %s\n", DerelictGL.loadedVersion, glver, glGetString(GL_VERSION));
+    const char* glverstr = glGetString(GL_VERSION);
+    debug printf("Derelict loaded GL version: %d (%d), available GL version: %s\n", DerelictGL.loadedVersion, glver, glverstr);
     
     version (OSX)
         enum GLVersion NEEDED_GL_VERSION = GLVersion.GL21;
@@ -149,6 +150,8 @@ void _initGL() {
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
+
+    glEnable(GL_MULTISAMPLE);
 
     //glShadeModel(GL_SMOOTH);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

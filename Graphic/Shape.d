@@ -67,12 +67,6 @@ protected:
         if (this.lineWidth != 1)
             glLineWidth(this.lineWidth);
 
-        if (this.useAntiAlias) {
-            if (!glIsEnabled(GL_LINE_SMOOTH))
-                glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-        }
-        
         final switch (this.fill) {
             case Fill.Full:
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -100,7 +94,6 @@ public:
     Geometry geometry;
 
     Fill fill = Fill.Full; /// Fill option. Default is Fill.Full
-    bool useAntiAlias = false; /// Option of anti-alias usage to smooth edges. Default is false.
     ubyte lineWidth = 1; /// Option for the line width. Default is 1
 
 final:

@@ -33,7 +33,9 @@ pragma(msg, Vector2f.sizeof);
 pragma(msg, Vertex.sizeof);
 
 void main() {
-    Window wnd = Window(480, 640, "Dgame App - Test");
+    GLSettings gl_settings = GLSettings(0, 0, 0);
+
+    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, 100, 100, &gl_settings);
 
     uint[256] xpixels = [
         255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
@@ -83,7 +85,6 @@ void main() {
 
     Shape circle = new Shape(25, Vector2f(180, 380));
     circle.setColor(Color4b.Green);
-    circle.useAntiAlias = true;
 
     Shape many = new Shape(Geometry.Quad,
         [
