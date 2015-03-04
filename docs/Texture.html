@@ -57,14 +57,6 @@ Randy Schuett<br><br>
 <dd>Alias for GL_LUMINANCE_ALPHA<br><br>
 
 </dd>
-<dt><big><a name="Texture.Format.CompressedRGB"></a><u>CompressedRGB</u></big></dt>
-<dd>Compressed RGB<br><br>
-
-</dd>
-<dt><big><a name="Texture.Format.CompressedRGBA"></a><u>CompressedRGBA</u></big></dt>
-<dd>Compressed RGBA<br><br>
-
-</dd>
 </dl>
 </dd>
 <dt><big><a name="Texture.Compression"></a>enum <u>Compression</u>: int;
@@ -89,12 +81,12 @@ Randy Schuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Texture.this"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.this"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, Format <i>fmt</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Texture.this"></a>nothrow this()(auto ref const Surface <i>srfc</i>);
+<dt><big><a name="Texture.this"></a>nothrow this()(auto ref const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -174,33 +166,12 @@ Format enum.<br><br>
 <dd>Returns if repeating is enabled.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setCompression"></a>pure nothrow @nogc void <u>setCompression</u>(Compression <i>comp</i>);
-</big></dt>
-<dd>(Re)Set the compression mode.
-<br><br>
-<b>See:</b><br>
-Compression enum<br><br>
-
-</dd>
-<dt><big><a name="Texture.getCompression"></a>const pure nothrow @nogc Compression <u>getCompression</u>();
-</big></dt>
-<dd>Returns the current Compression mode.
-<br><br>
-<b>See:</b><br>
-Compression enum<br><br>
-
-</dd>
-<dt><big><a name="Texture.isCompressed"></a>const nothrow @nogc bool <u>isCompressed</u>();
-</big></dt>
-<dd>Checks whether the current Texture is compressed or not.<br><br>
-
-</dd>
 <dt><big><a name="Texture.loadFrom"></a>nothrow @nogc void <u>loadFrom</u>()(auto ref const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Load from Surface<br><br>
 
 </dd>
-<dt><big><a name="Texture.loadFromMemory"></a>nothrow @nogc void <u>loadFromMemory</u>(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i>, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.loadFromMemory"></a>nothrow @nogc void <u>loadFromMemory</u>(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, Format <i>fmt</i>);
 </big></dt>
 <dd>Load from <i>memory</i>.<br><br>
 
@@ -287,14 +258,6 @@ Compression enum<br><br>
 <font color=blue>assert</font>(<u>switchFormat</u>(Texture.Format.RGBA, <font color=blue>true</font>) == Texture.Format.BGRA);
 </pre>
 <br><br>
-
-</dd>
-<dt><big><a name="compressFormat"></a>pure nothrow @nogc Texture.Format <u>compressFormat</u>(Texture.Format <i>fmt</i>);
-</big></dt>
-<dd>Choose the right compress format for the given Texture.Format.
-<br><br>
-<b>See:</b><br>
-Texture.Format enum<br><br>
 
 </dd>
 </dl>

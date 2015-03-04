@@ -55,9 +55,7 @@ struct Texture {
         RGBA8 = GL_RGBA8,                   /// 8 Bit RGBA Format
         Alpha = GL_ALPHA,                   /// Alias for GL_ALPHA
         Luminance = GL_LUMINANCE,           /// Alias for GL_LUMINANCE
-        LuminanceAlpha = GL_LUMINANCE_ALPHA, /// Alias for GL_LUMINANCE_ALPHA
-        CompressedRGB = GL_COMPRESSED_RGB,  /// Compressed RGB
-        CompressedRGBA = GL_COMPRESSED_RGBA /// Compressed RGBA
+        LuminanceAlpha = GL_LUMINANCE_ALPHA /// Alias for GL_LUMINANCE_ALPHA
     }
     
     /**
@@ -96,16 +94,16 @@ public:
      * CTor
      */
     @nogc
-    this(void* memory, uint  width, uint height, ubyte depth, Format fmt = Format.None) nothrow {
-        this.loadFromMemory(memory, width, height, depth, fmt);
+    this(void* memory, uint  width, uint height, Format fmt) nothrow {
+        this.loadFromMemory(memory, width, height, fmt);
     }
 
     /**
      * CTor
      */
     @nogc
-    this()(auto ref const Surface srfc) nothrow {
-        this.loadFrom(srfc);
+    this()(auto ref const Surface srfc, Format fmt = Format.None) nothrow {
+        this.loadFrom(srfc, fmt);
     }
 
     /// Postblit is disabled
@@ -253,81 +251,47 @@ public:
     bool isRepeated() const pure nothrow {
         return _isRepeated;
     }
-    
-    /**
-     * (Re)Set the compression mode.
-     * 
-     * See: Compression enum
-     */
-    @nogc
-    void setCompression(Compression comp) pure nothrow {
-        _comp = comp;
-    }
-    
-    /**
-     * Returns the current Compression mode.
-     *
-     * See: Compression enum
-     */
-    @nogc
-    Compression getCompression() const pure nothrow {
-        return _comp;
-    }
-    
-    /**
-     * Checks whether the current Texture is compressed or not.
-     */
-    @nogc
-    bool isCompressed() const nothrow {
-        this.bind();
-        
-        GLint compressed;
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &compressed);
-        
-        return compressed != 1;
-    }
 
     /**
      * Load from Surface
      */
     @nogc
     void loadFrom()(auto ref const Surface srfc, Format fmt = Format.None) nothrow {
-        this.loadFromMemory(srfc.pixels, srfc.width, srfc.height, fmt == Format.None ? srfc.bits : 0, fmt);
+        assert(srfc.isValid(), "Cannot load invalid Surface");
+
+        if (fmt == Format.None) {
+            fmt = bitsToFormat(srfc.bits);
+            version (BigEndian) fmt = switchFormat(fmt);
+        }
+
+        this.loadFromMemory(srfc.pixels, srfc.width, srfc.height, fmt);
     }
 
     /**
      * Load from memory.
      */
     @nogc
-    void loadFromMemory(void* memory, uint width, uint height, ubyte depth, Format fmt = Format.None) nothrow {
+    void loadFromMemory(void* memory, uint width, uint height, Format fmt) nothrow {
         _init();
 
         assert(width != 0 && height != 0, "Width and height cannot be 0.");
-        assert(depth >= 8 || fmt != Format.None, "Need a depth or a format.");
+        assert(fmt != Format.None, "Need a valid format.");
 
         _format = fmt == Format.None ? bitsToFormat(depth) : fmt;
         assert(_format != Format.None, "Need Texture.Format or depth > 24");
-        depth = depth < 8 ? formatToBits(_format) : depth;
+        _depth = formatToBits(_format);
         
         this.bind();
-        
-        Format format = Format.None;
-        // Compression
-        if (_comp != Compression.None) {
-            glHint(GL_TEXTURE_COMPRESSION_HINT, _comp);
-            format = compressFormat(_format);
-        }
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-        glTexImage2D(GL_TEXTURE_2D, 0, format == Format.None ? depth / 8 : format, width, height, 0, _format, GL_UNSIGNED_BYTE, memory);
+        glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, _format, GL_UNSIGNED_BYTE, memory);
 
         _width  = width;
         _height = height;
-        _depth  = depth;
     }
 
     /**
@@ -531,6 +495,8 @@ ubyte formatToBits(Texture.Format fmt) pure nothrow {
         case Texture.Format.RGBA:
         case Texture.Format.BGRA:
             return 32;
+        case Texture.Format.RGBA16: return 16;
+        case Texture.Format.RGBA8: return 8;
         default: return 0;
     }
 }
@@ -597,22 +563,5 @@ Texture.Format switchFormat(Texture.Format fmt, bool alpha = false) pure nothrow
         case Texture.Format.RGBA: return Texture.Format.BGRA;
         case Texture.Format.BGRA: return Texture.Format.RGBA;
         default: return fmt;
-    }
-}
-
-/**
- * Choose the right compress format for the given Texture.Format.
- *
- * See: Texture.Format enum
- */
-@nogc
-Texture.Format compressFormat(Texture.Format fmt) pure nothrow {
-    switch (fmt) {
-        case Texture.Format.RGB:  return Texture.Format.CompressedRGB;
-        case Texture.Format.RGBA: return Texture.Format.CompressedRGBA;
-        case Texture.Format.CompressedRGB:
-        case Texture.Format.CompressedRGBA:
-            return fmt;
-        default: return Texture.Format.None;
     }
 }

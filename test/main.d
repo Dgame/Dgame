@@ -36,7 +36,7 @@ void main() {
     GLSettings gl_settings = GLSettings(0, 0, 0);
 
     Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, 100, 100, &gl_settings);
-
+    
     uint[256] xpixels = [
         255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
         0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
@@ -65,7 +65,7 @@ void main() {
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 
     Texture wiki_tex = Texture(wiki_srfc);
-    writeln(wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.depth, ':', wiki_tex.format);
+    writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);

@@ -78,7 +78,7 @@ struct Surface {
     enum ubyte GMask = 0; /** Default Green Mask. */
     enum ubyte BMask = 0; /** Default Blue Mask. */
     
-    version(LittleEndian)
+    version (LittleEndian)
         enum uint AMask = 0xff000000; /// Default Alpha Mask
     else
         enum uint AMask = 0x000000ff; /// Default Alpha Mask
