@@ -316,7 +316,7 @@ public:
         assert(srfc.isValid(), "Could not adapt to invalid surface.");
         assert(this.isValid(), "Could not adapt a invalid surface.");
 
-        this.adaptTo(srfc.format());
+        this.adaptTo(srfc.format);
     }
     
     /**
@@ -324,7 +324,7 @@ public:
      * Works like <code>SLD_DisplayFormat</code>.
      */
     @nogc
-    bool adaptTo(SDL_PixelFormat* fmt) nothrow {
+    bool adaptTo(const SDL_PixelFormat* fmt) nothrow {
         if (!_surface)
             return false;
 

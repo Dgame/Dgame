@@ -81,12 +81,12 @@ Randy Schuett<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Surface.this"></a>nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
+<dt><big><a name="Surface.this.2"></a>nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
 </big></dt>
 <dd>Make a new Surface of the given <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.this"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
+<dt><big><a name="Surface.this.3"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
 </big></dt>
 <dd>Make an new Surface of the given <i>memory</i>, <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 
@@ -163,7 +163,7 @@ whether the call succeeded or not<br><br>
  Works like <code>SDL_DisplayFormat</code>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.adaptTo"></a>nothrow @nogc bool <u>adaptTo</u>(SDL_PixelFormat* <i>fmt</i>);
+<dt><big><a name="Surface.adaptTo.2"></a>nothrow @nogc bool <u>adaptTo</u>(const SDL_PixelFormat* <i>fmt</i>);
 </big></dt>
 <dd>Use this function to adapt the format of another Surface to this surface.
  Works like <code>SLD_DisplayFormat</code>.<br><br>
@@ -255,7 +255,7 @@ whether the call succeeded or not<br><br>
 Surface.Mask enum.<br><br>
 
 </dd>
-<dt><big><a name="Surface.isMask"></a>const pure nothrow @nogc bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
+<dt><big><a name="Surface.isMask.2"></a>const pure nothrow @nogc bool <u>isMask</u>(Mask <i>mask</i>, uint <i>col</i>);
 </big></dt>
 <dd>Returns if the given converted color match the color of the given <i>mask</i> of the surface.
 <br><br>

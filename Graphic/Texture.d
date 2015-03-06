@@ -260,7 +260,7 @@ public:
      * Load from memory.
      */
     @nogc
-    void loadFromMemory(void* memory, uint width, uint height, Format fmt) nothrow {
+    void loadFromMemory(const void* memory, uint width, uint height, Format fmt) nothrow {
         _init();
 
         assert(width != 0 && height != 0, "Width and height cannot be 0.");
