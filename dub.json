@@ -19,7 +19,7 @@
         },
         {
             "name": "lib",
-            "targetType": "lib",
+            "targetType": "library",
             "targetName": "Dgame",
             "excludedSourceFiles": ["main.d"]
         }
