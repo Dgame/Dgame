@@ -72,35 +72,20 @@ public:
      * Available Font styles
      */
     enum Style {
-        /*
-        * Used to indicate regular, normal, plain rendering style.
-        */
-        Normal = TTF_STYLE_NORMAL,
-        /*
-        * Used to indicate bold rendering style.This is used in a bitmask along with other styles.
-        */
-        Bold = TTF_STYLE_BOLD,
-        /*
-        * Used to indicate italicized rendering style.This is used in a bitmask along with other styles.
-        */
-        Italic = TTF_STYLE_ITALIC,
-        /*
-        * Used to indicate underlined rendering style.This is used in a bitmask along with other styles.
-        */
-        Underline = TTF_STYLE_UNDERLINE,
-        /*
-        * Used to indicate strikethrough rendering style.This is used in a bitmask along with other styles.
-        */
-        StrikeThrough = TTF_STYLE_STRIKETHROUGH
+        Normal = TTF_STYLE_NORMAL, /** Used to indicate regular, normal, plain rendering style. */
+        Bold = TTF_STYLE_BOLD, /** Used to indicate bold rendering style.This is used in a bitmask along with other styles. */
+        Italic = TTF_STYLE_ITALIC, /** Used to indicate italicized rendering style.This is used in a bitmask along with other styles. */
+        Underline = TTF_STYLE_UNDERLINE, /** Used to indicate underlined rendering style.This is used in a bitmask along with other styles. */
+        StrikeThrough = TTF_STYLE_STRIKETHROUGH /** Used to indicate strikethrough rendering style.This is used in a bitmask along with other styles. */
     }
 
     /**
      * Available Font modes
      */
     enum Mode : ubyte {
-        Solid,
-        Shaded,
-        Blended
+        Solid, /// Solid
+        Shaded, /// Shaded
+        Blended /// Blended
     }
 
     /**
