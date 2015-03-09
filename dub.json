@@ -6,7 +6,7 @@
     "license":      "Zlib/PNG License",
     "sourcePaths":  ["."],
     "dependencies": {
-        "derelict-sdl2": "~>1.9.3",
+        "derelict-sdl2": "~>1.9.4",
         "derelict-gl3": "~>1.0.12",
         "m3": "~>0.0.6"
     },
@@ -21,7 +21,7 @@
             "name": "lib",
             "targetType": "library",
             "targetName": "Dgame",
-            "excludedSourceFiles": ["main.d"]
+            "excludedSourceFiles": ["main.d", "test/main.d", "test/tut.d"]
         }
     ],
     "buildTypes": {

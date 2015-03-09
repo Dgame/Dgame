@@ -232,36 +232,42 @@ public:
      */
     @nogc
     Surface capture(Texture.Format fmt = Texture.Format.BGRA) nothrow {
-        const Size size = this.getSize();
+        if (this.getStyle() & Style.OpenGL) {
+            const Size size = this.getSize();
 
-        Surface mycapture = Surface(size.width, size.height);
-        
-        glReadBuffer(GL_FRONT);
-        
-        ubyte* pixels = cast(ubyte*) mycapture.pixels;
-        glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, pixels);
-        
-        immutable uint lineWidth = size.width * 4;
-        immutable uint hlw = size.height * lineWidth;
+            Surface mycapture = Surface(size.width, size.height);
+            
+            glReadBuffer(GL_FRONT);
+            
+            ubyte* pixels = cast(ubyte*) mycapture.pixels;
+            glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, pixels);
+            
+            immutable uint lineWidth = size.width * 4;
+            immutable uint hlw = size.height * lineWidth;
 
-        ubyte[] tmpLine = m3.m3.make!(ubyte[])(lineWidth);
-        scope(exit) m3.m3.destruct(tmpLine);
+            ubyte[] tmpLine = m3.m3.make!(ubyte[])(lineWidth);
+            scope(exit) m3.m3.destruct(tmpLine);
 
-        for (uint i = 0; i < size.height / 2; ++i) {
-            immutable uint tmpIdx1 = i * lineWidth;
-            immutable uint tmpIdx2 = (i + 1) * lineWidth;
+            for (uint i = 0; i < size.height / 2; ++i) {
+                immutable uint tmpIdx1 = i * lineWidth;
+                immutable uint tmpIdx2 = (i + 1) * lineWidth;
+                
+                immutable uint switchIdx1 = hlw - tmpIdx2;
+                immutable uint switchIdx2 = hlw - tmpIdx1;
+                
+                tmpLine[0 .. lineWidth] = pixels[tmpIdx1 .. tmpIdx2];
+                ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
+                
+                pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
+                pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
+            }
             
-            immutable uint switchIdx1 = hlw - tmpIdx2;
-            immutable uint switchIdx2 = hlw - tmpIdx1;
-            
-            tmpLine[0 .. lineWidth] = pixels[tmpIdx1 .. tmpIdx2];
-            ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
-            
-            pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
-            pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
+            return mycapture;
         }
-        
-        return mycapture;
+
+        SDL_Surface* wnd_srfc = SDL_GetWindowSurface(_window);
+
+        return Surface(wnd_srfc);
     }
 
     /**
@@ -363,7 +369,7 @@ public:
     bool hasEvent(Event.Type type) const nothrow {
         return SDL_HasEvent(type) == SDL_TRUE;
     }
-/+
+
     /**
      * Returns: if the current Event queue has the Quit Event.
      */
@@ -371,7 +377,7 @@ public:
     bool hasQuitEvent() const nothrow {
         return SDL_QuitRequested();
     }
-+/
+
     /**
      * Draw a drawable object on screen
      */
