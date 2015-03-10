@@ -39,7 +39,7 @@ public:
 *
 * Supported formats are .wav, .mp3, .vorbis, .ogg, .midi
 *
-* Author: Randy Schuett
+* Author: Randy Schuett <rswhite4@googlemail.com>
 */
 struct Music {
 private:
@@ -55,7 +55,9 @@ public:
         this.setVolume(volume);
     }
     
-    /// Postblit is disabled
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
 
@@ -178,7 +180,6 @@ public:
      *    <b>Does not go in reverse: negative values do nothing.</b>
      * 
      * Note: This only works for.ogg, .vorbis and .mp3
-     * 
      */
     @nogc
     void setPosition(float seconds) const nothrow {

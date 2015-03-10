@@ -27,16 +27,54 @@
 <dd><u>Rect</u> defines a rectangle structure that contains the left upper corner and the width/height.
 <br><br>
 <b>Author:</b><br>
-Randy Schuett<br><br>
+Randy Schuett <rswhite4@googlemail.com><br><br>
 
-<dl><dt><big><a name="Rect.x"></a>int <u>x</u>;
+<dl><dt><big><a name="Rect.Edge"></a>enum <u>Edge</u>: ubyte;
 </big></dt>
-<dd>The <u>x</u><br><br>
+<dd>The edges of the Rectangle<br><br>
+
+<dl><dt><big><a name="Rect.Edge.Top"></a><u>Top</u></big></dt>
+<dd><u>Top</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.Bottom"></a><u>Bottom</u></big></dt>
+<dd><u>Bottom</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.Left"></a><u>Left</u></big></dt>
+<dd><u>Left</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.Right"></a><u>Right</u></big></dt>
+<dd><u>Right</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.TopLeft"></a><u>TopLeft</u></big></dt>
+<dd><u>TopLeft</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.TopRight"></a><u>TopRight</u></big></dt>
+<dd><u>TopRight</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.BottomLeft"></a><u>BottomLeft</u></big></dt>
+<dd><u>BottomLeft</u> edge<br><br>
+
+</dd>
+<dt><big><a name="Rect.Edge.BottomRight"></a><u>BottomRight</u></big></dt>
+<dd><u>BottomRight</u> edge<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Rect.x"></a>int <u>x</u>;
+</big></dt>
+<dd>The <u>x</u> coordinate<br><br>
 
 </dd>
 <dt><big><a name="Rect.y"></a>int <u>y</u>;
 </big></dt>
-<dd>and <u>y</u> coordinates<br><br>
+<dd>The <u>y</u> coordinates<br><br>
 
 </dd>
 <dt><big><a name="Rect.width"></a>uint <u>width</u>;
@@ -46,7 +84,7 @@ Randy Schuett<br><br>
 </dd>
 <dt><big><a name="Rect.height"></a>uint <u>height</u>;
 </big></dt>
-<dd>and the <u>height</u><br><br>
+<dd>The <u>height</u><br><br>
 
 </dd>
 <dt><big><a name="Rect.this"></a>pure nothrow @nogc this(int <i>x</i>, int <i>y</i>, uint <i>width</i>, uint <i>height</i>);

@@ -44,7 +44,7 @@ public:
 /**
  * Shape defines a drawable geometric shape.
  *
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 class Shape : Transformable, Drawable {
 public:
@@ -89,12 +89,17 @@ public:
     /**
      * The geometric type of the shape
      *
-     * See: Geomtric enum
+     * See: Geometric enum
      */
     Geometry geometry;
-
-    Fill fill = Fill.Full; /// Fill option. Default is Fill.Full
-    ubyte lineWidth = 1; /// Option for the line width. Default is 1
+    /**
+     * Fill option. Default is Fill.Full
+     */
+    Fill fill = Fill.Full;
+    /**
+     * Option for the line width. Default is 1
+     */
+    ubyte lineWidth = 1;
 
 final:
     /**

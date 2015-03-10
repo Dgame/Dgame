@@ -40,7 +40,7 @@ public:
 /**
  * Sprite represents a drawable object and maintains a Texture
  *
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 class Sprite : Transformable, Drawable {
 protected:

@@ -55,7 +55,7 @@ public:
  * Font is the low-level class for loading and manipulating character fonts.
  * This class is meant to be used by Dgame.Graphic.Text.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Font {
 private:
@@ -72,11 +72,11 @@ public:
      * Available Font styles
      */
     enum Style {
-        Normal = TTF_STYLE_NORMAL, /** Used to indicate regular, normal, plain rendering style. */
-        Bold = TTF_STYLE_BOLD, /** Used to indicate bold rendering style.This is used in a bitmask along with other styles. */
-        Italic = TTF_STYLE_ITALIC, /** Used to indicate italicized rendering style.This is used in a bitmask along with other styles. */
-        Underline = TTF_STYLE_UNDERLINE, /** Used to indicate underlined rendering style.This is used in a bitmask along with other styles. */
-        StrikeThrough = TTF_STYLE_STRIKETHROUGH /** Used to indicate strikethrough rendering style.This is used in a bitmask along with other styles. */
+        Normal = TTF_STYLE_NORMAL, /// Used to indicate regular, normal, plain rendering style.
+        Bold = TTF_STYLE_BOLD, /// Used to indicate bold rendering style.This is used in a bitmask along with other styles.
+        Italic = TTF_STYLE_ITALIC, /// Used to indicate italicized rendering style.This is used in a bitmask along with other styles.
+        Underline = TTF_STYLE_UNDERLINE, /// Used to indicate underlined rendering style.This is used in a bitmask along with other styles.
+        StrikeThrough = TTF_STYLE_STRIKETHROUGH /// Used to indicate strikethrough rendering style.This is used in a bitmask along with other styles.
     }
 
     /**
@@ -96,7 +96,9 @@ public:
         this.loadFromFile(filename, fontSize);
     }
     
-    /// Postblit is disabled
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
 

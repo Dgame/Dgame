@@ -42,18 +42,18 @@ SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {
 /**
  * Color4b defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
  *
- * Author: randy schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Color4b {
-    static immutable Color4b Black   = Color4b(0,     0,   0); /** Black Color (0, 0, 0) */
-    static immutable Color4b White   = Color4b(255, 255, 255); /** White Color (255, 255, 255) */
-    static immutable Color4b Red     = Color4b(255,   0,   0); /** Red Color (255, 0, 0) */
-    static immutable Color4b Green   = Color4b(0,   255,   0); /** Green Color (0, 255, 0) */
-    static immutable Color4b Blue    = Color4b(0,     0, 255); /** Blue Color (0, 0, 255) */
-    static immutable Color4b Cyan    = Color4b(0,   255, 255); /** Cyan Color (0, 255, 255) */
-    static immutable Color4b Yellow  = Color4b(255, 255,   0); /** Yellow Color (255, 255, 0)*/
-    static immutable Color4b Magenta = Color4b(255,   0, 255); /** Magenta Color (255, 0, 255) */
-    static immutable Color4b Gray    = Color4b(179, 179, 179); /** Gray Color (179, 179, 179) */
+    static immutable Color4b Black   = Color4b(0,     0,   0); /// Black Color (0, 0, 0)
+    static immutable Color4b White   = Color4b(255, 255, 255); /// White Color (255, 255, 255)
+    static immutable Color4b Red     = Color4b(255,   0,   0); /// Red Color (255, 0, 0)
+    static immutable Color4b Green   = Color4b(0,   255,   0); /// Green Color (0, 255, 0)
+    static immutable Color4b Blue    = Color4b(0,     0, 255); /// Blue Color (0, 0, 255)
+    static immutable Color4b Cyan    = Color4b(0,   255, 255); /// Cyan Color (0, 255, 255)
+    static immutable Color4b Yellow  = Color4b(255, 255,   0); /// Yellow Color (255, 255, 0)
+    static immutable Color4b Magenta = Color4b(255,   0, 255); /// Magenta Color (255, 0, 255)
+    static immutable Color4b Gray    = Color4b(179, 179, 179); /// Gray Color (179, 179, 179)
     
     /**
      * The color components
@@ -128,18 +128,18 @@ struct Color4b {
 /**
  * Color4f defines a structure which contains 4 floats values, each for red, green, blue and alpha.
  *
- * Author: randy schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Color4f {
-    static immutable Color4f Black   = Color4f(0,     0,   0); /** Black Color (0, 0, 0) */
-    static immutable Color4f White   = Color4f(255, 255, 255); /** White Color (255, 255, 255) */
-    static immutable Color4f Red     = Color4f(255,   0,   0); /** Red Color (255, 0, 0) */
-    static immutable Color4f Green   = Color4f(0,   255,   0); /** Green Color (0, 255, 0) */
-    static immutable Color4f Blue    = Color4f(0,     0, 255); /** Blue Color (0, 0, 255) */
-    static immutable Color4f Cyan    = Color4f(0,   255, 255); /** Cyan Color (0, 255, 255) */
-    static immutable Color4f Yellow  = Color4f(255, 255,   0); /** Yellow Color (255, 255, 0)*/
-    static immutable Color4f Magenta = Color4f(255,   0, 255); /** Magenta Color (255, 0, 255) */
-    static immutable Color4f Gray    = Color4f(179, 179, 179); /** Gray Color (179, 179, 179) */
+    static immutable Color4f Black   = Color4f(0,     0,   0); /// Black Color (0, 0, 0)
+    static immutable Color4f White   = Color4f(255, 255, 255); /// White Color (255, 255, 255)
+    static immutable Color4f Red     = Color4f(255,   0,   0); /// Red Color (255, 0, 0)
+    static immutable Color4f Green   = Color4f(0,   255,   0); /// Green Color (0, 255, 0)
+    static immutable Color4f Blue    = Color4f(0,     0, 255); /// Blue Color (0, 0, 255)
+    static immutable Color4f Cyan    = Color4f(0,   255, 255); /// Cyan Color (0, 255, 255)
+    static immutable Color4f Yellow  = Color4f(255, 255,   0); /// Yellow Color (255, 255, 0)
+    static immutable Color4f Magenta = Color4f(255,   0, 255); /// Magenta Color (255, 0, 255)
+    static immutable Color4f Gray    = Color4f(179, 179, 179); /// Gray Color (179, 179, 179)
     
     /**
      * The color components

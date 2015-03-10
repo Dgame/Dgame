@@ -41,7 +41,7 @@ public:
 /**
  * Text defines a graphical 2D text, that can be drawn on screen.
  *
- * Author: randy schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 class Text : Transformable, Drawable {
 private:
@@ -99,16 +99,25 @@ protected:
     }
 
 public:
-    Color4b foreground = Color4b.Black; /// The foreground color. Default is Black.
-    Color4b background = Color4b.White; /// The background color. Default is White.
-    Font.Mode mode = Font.Mode.Solid;   /// The Font mode which is default Solid.
+    /**
+     * The foreground color. Default is Black.
+     */
+    Color4b foreground = Color4b.Black;
+    /**
+     * The background color. Default is White.
+     */
+    Color4b background = Color4b.White;
+    /**
+     * The Font mode which is default Solid.
+     */
+    Font.Mode mode = Font.Mode.Solid;
 
 final:
     /**
      * CTor
      */
     @nogc
-    this(ref Font fnt, string str = "") pure nothrow {
+    this(ref Font fnt, string str = null) pure nothrow {
         _font = &fnt;
         _text = str;
 

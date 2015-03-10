@@ -36,9 +36,9 @@ public:
  * For that purpose an additional Matrix is used (besides the Vector2f and float components) which maps the transformations.
  *
  * See: Matrix4
- * Sett: Vector2f
+ * See: Vector2f
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 class Transformable {
 protected:

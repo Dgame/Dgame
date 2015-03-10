@@ -60,34 +60,43 @@ SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
  * is used to wraps both, the width and the height, in one element.
  */
 struct Size {
-    uint width; /// the width property
-    uint height; /// the height property
+    /**
+     * the width property
+     */
+    uint width;
+    /**
+     * the height property
+     */
+    uint height;
 }
 
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Rect {
+    /**
+     * The edges of the Rectangle
+     */
     enum Edge : ubyte {
-        Top,
-        Bottom,
-        Left,
-        Right,
+        Top, /// Top edge
+        Bottom, /// Bottom edge
+        Left, /// Left edge
+        Right, /// Right edge
         
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
+        TopLeft, /// TopLeft edge
+        TopRight, /// TopRight edge
+        BottomLeft, /// BottomLeft edge
+        BottomRight /// BottomRight edge
     }
 
     /**
-     * The x
+     * The x coordinate
      */
     int x = 0;
     /**
-     * and y coordinates
+     * The y coordinates
      */
     int y = 0;
     /**
@@ -95,7 +104,7 @@ struct Rect {
      */
     uint width = 0;
     /**
-     * and the height
+     * The height
      */
     uint height = 0;
     

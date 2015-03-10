@@ -54,7 +54,7 @@ import Dgame.Window.GLSettings;
  * Note that the default clear-color is <code>Color.White</code> and the
  * default Sync is <code>Window.Sync.Disables</code>, which means the Applications runs with full FPS.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Window {
     /**
@@ -62,30 +62,30 @@ struct Window {
      * Default Syncronisation is <code>Sync.Enable</code>.
      */
     enum Sync : byte {
-        Enable  = 1,    /** Sync is enabled */
-        Disable = 0,    /** Sync is disabled */
-        LateSwapTearing = -1    /** For late swap tearing */
+        Enable  = 1,    /// Sync is enabled
+        Disable = 0,    /// Sync is disabled
+        LateSwapTearing = -1    /// For late swap tearing
     }
 
     /**
      * The specific window styles
      */
     enum Style {
-        Fullscreen = SDL_WINDOW_FULLSCREEN, /** Window is fullscreened */
-        Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP, /** Window has Desktop Fullscreen */
-        OpenGL = SDL_WINDOW_OPENGL,  /** OpenGL support */
-        Shown = SDL_WINDOW_SHOWN,        /** Show the Window immediately */
-        Borderless = SDL_WINDOW_BORDERLESS, /** Hide the Window immediately */
-        Resizeable = SDL_WINDOW_RESIZABLE,  /** Window is resizeable */
-        Maximized = SDL_WINDOW_MAXIMIZED,  /** Maximize the Window immediately */
-        Minimized = SDL_WINDOW_MINIMIZED,  /** Minimize the Window immediately */
-        InputGrabbed = SDL_WINDOW_INPUT_GRABBED, /** Grab the input inside the window */
-        InputFocus = SDL_WINDOW_INPUT_FOCUS, /** The Window has input (keyboard) focus */
-        MouseFocus = SDL_WINDOW_MOUSE_FOCUS, /** The Window has mouse focus */
-        HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /** Window should be created in high-DPI mode if supported (>= SDL 2.0.1) */
-        Foreign = SDL_WINDOW_FOREIGN, /** The window was created by some other framework. */
+        Fullscreen = SDL_WINDOW_FULLSCREEN, /// Window is fullscreened
+        Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP,    /// Window has Desktop Fullscreen
+        OpenGL = SDL_WINDOW_OPENGL, /// OpenGL support
+        Shown = SDL_WINDOW_SHOWN,   /// Show the Window immediately
+        Borderless = SDL_WINDOW_BORDERLESS, /// Hide the Window immediately
+        Resizeable = SDL_WINDOW_RESIZABLE,  /// Window is resizeable
+        Maximized = SDL_WINDOW_MAXIMIZED,   /// Maximize the Window immediately
+        Minimized = SDL_WINDOW_MINIMIZED,   /// Minimize the Window immediately
+        InputGrabbed = SDL_WINDOW_INPUT_GRABBED,    /// Grab the input inside the window
+        InputFocus = SDL_WINDOW_INPUT_FOCUS,    /// The Window has input (keyboard) focus
+        MouseFocus = SDL_WINDOW_MOUSE_FOCUS,    /// The Window has mouse focus
+        HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /// Window should be created in high-DPI mode if supported
+        Foreign = SDL_WINDOW_FOREIGN,   /// The window was created by some other framework.
         
-        Default = Shown | OpenGL | HighDPI /** Default mode is Shown | OpenGL | HighDPI */
+        Default = Shown | OpenGL | HighDPI  /// Default mode is Shown | OpenGL | HighDPI
     }
 
 private:
@@ -138,7 +138,9 @@ public:
         this(rect.width, rect.height, title, style, rect.x, rect.y, gl_settings);
     }
 
-    /// Postblit is disabled
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
     

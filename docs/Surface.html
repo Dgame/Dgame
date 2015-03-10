@@ -10,7 +10,7 @@
 <dd><u>Surface</u> is a wrapper for a SDL_Surface and can load and save images.
 <br><br>
 <b>Author:</b><br>
-Randy Schuett<br><br>
+Randy Schuett <rswhite4@googlemail.com><br><br>
 
 <dl><dt><big><a name="Surface.BlendMode"></a>enum <u>BlendMode</u>: ubyte;
 </big></dt>
@@ -56,37 +56,22 @@ Randy Schuett<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="Surface.RMask"></a>ubyte <u>RMask</u>;
-</big></dt>
-<dd>Default Red Mask.<br><br>
-
-</dd>
-<dt><big><a name="Surface.GMask"></a>ubyte <u>GMask</u>;
-</big></dt>
-<dd>Default Green Mask.<br><br>
-
-</dd>
-<dt><big><a name="Surface.BMask"></a>ubyte <u>BMask</u>;
-</big></dt>
-<dd>Default Blue Mask.<br><br>
-
-</dd>
-<dt><big><a name="Surface.AMask"></a>uint <u>AMask</u>;
-</big></dt>
-<dd>Default Alpha Mask<br><br>
-
-</dd>
-<dt><big><a name="Surface.this"></a>nothrow @nogc this(string <i>filename</i>);
+<dt><big><a name="Surface.this"></a>pure nothrow @nogc this(SDL_Surface* <i>srfc</i>);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Surface.this.2"></a>nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
+<dt><big><a name="Surface.this.2"></a>nothrow @nogc this(string <i>filename</i>);
+</big></dt>
+<dd>CTor<br><br>
+
+</dd>
+<dt><big><a name="Surface.this.3"></a>nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
 </big></dt>
 <dd>Make a new Surface of the given <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 
 </dd>
-<dt><big><a name="Surface.this.3"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
+<dt><big><a name="Surface.this.4"></a>nothrow @nogc this(void* <i>memory</i>, uint <i>width</i>, uint <i>height</i>, ubyte <i>depth</i> = 32);
 </big></dt>
 <dd>Make an new Surface of the given <i>memory</i>, <i>width</i>, <i>height</i> and <i>depth</i>.<br><br>
 

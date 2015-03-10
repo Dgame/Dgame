@@ -41,7 +41,7 @@ public:
 *
 * Supported formats are .wav, .mp3, .vorbis, .ogg, .midi
 *
-* Author: Randy Schuett
+* Author: Randy Schuett <rswhite4@googlemail.com>
 */
 struct Sound {
 private:
@@ -60,7 +60,9 @@ public:
         this.setVolume(volume);
     }
     
-    /// Postblit is disabled
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
 

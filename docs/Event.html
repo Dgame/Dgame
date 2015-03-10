@@ -29,14 +29,14 @@
 <dd>The Key modifier.<br><br>
 
 </dd>
-<dt><big><a name="KeyboardEvent.key"></a>alias <u>key</u> = code;
-</big></dt>
-<dd>An alias<br><br>
-
-</dd>
 <dt><big><a name="KeyboardEvent.repeat"></a>bool <u>repeat</u>;
 </big></dt>
 <dd><b>true</b>, if this is a key <u>repeat</u>.<br><br>
+
+</dd>
+<dt><big><a name="KeyboardEvent.key"></a>alias <u>key</u> = code;
+</big></dt>
+<dd>An alias<br><br>
 
 </dd>
 </dl>
@@ -70,13 +70,16 @@
 
 </dd>
 <dt><big><a name="WindowEventId.SizeChanged"></a><u>SizeChanged</u></big></dt>
-<dd>The window size has changed,
- either as a result of an API call or through
- the system or user changing the window size.<br><br>
+<dd>The window size has changed,<br><br>
 
 </dd>
 <dt><big><a name="WindowEventId.Minimized"></a><u>Minimized</u></big></dt>
-<dd>Window has been minimized.<br><br>
+<dd>either as a result of an API call or through
+<br><br>
+the system or user changing the window size. */
+<br><br>
+
+Window has been minimized.<br><br>
 
 </dd>
 <dt><big><a name="WindowEventId.Maximized"></a><u>Maximized</u></big></dt>
@@ -103,7 +106,7 @@
 <dd>Window has lost keyboard focus.<br><br>
 
 </dd>
-<dt><big><a name="WindowEventId.Close"></a><u>Close</u></big></dt>
+<dt><big><a name="WindowEventId.Closed"></a><u>Closed</u></big></dt>
 <dd>The window manager requests that the window be closed.<br><br>
 
 </dd>
@@ -115,7 +118,7 @@
 
 <dl><dt><big><a name="WindowEvent.eventId"></a>WindowEventId <u>eventId</u>;
 </big></dt>
-<dd>&lt; The Window Event id.<br><br>
+<dd>The Window Event id.<br><br>
 
 </dd>
 </dl>
@@ -204,7 +207,7 @@
  <u>Event</u> defines a system event and it's parameters
 <br><br>
 <b>Author:</b><br>
-rschuett<br><br>
+Randy Schuett <rswhite4@googlemail.com><br><br>
 
 <dl><dt><big><a name="Event.Type"></a>enum <u>Type</u>: int;
 </big></dt>

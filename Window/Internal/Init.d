@@ -109,12 +109,14 @@ void _initSDL() {
     }
 
     wasInited = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) != 0;
-/+
-    if (!wasInited) {
-        printf("Could not open Mix_OpenAudio: %s\n", Mix_GetError());
-        assert(0);
+
+    version (none) {
+        if (!wasInited) {
+            printf("Could not open Mix_OpenAudio: %s\n", Mix_GetError());
+            assert(0);
+        }
     }
-+/
+    
     immutable int channels = Mix_AllocateChannels(256);
     if (channels < 256)
         printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());

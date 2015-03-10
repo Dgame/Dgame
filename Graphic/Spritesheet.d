@@ -37,7 +37,7 @@ public:
 /**
  * SpriteSheet extends Sprite and act like a Texture Atlas.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 class Spritesheet : Sprite {
 protected:
@@ -45,7 +45,10 @@ protected:
     uint _execCount = 0;
 
 public:
-    uint timeout = 0; /// The timeout between the slides
+    /**
+     * The timeout between the slides
+     */
+    uint timeout = 0;
     /**
      * The amount of executions of the <b>whole</b> slide
      * -1 or less means infinite sliding

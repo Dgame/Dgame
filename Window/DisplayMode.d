@@ -42,12 +42,21 @@ public:
  * The DisplayMode struct contains informations about the current window video mode.
  * It is passed to Window which extract the informations and use them to build a window context.
  * 
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct DisplayMode {
-    uint width; /** The width of this video mode */
-    uint height;    /** The height of this video mode */
-    ubyte refreshRate;  /** The refresh rate of this video mode */
+    /**
+     * The width of this video mode
+     */
+    uint width;
+    /**
+     * The height of this video mode
+     */
+    uint height;
+    /**
+     * The refresh rate of this video mode
+     */
+    ubyte refreshRate;
     
     /**
      * CTor

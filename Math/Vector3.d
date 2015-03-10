@@ -33,7 +33,7 @@ public:
 /**
  * Vector3 is a structure that defines a three-dimensional point.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Vector3(T) if (isNumeric!(T)) {
     T x = 0; /// The x coordinate

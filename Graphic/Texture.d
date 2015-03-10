@@ -39,22 +39,22 @@ public:
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Texture {
     /**
      * Supported Texture Format
      */
     enum Format {
-        None = 0,                           /// Take this if you want to declare that you give no Format.
-        RGB = GL_RGB,                       /// Alias for GL_RGB
-        RGBA = GL_RGBA,                 /// Alias for GL_RGBA
-        BGR = GL_BGR,                       /// Alias for GL_BGR
-        BGRA = GL_BGRA,                 /// Alias for GL_BGRA
-        RGBA16 = GL_RGBA16,                 /// 16 Bit RGBA Format
-        RGBA8 = GL_RGBA8,                   /// 8 Bit RGBA Format
-        Alpha = GL_ALPHA,                   /// Alias for GL_ALPHA
-        Luminance = GL_LUMINANCE,           /// Alias for GL_LUMINANCE
+        None = 0,   /// Take this if you want to declare that you give no Format.
+        RGB = GL_RGB,   /// Alias for GL_RGB
+        RGBA = GL_RGBA, /// Alias for GL_RGBA
+        BGR = GL_BGR,   /// Alias for GL_BGR
+        BGRA = GL_BGRA, /// Alias for GL_BGRA
+        RGBA16 = GL_RGBA16, /// 16 Bit RGBA Format
+        RGBA8 = GL_RGBA8,   /// 8 Bit RGBA Format
+        Alpha = GL_ALPHA,   /// Alias for GL_ALPHA
+        Luminance = GL_LUMINANCE,   /// Alias for GL_LUMINANCE
         LuminanceAlpha = GL_LUMINANCE_ALPHA /// Alias for GL_LUMINANCE_ALPHA
     }
     
@@ -95,7 +95,9 @@ public:
         this.loadFrom(srfc, fmt);
     }
 
-    /// Postblit is disabled
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
     

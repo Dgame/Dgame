@@ -35,53 +35,42 @@ import Dgame.Math.Vector2;
 
 import Dgame.Graphic.Color;
 
-// @@ std.file.exists FIX @@
-@nogc
-bool accessable(string filename) nothrow {
-    import core.stdc.stdio : fopen, fclose;
-
-    auto f = fopen(filename.ptr, "r");
-    scope(exit) fclose(f);
-
-    return f !is null;
-}
-
 public:
 
 /**
  * Surface is a wrapper for a SDL_Surface and can load and save images.
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Surface {
     /**
      * Supported BlendModes
      */
     enum BlendMode : ubyte {
-        None   = SDL_BLENDMODE_NONE,    /** no blending */
-        Blend  = SDL_BLENDMODE_BLEND,   /** dst = (src * A) + (dst * (1-A)) */
-        Add    = SDL_BLENDMODE_ADD,     /** dst = (src * A) + dst */
-        Mod    = SDL_BLENDMODE_MOD      /** dst = src * dst */
+        None   = SDL_BLENDMODE_NONE,  /// no blending
+        Blend  = SDL_BLENDMODE_BLEND, /// dst = (src * A) + (dst * (1-A))
+        Add    = SDL_BLENDMODE_ADD,   /// dst = (src * A) + dst
+        Mod    = SDL_BLENDMODE_MOD    /// dst = src * dst
     }
     
     /**
      * Supported Color Masks
      */
     enum Mask : ubyte {
-        Red   = 1,  /** Red Mask */
-        Green = 2,  /** Green Mask */
-        Blue  = 4,  /** Blue Mask */
-        Alpha = 8   /** Alpha Mask */
+        Red   = 1, /// Red Mask
+        Green = 2, /// Green Mask
+        Blue  = 4, /// Blue Mask
+        Alpha = 8  /// Alpha Mask
     }
     
-    enum ubyte RMask = 0; /** Default Red Mask. */
-    enum ubyte GMask = 0; /** Default Green Mask. */
-    enum ubyte BMask = 0; /** Default Blue Mask. */
+    enum ubyte RMask = 0;
+    enum ubyte GMask = 0;
+    enum ubyte BMask = 0;
     
     version (LittleEndian)
-        enum uint AMask = 0xff000000; /// Default Alpha Mask
+        enum uint AMask = 0xff000000;
     else
-        enum uint AMask = 0x000000ff; /// Default Alpha Mask
+        enum uint AMask = 0x000000ff;
 
 private:
     SDL_Surface* _surface;
@@ -102,6 +91,9 @@ private:
     }
 
 public:
+    /**
+     * CTor
+     */
     @nogc
     this(SDL_Surface* srfc) pure nothrow {
         assert(srfc, "Invalid SDL_Surface.");
@@ -144,7 +136,9 @@ public:
         assert(_surface.pixels, "Invalid pixel data.");
     }
     
-    /// Postblit is allowed and increases the internal ref count
+    /**
+     * Postblit is allowed and increases the internal ref count
+     */
     @nogc
     this(this) nothrow {
         if (_surface)
@@ -181,7 +175,9 @@ public:
      */
     @nogc
     bool loadFromFile(string filename) nothrow {
-        immutable bool ex = accessable(filename);
+        import std.file : exists;
+
+        immutable bool ex = exists(filename);
         if (!ex) {
             printf("File %s does not exists.\n", filename.ptr);
             return false;

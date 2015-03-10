@@ -33,12 +33,21 @@ public:
 /**
  * A Vertex a coordinate, a color and a coordinate to the Texture
  *
- * Author: Randy Schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Vertex {
-    Vector2f position; /// The position
-    Vector2f texCoord; // The Texture coordinates, if any
-    Color4f color = Color4f.Black; /// The current Color. Default is Black
+    /**
+     * The position
+     */
+    Vector2f position;
+    /**
+     * The Texture coordinates, if any
+     */ 
+    Vector2f texCoord;
+    /**
+     * The current Color. Default is Black
+     */
+    Color4f color = Color4f.Black;
 
     /**
      * CTor

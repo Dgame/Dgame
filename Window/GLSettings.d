@@ -6,14 +6,20 @@ module Dgame.Window.GLSettings;
  *
  * Note: if anti aliasing is activated you will notice a drastic reduction of your framerate.
  *
- * Author: randy schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct GLSettings {
-	/// Major Version of OpenGL. 0 means highest possible.
+	/**
+	 * Major Version of OpenGL. 0 means highest possible.
+	 */
 	ubyte majorVersion = 0;
-	/// Minor Version of OpenGL. 0 means highest possible.
+	/**
+	 * Minor Version of OpenGL. 0 means highest possible.
+	 */
 	ubyte minorVersion = 0;
-	/// Anti aliasing level. 0 means deactivated.
+	/**
+	 * Anti aliasing level. 0 means deactivated.
+	 */
 	ubyte antiAliasLevel = 0;
 
 	/**

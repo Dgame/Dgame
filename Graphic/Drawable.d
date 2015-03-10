@@ -28,9 +28,12 @@ package import Dgame.Window.Window;
 /**
  * Drawable is the base class for objects which can be drawn.
  * 
- * Author: randy schuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 interface Drawable {
+	/**
+	* Draw it on a Window
+	*/
     @nogc
     void draw(ref const Window) nothrow;
 }

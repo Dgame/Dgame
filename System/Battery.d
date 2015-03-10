@@ -30,24 +30,22 @@ private import derelict.sdl2.sdl;
  * which give information about your current battery
  * and several other informations about your system, like the available RAM.
  * 
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>k
  */
 final abstract class System {
     /**
      * This structure provide support for battery lifetime if you are on a laptop etc.
-     * 
-     * Author: rschuett
      */
     static struct Battery {
         /**
-         * Power states
+         * The Power States
          */
         enum State {
-            Unknown   = SDL_POWERSTATE_UNKNOWN,    /** Cannot determine power status */
-            OnBattery = SDL_POWERSTATE_ON_BATTERY, /** Not plugged in, running on the battery */
-            NoBattery = SDL_POWERSTATE_NO_BATTERY, /** plugged in, no battery available */
-            Charging  = SDL_POWERSTATE_CHARGING,   /** plugged in, charging battery */
-            Charged   = SDL_POWERSTATE_CHARGED,    /** plugged in, battery charged **/
+            Unknown   = SDL_POWERSTATE_UNKNOWN, /// Cannot determine power status
+            OnBattery = SDL_POWERSTATE_ON_BATTERY, /// Not plugged in, running on the battery
+            NoBattery = SDL_POWERSTATE_NO_BATTERY, /// plugged in, no battery available
+            Charging  = SDL_POWERSTATE_CHARGING, /// plugged in, charging battery
+            Charged   = SDL_POWERSTATE_CHARGED, /// plugged in, battery charged
         }
         
         /**

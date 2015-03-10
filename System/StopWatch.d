@@ -55,15 +55,25 @@ ushort asHours(uint n) pure nothrow {
 
 /**
  * The Time struct converts ticks to msecs, seconds, minutes and hours.
+ *
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Time {
-    /// Milliseconds = Ticks
+    /**
+     * Milliseconds = Ticks
+     */
     uint msecs;
-    /// Seconds = Milliseconds / 1000
+    /**
+     * Seconds = Milliseconds / 1000
+     */
     float seconds;
-    //// Minutes = Seconds / 60
+    /**
+     * Minutes = Seconds / 60
+     */
     float minutes;
-    /// Hours = Minutes / 60
+    /**
+     * Hours = Minutes / 60
+     */
     ushort hours;
 
     /**
@@ -114,7 +124,7 @@ unittest {
  * This class handles timer functions and 
  * the window class use these class to calculate the current fps.
  *
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct StopWatch {
 private:

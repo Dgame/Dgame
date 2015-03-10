@@ -36,122 +36,179 @@ public:
  * The Keyboard Event structure.
  */
 struct KeyboardEvent {
-    Keyboard.State state;   /** Keyboard State. See: Dgame.Input.Keyboard. */
-    Keyboard.Code code; /** The Key which is released or pressed. */
-    Keyboard.ScanCode scancode; /** The Key which is released or pressed. */
-    Keyboard.Mod mod;   /** The Key modifier. */
-    
-    alias key = code; /** An alias */
-    
-    bool repeat;    /** true, if this is a key repeat. */
+    /**
+     * Keyboard State. See: Dgame.Input.Keyboard.
+     */
+    Keyboard.State state;
+    /**
+     * The Key which is released or pressed.
+     */
+    Keyboard.Code code;
+    /**
+     * The Key which is released or pressed.
+     */
+    Keyboard.ScanCode scancode;
+    /**
+     * The Key modifier.
+     */
+    Keyboard.Mod mod;
+    /**
+     * true, if this is a key repeat.
+     */
+    bool repeat;
+
+    /**
+     * An alias
+     */
+    alias key = code;
 }
 
 /**
  * Specific Window Events.
  */
 enum WindowEventId : ubyte {
-    None,           /** Nothing happens */
-    Shown,          /** Window has been shown */
-    Hidden,         /** Window has been hidden */
-    Exposed,        /** Window has been exposed and should be redrawn */
-    Moved,          /** Window has been moved to data1, data2  */
-    Resized,        /** Window has been resized to data1Xdata2 */
-    SizeChanged,    /** The window size has changed, 
-                     * either as a result of an API call or through 
-                     * the system or user changing the window size. */
-    Minimized,      /** Window has been minimized. */
-    Maximized,      /** Window has been maximized. */
-    Restored,       /** Window has been restored to normal size and position. */
-    Enter,          /** Window has gained mouse focus. */
-    Leave,          /** Window has lost mouse focus. */
-    FocusGained,    /** Window has gained keyboard focus. */
-    FocusLost,      /** Window has lost keyboard focus. */
-    Close           /** The window manager requests that the window be closed. */
+    None,   /// Nothing happens
+    Shown,  /// Window has been shown
+    Hidden, /// Window has been hidden
+    Exposed,    /// Window has been exposed and should be redrawn
+    Moved,  /// Window has been moved to data1, data2 
+    Resized,    /// Window has been resized to data1Xdata2
+    SizeChanged,    /// The window size has changed, 
+                    /// either as a result of an API call or through 
+                    /// the system or user changing the window size. */
+    Minimized,  /// Window has been minimized.
+    Maximized,  /// Window has been maximized.
+    Restored,   /// Window has been restored to normal size and position.
+    Enter,  /// Window has gained mouse focus.
+    Leave,  /// Window has lost mouse focus.
+    FocusGained,    /// Window has gained keyboard focus.
+    FocusLost,  /// Window has lost keyboard focus.
+    Closed  /// The window manager requests that the window be closed.
 }
 
 /**
  * The Window Event structure.
  */
 struct WindowEvent {
-    WindowEventId eventId; /** < The Window Event id. */
+    /**
+     * The Window Event id.
+     */
+    WindowEventId eventId;
 }
 
 /**
  * The Mouse button Event structure.
  */
 struct MouseButtonEvent {
-    Mouse.Button button; /** The mouse button which is pressed or released. */
-    
-    int x; /** Current x position. */
-    int y; /** Current y position. */
+    /**
+     * The mouse button which is pressed or released.
+     */
+    Mouse.Button button;
+    /**
+     * Current x position.
+     */
+    int x;
+    /**
+     * Current y position.
+     */
+    int y;
 }
 
 /**
  * The Mouse motion Event structure.
  */
 struct MouseMotionEvent {
-    Mouse.State state; /** Mouse State. See: Dgame.Input.Mouse. */
-    
-    int x; /** Current x position. */
-    int y; /** Current y position. */
-    
-    int rel_x; /** Relative motion in the x direction. */
-    int rel_y; /** Relative motion in the y direction. */
+    /**
+     * Mouse State. See: Dgame.Input.Mouse.
+     */
+    Mouse.State state;
+    /**
+     * Current x position.
+     */
+    int x;
+    /**
+     * Current y position.
+     */
+    int y;
+    /**
+     * Relative motion in the x direction.
+     */
+    int rel_x;
+    /**
+     * Relative motion in the y direction.
+     */
+    int rel_y;
 }
 
 /**
  * The Mouse wheel Event structure.
  */
 struct MouseWheelEvent {
-    int x; /** Current x position. */
-    int y; /** Current y position. */
-    
-    int delta_x; /** The amount scrolled horizontally. */
-    int delta_y; /** The amount scrolled vertically. */
+    /**
+     * Current x position.
+     */
+    int x;
+    /**
+     * Current y position.
+     */
+    int y;
+    /**
+     * The amount scrolled horizontally.
+     */
+    int delta_x;
+    /**
+     * The amount scrolled vertically.
+     */
+    int delta_y;
 }
 
 /**
  * The Event structure.
  * Event defines a system event and it's parameters
  *
- * Author: rschuett
+ * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 struct Event {
     /**
      * All supported Event Types.
      */
     enum Type {
-        Quit = SDL_QUIT,            /** Quit Event. Time to close the window. */
-        Window  = SDL_WINDOWEVENT,  /** Something happens with the window. */
-        KeyDown = SDL_KEYDOWN,      /** A key is pressed. */
-        KeyUp = SDL_KEYUP,      /** A key is released. */
-        MouseMotion = SDL_MOUSEMOTION,  /** The mouse has moved. */
-        MouseButtonDown = SDL_MOUSEBUTTONDOWN,  /** A mouse button is pressed. */
-        MouseButtonUp = SDL_MOUSEBUTTONUP,  /** A mouse button is released. */
-        MouseWheel = SDL_MOUSEWHEEL,        /** The mouse wheel has scolled. */
-        //TextEdit   = SDL_TEXTEDITING,            /**< Keyboard text editing (composition) */
-        //TextInput  = SDL_TEXTINPUT              /**< Keyboard text input */
+        Quit = SDL_QUIT,    /// Quit Event. Time to close the window.
+        Window  = SDL_WINDOWEVENT,  /// Something happens with the window.
+        KeyDown = SDL_KEYDOWN,  /// A key is pressed.
+        KeyUp = SDL_KEYUP,  /// A key is released.
+        MouseMotion = SDL_MOUSEMOTION,  /// The mouse has moved.
+        MouseButtonDown = SDL_MOUSEBUTTONDOWN,  /// A mouse button is pressed.
+        MouseButtonUp = SDL_MOUSEBUTTONUP,  /// A mouse button is released.
+        MouseWheel = SDL_MOUSEWHEEL,    /// The mouse wheel has scolled.
     }
 
-    Type type; /// The type of the Event
-
-    uint timestamp; /** Milliseconds since the app is running */
-    uint windowId;  /** The window which has raised this event */
+    /**
+     * The type of the Event
+     */
+    Type type;
+    /**
+     * Milliseconds since the app is running
+     */
+    uint timestamp;
+    /**
+     * The window which has raised this event
+     */
+    uint windowId;
 
     /**
      * Mouse union
      */
     union MouseUnion {
-        MouseButtonEvent button; /** Mouse button Event */
-        MouseMotionEvent motion; /** Mouse motion Event */
-        MouseWheelEvent  wheel;  /** Mouse wheel Event */
+        MouseButtonEvent button; /// Mouse button Event
+        MouseMotionEvent motion; /// Mouse motion Event
+        MouseWheelEvent  wheel; /// Mouse wheel Event
     }
     
     union {
-        KeyboardEvent keyboard; /** Keyboard Event */
-        WindowEvent   window;   /** Window Event */
-        
-        MouseUnion mouse; /** Mouse Events */
+        KeyboardEvent keyboard; /// Keyboard Event
+        WindowEvent window; /// Window Event
+        MouseUnion mouse; /// Mouse Events
     }
 }
 
@@ -159,7 +216,7 @@ package:
 
 @nogc
 bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
-    assert(event);
+    assert(event, "Event is null");
 
     switch (sdl_event.type) {
         case Event.Type.KeyDown:
@@ -238,28 +295,6 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.mouse.wheel.delta_y = sdl_event.wheel.y;
             
             return true;
-        /+
-        case Event.Type.TextEdit:
-            event.type = Event.Type.TextEdit;
-            
-            event.timestamp = sdl_event.edit.timestamp;
-            event.windowId  = sdl_event.edit.windowID;
-            
-            event.textEdit.text = sdl_event.edit.text;
-            event.textEdit.start = sdl_event.edit.start;
-            event.textEdit.length = sdl_event.edit.length;
-            
-            return true;
-        case Event.Type.TextInput:
-            event.type = Event.Type.TextInput;
-            
-            event.timestamp = sdl_event.text.timestamp;
-            event.windowId  = sdl_event.text.windowID;
-            
-            event.textInput.text = sdl_event.text.text;
-            
-            return true;
-        +/
         default:
             return false;
     }
