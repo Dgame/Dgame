@@ -41,11 +41,11 @@ public:
      * Supported mouse buttons
      */
     enum Button : ubyte {
-        Left    = 1, /// 
-        Middle  = 2, /// 
-        Right   = 3, /// 
-        X1      = 4, /// 
-        X2      = 5, /// 
+        Left = 1, /// 
+        Middle = 2, /// 
+        Right = 3, /// 
+        X1 = 4, /// 
+        X2 = 5, /// 
         Other /// 
     }
     
@@ -61,11 +61,11 @@ public:
      * Supported mouse motion states
      */
     enum MotionStates : ubyte {
-        LMask  = 0x1, /// 
-        MMask  = 0x2, /// 
-        RMask  = 0x4, /// 
-        X1Mask = 0x8, /// 
-        X2Mask = 0x10 /// 
+        Left = 0x1, /// 
+        Middle = 0x2, /// 
+        Rright = 0x4, /// 
+        X1 = 0x8, /// 
+        X2 = 0x10 /// 
     }
     
     /**
