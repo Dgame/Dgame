@@ -32,15 +32,13 @@ import Dgame.Math.Vector2;
 // @@ pure FIX @@
 @nogc
 bool SDL_RectEmpty(const SDL_Rect* X) pure nothrow {
-    return !X || ( X.w <= 0 ) || ( X.h <= 0 );
+    return !X || (X.w <= 0) || (X.h <= 0);
 }
 
 // @@ pure FIX @@
 @nogc
 bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
-    return A && B &&
-        (A.x == B.x) && (A.y == B.y) &&
-        (A.w == B.w) && (A.h == B.h);
+    return A && B && (A.x == B.x) && (A.y == B.y) && (A.w == B.w) && (A.h == B.h);
 }
 
 public:

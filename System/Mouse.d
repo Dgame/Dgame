@@ -63,7 +63,7 @@ public:
     enum MotionStates : ubyte {
         Left = 0x1, /// 
         Middle = 0x2, /// 
-        Rright = 0x4, /// 
+        Right = 0x4, /// 
         X1 = 0x8, /// 
         X2 = 0x10 /// 
     }
