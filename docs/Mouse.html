@@ -69,6 +69,53 @@ Randy Schuett <rswhite4@googlemail.com><br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Mouse.SystemCursor"></a>enum <u>SystemCursor</u>: int;
+</big></dt>
+<dd>Possible System cursors<br><br>
+
+<dl><dt><big><a name="Mouse.SystemCursor.Arrow"></a><u>Arrow</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.IBeam"></a><u>IBeam</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.Wait"></a><u>Wait</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.CrossHair"></a><u>CrossHair</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.WaitArrow"></a><u>WaitArrow</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.SizeNWSE"></a><u>SizeNWSE</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.SizeNESW"></a><u>SizeNESW</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.SizeWE"></a><u>SizeWE</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.SizeNS"></a><u>SizeNS</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.SizeAll"></a><u>SizeAll</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.None"></a><u>None</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="Mouse.SystemCursor.HAnd"></a><u>HAnd</u></big></dt>
+<dd><br><br>
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Mouse.Cursor"></a>alias <u>Cursor</u> = SDL_Cursor*;
+</big></dt>
+<dd><u>Cursor</u><br><br>
+
+</dd>
 <dt><big><a name="Mouse.getState"></a>static nothrow @nogc uint <u>getState</u>(int* <i>x</i> = null, int* <i>y</i> = null);
 </big></dt>
 <dd>Returns the mouse state and (if <i>y</i> and <i>y</i> aren't <b>null</b>) the current position.
@@ -86,17 +133,13 @@ Mouse.State enum<br><br>
 Mouse.RelativeState enum<br><br>
 
 </dd>
-<dt><big><a name="Mouse.hasState"></a>static nothrow @nogc bool <u>hasState</u>(Button <i>btn</i>);
+<dt><big><a name="Mouse.isPressed"></a>static nothrow @nogc bool <u>isPressed</u>(Button <i>btn</i>);
 </big></dt>
 <dd>Returns if the given button is pressed.
 <br><br>
 <b>See:</b><br>
 Mouse.Button<br><br>
 
-</dd>
-<dt><big><a name="Mouse.hasRelativeState"></a>static nothrow @nogc bool <u>hasRelativeState</u>(Button <i>btn</i>);
-</big></dt>
-<dd><br><br>
 </dd>
 <dt><big><a name="Mouse.getCursorPosition"></a>static nothrow @nogc int[2] <u>getCursorPosition</u>();
 </big></dt>
@@ -106,6 +149,31 @@ Mouse.Button<br><br>
 <dt><big><a name="Mouse.showCursor"></a>static nothrow @nogc void <u>showCursor</u>(bool <i>enable</i>);
 </big></dt>
 <dd>Enable or disable that the cursor is shown on the window.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.createCursor"></a>static nothrow @nogc Cursor <u>createCursor</u>(ref Surface <i>srfc</i>, int <i>hx</i>, int <i>hy</i>);
+</big></dt>
+<dd>Create a Surface cursor.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.createCursor.2"></a>static nothrow @nogc Cursor <u>createCursor</u>(SystemCursor <i>cursor</i>);
+</big></dt>
+<dd>Create a system <i>cursor</i>.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.setCursor"></a>static nothrow @nogc void <u>setCursor</u>(Cursor <i>cursor</i>);
+</big></dt>
+<dd>Set the active <i>cursor</i>.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.getCursor"></a>static nothrow @nogc Cursor <u>getCursor</u>();
+</big></dt>
+<dd>Returns the active cursor.<br><br>
+
+</dd>
+<dt><big><a name="Mouse.getDefaultCursor"></a>static nothrow @nogc Cursor <u>getDefaultCursor</u>();
+</big></dt>
+<dd>Get the default cursor.<br><br>
 
 </dd>
 <dt><big><a name="Mouse.setCursorPosition"></a>static nothrow @nogc void <u>setCursorPosition</u>(int <i>x</i>, int <i>y</i>);

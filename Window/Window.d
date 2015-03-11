@@ -44,6 +44,12 @@ import Dgame.Math.Geometry;
 import Dgame.Window.Event;
 import Dgame.Window.Internal.Init;
 
+static if (!SDL_VERSION_ATLEAST(2, 0, 4))
+    enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
+
+static if (!SDL_VERSION_ATLEAST(2, 0, 1))
+    enum int SDL_WINDOW_ALLOW_HIGHDPI = 0;
+
 public:
 
 import Dgame.Window.GLSettings;
@@ -82,6 +88,7 @@ struct Window {
         InputGrabbed = SDL_WINDOW_INPUT_GRABBED,    /// Grab the input inside the window
         InputFocus = SDL_WINDOW_INPUT_FOCUS,    /// The Window has input (keyboard) focus
         MouseFocus = SDL_WINDOW_MOUSE_FOCUS,    /// The Window has mouse focus
+        MouseCapture = SDL_WINDOW_MOUSE_CAPTURE, /// window has mouse captured (unrelated to InputGrabbed)
         HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /// Window should be created in high-DPI mode if supported
         Foreign = SDL_WINDOW_FOREIGN,   /// The window was created by some other framework.
         

@@ -15,13 +15,14 @@
             "name": "main",
             "targetName": "dgame-example",
             "targetType": "executable",
-            "sourceFiles": ["main.d"]
+            "sourceFiles": ["main.d"],
+            "excludedSourceFiles": ["test/*.d"]
         },
         {
             "name": "lib",
             "targetType": "library",
             "targetName": "Dgame",
-            "excludedSourceFiles": ["main.d", "test/main.d", "test/tut.d"]
+            "excludedSourceFiles": ["main.d", "test/*.d"]
         }
     ],
     "buildTypes": {

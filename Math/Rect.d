@@ -41,7 +41,7 @@ bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
     return A && B && (A.x == B.x) && (A.y == B.y) && (A.w == B.w) && (A.h == B.h);
 }
 
-public:
+package(Dgame):
 
 @nogc
 SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
@@ -52,6 +52,8 @@ SDL_Rect* _transfer(ref const Rect rect, ref SDL_Rect to) pure nothrow {
 
     return &to;
 }
+
+public:
 
 /**
  * Size contains a width and a height property and 

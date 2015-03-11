@@ -662,12 +662,17 @@ public:
         
         return Surface(sub);
     }
-    
+
     @nogc
-    void setAsIconOf(SDL_Window* wnd) nothrow {
+    /+package(Dgame)+/void setAsIconOf(SDL_Window* wnd) nothrow {
         assert(wnd, "Invalid SDL_Window");
         assert(_surface, "Invalid SDL_Surface");
 
         SDL_SetWindowIcon(wnd, _surface);
+    }
+
+    @nogc
+    /+package(Dgame)+/SDL_Cursor* setAsCursorAt(int hx, int hy) nothrow {
+        return SDL_CreateColorCursor(_surface, hx, hy);
     }
 }

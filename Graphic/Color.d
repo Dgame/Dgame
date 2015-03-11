@@ -27,7 +27,7 @@ private:
 
 import derelict.sdl2.types;
 
-public:
+package(Dgame):
 
 @nogc
 SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {
@@ -38,6 +38,8 @@ SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {
 
     return &dst;
 }
+
+public:
 
 /**
  * Color4b defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.

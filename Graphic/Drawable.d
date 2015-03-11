@@ -31,9 +31,9 @@ package import Dgame.Window.Window;
  * Author: Randy Schuett <rswhite4@googlemail.com>
  */
 interface Drawable {
-	/**
-	* Draw it on a Window
-	*/
+    /**
+     * Draw method which is called from the Window's draw method
+     */
     @nogc
     void draw(ref const Window) nothrow;
 }

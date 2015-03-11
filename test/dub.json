@@ -15,8 +15,9 @@
             "targetName": "dgame-example",
             "targetType": "executable",
             "sourceFiles": ["main.d"],
-            "excludedSourceFiles": ["tut.d"],
-            "dflags": ["-Dddocs"]
+            "dflags": ["-Dd../docs"],
+            "sourcePaths": ["../"],
+            "importPaths": ["../"]
         }
     ],
     "buildTypes": {
@@ -26,6 +27,5 @@
         "dg_release": {
             "buildOptions": ["releaseMode", "inline", "optimize", "noBoundsCheck", "warnings"]
         }
-    },
-    "sourcePaths": ["../"]
+    }
 }

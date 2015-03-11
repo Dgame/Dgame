@@ -28,6 +28,8 @@ private:
 import derelict.sdl2.types;
 import derelict.sdl2.functions;
 
+import Dgame.Graphic.Surface;
+
 public:
 
 /**
@@ -67,6 +69,29 @@ public:
         X1 = 0x8, /// 
         X2 = 0x10 /// 
     }
+
+    /**
+     * Possible System cursors
+     */
+    enum SystemCursor {
+        Arrow = SDL_SYSTEM_CURSOR_ARROW, /// 
+        IBeam = SDL_SYSTEM_CURSOR_IBEAM, /// 
+        Wait = SDL_SYSTEM_CURSOR_WAIT, /// 
+        CrossHair = SDL_SYSTEM_CURSOR_CROSSHAIR, /// 
+        WaitArrow = SDL_SYSTEM_CURSOR_WAITARROW, /// 
+        SizeNWSE = SDL_SYSTEM_CURSOR_SIZENWSE, /// 
+        SizeNESW = SDL_SYSTEM_CURSOR_SIZENESW, /// 
+        SizeWE = SDL_SYSTEM_CURSOR_SIZEWE, /// 
+        SizeNS = SDL_SYSTEM_CURSOR_SIZENS, /// 
+        SizeAll = SDL_SYSTEM_CURSOR_SIZEALL, /// 
+        None = SDL_SYSTEM_CURSOR_NO, /// 
+        HAnd = SDL_SYSTEM_CURSOR_HAND /// 
+    }
+
+    /**
+     * Cursor
+     */
+    alias Cursor = SDL_Cursor*;
     
     /**
      * Returns the mouse state and (if y and y aren't null) the current position.
@@ -95,15 +120,7 @@ public:
      * See: Mouse.Button
      */
     @nogc
-    static bool hasState(Button btn) nothrow {
-        return (Mouse.getState() & SDL_BUTTON(btn)) != 0;
-    }
-    
-    /**
-     * 
-     */
-    @nogc
-    static bool hasRelativeState(Button btn) nothrow {
+    static bool isPressed(Button btn) nothrow {
         return (Mouse.getState() & SDL_BUTTON(btn)) != 0;
     }
     
@@ -124,6 +141,56 @@ public:
     @nogc
     static void showCursor(bool enable) nothrow {
         SDL_ShowCursor(enable);
+    }
+
+static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
+    /**
+     * Capture the mouse and track input outside of an Window.
+     */
+    @nogc
+    static void captureCursor(bool enable) nothrow {
+        SDL_CaptureMouse(enable);
+    }
+}
+
+    /**
+     * Create a Surface cursor.
+     */
+    @nogc
+    static Cursor createCursor(ref Surface srfc, int hx, int hy) nothrow {
+        return srfc.setAsCursorAt(hx, hy);
+    }
+
+    /**
+     * Create a system cursor.
+     */
+    @nogc
+    static Cursor createCursor(SystemCursor cursor) nothrow {
+        return SDL_CreateSystemCursor(cursor);
+    }
+
+    /**
+     * Set the active cursor.
+     */
+    @nogc
+    static void setCursor(Cursor cursor) nothrow {
+        SDL_SetCursor(cursor);
+    }
+
+    /**
+     * Returns the active cursor.
+     */
+    @nogc
+    static Cursor getCursor() nothrow {
+        return SDL_GetCursor();
+    }
+
+    /**
+     * Get the default cursor.
+     */
+    @nogc
+    static Cursor getDefaultCursor() nothrow {
+        return SDL_GetDefaultCursor();
     }
     
     /**
