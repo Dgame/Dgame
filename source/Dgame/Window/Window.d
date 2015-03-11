@@ -179,16 +179,6 @@ public:
     }
 
     /**
-     * Returns the current projection Matrix
-     *
-     * See: Matrix4
-     */
-    @nogc
-    ref inout(Matrix4) getProjection() inout pure nothrow {
-        return this.projection;
-    }
-
-    /**
      * Load the projection Matrix, so that any change / transformation of the Matrix will now be visible
      */
     @nogc
