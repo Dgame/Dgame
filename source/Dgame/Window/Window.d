@@ -41,6 +41,8 @@ import Dgame.Math.Matrix4;
 import Dgame.Math.Rect;
 import Dgame.Math.Geometry;
 
+import Dgame.System.StopWatch;
+
 import Dgame.Window.Event;
 import Dgame.Window.Internal.Init;
 
@@ -58,18 +60,18 @@ import Dgame.Window.GLSettings;
  * Window is the rendering window where all drawable objects are drawn.
  *
  * Note that the default clear-color is <code>Color.White</code> and the
- * default Sync is <code>Window.Sync.Disables</code>, which means the Applications runs with full FPS.
+ * default VerticalSync is <code>Window.VerticalSync.Disable</code>, which means the Applications runs with full FPS.
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Window {
     /**
      * The Window syncronisation mode.
-     * Default Syncronisation is <code>Sync.Enable</code>.
+     * Default VerticalSyncronisation is <code>VerticalSync.Enable</code>.
      */
-    enum Sync : byte {
-        Enable  = 1,    /// Sync is enabled
-        Disable = 0,    /// Sync is disabled
+    enum VerticalSync : byte {
+        Enable  = 1,    /// VerticalSync is enabled
+        Disable = 0,    /// VerticalSync is disabled
         LateSwapTearing = -1    /// For late swap tearing
     }
 
@@ -99,11 +101,25 @@ private:
     SDL_Window* _window;
     SDL_GLContext _glContext;
 
-    Matrix4 _projection;
-
     static ushort _count = 0;
 
 public:
+    /**
+     * The current projection Matrix
+     *
+     * Note: This is intended for advanced users only.
+     *
+     * See: Matrix4
+     */
+    Matrix4 projection;
+    /**
+     * The framerate limit for the Window.
+     * 0 means no limit.
+     *
+     * Note: this is only working, if the vertical syncronisation (see Window.VerticalSync enum) is disabled
+     */
+    ushort framerateLimit = 0;
+
     /**
      * CTor
      */
@@ -126,7 +142,7 @@ public:
             if (_count == 0)
                 _initGL();
 
-            _projection.ortho(Rect(0, 0, width, height));
+            this.projection.ortho(Rect(0, 0, width, height));
             this.loadProjection();
 
             this.setClearColor(Color4b.White);
@@ -169,7 +185,7 @@ public:
      */
     @nogc
     ref inout(Matrix4) getProjection() inout pure nothrow {
-        return _projection;
+        return this.projection;
     }
 
     /**
@@ -178,7 +194,7 @@ public:
     @nogc
     void loadProjection() const {
         glMatrixMode(GL_PROJECTION);
-        glLoadMatrixf(_projection.getValues().ptr);
+        glLoadMatrixf(this.projection.getValues().ptr);
         glMatrixMode(GL_MODELVIEW);
     }
 
@@ -201,28 +217,26 @@ public:
     }
 
     /**
-     * Set the Syncronisation mode of this window.
-     * Default Syncronisation is <code>Sync.Enable</code>.
+     * Set the VerticalSyncronisation mode of this window.
+     * Default VerticalSyncronisation is <code>VerticalSync.Enable</code>.
      *
-     * See: Sync enum
+     * See: VerticalSync enum
      *
      * Returns if the sync mode is supported.
      */
     @nogc
-    bool setVerticalSync(Sync sync) const nothrow {
-        assert(sync == Sync.Enable || sync == Sync.Disable, "Unknown sync mode. Sync mode must be one of Sync.Enable / Sync.Disable.");
-
+    bool setVerticalSync(VerticalSync sync) const nothrow {
         return SDL_GL_SetSwapInterval(sync) == 0;
     }
 
     /**
      * Returns the current syncronisation mode.
      *
-     * See: Sync enum
+     * See: VerticalSync enum
      */
     @nogc
-    Sync getVerticalSync() nothrow {
-        return cast(Sync) SDL_GL_GetSwapInterval();
+    VerticalSync getVerticalSync() nothrow {
+        return cast(VerticalSync) SDL_GL_GetSwapInterval();
     }
 
     /**
@@ -426,6 +440,12 @@ public:
      */
     @nogc
     void display() nothrow {
+        if (this.framerateLimit != 0 &&
+            this.getVerticalSync() == VerticalSync.Disable)
+        {            
+            StopWatch.wait(1000 / this.framerateLimit);
+        }
+
         immutable uint style = this.getStyle();
         if (style & Style.OpenGL) {
             if (_count > 1)

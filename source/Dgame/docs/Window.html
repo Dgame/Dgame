@@ -10,26 +10,26 @@
 <dd><u>Window</u> is the rendering window where all drawable objects are drawn.
 <br><br>
 Note that the default clear-color is <code>Color.White</code> and the
- default Sync is <code><u>Window</u>.Sync.Disables</code>, which means the Applications runs with full FPS.
+ default VerticalSync is <code><u>Window</u>.VerticalSync.Disable</code>, which means the Applications runs with full FPS.
 
 <br><br>
 <b>Author:</b><br>
 Randy Schuett (rswhite4@googlemail.com)<br><br>
 
-<dl><dt><big><a name="Window.Sync"></a>enum <u>Sync</u>: byte;
+<dl><dt><big><a name="Window.VerticalSync"></a>enum <u>VerticalSync</u>: byte;
 </big></dt>
 <dd>The Window syncronisation mode.
- Default Syncronisation is <code><u>Sync</u>.Enable</code>.<br><br>
+ Default VerticalSyncronisation is <code><u>VerticalSync</u>.Enable</code>.<br><br>
 
-<dl><dt><big><a name="Window.Sync.Enable"></a><u>Enable</u></big></dt>
-<dd>Sync is enabled<br><br>
-
-</dd>
-<dt><big><a name="Window.Sync.Disable"></a><u>Disable</u></big></dt>
-<dd>Sync is disabled<br><br>
+<dl><dt><big><a name="Window.VerticalSync.Enable"></a><u>Enable</u></big></dt>
+<dd>VerticalSync is enabled<br><br>
 
 </dd>
-<dt><big><a name="Window.Sync.LateSwapTearing"></a><u>LateSwapTearing</u></big></dt>
+<dt><big><a name="Window.VerticalSync.Disable"></a><u>Disable</u></big></dt>
+<dd>VerticalSync is disabled<br><br>
+
+</dd>
+<dt><big><a name="Window.VerticalSync.LateSwapTearing"></a><u>LateSwapTearing</u></big></dt>
 <dd>For late swap tearing<br><br>
 
 </dd>
@@ -101,6 +101,27 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Window.projection"></a>Matrix4 <u>projection</u>;
+</big></dt>
+<dd>The current <u>projection</u> Matrix
+<br><br>
+<b>Note:</b><br>
+This is intended for advanced users only.
+
+<br><br>
+<b>See:</b><br>
+Matrix4<br><br>
+
+</dd>
+<dt><big><a name="Window.framerateLimit"></a>ushort <u>framerateLimit</u>;
+</big></dt>
+<dd>The framerate limit for the Window.
+ 0 means no limit.
+<br><br>
+<b>Note:</b><br>
+this is only working, if the vertical syncronisation (see Window.VerticalSync enum) is disabled<br><br>
+
+</dd>
 <dt><big><a name="Window.this"></a>this(uint <i>width</i>, uint <i>height</i>, string <i>title</i>, uint <i>style</i> = Style.Default, int <i>x</i> = 100, int <i>y</i> = 100, GLSettings* <i>gl_settings</i> = null);
 </big></dt>
 <dd>CTor<br><br>
@@ -135,24 +156,24 @@ Matrix4<br><br>
 <dd>Clears the given buffer (or'ed together)<br><br>
 
 </dd>
-<dt><big><a name="Window.setVerticalSync"></a>const nothrow @nogc bool <u>setVerticalSync</u>(Sync <i>sync</i>);
+<dt><big><a name="Window.setVerticalSync"></a>const nothrow @nogc bool <u>setVerticalSync</u>(VerticalSync <i>sync</i>);
 </big></dt>
-<dd>Set the Syncronisation mode of this window.
- Default Syncronisation is <code>Sync.Enable</code>.
+<dd>Set the VerticalSyncronisation mode of this window.
+ Default VerticalSyncronisation is <code>VerticalSync.Enable</code>.
 <br><br>
 <b>See:</b><br>
-Sync enum
+VerticalSync enum
 <br><br>
 
  Returns if the <i>sync</i> mode is supported.<br><br>
 
 </dd>
-<dt><big><a name="Window.getVerticalSync"></a>nothrow @nogc Sync <u>getVerticalSync</u>();
+<dt><big><a name="Window.getVerticalSync"></a>nothrow @nogc VerticalSync <u>getVerticalSync</u>();
 </big></dt>
 <dd>Returns the current syncronisation mode.
 <br><br>
 <b>See:</b><br>
-Sync enum<br><br>
+VerticalSync enum<br><br>
 
 </dd>
 <dt><big><a name="Window.capture"></a>nothrow @nogc Surface <u>capture</u>(Texture.Format <i>fmt</i> = Texture.Format.BGRA);

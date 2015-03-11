@@ -22,6 +22,7 @@
             "name": "lib",
             "targetType": "library",
             "targetName": "Dgame",
+            "targetPath": "lib",
             "excludedSourceFiles": ["main.d", "test/*.d"]
         }
     ],
