@@ -33,7 +33,7 @@ public:
 /**
  * Vector2 is a structure that defines a two-dimensional point.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Vector2(T) if (isNumeric!(T)) {
     /**

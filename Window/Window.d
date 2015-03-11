@@ -60,7 +60,7 @@ import Dgame.Window.GLSettings;
  * Note that the default clear-color is <code>Color.White</code> and the
  * default Sync is <code>Window.Sync.Disables</code>, which means the Applications runs with full FPS.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Window {
     /**

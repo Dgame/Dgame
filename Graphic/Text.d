@@ -41,7 +41,7 @@ public:
 /**
  * Text defines a graphical 2D text, that can be drawn on screen.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 class Text : Transformable, Drawable {
 private:

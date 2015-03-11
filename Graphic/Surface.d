@@ -40,7 +40,7 @@ public:
 /**
  * Surface is a wrapper for a SDL_Surface and can load and save images.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Surface {
     /**

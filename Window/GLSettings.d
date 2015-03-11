@@ -6,7 +6,7 @@ module Dgame.Window.GLSettings;
  *
  * Note: if anti aliasing is activated you will notice a drastic reduction of your framerate.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct GLSettings {
 	/**

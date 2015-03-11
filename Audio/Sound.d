@@ -41,7 +41,7 @@ public:
 *
 * Supported formats are .wav, .mp3, .vorbis, .ogg, .midi
 *
-* Author: Randy Schuett <rswhite4@googlemail.com>
+* Author: Randy Schuett (rswhite4@googlemail.com)
 */
 struct Sound {
 private:

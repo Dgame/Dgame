@@ -39,7 +39,7 @@ public:
  * A Texture is a 2 dimensional pixel reprasentation.
  * It is a wrapper of an OpenGL Texture.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Texture {
     /**

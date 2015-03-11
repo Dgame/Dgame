@@ -44,7 +44,7 @@ public:
 /**
  * Color4b defines a structure which contains 4 ubyte values, each for red, green, blue and alpha.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Color4b {
     static immutable Color4b Black   = Color4b(0,     0,   0); /// Black Color (0, 0, 0)
@@ -130,7 +130,7 @@ struct Color4b {
 /**
  * Color4f defines a structure which contains 4 floats values, each for red, green, blue and alpha.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Color4f {
     static immutable Color4f Black   = Color4f(0,     0,   0); /// Black Color (0, 0, 0)

@@ -44,7 +44,7 @@ public:
 /**
  * Shape defines a drawable geometric shape.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 class Shape : Transformable, Drawable {
 public:

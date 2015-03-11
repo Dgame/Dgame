@@ -35,7 +35,7 @@ public:
 /**
  * Represent the Mouse
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 final abstract class Mouse {
 public:
@@ -85,11 +85,11 @@ public:
         SizeNS = SDL_SYSTEM_CURSOR_SIZENS, /// 
         SizeAll = SDL_SYSTEM_CURSOR_SIZEALL, /// 
         None = SDL_SYSTEM_CURSOR_NO, /// 
-        HAnd = SDL_SYSTEM_CURSOR_HAND /// 
+        Hand = SDL_SYSTEM_CURSOR_HAND /// 
     }
 
     /**
-     * Cursor
+     * The Cursor representation
      */
     alias Cursor = SDL_Cursor*;
     

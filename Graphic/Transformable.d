@@ -38,7 +38,7 @@ public:
  * See: Matrix4
  * See: Vector2f
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 class Transformable {
 protected:

@@ -55,7 +55,7 @@ public:
  * Font is the low-level class for loading and manipulating character fonts.
  * This class is meant to be used by Dgame.Graphic.Text.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Font {
 private:

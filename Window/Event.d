@@ -166,7 +166,7 @@ struct MouseWheelEvent {
  * The Event structure.
  * Event defines a system event and it's parameters
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Event {
     /**

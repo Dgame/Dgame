@@ -42,7 +42,7 @@ public:
  * The DisplayMode struct contains informations about the current window video mode.
  * It is passed to Window which extract the informations and use them to build a window context.
  * 
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct DisplayMode {
     /**

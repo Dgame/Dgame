@@ -33,7 +33,7 @@ public:
 /**
  * A Vertex a coordinate, a color and a coordinate to the Texture
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Vertex {
     /**

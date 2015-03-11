@@ -58,7 +58,7 @@ public:
  * A Matrix is a structure which may describe different transformation.
  * Note: Matrix.init is the identity Matrix.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Matrix4 {
     float[16] _values = [

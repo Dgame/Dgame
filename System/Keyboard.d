@@ -33,7 +33,7 @@ public:
 /**
  * Represent the Keyboard
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 final abstract class Keyboard {
 private:

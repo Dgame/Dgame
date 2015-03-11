@@ -30,7 +30,7 @@ private import derelict.sdl2.sdl;
  * which give information about your current battery
  * and several other informations about your system, like the available RAM.
  * 
- * Author: Randy Schuett <rswhite4@googlemail.com>k
+ * Author: Randy Schuett (rswhite4@googlemail.com)k
  */
 final abstract class System {
     /**

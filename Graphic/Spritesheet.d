@@ -37,7 +37,7 @@ public:
 /**
  * SpriteSheet extends Sprite and act like a Texture Atlas.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 class Spritesheet : Sprite {
 protected:

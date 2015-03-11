@@ -73,7 +73,7 @@ struct Size {
 /**
  * Rect defines a rectangle structure that contains the left upper corner and the width/height.
  *
- * Author: Randy Schuett <rswhite4@googlemail.com>
+ * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Rect {
     /**
