@@ -37,7 +37,7 @@ import Dgame.Math.Vertex;
 import Dgame.Math.Vector2;
 import Dgame.Math.Rect;
 import Dgame.Graphic.Color;
-public import Dgame.Math.Geometry;
+import Dgame.Math.Geometry;
 
 public:
 

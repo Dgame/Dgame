@@ -45,6 +45,7 @@ import Dgame.System.StopWatch;
 
 import Dgame.Window.Event;
 import Dgame.Window.Internal.Init;
+import Dgame.Window.GLSettings;
 
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
@@ -53,8 +54,6 @@ static if (!SDL_VERSION_ATLEAST(2, 0, 1))
     enum int SDL_WINDOW_ALLOW_HIGHDPI = 0;
 
 public:
-
-import Dgame.Window.GLSettings;
 
 /**
  * Window is the rendering window where all drawable objects are drawn.
@@ -112,13 +111,6 @@ public:
      * See: Matrix4
      */
     Matrix4 projection;
-    /**
-     * The framerate limit for the Window.
-     * 0 means no limit.
-     *
-     * Note: this is only working, if the vertical syncronisation (see Window.VerticalSync enum) is disabled
-     */
-    ushort framerateLimit = 0;
 
     /**
      * CTor
@@ -430,12 +422,6 @@ public:
      */
     @nogc
     void display() nothrow {
-        if (this.framerateLimit != 0 &&
-            this.getVerticalSync() == VerticalSync.Disable)
-        {            
-            StopWatch.wait(1000 / this.framerateLimit);
-        }
-
         immutable uint style = this.getStyle();
         if (style & Style.OpenGL) {
             if (_count > 1)

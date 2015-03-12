@@ -82,14 +82,10 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Returns only the milliseconds since the last reset.<br><br>
 
 </dd>
-<dt><big><a name="StopWatch.getCurrentFPS"></a>nothrow @nogc uint <u>getCurrentFPS</u>();
+<dt><big><a name="StopWatch.getCurrentFPS"></a>nothrow @nogc uint <u>getCurrentFPS</u>(uint* <i>frame_ms</i> = null);
 </big></dt>
-<dd>Returns the current framerate per seconds.<br><br>
-
-</dd>
-<dt><big><a name="StopWatch.getFrameTime"></a>const pure nothrow @nogc float <u>getFrameTime</u>();
-</big></dt>
-<dd>Returns the Time since the last Frame.<br><br>
+<dd>Returns the current framerate per seconds.
+ If <i>frame_ms</i> is not <b>null</b>, the average ms per frame is stored there<br><br>
 
 </dd>
 <dt><big><a name="StopWatch.getTicks"></a>static nothrow @nogc uint <u>getTicks</u>();
@@ -105,18 +101,6 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dt><big><a name="StopWatch.wait"></a>static nothrow @nogc void <u>wait</u>(uint <i>msecs</i>);
 </big></dt>
 <dd>Wait for <i>msecs</i> milliseconds, which means that the application freeze for this time.<br><br>
-
-</dd>
-<dt><big><a name="StopWatch.getPerformanceCounter"></a>static nothrow @nogc ulong <u>getPerformanceCounter</u>();
-</big></dt>
-<dd>Use this function to get the
- current value of the high resolution counter.<br><br>
-
-</dd>
-<dt><big><a name="StopWatch.getPerformanceFrequency"></a>static nothrow @nogc ulong <u>getPerformanceFrequency</u>();
-</big></dt>
-<dd>Use this function to get the
- count per second of the high resolution counter.<br><br>
 
 </dd>
 </dl>

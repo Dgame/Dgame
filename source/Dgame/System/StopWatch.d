@@ -131,7 +131,6 @@ private:
     uint _startTime;
     uint _numFrames;
     uint _currentFps;
-    float _frameTime;
     
 public:
     /**
@@ -160,29 +159,23 @@ public:
     
     /**
      * Returns the current framerate per seconds.
+     * If frame_ms is not null, the average ms per frame is stored there
      */
     @nogc
-    uint getCurrentFPS() nothrow {
+    uint getCurrentFPS(uint* frame_ms = null) nothrow {
         immutable uint elapsed_ticks = this.getElapsedTicks();
         if (elapsed_ticks >= 1000) {
             _currentFps = _numFrames;
-            _frameTime = float(elapsed_ticks) / _numFrames;
-            
             _numFrames = 0;
             this.reset();
         }
+
+        if (frame_ms)
+            *frame_ms = elapsed_ticks / _numFrames;
         
         _numFrames++;
         
         return _currentFps;
-    }
-
-    /**
-     * Returns the Time since the last Frame.
-     */
-    @nogc
-    float getFrameTime() const pure nothrow {
-        return _frameTime;
     }
 
     /**
@@ -207,23 +200,5 @@ public:
     @nogc
     static void wait(uint msecs) nothrow {
         SDL_Delay(msecs);
-    }
-    
-    /**
-     * Use this function to get the 
-     * current value of the high resolution counter.
-     */
-    @nogc
-    static ulong getPerformanceCounter() nothrow {
-        return SDL_GetPerformanceCounter();
-    }
-    
-    /**
-     * Use this function to get the 
-     * count per second of the high resolution counter.
-     */
-    @nogc
-    static ulong getPerformanceFrequency() nothrow {
-        return SDL_GetPerformanceFrequency();
     }
 }

@@ -27,8 +27,8 @@ private:
 
 import derelict.sdl2.sdl;
 
-public import Dgame.System.Mouse;
-public import Dgame.System.Keyboard;
+import Dgame.System.Mouse;
+import Dgame.System.Keyboard;
 
 public:
 

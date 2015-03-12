@@ -1,26 +1,10 @@
 import std.stdio;
 
-import Dgame.Window.Window;
-import Dgame.Window.Event;
-
-import Dgame.Graphic.Color;
-import Dgame.Graphic.Surface;
-import Dgame.Graphic.Texture;
-import Dgame.Graphic.Sprite;
-import Dgame.Graphic.Spritesheet;
-import Dgame.Graphic.Shape;
-import Dgame.Graphic.Text;
-
-import Dgame.Math.Vector2;
-import Dgame.Math.Vertex;
-import Dgame.Math.Matrix4;
-import Dgame.Math.Rect;
-
-import Dgame.Audio.Sound;
-
-import Dgame.System.Keyboard;
-import Dgame.System.Font;
-import Dgame.System.StopWatch;
+import Dgame.Graphic;
+import Dgame.Math;
+import Dgame.Audio;
+import Dgame.System;
+import Dgame.Window;
 
 pragma(msg, Color4b.sizeof);
 pragma(msg, Color4f.sizeof);
@@ -154,9 +138,6 @@ void main() {
 
     //ushort fps = 0;
 
-    import derelict.opengl3.gl;
-    import derelict.sdl2.sdl;
-
     bool loop = true;
     while (loop) {
         //if (sw.getElapsedTicks() < TicksPerFrame)
@@ -191,23 +172,7 @@ void main() {
         }
 
         wnd.clear();
-/+
-        glBegin(GL_TRIANGLE_STRIP);
-            glVertex3f(10, 100, 0);
-            glVertex3f(10, 10, 0);
-            glVertex3f(100, 100, 0);
-            glVertex3f(100, 10, 0);
-        glEnd();
 
-        glBegin(GL_TRIANGLES);
-            glColor3f(1, 0, 0);
-            glVertex3f(100, 100, 0);
-            glColor3f(0, 1, 0);
-            glVertex3f(300, 100, 0);
-            glColor3f(0, 0, 1);
-            glVertex3f(0, 300, 0);
-        glEnd();
-+/
         wnd.draw(wiki);
 
         wnd.draw(qs);
