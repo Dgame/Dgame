@@ -78,12 +78,9 @@ Geometric enum<br><br>
 <dd>Set or reset a Texture<br><br>
 
 </dd>
-<dt><big><a name="Shape.setTexture.2"></a>final pure nothrow @nogc void <u>setTexture</u>(Texture* <i>texture</i>, const float[4] <i>texArea</i>);
+<dt><big><a name="Shape.setTexture.2"></a>pure nothrow @nogc void <u>setTexture</u>()(Texture* <i>texture</i>, auto ref const Rect <i>rect</i>);
 </big></dt>
-<dd>Set (or reset) a Texture and set the corresponding area
-<br><br>
-<b>Note:</b><br>
-<i>texArea</i> = [x, y, w, h]<br><br>
+<dd>Set (or reset) a Texture and set the corresponding Rect<br><br>
 
 </dd>
 <dt><big><a name="Shape.getTexture"></a>final inout pure nothrow @nogc inout(Texture*) <u>getTexture</u>();
@@ -91,23 +88,14 @@ Geometric enum<br><br>
 <dd>Returns the current texture or <b>null</b><br><br>
 
 </dd>
-<dt><big><a name="Shape.setTextureArea"></a>final pure nothrow @nogc void <u>setTextureArea</u>(const float[4] <i>texArea</i>);
+<dt><big><a name="Shape.setTextureRect"></a>pure nothrow @nogc void <u>setTextureRect</u>()(auto ref const Rect <i>rect</i>);
 </big></dt>
-<dd>Set the corresponding Texture area
-<br><br>
-<b>Note:</b><br>
-<i>texArea</i> = [x, y, w, h]<br><br>
-
-</dd>
-<dt><big><a name="Shape.getArea"></a>final const pure nothrow @nogc float[4] <u>getArea</u>();
-</big></dt>
-<dd>Returns the bounding area<br><br>
+<dd>Set the corresponding Texture Rect<br><br>
 
 </dd>
 <dt><big><a name="Shape.getClipRect"></a>final const pure nothrow @nogc Rect <u>getClipRect</u>();
 </big></dt>
-<dd>Returns the clip rect.
- Therefore the getArea() method is used and the elements are casted to int<br><br>
+<dd>Returns the clip Rect<br><br>
 
 </dd>
 <dt><big><a name="Shape.getVertices"></a>final inout pure nothrow @nogc inout(Vertex[]) <u>getVertices</u>();

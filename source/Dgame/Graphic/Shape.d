@@ -165,20 +165,18 @@ final:
         _texture = texture;
 
         if (texture)
-            this.setTextureArea([0, 0, texture.width, texture.height]);
+            this.setTextureRect(Rect(0, 0, texture.width, texture.height));
     }
 
     /**
-     * Set (or reset) a Texture and set the corresponding area
-     *
-     * Note: texArea = [x, y, w, h]
+     * Set (or reset) a Texture and set the corresponding Rect
      */
     @nogc
-    void setTexture(Texture* texture, const float[4] texArea) pure nothrow {
+    void setTexture()(Texture* texture, auto ref const Rect rect) pure nothrow {
         _texture = texture;
 
         if (texture)
-            this.setTextureArea(texArea);
+            this.setTextureArea(rect);
     }
 
     /**
@@ -190,29 +188,27 @@ final:
     }
 
     /**
-     * Set the corresponding Texture area
-     *
-     * Note: texArea = [x, y, w, h]
+     * Set the corresponding Texture Rect
      */
     @nogc
-    void setTextureArea(const float[4] texArea) pure nothrow {
+    void setTextureRect()(auto ref const Rect rect) pure nothrow {
         assert(_texture, "No texture defined");
 
-        immutable float[4] bounds = this.getArea();
+        const Rect clip = this.getClipRect();
         foreach (ref Vertex v; _vertices) {
-            immutable float xratio = bounds[2] > 0 ? (v.position.x - bounds[0]) / bounds[2] : 0;
-            immutable float yratio = bounds[3] > 0 ? (v.position.y - bounds[1]) / bounds[3] : 0;
+            immutable float xratio = clip.width > 0 ? (v.position.x - clip.x) / clip.width : 0;
+            immutable float yratio = clip.height > 0 ? (v.position.y - clip.y) / clip.height : 0;
 
-            v.texCoord.x = (texArea[0] + texArea[2] * xratio) / _texture.width;
-            v.texCoord.y = (texArea[1] + texArea[3] * yratio) / _texture.height;
+            v.texCoord.x = (rect.x + rect.width * xratio) / _texture.width;
+            v.texCoord.y = (rect.y + rect.height * yratio) / _texture.height;
         }
     }
 
     /**
-     * Returns the bounding area
+     * Returns the clip Rect
      */
     @nogc
-    float[4] getArea() const pure nothrow {
+    Rect getClipRect() const pure nothrow {
         assert(_vertices.length > 0, "No vertices");
 
         float left = _vertices[0].position.x;
@@ -233,18 +229,12 @@ final:
                 bottom = v.position.y;
         }
 
-        return [left, top, right - left, bottom - top];
-    }
+        immutable int l = cast(int) left;
+        immutable int t = cast(int) top;
+        immutable uint w = cast(uint)(right - left);
+        immutable uint h = cast(uint)(bottom - top);
 
-    /**
-     * Returns the clip rect.
-     * Therefore the getArea() method is used and the elements are casted to int
-     */
-    @nogc
-    Rect getClipRect() const pure nothrow {
-        const float[4] area = this.getArea();
-
-        return Rect(cast(int) area[0], cast(int) area[1], cast(uint) area[3], cast(uint) area[3]);
+        return Rect(l, t, w, h);
     }
 
     /**
