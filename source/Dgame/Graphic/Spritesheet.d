@@ -68,7 +68,7 @@ final:
      * CTor
      */
     @nogc
-    this()(ref Texture tex, auto ref Rect texRect) pure nothrow {
+    this()(ref Texture tex, auto ref const Rect texRect) pure nothrow {
         this(tex);
 
         super.setTextureRect(texRect);

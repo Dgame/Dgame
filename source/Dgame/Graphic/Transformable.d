@@ -93,7 +93,7 @@ final:
      * Set the position
      */
     @nogc
-    void setPosition(ref const Vector2f pos) pure nothrow {
+    void setPosition()(auto ref const Vector2f pos) pure nothrow {
         _position = pos;
         _notifyTransform();
     }
@@ -112,7 +112,7 @@ final:
      * Move the position by offset
      */
     @nogc
-    void move(ref const Vector2f offset) pure nothrow {
+    void move()(auto ref const Vector2f offset) pure nothrow {
         _position += offset;
         _notifyTransform();
     }
@@ -139,7 +139,7 @@ final:
      * Set the center position
      */
     @nogc
-    void setCenter(ref const Vector2f center) pure nothrow {
+    void setCenter()(auto ref const Vector2f center) pure nothrow {
         _local_center = center;
         _notifyTransform();
     }

@@ -104,6 +104,16 @@ final:
     }
 
     /**
+     * CTor
+     */
+    @nogc
+    this()(ref Texture tex, auto ref const Vector2f pos) pure nothrow {
+        this(tex);
+
+        super.setPosition(pos);
+    }
+
+    /**
      * Reset the Texture
      */
     @nogc
