@@ -17,7 +17,7 @@ pragma(msg, Vector2f.sizeof);
 pragma(msg, Vertex.sizeof);
 
 void main() {
-    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default);
+    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 0));
     
     uint[256] xpixels = [
         255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,

@@ -19,6 +19,11 @@ struct GLSettings {
 	ubyte minorVersion = 0;
 	/**
 	 * Anti aliasing level. 0 means deactivated.
+	 * 
+	 * Note: A too high value may crash your application at the beginning
+	 *		 because your driver does not support it.
+	 *
+	 * Typical values are 2, 4 or 8
 	 */
 	ubyte antiAliasLevel = 0;
 

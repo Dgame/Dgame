@@ -141,6 +141,9 @@ public:
      * Position is specifiable and the VerticalSync is disabled
      */
     this()(auto ref const Rect rect, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+        if (_count == 0)
+            _initSDL();
+
         if (style & Style.OpenGL)
             _initGLAttr(gl_settings);
 

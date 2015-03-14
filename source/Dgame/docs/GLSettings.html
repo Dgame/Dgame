@@ -29,7 +29,14 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 <dt><big><a name="GLSettings.antiAliasLevel"></a>ubyte <u>antiAliasLevel</u>;
 </big></dt>
-<dd>Anti aliasing level. 0 means deactivated.<br><br>
+<dd>Anti aliasing level. 0 means deactivated.
+<br><br>
+<b>Note:</b><br>
+A too high value may crash your application at the beginning
+		 because your driver does not support it.
+<br><br>
+
+ Typical values are 2, 4 or 8<br><br>
 
 </dd>
 <dt><big><a name="GLSettings.this"></a>pure nothrow @nogc this(ubyte <i>major</i>, ubyte <i>minor</i>, ubyte <i>antiAlias</i>);

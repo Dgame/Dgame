@@ -41,8 +41,6 @@ shared static this() {
     DerelictSDL2ttf.load();
     DerelictSDL2Mixer.load();
     DerelictGL.load();
-
-    _initSDL();
 }
 
 shared static ~this() {
@@ -66,6 +64,8 @@ shared static ~this() {
 
 bool _isGLInited = false;
 bool _isSDLInited = false;
+
+package(Dgame.Window):
 
 @nogc
 void _initSDL() {
@@ -122,8 +122,6 @@ void _initSDL() {
         printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
 }
 
-public:
-
 @nogc
 void _initGLAttr(ref const GLSettings gl_settings) {
     // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
@@ -135,17 +133,43 @@ void _initGLAttr(ref const GLSettings gl_settings) {
     }
 
     if (gl_settings.majorVersion != 0) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
+        int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
+        if (result != 0) {
+            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+            assert(0);
+        }
+
+        result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
+        if (result != 0) {
+            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+            assert(0);
+        }
     }
 
     if (gl_settings.antiAliasLevel > 0) {
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
+        int result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        if (result != 0) {
+            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+            assert(0);
+        }
+
+        result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
+        if (result != 0) {
+            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+            assert(0);
+        }
     }
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    int result = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    if (result != 0) {
+        printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+        assert(0);
+    }
+    result = SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    if (result != 0) {
+        printf("Error by initializing OpenGL: %s\n", SDL_GetError());
+        assert(0);
+    }
 }
 
 void _initGL() {
