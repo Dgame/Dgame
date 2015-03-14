@@ -115,11 +115,10 @@ public:
     /**
      * CTor
      */
-    this(uint width, uint height, string title,
-        uint style = Style.Default,
-        int x = 100, int y = 100,
-        GLSettings* gl_settings = null)
-    {   
+    this(uint width, uint height, string title, 
+         uint style = Style.Default, int x = 100, int y = 100,
+         GLSettings gl_settings = GLSettings.init)
+    {
         if (style & Style.OpenGL)
             _initGLAttr(gl_settings);
 
@@ -148,7 +147,7 @@ public:
      */
     this(Rect rect, string title,
         Style style = Style.Default,
-        GLSettings* gl_settings = null)
+        GLSettings gl_settings = GLSettings.init)
     {
         this(rect.width, rect.height, title, style, rect.x, rect.y, gl_settings);
     }
