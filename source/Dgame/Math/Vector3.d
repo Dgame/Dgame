@@ -54,7 +54,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(U x, U y, U z = 0) pure nothrow if (isNumeric!(U) && !is(U : T)) {
+    this(U)(U x, U y, U z = 0) pure nothrow if (isNumeric!(U) && !is(U == T)) {
         this(cast(T) x, cast(T) y, cast(T) z);
     }
     
@@ -62,7 +62,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(ref const Vector3!(U) vec) pure nothrow if (!is(U : T)) {
+    this(U)(ref const Vector3!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y, vec.z);
     }
 
@@ -140,7 +140,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Supported operation: +=, -=, *=, /= and %=
      */
     @nogc
-    ref Vector3!(T)opOpAssign(string op)(T num) pure nothrow {
+    ref Vector3!(T) opOpAssign(string op)(float num) pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -169,7 +169,7 @@ struct Vector3(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("return Vector3(vec.x " ~ op ~ " this.x, vec.y " ~ op ~ " this.y, vec.z " ~ op ~ " this.z);");
+                mixin("return Vector3!(T)(vec.x " ~ op ~ " this.x, vec.y " ~ op ~ " this.y, vec.z " ~ op ~ " this.z);");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -179,14 +179,14 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Supported operation: +, -, *, / and %
      */
     @nogc
-    Vector3!(T) opBinary(string op)(T num) const pure {
+    Vector3!(T) opBinary(string op)(float num) const pure {
         switch (op) {
             case "+":
             case "-":
             case "*":
             case "/":
             case "%":
-                mixin("return Vector3(num " ~ op ~ " this.x, num " ~ op ~ " this.y, num " ~ op ~ " this.z);");
+                mixin("return Vector3!(T)(cast(T)(num " ~ op ~ " this.x), cast(T)(num " ~ op ~ " this.y), cast(T)(num " ~ op ~ " this.z));");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -197,15 +197,13 @@ struct Vector3(T) if (isNumeric!(T)) {
      */
     @nogc
     Vector3!(T) cross(ref const Vector3!(T) vec) const pure nothrow {
-        return Vector3!(T)(this.y * vec.z - this.z * vec.y,
-                       this.z * vec.x - this.x * vec.z,
-                       this.x * vec.y - this.y * vec.x);
+        return Vector3!(T)(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
     }
 
     /**
      * Normalize the vector in which the coordinates are divided by the length.
      */
-    Vector3f normalize() const pure nothrow {
+    Vector3!(T) normalize() pure nothrow {
         immutable float len = this.length;
         if (len > 0)
             return this / len;
@@ -215,9 +213,14 @@ struct Vector3(T) if (isNumeric!(T)) {
     /**
      * Rotate the current Vector by an angle and rotation Vector and returns the result
      */
-    Vector3f rotate(float angle, ref const Vector3!(T) rot) const pure nothrow {
-        const Vector3!(T) norm1 = this.normalize();
-        const Vector3!(T) norm2 = rot.normalize();
+    Vector3!(T) rotate(float angle, ref const Vector3!(T) rot) const pure nothrow {
+        immutable float len1 = this.length;
+        immutable float len2 = rot.length;
+
+        assert(len1 > 0 && len2 > 0);
+
+        const Vector3!(T) norm1 = this / len1;
+        const Vector3!(T) norm2 = rot / len2;
 
         immutable float rho_rad = angle / 180 * std.math.PI;
         immutable float c = std.math.cos(rho_rad);
@@ -236,3 +239,4 @@ struct Vector3(T) if (isNumeric!(T)) {
 }
 
 alias Vector3f = Vector3!(float); /// A float representation
+alias Vector3i = Vector3!(int); /// An int representation

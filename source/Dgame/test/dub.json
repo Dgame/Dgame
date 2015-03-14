@@ -22,7 +22,7 @@
     ],
     "buildTypes": {
         "dg_debug": {
-            "buildOptions": ["debugMode", "debugInfoC", "alwaysStackFrame", "warnings"]
+            "buildOptions": ["debugMode", "debugInfoC", "alwaysStackFrame", "warnings", "unittests"]
         },
         "dg_release": {
             "buildOptions": ["releaseMode", "inline", "optimize", "noBoundsCheck", "warnings"]

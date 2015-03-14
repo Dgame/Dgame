@@ -58,7 +58,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(U x, U y) pure nothrow if (isNumeric!(U) && !is(U : T)) {
+    this(U)(U x, U y) pure nothrow if (isNumeric!(U) && !is(U == T)) {
         this(cast(T) x, cast(T) y);
     }
     
@@ -66,7 +66,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(ref const Vector2!(U) vec) pure nothrow if (!is(U : T)) {
+    this(U)(ref const Vector2!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y);
     }
     
@@ -95,7 +95,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Supported operation: +=, -=, *=, /= and %=
      */
     @nogc
-    ref Vector2!(T) opOpAssign(string op)(T num) pure nothrow {
+    ref Vector2!(T) opOpAssign(string op)(float num) pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -123,7 +123,7 @@ struct Vector2(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("return Vector2(vec.x " ~ op ~ " this.x, vec.y " ~ op ~ " this.y);");
+                mixin("return Vector2!(T)(vec.x " ~ op ~ " this.x, vec.y " ~ op ~ " this.y);");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -133,14 +133,14 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Supported operation: +, -, *, / and %
      */
     @nogc
-    Vector2!(T) opBinary(string op)(T num) const pure {
+    Vector2!(T) opBinary(string op)(float num) const pure {
         switch (op) {
             case "+":
             case "-":
             case "*":
             case "/":
             case "%":
-                mixin("return Vector2(num " ~ op ~ " this.x, num " ~ op ~ " this.y);");
+                mixin("return Vector2!(T)(cast(T)(num " ~ op ~ " this.x), cast(T)(num " ~ op ~ " this.y));");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -271,4 +271,16 @@ unittest {
 
     assert(vec4.x == -62);
     assert(vec4.y == -72);
+
+    Vector2f vconv = vec4;
+
+    assert(vec4.x == vconv.x && vec4.y == vconv.y);
+
+    Vector2f v1 = Vector2f(2.3, 4.2);
+    immutable float l1 = v1.length;
+    const Vector2f v1n = v1.normalize();
+
+    Vector2i v2 = Vector2i(2.3, 4.2);
+    immutable float l2 = v2.length;
+    const Vector2i v2n = v2.normalize();
 }
