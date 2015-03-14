@@ -44,14 +44,19 @@ import Dgame.Math.Geometry;
 import Dgame.System.StopWatch;
 
 import Dgame.Window.Event;
-import Dgame.Window.Internal.Init;
 import Dgame.Window.GLSettings;
+import Dgame.Window.DisplayMode;
+import Dgame.Window.Internal.Init;
 
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
 
 static if (!SDL_VERSION_ATLEAST(2, 0, 1))
     enum int SDL_WINDOW_ALLOW_HIGHDPI = 0;
+
+
+enum int DefPosX = 100;
+enum int DefPosY = 100;
 
 public:
 
@@ -114,15 +119,32 @@ public:
 
     /**
      * CTor
+     * Position of the Window is default 100x, 100y and the VerticalSync is disabled
      */
-    this(uint width, uint height, string title, 
-         uint style = Style.Default, int x = 100, int y = 100,
-         GLSettings gl_settings = GLSettings.init)
-    {
+    this(uint width, uint height, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+        this(Rect(DefPosX, DefPosY, width, height), title, style, gl_settings);
+    }
+
+    /**
+    * CTor
+    * Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate > 0
+    */
+    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+        this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style, gl_settings);
+
+        if (mode.refreshRate > 0)
+            this.setVerticalSync(VerticalSync.Enable);
+    }
+
+    /**
+     * CTor
+     * Position is specifiable and the VerticalSync is disabled
+     */
+    this()(auto ref const Rect rect, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
         if (style & Style.OpenGL)
             _initGLAttr(gl_settings);
 
-        _window = SDL_CreateWindow(title.ptr, x, y, width, height, style);
+        _window = SDL_CreateWindow(title.ptr, rect.x, rect.y, rect.width, rect.height, style);
         assert(_window, "SDL_Window could not be created.");
 
         if (style & Style.OpenGL) {
@@ -133,23 +155,14 @@ public:
             if (_count == 0)
                 _initGL();
 
-            this.projection.ortho(Rect(0, 0, width, height));
+            this.projection.ortho(Rect(0, 0, rect.width, rect.height));
             this.loadProjection();
 
             this.setClearColor(Color4b.White);
+            this.setVerticalSync(VerticalSync.Disable);
         }
 
         _count++;
-    }
-
-    /**
-     * CTor
-     */
-    this(Rect rect, string title,
-        Style style = Style.Default,
-        GLSettings gl_settings = GLSettings.init)
-    {
-        this(rect.width, rect.height, title, style, rect.x, rect.y, gl_settings);
     }
 
     /**
