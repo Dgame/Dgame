@@ -4,7 +4,6 @@
     "homepage":     "http://dgame-dev.de",
     "authors":  	["Randy Schütt"],
     "license":      "Zlib/PNG License",
-    "sourcePaths":  ["."],
     "dependencies": {
         "derelict-sdl2": "~>1.9.4",
         "derelict-gl3": "~>1.0.12",
@@ -12,18 +11,11 @@
     },
     "configurations": [
         {
-            "name": "main",
-            "targetName": "dgame-example",
-            "targetType": "executable",
-            "sourceFiles": ["main.d"],
-            "excludedSourceFiles": ["test/*.d"]
-        },
-        {
             "name": "lib",
             "targetType": "library",
             "targetName": "Dgame",
             "targetPath": "lib",
-            "excludedSourceFiles": ["main.d", "test/*.d"]
+            "excludedSourceFiles": ["test/*.d"]
         }
     ],
     "buildTypes": {
