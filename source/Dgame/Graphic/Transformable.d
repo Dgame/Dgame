@@ -196,8 +196,8 @@ final:
     @nogc
     void rotate(float rotation) pure nothrow {
         _rotation += rotation;
-        if (_rotation < 0 || _rotation > 360)
-            _rotation = 0;
+        if (_rotation > 360 || _rotation < -360)
+            _rotation %= 360;
         _notifyTransform();
     }
 
