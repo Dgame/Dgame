@@ -27,7 +27,7 @@ private:
 
 import derelict.sdl2.types;
 
-package(Dgame):
+public: /// @@ Replace with package(Dgame): @@
 
 @nogc
 SDL_Color* _transfer(ref const Color4b src, ref SDL_Color dst) pure nothrow {

@@ -27,17 +27,17 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>The <u>z</u> coordinate<br><br>
 
 </dd>
-<dt><big><a name="Vector3.this"></a>pure nothrow @nogc this(T <i>x</i>, T <i>y</i>, T <i>z</i> = 0);
+<dt><big><a name="Vector3.this"></a>pure nothrow this(T <i>x</i>, T <i>y</i>, T <i>z</i> = 0);
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector3.this.2"></a>pure nothrow @nogc this(U)(U <i>x</i>, U <i>y</i>, U <i>z</i> = 0) if (isNumeric!U &amp;&amp; !is(U == T));
+<dt><big><a name="Vector3.this"></a>pure nothrow this(U)(U <i>x</i>, U <i>y</i>, U <i>z</i> = 0) if (isNumeric!U &amp;&amp; !is(U == T));
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector3.this.3"></a>pure nothrow @nogc this(U)(ref const Vector3!U <i>vec</i>) if (!is(U == T));
+<dt><big><a name="Vector3.this"></a>pure nothrow this(U)(ref const Vector3!U <i>vec</i>) if (!is(U == T));
 </big></dt>
 <dd>CTor<br><br>
 
@@ -77,7 +77,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="Vector3.opOpAssign.2"></a>pure nothrow @nogc ref Vector3!T <u>opOpAssign</u>(string op)(float <i>num</i>);
+<dt><big><a name="Vector3.opOpAssign"></a>pure nothrow @nogc ref Vector3!T <u>opOpAssign</u>(string op)(float <i>num</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
@@ -87,7 +87,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
 </dd>
-<dt><big><a name="Vector3.opBinary.2"></a>const pure @nogc Vector3!T <u>opBinary</u>(string op)(float <i>num</i>);
+<dt><big><a name="Vector3.opBinary"></a>const pure @nogc Vector3!T <u>opBinary</u>(string op)(float <i>num</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 

@@ -35,6 +35,17 @@ import Dgame.Math.Vector2;
 
 import Dgame.Graphic.Color;
 
+// @@ Fix for 2.066 @@ //
+@nogc
+bool exists(string filename) nothrow {
+    import core.stdc.stdio : fopen, fclose;
+
+    auto f = fopen(filename.ptr, "r");
+    scope(exit) fclose(f);
+
+    return f !is null;
+}
+
 public:
 
 /**
@@ -175,7 +186,7 @@ public:
      */
     @nogc
     bool loadFromFile(string filename) nothrow {
-        import std.file : exists;
+        //import std.file : exists;
 
         immutable bool ex = exists(filename);
         if (!ex) {
