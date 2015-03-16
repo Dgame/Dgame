@@ -65,7 +65,7 @@ shared static ~this() {
 bool _isGLInited = false;
 bool _isSDLInited = false;
 
-public: /// @@ Replace with package(Dgame) @@
+public: /// @@ Replace with package(Dgame): @@
 
 @nogc
 void _initSDL() {
@@ -123,7 +123,7 @@ void _initSDL() {
 }
 
 @nogc
-void _initGLAttr(ref const GLSettings gl_settings) {
+void _initGLAttr(ref GLSettings gl_settings) {
     // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
     version (OSX) {
         if (gl_settings.majorVersion == 0) {
