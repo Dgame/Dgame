@@ -59,7 +59,7 @@ protected:
     override void draw(ref const Window wnd) nothrow {
         import core.stdc.stdio : printf;
 
-        if (_text.length && (_redraw || _wasTransformed())) {
+        if (_text.length && _redraw) {
             assert(_font, "No font given");
 
             _redraw = false;

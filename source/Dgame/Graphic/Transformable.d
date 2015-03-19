@@ -53,11 +53,6 @@ protected:
         _was_transformed = true;
     }
 
-    @nogc
-    final bool _wasTransformed() const pure nothrow {
-        return _was_transformed;
-    }
-
 private:
     Matrix4 _matrix;
     bool _was_transformed = true;
@@ -70,7 +65,7 @@ final:
      */
     @nogc
     ref const(Matrix4) getMatrix() pure nothrow {
-        if (_wasTransformed()) {
+        if (_was_transformed) {
             const Vector2f global_center = _position + _local_center;
             _matrix.loadIdentity().rotate(_rotation, global_center).scale(_scale, global_center).translate(_position);
             _was_transformed = false;

@@ -76,42 +76,43 @@ void _initSDL() {
 
     // Initialize SDL2
     int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    bool wasInited = result == 0;
-
-    if (!wasInited) {
+    if (result != 0) {
         printf("SDL init error: %s\n", SDL_GetError());
         assert(0);
     }
 
     // Initialize SDL_image
-    enum uint IMG_FLAGS = IMG_INIT_JPG | IMG_INIT_PNG;
-    
-    result = IMG_Init(IMG_FLAGS);
-    wasInited = (result & IMG_FLAGS) == IMG_FLAGS;
 
-    if (!wasInited) {
+    result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+    if (result == 0) {
         printf("Failed to init the required jpg and png support: %s\n", IMG_GetError());
         assert(0);
-    }
+    } else if ((result & IMG_INIT_JPG) == 0)
+        printf("Failed to init the required jpg support: %s\n", IMG_GetError());
+    else if ((result & IMG_INIT_PNG) == 0)
+        printf("Failed to init the required png support: %s\n", IMG_GetError());
 
     // Initialize SDL_ttf
-    wasInited = TTF_Init() == 0;
-    assert(wasInited, "SDL_TTF could not be initialized");
-
-    // Initialize SDL_mixer
-    enum uint MIX_FLAGS = MIX_INIT_OGG | MIX_INIT_MP3;
-    result = Mix_Init(MIX_FLAGS);
-    wasInited = (result & MIX_FLAGS) == MIX_FLAGS;
- 
-    if (!wasInited) {
-        printf("Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
+    result = TTF_Init();
+    if (result != 0) {
+        printf("SDL_TTF could not be initialized: %s\n", Mix_GetError());
         assert(0);
     }
 
-    wasInited = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) != 0;
+    // Initialize SDL_mixer
+    result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
+    if (result == 0) {
+        printf("Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
+        assert(0);
+    } else if ((result & MIX_INIT_OGG) == 0)
+        printf("Failed to init the required ogg support: %s\n", Mix_GetError());
+    else if ((result & MIX_INIT_MP3) == 0)
+        printf("Failed to init the required mp3 support: %s\n", Mix_GetError());
+
+    result = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
 
     version (none) {
-        if (!wasInited) {
+        if (result != 0) {
             printf("Could not open Mix_OpenAudio: %s\n", Mix_GetError());
             assert(0);
         }
