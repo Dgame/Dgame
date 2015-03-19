@@ -77,7 +77,7 @@ void _initSDL() {
     // Initialize SDL2
     int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     if (result != 0) {
-        printf("SDL init error: %s\n", SDL_GetError());
+        printf("Error: SDL could not be initialized: %s\n", SDL_GetError());
         assert(0);
     }
 
@@ -85,42 +85,41 @@ void _initSDL() {
 
     result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
     if (result == 0) {
-        printf("Failed to init the required jpg and png support: %s\n", IMG_GetError());
+        printf("Error: Failed to init the required jpg and png support: %s\n", IMG_GetError());
         assert(0);
     } else if ((result & IMG_INIT_JPG) == 0)
-        printf("Failed to init the required jpg support: %s\n", IMG_GetError());
+        printf("Warning: Failed to init the required jpg support: %s\n", IMG_GetError());
     else if ((result & IMG_INIT_PNG) == 0)
-        printf("Failed to init the required png support: %s\n", IMG_GetError());
+        printf("Warning: Failed to init the required png support: %s\n", IMG_GetError());
 
     // Initialize SDL_ttf
     result = TTF_Init();
     if (result != 0) {
-        printf("SDL_TTF could not be initialized: %s\n", Mix_GetError());
+        printf("Error: SDL_TTF could not be initialized: %s\n", Mix_GetError());
         assert(0);
     }
 
     // Initialize SDL_mixer
     result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
     if (result == 0) {
-        printf("Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
+        printf("Error: Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
         assert(0);
     } else if ((result & MIX_INIT_OGG) == 0)
-        printf("Failed to init the required ogg support: %s\n", Mix_GetError());
+        printf("Warning: Failed to init the required ogg support: %s\n", Mix_GetError());
     else if ((result & MIX_INIT_MP3) == 0)
-        printf("Failed to init the required mp3 support: %s\n", Mix_GetError());
+        printf("Warning: Failed to init the required mp3 support: %s\n", Mix_GetError());
 
     result = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
 
+    // ignore this warning silently
     version (none) {
-        if (result != 0) {
-            printf("Could not open Mix_OpenAudio: %s\n", Mix_GetError());
-            assert(0);
-        }
+        if (result != 0)
+            printf("Warning: Could not open Mix_OpenAudio: %s\n", Mix_GetError());
     }
     
     immutable int channels = Mix_AllocateChannels(256);
     if (channels < 256)
-        printf("Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
+        printf("Warning: Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
 }
 
 @nogc
