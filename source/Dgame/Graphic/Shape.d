@@ -64,8 +64,15 @@ private:
 protected:
     @nogc
     override void draw(ref const Window wnd) nothrow {
-        if (this.lineWidth != 1)
+        glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT | GL_LINE_BIT);
+        scope(exit) glPopAttrib();
+
+        if (this.lineWidth != 1) {
             glLineWidth(this.lineWidth);
+
+            if (this.antiAliasing)
+                glEnable(GL_LINE_SMOOTH);
+        }
 
         final switch (this.fill) {
             case Fill.Full:
@@ -83,10 +90,6 @@ protected:
 
         // prevent 64 bit bug, because *.length is size_t and therefore on 64 bit platforms ulong
         wnd.draw(this.geometry, super.getMatrix(), _texture, _vertices.ptr, cast(uint) _vertices.length);
-
-        // reset global behaviour
-        if (this.fill != Fill.Full)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
 public:

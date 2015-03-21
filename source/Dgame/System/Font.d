@@ -175,25 +175,22 @@ public:
         _transfer(bg, b);
 
         char[512] buf = void; // TODO: reduce to 256?
-        char* ptr = text.ptr;
+        char* ptr = null;
         if (text[$ - 1] != '\0') // TODO: text.canFind('\0')? O(1) vs. O(n)
             ptr = toStringz(text, buf[]);
 
-        scope(exit) {
-            if (ptr !is buf.ptr && ptr !is text.ptr)
-                m3.m3.destruct(ptr);
-        }
+        scope(exit) if (ptr && ptr !is buf.ptr) m3.m3.destruct(ptr);
 
         SDL_Surface* srfc;
         final switch (mode) {
             case Mode.Solid:
-                srfc = TTF_RenderUTF8_Solid(_ttf, ptr, a);
+                srfc = TTF_RenderUTF8_Solid(_ttf, ptr ? ptr : text.ptr, a);
                 break;
             case Mode.Shaded:
-                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr, a, b);
+                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr ? ptr : text.ptr, a, b);
                 break;
             case Mode.Blended:
-                srfc = TTF_RenderUTF8_Blended(_ttf, ptr, a);
+                srfc = TTF_RenderUTF8_Blended(_ttf, ptr ? ptr : text.ptr, a);
                 break;
         }
 
