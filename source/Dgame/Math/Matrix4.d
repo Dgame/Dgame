@@ -61,6 +61,7 @@ public:
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 struct Matrix4 {
+private:
     float[16] _values = [
         1, 0, 0, 0,
         0, 1, 0, 0,
