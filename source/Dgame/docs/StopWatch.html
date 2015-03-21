@@ -7,17 +7,47 @@
 <br><br>
 <dl><dt><big><a name="asSeconds"></a>pure nothrow @nogc float <u>asSeconds</u>(uint <i>n</i>);
 </big></dt>
-<dd>To convert the Clock milliseconds to seconds<br><br>
+<dd>Convert the Clock milliseconds to seconds<br><br>
 
 </dd>
 <dt><big><a name="asMinutes"></a>pure nothrow @nogc float <u>asMinutes</u>(uint <i>n</i>);
 </big></dt>
-<dd>To convert the Clock milliseconds to minutes<br><br>
+<dd>Convert the Clock milliseconds to minutes<br><br>
 
 </dd>
 <dt><big><a name="asHours"></a>pure nothrow @nogc ushort <u>asHours</u>(uint <i>n</i>);
 </big></dt>
-<dd>To convert the Clock milliseconds to hours<br><br>
+<dd>Convert the Clock milliseconds to hours<br><br>
+
+</dd>
+<dt><big><a name="seconds"></a>pure nothrow @nogc @property uint <u>seconds</u>(uint <i>n</i>);
+</big></dt>
+<dd>Returns the given <u>seconds</u> in milliseconds
+<br><br>
+<b>Example:</b><br>
+<pre class="d_code"><font color=blue>int</font> <i>n</i> = 5.<u>seconds</u>; <font color=green>// n is 5000 because 5 seconds are 5000 milliseconds
+</font></pre>
+<br><br>
+
+<pre class="d_code">StopWatch sw;
+sw.wait(5.<u>seconds</u>);
+</pre>
+<br><br>
+
+</dd>
+<dt><big><a name="minutes"></a>pure nothrow @nogc @property uint <u>minutes</u>(uint <i>n</i>);
+</big></dt>
+<dd>Returns the given <u>minutes</u> in milliseconds
+<br><br>
+<b>Example:</b><br>
+<pre class="d_code"><font color=blue>int</font> <i>n</i> = 5.<u>minutes</u>; <font color=green>// n is 300_000 because 5 minutes are 300 seconds are 300_000 milliseconds
+</font></pre>
+<br><br>
+
+<pre class="d_code">StopWatch sw;
+sw.wait(5.<u>minutes</u>);
+</pre>
+<br><br>
 
 </dd>
 <dt><big><a name="Time"></a>struct <u>Time</u>;

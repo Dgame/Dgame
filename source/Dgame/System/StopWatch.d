@@ -26,7 +26,7 @@ module Dgame.System.StopWatch;
 private import derelict.sdl2.functions;
 
 /**
- * To convert the Clock milliseconds to seconds
+ * Convert the Clock milliseconds to seconds
  */
 @nogc
 float asSeconds(uint n) pure nothrow {
@@ -34,7 +34,7 @@ float asSeconds(uint n) pure nothrow {
 }
 
 /**
- * To convert the Clock milliseconds to minutes
+ * Convert the Clock milliseconds to minutes
  */
 @nogc
 float asMinutes(uint n) pure nothrow {
@@ -44,13 +44,51 @@ float asMinutes(uint n) pure nothrow {
 }
 
 /**
- * To convert the Clock milliseconds to hours
+ * Convert the Clock milliseconds to hours
  */
 @nogc
 ushort asHours(uint n) pure nothrow {
     immutable float mins = asMinutes(n);
     
     return mins >= 60 ? cast(ushort)(mins / 60) : 0;
+}
+
+/**
+* Returns the given seconds in milliseconds
+*
+* Example:
+* ----
+* int n = 5.seconds; // n is 5000 because 5 seconds are 5000 milliseconds
+* ----
+*
+* ----
+* StopWatch sw;
+* sw.wait(5.seconds);
+* ----
+*/
+@nogc
+@property
+uint seconds(uint n) pure nothrow {
+    return n * 1000;
+}
+
+/**
+* Returns the given minutes in milliseconds
+*
+* Example:
+* ----
+* int n = 5.minutes; // n is 300_000 because 5 minutes are 300 seconds are 300_000 milliseconds
+* ----
+*
+* ----
+* StopWatch sw;
+* sw.wait(5.minutes);
+* ----
+*/
+@nogc
+@property
+uint minutes(uint n) pure nothrow {
+    return (n * 60).seconds;
 }
 
 /**
