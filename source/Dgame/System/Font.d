@@ -35,6 +35,9 @@ import Dgame.Graphic.Surface;
 
 @nogc
 char* toStringz(string text, char[] buf) nothrow {
+    assert(text.length != 0);
+    assert(buf.length != 0);
+
     if (text.length < buf.length) {
         buf[0 .. text.length] = text;
         buf[text.length] = '\0';
@@ -163,6 +166,7 @@ public:
     @nogc
     Surface render()(string text, auto ref const Color4b fg, auto ref const Color4b bg, Mode mode = Mode.Solid) nothrow {
         assert(_ttf, "Font is invalid");
+        assert(text.length != 0, "Empty text");
 
         SDL_Color a = void;
         SDL_Color b = void;
@@ -170,9 +174,15 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
-        char[512] buf = void;
-        char* ptr = toStringz(text, buf[]);
-        scope(exit) if (ptr !is buf.ptr) m3.m3.destruct(ptr);
+        char[512] buf = void; // TODO: reduce to 256?
+        char* ptr = text.ptr;
+        if (text[$ - 1] != '\0') // TODO: text.canFind('\0')? O(1) vs. O(n)
+            ptr = toStringz(text, buf[]);
+
+        scope(exit) {
+            if (ptr !is buf.ptr && ptr !is text.ptr)
+                m3.m3.destruct(ptr);
+        }
 
         SDL_Surface* srfc;
         final switch (mode) {

@@ -100,6 +100,12 @@ public:
      * Option for the line width. Default is 1
      */
     ubyte lineWidth = 1;
+    /**
+     * Optional anti-alias for lines thicker than 1. Default is false.
+     *
+     * Note: this is redundant if you have already enabled anti-aliasing
+     */
+    bool antiAliasing = false;
 
 final:
     /**

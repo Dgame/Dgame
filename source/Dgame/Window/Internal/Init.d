@@ -153,6 +153,14 @@ void _initGLAttr(ref GLSettings gl_settings) {
             assert(0);
         }
 
+        int max_samples;
+        glGetIntegerv(GL_MAX_SAMPLES, &samples);
+
+        if (gl_settings.antiAliasLevel > max_samples) {
+            printf("Your anti-alias level (%d) is too high and will be reduced to %d.\n",gl_settings.antiAliasLevel, max_samples);
+            gl_settings.antiAliasLevel = max_samples;
+        }
+
         result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
         if (result != 0) {
             printf("Error by initializing OpenGL: %s\n", SDL_GetError());
