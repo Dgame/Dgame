@@ -75,8 +75,8 @@ public:
      */
     @nogc
     this(float a00, float a01, float a02,
-        float a10, float a11, float a12,
-        float a20, float a21, float a22) pure nothrow
+         float a10, float a11, float a12,
+         float a20, float a21, float a22) pure nothrow
     {
         _values[0] = a00; _values[4] = a01; _values[8] = 0; _values[12] = a02;
         _values[1] = a10; _values[5] = a11; _values[9] = 0; _values[13] = a12;
@@ -126,8 +126,8 @@ public:
     @nogc
     float det() const pure nothrow {
         return _values[0] * (_values[15] * _values[5] - _values[7] * _values[13]) -
-            _values[1] * (_values[15] * _values[4] - _values[7] * _values[12]) +
-            _values[3] * (_values[13] * _values[4] - _values[5] * _values[12]);
+               _values[1] * (_values[15] * _values[4] - _values[7] * _values[12]) +
+               _values[3] * (_values[13] * _values[4] - _values[5] * _values[12]);
     }
 
     /**
@@ -177,8 +177,8 @@ public:
     @nogc
     ref Matrix4 scale(float scale) pure nothrow {
         const Matrix4 scaling = Matrix4(scale, 0, 0,
-                       0, scale, 0,
-                       0, 0, 1);
+                                        0, scale, 0,
+                                        0, 0, 1);
 
         return merge(this, scaling);
     }
