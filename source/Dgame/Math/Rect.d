@@ -182,7 +182,7 @@ struct Rect {
      * Checks whether this Rect contains the given coordinates.
      */
     @nogc
-    bool contains(ref const Vector2i vec) const pure nothrow {
+    bool contains()(auto ref const Vector2i vec) const pure nothrow {
         return this.contains(vec.x, vec.y);
     }
     
@@ -270,7 +270,7 @@ struct Rect {
      * Set a new position with a vector.
      */
     @nogc
-    void setPosition(ref const Vector2i position) pure nothrow {
+    void setPosition()(auto ref const Vector2i position) pure nothrow {
         this.setPosition(position.x, position.y);
     }
     
@@ -286,7 +286,7 @@ struct Rect {
      * Move the object.
      */
     @nogc
-    void move(ref const Vector2i vec) pure nothrow {
+    void move()(auto ref const Vector2i vec) pure nothrow {
         this.move(vec.x, vec.y);
     }
     

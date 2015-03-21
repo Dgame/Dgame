@@ -207,7 +207,7 @@ final:
     void setTextureRect()(auto ref const Rect rect) pure nothrow {
         assert(_texture, "No texture defined");
 
-        const Rect clip = this.getClipRect();
+        const Rect clip = this.getVertexRect();
         foreach (ref Vertex v; _vertices) {
             immutable float xratio = clip.width > 0 ? (v.position.x - clip.x) / clip.width : 0;
             immutable float yratio = clip.height > 0 ? (v.position.y - clip.y) / clip.height : 0;
@@ -218,10 +218,10 @@ final:
     }
 
     /**
-     * Returns the clip Rect
+     * Returns the Rect which contains all vertices
      */
     @nogc
-    Rect getClipRect() const pure nothrow {
+    Rect getVertexRect() const pure nothrow {
         assert(_vertices.length > 0, "No vertices");
 
         float left = _vertices[0].position.x;
@@ -248,6 +248,17 @@ final:
         immutable uint h = cast(uint)(bottom - top);
 
         return Rect(l, t, w, h);
+    }
+
+    /**
+     * Returns the clip Rect
+     */
+    @nogc
+    Rect getClipRect() const pure nothrow {
+        Rect rect = this.getVertexRect();
+        rect.move(Vector2i(super.getPosition()));
+
+        return rect;
     }
 
     /**
