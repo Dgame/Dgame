@@ -78,7 +78,9 @@ protected:
             _vertices[3].position.y = th;
         }
 
-        wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices.ptr, 4);
+        immutable ubyte vCount = _text.length != 0 ? 4 : 0;
+
+        wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices.ptr, vCount);
     }
 
     @nogc
@@ -155,7 +157,7 @@ final:
     void format(Args...)(string text, Args args) pure {
         import std.string : format;
 
-        immutable string formated = format(text, args);
+        immutable string formated = text.length != 0 ? format(text, args) : null;
         if (formated != _text) {
             _text = formated;
             _redraw = true;
@@ -166,25 +168,21 @@ final:
      * Set or reset the current text by using std.conv.to!(string) if the data is not a string
      */
     void setData(T)(T data) pure nothrow {
-        import std.conv : to;
+
         static if (is(T == string))
             immutable string text = data;
-        else
+        else static if (is(T == typeof(null)))
+            immutable string text = null;
+        else {
+            import std.conv : to;
+
             immutable string text = to!string(data);
+        }
 
         if (text != _text) {
             _text = text;
             _redraw = true;
         }
-    }
-
-    /**
-     * Cleans / Clears the current text so that nothing can be drawn.
-     */
-    @nogc
-    void clear() pure nothrow {
-        _text = null;
-        _redraw = true;
     }
 
     /**

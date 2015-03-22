@@ -410,6 +410,9 @@ public:
 
     @nogc
     void draw(Geometry geo, ref const Matrix4 mat, const Texture* texture, const Vertex* vertices, uint vCount) const nothrow {
+        if (vCount == 0)
+            return;
+
         glPushMatrix();
         scope(exit) glPopMatrix();
 
@@ -426,10 +429,8 @@ public:
             glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
         glDrawArrays(geo, 0, vCount);
 
-        if (texture) {
+        if (texture)
             texture.unbind();
-            //glDisable(GL_TEXTURE_2D);
-        }
     }
 
     /**
