@@ -25,8 +25,6 @@ module Dgame.Graphic.Shape;
 
 private:
 
-static import std.math;
-
 import derelict.opengl3.gl;
 
 import Dgame.Graphic.Drawable;
@@ -136,11 +134,13 @@ final:
      * CTor for circles
      */
     this()(size_t radius, auto ref const Vector2f center, size_t vecNum = 30) pure nothrow {
+        import std.math : PI, cos, sin;
+
         assert(vecNum >= 10, "Too few edges for a circle");
 
         this(Geometry.TriangleFan);
 
-        enum real PIx2 = std.math.PI * 2;
+        enum real PIx2 = PI * 2;
         immutable float Deg2Rad = PIx2 / vecNum;
 
         _vertices.reserve(vecNum);
@@ -148,8 +148,8 @@ final:
         for (size_t i = 0; i < vecNum; i++) {
             immutable float degInRad = i * Deg2Rad;
             
-            immutable float x = center.x + std.math.cos(degInRad) * radius;
-            immutable float y = center.y + std.math.sin(degInRad) * radius;
+            immutable float x = center.x + cos(degInRad) * radius;
+            immutable float y = center.y + sin(degInRad) * radius;
             
             this.append(Vertex(x, y));
         }
@@ -229,7 +229,7 @@ final:
         float right = _vertices[0].position.x;
         float bottom = _vertices[0].position.y;
 
-        foreach (ref const Vertex v; _vertices) {
+        foreach (ref const Vertex v; _vertices[1 .. $]) {
             // Update left and right
             if (v.position.x < left)
                 left = v.position.x;

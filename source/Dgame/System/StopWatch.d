@@ -66,8 +66,8 @@ ushort asHours(uint n) pure nothrow {
 * sw.wait(5.seconds);
 * ----
 */
-@nogc
 @property
+@nogc
 uint seconds(uint n) pure nothrow {
     return n * 1000;
 }
@@ -85,8 +85,8 @@ uint seconds(uint n) pure nothrow {
 * sw.wait(5.minutes);
 * ----
 */
-@nogc
 @property
+@nogc
 uint minutes(uint n) pure nothrow {
     return (n * 60).seconds;
 }

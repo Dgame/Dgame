@@ -57,9 +57,7 @@ private:
 protected:
     @nogc
     override void draw(ref const Window wnd) nothrow {
-        import core.stdc.stdio : printf;
-
-        if (_text.length && _redraw) {
+        if (_text.length != 0 && _redraw) {
             assert(_font, "No font given");
 
             _redraw = false;
