@@ -77,9 +77,8 @@ protected:
             _vertices[3].position.x = tw;
             _vertices[3].position.y = th;
         }
-
+        
         immutable ubyte vCount = _text.length != 0 ? 4 : 0;
-
         wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices.ptr, vCount);
     }
 
@@ -168,7 +167,6 @@ final:
      * Set or reset the current text by using std.conv.to!(string) if the data is not a string
      */
     void setData(T)(T data) pure nothrow {
-
         static if (is(T == string))
             immutable string text = data;
         else static if (is(T == typeof(null)))
