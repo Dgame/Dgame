@@ -47,7 +47,7 @@ class Text : Transformable, Drawable {
 private:
     Vertex[4] _vertices;
 
-    Texture _texture; // TODO: make it a Texture*? Is it guaranteed that the DTor is called?
+    Texture _texture;
     Font* _font;
 
     string _text;

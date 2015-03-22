@@ -174,9 +174,9 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
-        char[512] buf = void; // TODO: reduce to 256?
+        char[256] buf = void;
         char* ptr = null;
-        if (text[$ - 1] != '\0') // TODO: text.canFind('\0')? O(1) vs. O(n)
+        if (text[$ - 1] != '\0')
             ptr = toStringz(text, buf[]);
 
         scope(exit) if (ptr && ptr !is buf.ptr) m3.m3.destruct(ptr);
