@@ -255,7 +255,7 @@ public:
      * See: <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html#ortho">here</a>
      */
     @nogc
-    bool ortho()(auto ref const Rect rect, float zNear = 1, float zFar = -1)/* pure nothrow */{
+    bool ortho()(auto ref const Rect rect, float zNear = 1, float zFar = -1) pure nothrow {
         if (!rect.isEmpty()) {
             immutable float inv_z = 1.0 / (zFar - zNear);
             immutable float inv_y = 1.0 / (cast(float) rect.x - rect.height);

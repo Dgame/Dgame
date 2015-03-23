@@ -160,7 +160,7 @@ void _initGL() {
     if (_isGLInited)
         return;
 
-    import core.stdc.stdio : printf;
+    debug import core.stdc.stdio : printf;
 
     scope(exit) _isGLInited = true;
 
