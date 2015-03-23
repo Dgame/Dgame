@@ -25,8 +25,6 @@ module Dgame.Window.Internal.Init;
 
 private:
 
-import core.stdc.stdio : printf;
-
 import derelict.sdl2.sdl;
 import derelict.opengl3.gl;
 import derelict.sdl2.ttf;
@@ -34,6 +32,8 @@ import derelict.sdl2.image;
 import derelict.sdl2.mixer;
 
 import Dgame.Window.GLSettings;
+
+import Dgame.Internal.Error;
 
 shared static this() {
     DerelictSDL2.load();
@@ -72,50 +72,41 @@ void _initSDL() {
     if (_isSDLInited)
         return;
 
+    import core.stdc.stdio : printf;
+
     scope(exit) _isSDLInited = true;
 
     // Initialize SDL2
     int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    if (result != 0) {
-        printf("Error: SDL could not be initialized: %s\n", SDL_GetError());
-        assert(0);
-    }
+    assert_fmt(result == 0, "Error: SDL could not be initialized: %s\n", SDL_GetError());
 
     // Initialize SDL_image
 
     result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
-    if (result == 0) {
-        printf("Error: Failed to init the required jpg and png support: %s\n", IMG_GetError());
-        assert(0);
-    } else if ((result & IMG_INIT_JPG) == 0)
+    assert_fmt(result != 0, "Error: Failed to init the required jpg and png support: %s\n", IMG_GetError());
+    
+    if ((result & IMG_INIT_JPG) == 0)
         printf("Warning: No jpg support: %s\n", IMG_GetError());
     else if ((result & IMG_INIT_PNG) == 0)
         printf("Warning: No png support: %s\n", IMG_GetError());
 
     // Initialize SDL_ttf
     result = TTF_Init();
-    if (result != 0) {
-        printf("Error: SDL_TTF could not be initialized: %s\n", Mix_GetError());
-        assert(0);
-    }
+    assert_fmt(result == 0, "Error: SDL_TTF could not be initialized: %s\n", Mix_GetError());
 
     // Initialize SDL_mixer
     result = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
-    if (result == 0) {
-        printf("Error: Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
-        assert(0);
-    } else if ((result & MIX_INIT_OGG) == 0)
+    assert_fmt(result != 0, "Error: Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
+    
+    if ((result & MIX_INIT_OGG) == 0)
         printf("Warning: No ogg support: %s\n", Mix_GetError());
     else if ((result & MIX_INIT_MP3) == 0)
         printf("Warning: No mp3 support: %s\n", Mix_GetError());
 
     result = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
+    assert_fmt(result == 0, "Warning: Could not open Mix_OpenAudio: %s\n", Mix_GetError());
 
-    // ignore this warning silently
-    version (none) {
-        if (result != 0)
-            printf("Warning: Could not open Mix_OpenAudio: %s\n", Mix_GetError());
-    }
+    SDL_ClearError(); // Ignore XAudio2 error: http://redmine.audacious-media-player.org/issues/346
     
     immutable int channels = Mix_AllocateChannels(256);
     if (channels < 256)
@@ -124,6 +115,8 @@ void _initSDL() {
 
 @nogc
 void _initGLAttr(ref GLSettings gl_settings) {
+    import core.stdc.stdio : printf;
+
     // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
     version (OSX) {
         if (gl_settings.majorVersion == 0) {
@@ -134,24 +127,15 @@ void _initGLAttr(ref GLSettings gl_settings) {
 
     if (gl_settings.majorVersion != 0) {
         int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
-        if (result != 0) {
-            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-            assert(0);
-        }
+        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
 
         result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
-        if (result != 0) {
-            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-            assert(0);
-        }
+        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
     }
 
     if (gl_settings.antiAliasLevel > 0) {
         int result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        if (result != 0) {
-            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-            assert(0);
-        }
+        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
 
         int max_samples;
         glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
@@ -162,27 +146,21 @@ void _initGLAttr(ref GLSettings gl_settings) {
         }
 
         result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
-        if (result != 0) {
-            printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-            assert(0);
-        }
+        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
     }
 
     int result = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    if (result != 0) {
-        printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-        assert(0);
-    }
+    assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
+
     result = SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-    if (result != 0) {
-        printf("Error by initializing OpenGL: %s\n", SDL_GetError());
-        assert(0);
-    }
+    assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
 }
 
 void _initGL() {
     if (_isGLInited)
         return;
+
+    import core.stdc.stdio : printf;
 
     scope(exit) _isGLInited = true;
 
@@ -195,11 +173,7 @@ void _initGL() {
     else
         enum GLVersion NEEDED_GL_VERSION = GLVersion.GL30;
 
-    immutable bool glValidateVersion = glver >= NEEDED_GL_VERSION;
-    if (!glValidateVersion) {
-        printf("Your OpenGL version (%d) is too low.", glver);
-        assert(0);
-    }
+    assert_fmt(glver >= NEEDED_GL_VERSION, "Your OpenGL version (%d) is too low.", glver);
 
     glDisable(GL_DITHER);
     glDisable(GL_LIGHTING);

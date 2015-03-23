@@ -25,8 +25,6 @@ module Dgame.Audio.Music;
 
 private:
 
-import core.stdc.stdio : printf;
-
 import derelict.sdl2.mixer;
 
 public:
@@ -78,6 +76,8 @@ public:
     bool loadFromFile(string filename) nothrow {
         _music = Mix_LoadMUS(filename.ptr);
         if (!_music) {
+            import core.stdc.stdio : printf;
+            
             printf("Could not load file: %s\n", Mix_GetError());
             return false;
         }

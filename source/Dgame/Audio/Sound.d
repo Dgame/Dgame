@@ -25,8 +25,6 @@ module Dgame.Audio.Sound;
 
 private:
 
-import core.stdc.stdio : printf;
-
 import derelict.sdl2.mixer;
 
 public:
@@ -91,6 +89,8 @@ public:
     bool loadFromFile(string filename) nothrow {
         _chunk = Mix_LoadWAV(filename.ptr);
         if (!_chunk) {
+            import core.stdc.stdio : printf;
+
             printf("Could not load file: %s\n", Mix_GetError());
             return false;
         }

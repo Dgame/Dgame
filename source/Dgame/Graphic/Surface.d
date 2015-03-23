@@ -28,12 +28,12 @@ private:
 import derelict.sdl2.sdl;
 import derelict.sdl2.image;
 
-import core.stdc.stdio : printf;
-
 import Dgame.Math.Rect;
 import Dgame.Math.Vector2;
 
 import Dgame.Graphic.Color;
+
+import Dgame.Internal.Error;
 
 // @@ Fix for 2.066 @@ //
 @nogc
@@ -187,6 +187,7 @@ public:
     @nogc
     bool loadFromFile(string filename) nothrow {
         //import std.file : exists;
+        import core.stdc.stdio : printf;
 
         immutable bool ex = exists(filename);
         if (!ex) {
@@ -219,6 +220,8 @@ public:
 
         _surface = SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
         if (!_surface) {
+            import core.stdc.stdio : printf;
+
             printf("Could not load image. Error: %s.\n", SDL_GetError());
             return false;
         }
@@ -235,6 +238,8 @@ public:
     bool saveToFile(string filename) nothrow {
         immutable int result = IMG_SavePNG(_surface, filename.ptr);
         if (result != 0) {
+            import core.stdc.stdio : printf;
+
             printf("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
             return false;
         }
@@ -345,6 +350,7 @@ public:
             return true;
         }
 
+        import core.stdc.stdio : printf;
         printf("Image could not be adapted: %s\n", SDL_GetError());
 
         return false;
@@ -620,8 +626,11 @@ public:
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
         immutable bool result = SDL_BlitScaled(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
-        if (!result)
+        if (!result) {
+            import core.stdc.stdio : printf;
+
             printf("Could not blit surface: %s\n", SDL_GetError());
+        }
 
         return result;
     }
@@ -645,8 +654,11 @@ public:
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
         immutable bool result = SDL_BlitSurface(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
-        if (!result)
+        if (!result) {
+            import core.stdc.stdio : printf;
+
             printf("Could not blit surface: %s\n", SDL_GetError());
+        }
 
         return result;
     }
@@ -666,10 +678,7 @@ public:
         SDL_Rect clip = void;
 
         immutable int result = SDL_BlitSurface(_surface, _transfer(rect, clip), sub, null);
-        if (result == 0) {
-            printf("Could not blit surface: %s\n", SDL_GetError());
-            assert(0);
-        }
+        assert_fmt(result != 0, "Could not blit Surface: %s\n", SDL_GetError());
         
         return Surface(sub);
     }

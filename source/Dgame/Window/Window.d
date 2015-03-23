@@ -514,6 +514,8 @@ public:
         
         if (style & FullScreenMask || style == 0) {
             if (SDL_SetWindowFullscreen(this._window, style) != 0) {
+                import core.stdc.stdio : printf;
+
                 printf("Could not enable fullscreen: %s\n", SDL_GetError());
                 return false;
             }

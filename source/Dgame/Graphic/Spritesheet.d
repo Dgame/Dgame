@@ -28,6 +28,7 @@ private:
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Sprite;
 
+import Dgame.Math.Vector2;
 import Dgame.Math.Rect;
 
 import Dgame.System.StopWatch;
@@ -93,15 +94,6 @@ final:
     }
 
     /**
-     * Manual moving of the Texture Rect
-     */
-    @nogc
-    void moveTextureRect(int x, int y) pure nothrow {
-        _texRect.move(x, y);
-        _updateVertices();
-    }
-
-    /**
      * Slide / move the current view of the Texture,
      * so that the next view of the Texture will be drawn.
      * This happens by moving the Texture Rect.
@@ -130,5 +122,29 @@ final:
         }
 
         _updateVertices();
+    }
+
+    /**
+     * Selects a specific frame and adapts the position of the texture rect.
+     * The index starts at 0 line by line.
+     */
+    @nogc
+    void selectFrame(ubyte index) pure nothrow {
+        const Vector2i old_position = _texRect.getPosition();
+
+        immutable uint frames_w = _texture.width / _texRect.width;
+        immutable float num_h = index / float(frames_w);
+        immutable float num_w = num_h - cast(uint) num_h;
+
+        _texRect.y = cast(uint)(num_h) * _texRect.height;
+        _texRect.x = cast(uint)(num_w * _texture.width) - _texRect.width;
+
+        if (_texRect.x >= _texture.width)
+            _texRect.x = 0;
+        if (_texRect.y >= _texture.height)
+            _texRect.y = 0;
+
+        if (old_position.x != _texRect.x || old_position.y != _texRect.y)
+            _updateVertices();
     }
 }

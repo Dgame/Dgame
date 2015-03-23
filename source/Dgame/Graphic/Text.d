@@ -77,7 +77,7 @@ protected:
             _vertices[3].position.x = tw;
             _vertices[3].position.y = th;
         }
-        
+
         immutable ubyte vCount = _text.length != 0 ? 4 : 0;
         wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices.ptr, vCount);
     }
@@ -99,15 +99,15 @@ protected:
 
 public:
     /**
-     * The foreground color. Default is Black.
+     * The foreground color. Default is Color4b.Black.
      */
     Color4b foreground = Color4b.Black;
     /**
-     * The background color. Default is White.
+     * The background color. Default is Color4b.White.
      */
     Color4b background = Color4b.White;
     /**
-     * The Font mode which is default Solid.
+     * The Font mode which is default Font.Mode.Solid.
      */
     Font.Mode mode = Font.Mode.Solid;
 

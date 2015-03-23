@@ -33,6 +33,8 @@ import derelict.sdl2.ttf;
 import Dgame.Graphic.Color;
 import Dgame.Graphic.Surface;
 
+import Dgame.Internal.Error;
+
 @nogc
 char* toStringz(string text, char[] buf) nothrow {
     assert(text.length != 0);
@@ -127,6 +129,8 @@ public:
         _fontSize = fontSize == 0 ? DefaultSize : fontSize;
         _ttf = TTF_OpenFont(filename.ptr, _fontSize);
         if (!_ttf) {
+            import core.stdc.stdio : printf;
+
             printf("Error by loading TTF_Font: %s\n", TTF_GetError());
             return false;
         }
@@ -194,10 +198,7 @@ public:
                 break;
         }
 
-        if (!srfc) {
-            printf("Error by rendering text: %s\n", TTF_GetError());
-            assert(0);
-        }
+        assert_fmt(srfc !is null, "Error by rendering text: %s", TTF_GetError());
 
         if (srfc.format.BitsPerPixel < 24) {
             SDL_PixelFormat fmt;

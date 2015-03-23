@@ -45,10 +45,6 @@ struct KeyboardEvent {
      */
     Keyboard.Code code;
     /**
-     * The Key which is released or pressed.
-     */
-    Keyboard.ScanCode scancode;
-    /**
      * The Key modifier.
      */
     Keyboard.Mod mod;
@@ -227,7 +223,6 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.windowId = sdl_event.key.windowID;
             
             event.keyboard.code = cast(Keyboard.Code) sdl_event.key.keysym.sym;
-            event.keyboard.scancode = cast(Keyboard.ScanCode) sdl_event.key.keysym.scancode;
             
             event.keyboard.repeat = sdl_event.key.repeat != 0;
             event.keyboard.state = cast(Keyboard.State) sdl_event.key.state;

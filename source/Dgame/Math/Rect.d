@@ -157,14 +157,6 @@ struct Rect {
     }
     
     /**
-     * Checks if all corners are zero.
-     */
-    @nogc
-    bool isZero() const pure nothrow {
-        return this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0;
-    }
-    
-    /**
      * Returns an union of the given and this Rect.
      */
     @nogc

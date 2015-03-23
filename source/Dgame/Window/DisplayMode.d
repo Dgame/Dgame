@@ -25,8 +25,6 @@ module Dgame.Window.DisplayMode;
 
 private:
 
-import core.stdc.stdio : printf;
-
 import derelict.sdl2.sdl;
 
 DisplayMode[][] modes;
@@ -83,8 +81,11 @@ struct DisplayMode {
     static DisplayMode getDesktopMode(ubyte display = 1) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDesktopDisplayMode(display, &mode);
-        if (result != 0)
+        if (result != 0) {
+            import core.stdc.stdio : printf;
+
             printf("An error occured: %s\n", SDL_GetError());
+        }
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
@@ -96,8 +97,11 @@ struct DisplayMode {
     static DisplayMode getMode(uint index, ubyte display = 1) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDisplayMode(display, index, &mode);
-        if (result != 0)
+        if (result != 0) {
+            import core.stdc.stdio : printf;
+
             printf("An error occured: %s\n", SDL_GetError());
+        }
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }

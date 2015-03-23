@@ -166,6 +166,8 @@ void main() {
                 else if (event.keyboard.key == Keyboard.Code.Space) {
                     explosion_sound.play();
                     explosion.slideTextureRect();
+                } else if (event.keyboard.key == Keyboard.Code.Dot) {
+                    explosion.selectFrame(37);
                 }
             }
         }
