@@ -47,13 +47,26 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </big></dt>
 <dd>Slide / move the current view of the Texture,
  so that the next view of the Texture will be drawn.
- This happens by moving the Texture Rect.<br><br>
+ This happens by moving the Texture Rect.
+<br><br>
+<b>Note:</b><br>
+If you reached the end of the Texture, the procedure starts from scratch.<br><br>
 
 </dd>
 <dt><big><a name="Spritesheet.selectFrame"></a>final pure nothrow @nogc void <u>selectFrame</u>(ubyte <i>index</i>);
 </big></dt>
 <dd>Selects a specific frame and adapts the position of the texture rect.
- The <i>index</i> starts at 0 line by line.<br><br>
+ The <i>index</i> starts at 0 and line by line.
+<br><br>
+<b>Note:</b><br>
+The size of your Texture and the size of your Texture-Rect should be divisible without a rest.<br><br>
+
+</dd>
+<dt><big><a name="Spritesheet.numOfFrames"></a>final const pure nothrow @nogc uint <u>numOfFrames</u>();
+</big></dt>
+<dd>Returns how many frames this Spritesheet has.
+ The width / height of the current Texture is divided through
+ the corresponding width / height of the current Texture-Rect and both values are being multiplied.<br><br>
 
 </dd>
 </dl>

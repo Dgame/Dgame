@@ -133,6 +133,11 @@ void main() {
     Spritesheet explosion = new Spritesheet(explosion_tex, Rect(0, 0, 256, 256));
     explosion.setPosition(100, 100);
 
+    Texture frames_tex = Texture(Surface("samples/images/frames.png"));
+    Spritesheet frames = new Spritesheet(frames_tex, Rect(0, 0, 32, 32));
+    
+    ubyte idx = 0;
+
     Event event;
 
     //ushort fps = 0;
@@ -167,7 +172,9 @@ void main() {
                     explosion_sound.play();
                     explosion.slideTextureRect();
                 } else if (event.keyboard.key == Keyboard.Code.Dot) {
-                    explosion.selectFrame(37);
+                    frames.selectFrame(idx);
+                    writeln(idx);
+                    idx++;
                 }
             }
         }
@@ -183,6 +190,7 @@ void main() {
         wnd.draw(tri);
 
         wnd.draw(explosion);
+        wnd.draw(frames);
 
         wnd.draw(curFps);
 

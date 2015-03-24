@@ -97,6 +97,8 @@ final:
      * Slide / move the current view of the Texture,
      * so that the next view of the Texture will be drawn.
      * This happens by moving the Texture Rect.
+     *
+     * Note: If you reached the end of the Texture, the procedure starts from scratch.
      */
     @nogc
     void slideTextureRect() nothrow {
@@ -126,25 +128,42 @@ final:
 
     /**
      * Selects a specific frame and adapts the position of the texture rect.
-     * The index starts at 0 line by line.
+     * The index starts at 0 and line by line.
+     *
+     * Note: The size of your Texture and the size of your Texture-Rect should be divisible without a rest.
      */
     @nogc
     void selectFrame(ubyte index) pure nothrow {
-        const Vector2i old_position = _texRect.getPosition();
+        immutable uint nof = this.numOfFrames();
+        if (index >= nof)
+            index = index % nof;
 
-        immutable uint frames_w = _texture.width / _texRect.width;
-        immutable float num_h = index / float(frames_w);
-        immutable float num_w = num_h - cast(uint) num_h;
+        int sum = index * _texRect.width;
+     
+        int x = 0, y = 0;
+        while (sum >= _texRect.width) {
+            x += _texRect.width;
+            if (x >= _texture.width) {
+                x = 0;
+                y += _texRect.height;
+            }
+     
+            sum -= _texRect.width;
+        }
 
-        _texRect.y = cast(uint)(num_h) * _texRect.height;
-        _texRect.x = cast(uint)(num_w * _texture.width) - _texRect.width;
+        _texRect.x = x;
+        _texRect.y = y;
 
-        if (_texRect.x >= _texture.width)
-            _texRect.x = 0;
-        if (_texRect.y >= _texture.height)
-            _texRect.y = 0;
+        _updateVertices();
+    }
 
-        if (old_position.x != _texRect.x || old_position.y != _texRect.y)
-            _updateVertices();
+    /**
+     * Returns how many frames this Spritesheet has.
+     * The width / height of the current Texture is divided through
+     * the corresponding width / height of the current Texture-Rect and both values are being multiplied.
+     */
+    @nogc
+    uint numOfFrames() const pure nothrow {
+        return (_texture.width / _texRect.width) * (_texture.height / _texRect.height);
     }
 }
