@@ -65,7 +65,7 @@ shared static ~this() {
 bool _isGLInited = false;
 bool _isSDLInited = false;
 
-public: /// @@ Replace with package(Dgame): @@
+package(Dgame):
 
 @nogc
 void _initSDL() {
