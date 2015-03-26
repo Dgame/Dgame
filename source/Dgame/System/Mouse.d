@@ -92,6 +92,13 @@ public:
      * The Cursor representation
      */
     alias Cursor = SDL_Cursor*;
+
+    private static Cursor _cursor;
+
+    static ~this() {
+        if (_cursor)
+            SDL_FreeCursor(_cursor);
+    }
     
     /**
      * Returns the mouse state and (if y and y aren't null) the current position.
@@ -102,7 +109,19 @@ public:
     static uint getState(int* x = null, int* y = null) nothrow {
         return SDL_GetMouseState(x, y);
     }
-    
+
+static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
+    /**
+     * Returns the global mouse state and (if y and y aren't null) the global position.
+     * 
+     * See: Mouse.State enum
+     */
+    @nogc
+    static uint getGlobalState(int* x = null, int* y = null) nothrow {
+        return SDL_GetGlobalMouseState(x, y);
+    }
+}
+
     /**
      * Returns the relative mouse state and (if y and y aren't null) the relative position.
      * This means the difference of the positions since the last call of this method.
@@ -158,7 +177,13 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      */
     @nogc
     static Cursor createCursor(ref Surface srfc, int hx, int hy) nothrow {
-        return srfc.setAsCursorAt(hx, hy);
+        Cursor my_cursor = srfc.setAsCursorAt(hx, hy);
+        if (my_cursor && _cursor) {
+            SDL_FreeCursor(_cursor);
+            _cursor = my_cursor;
+        }
+
+        return _cursor;
     }
 
     /**
@@ -166,7 +191,13 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      */
     @nogc
     static Cursor createCursor(SystemCursor cursor) nothrow {
-        return SDL_CreateSystemCursor(cursor);
+        Cursor my_cursor = SDL_CreateSystemCursor(cursor);
+        if (my_cursor && _cursor) {
+            SDL_FreeCursor(_cursor);
+            _cursor = my_cursor;
+        }
+
+        return _cursor;
     }
 
     /**

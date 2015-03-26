@@ -104,9 +104,9 @@ struct Color4b {
      */
     @nogc
     bool opEquals(ref const Color4b col) const pure nothrow {
-        return this.red == col.red &&
+        return this.red   == col.red &&
                this.green == col.green &&
-               this.blue == col.blue &&
+               this.blue  == col.blue &&
                this.alpha == col.alpha;
     }
     
@@ -153,10 +153,10 @@ struct Color4f {
      */
     @nogc
     this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) pure nothrow {
-        this.red   = red / 255f;
-        this.green = green / 255f;
-        this.blue  = blue / 255f;
-        this.alpha = alpha / 255f;
+        this.red   = red   > 0 ? red   / 255f : 0;
+        this.green = green > 0 ? green / 255f : 0;
+        this.blue  = blue  > 0 ? blue  / 255f : 0;
+        this.alpha = alpha > 0 ? alpha / 255f : 0;
     }
 
     /**
@@ -190,9 +190,9 @@ struct Color4f {
      */
     @nogc
     bool opEquals(ref const Color4f col) const pure nothrow {
-        return this.red == col.red &&
+        return this.red   == col.red &&
                this.green == col.green &&
-               this.blue == col.blue &&
+               this.blue  == col.blue &&
                this.alpha == col.alpha;
     }
     
