@@ -33,33 +33,6 @@ import Dgame.System.Keyboard;
 public:
 
 /**
- * The Keyboard Event structure.
- */
-struct KeyboardEvent {
-    /**
-     * Keyboard State. See: Dgame.Input.Keyboard.
-     */
-    Keyboard.State state;
-    /**
-     * The Key which is released or pressed.
-     */
-    Keyboard.Code code;
-    /**
-     * The Key modifier.
-     */
-    Keyboard.Mod mod;
-    /**
-     * true, if this is a key repeat.
-     */
-    bool repeat;
-
-    /**
-     * An alias
-     */
-    alias key = code;
-}
-
-/**
  * Specific Window Events.
  */
 enum WindowEventId : ubyte {
@@ -93,6 +66,33 @@ struct WindowEvent {
 }
 
 /**
+ * The Keyboard Event structure.
+ */
+struct KeyboardEvent {
+    /**
+     * Keyboard State. See: Dgame.Input.Keyboard.
+     */
+    Keyboard.State state;
+    /**
+     * The Key which is released or pressed.
+     */
+    Keyboard.Code code;
+    /**
+     * The Key modifier.
+     */
+    Keyboard.Mod mod;
+    /**
+     * true, if this is a key repeat.
+     */
+    bool repeat;
+
+    /**
+     * An alias
+     */
+    alias key = code;
+}
+
+/**
  * The Mouse button Event structure.
  */
 struct MouseButtonEvent {
@@ -100,6 +100,18 @@ struct MouseButtonEvent {
      * The mouse button which is pressed or released.
      */
     Mouse.Button button;
+    /**
+     * Mouse State. See: Dgame.Input.Mouse.
+     */
+    Mouse.State state;
+
+static if (SDL_VERSION_ATLEAST(2, 0, 2)) {
+    /**
+     * 1 for single-click, 2 for double-click, etc.
+     */
+    ubyte clicks;
+}
+
     /**
      * Current x position.
      */
@@ -141,21 +153,21 @@ struct MouseMotionEvent {
  */
 struct MouseWheelEvent {
     /**
-     * Current x position.
+     * The amount scrolled horizontally, positive to the right and negative to the left
      */
     int x;
     /**
-     * Current y position.
+     * The amount scrolled vertically, positive away from the user and negative toward the user
      */
     int y;
+
+static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
     /**
-     * The amount scrolled horizontally.
+     * If true, the values in x and y will be opposite. Multiply by -1 to change them back.
      */
-    int delta_x;
-    /**
-     * The amount scrolled vertically.
-     */
-    int delta_y;
+    bool flipped;
+}
+
 }
 
 /**
@@ -252,8 +264,17 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
+
+            if (sdl_event.button.state == SDL_PRESSED)
+                event.mouse.button.state = Mouse.State.Pressed;
+            else
+                event.mouse.button.state = Mouse.State.Released;
             
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
+
+            static if (SDL_VERSION_ATLEAST(2, 0, 2)) {
+                event.mouse.button.clicks = sdl_event.button.clicks;
+            }
             
             event.mouse.button.x = sdl_event.button.x;
             event.mouse.button.y = sdl_event.button.y;
@@ -265,7 +286,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.timestamp = sdl_event.motion.timestamp;
             event.windowId  = sdl_event.motion.windowID;
             
-            if (sdl_event.button.state == SDL_PRESSED)
+            if (sdl_event.motion.state == SDL_PRESSED)
                 event.mouse.motion.state = Mouse.State.Pressed;
             else
                 event.mouse.motion.state = Mouse.State.Released;
@@ -285,9 +306,10 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             
             event.mouse.wheel.x = sdl_event.wheel.x;
             event.mouse.wheel.y = sdl_event.wheel.y;
-            
-            event.mouse.wheel.delta_x = sdl_event.wheel.x;
-            event.mouse.wheel.delta_y = sdl_event.wheel.y;
+
+            static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
+                event.mouse.wheel.flipped = sdl_event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
+            }
             
             return true;
         default:
