@@ -183,8 +183,7 @@ struct Rect {
      */
     @nogc
     bool contains(int x, int y) const pure nothrow {
-        return (x >= this.x) && (x < this.x + this.width)
-            && (y >= this.y) && (y < this.y + this.height);
+        return (x >= this.x) && (x < this.x + this.width) && (y >= this.y) && (y < this.y + this.height);
     }
     
     /**
