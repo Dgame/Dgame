@@ -131,7 +131,7 @@ Matrix4<br><br>
  Position is specifiable and the VerticalSync is disabled<br><br>
 
 </dd>
-<dt><big><a name="Window.loadProjection"></a>const @nogc void <u>loadProjection</u>();
+<dt><big><a name="Window.loadProjection"></a>const nothrow @nogc void <u>loadProjection</u>();
 </big></dt>
 <dd>Load the projection Matrix, so that any change / transformation of the Matrix will now be visible<br><br>
 
@@ -183,6 +183,31 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <br><br>
 
 </dd>
+<dt><big><a name="Window.restore"></a>nothrow @nogc void <u>restore</u>();
+</big></dt>
+<dd>Restore the size and position, if the Window is minimized or maximized.<br><br>
+
+</dd>
+<dt><big><a name="Window.raise"></a>nothrow @nogc void <u>raise</u>();
+</big></dt>
+<dd>Raises the Window above other Windows and set the input focus.<br><br>
+
+</dd>
+<dt><big><a name="Window.maximize"></a>nothrow @nogc void <u>maximize</u>();
+</big></dt>
+<dd>Make the window as large as possible.<br><br>
+
+</dd>
+<dt><big><a name="Window.minimize"></a>nothrow @nogc void <u>minimize</u>();
+</big></dt>
+<dd>Minimize the Window to an iconic representation.<br><br>
+
+</dd>
+<dt><big><a name="Window.setBorder"></a>nothrow @nogc void <u>setBorder</u>(bool <i>enable</i>);
+</big></dt>
+<dd>Set the border state of the Window.<br><br>
+
+</dd>
 <dt><big><a name="Window.hasKeyboardFocus"></a>const nothrow @nogc bool <u>hasKeyboardFocus</u>();
 </big></dt>
 <dd>Returns if the keyboard focus is on this window.<br><br>
@@ -193,7 +218,12 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dd>Returns if the mouse focus is on this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.setPosition"></a>nothrow @nogc void <u>setPosition</u>()(auto ref const Vector2i <i>vec</i>);
+<dt><big><a name="Window.setPosition"></a>nothrow @nogc void <u>setPosition</u>(int <i>x</i>, int <i>y</i>);
+</big></dt>
+<dd>Set a new position to this window<br><br>
+
+</dd>
+<dt><big><a name="Window.setPosition.2"></a>nothrow @nogc void <u>setPosition</u>()(auto ref const Vector2i <i>vec</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
 
@@ -201,6 +231,57 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dt><big><a name="Window.getPosition"></a>nothrow @nogc Vector2i <u>getPosition</u>();
 </big></dt>
 <dd>Returns the current position of the window.<br><br>
+
+</dd>
+<dt><big><a name="Window.setSize"></a>nothrow @nogc void <u>setSize</u>(uint <i>width</i>, uint <i>height</i>);
+</big></dt>
+<dd>Set a new size to this window<br><br>
+
+</dd>
+<dt><big><a name="Window.setSize.2"></a>nothrow @nogc void <u>setSize</u>()(auto ref const Size <i>size</i>);
+</big></dt>
+<dd>Set a new size to this window<br><br>
+
+</dd>
+<dt><big><a name="Window.getSize"></a>nothrow @nogc Size <u>getSize</u>();
+</big></dt>
+<dd>Returns the size (width and height) of the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.getDrawableSize"></a>nothrow @nogc Size <u>getDrawableSize</u>();
+</big></dt>
+<dd>Returns the size of the underlying drawable area (e.g. for use with glViewport).
+ This method may only differ from getSize if you are using High-DPI.<br><br>
+
+</dd>
+<dt><big><a name="Window.setMinimumSize"></a>nothrow @nogc void <u>setMinimumSize</u>(uint <i>width</i>, uint <i>height</i>);
+</big></dt>
+<dd>Set the minimum Size for the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.setMinimumSize.2"></a>nothrow @nogc void <u>setMinimumSize</u>()(auto ref const Size <i>size</i>);
+</big></dt>
+<dd>Set the minimum Size for the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.getMinimumSize"></a>nothrow @nogc Size <u>getMinimumSize</u>();
+</big></dt>
+<dd>Returns the minimum Size of the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.setMaximumSize"></a>nothrow @nogc void <u>setMaximumSize</u>(uint <i>width</i>, uint <i>height</i>);
+</big></dt>
+<dd>Set the maximum Size of the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.setMaximumSize.2"></a>nothrow @nogc void <u>setMaximumSize</u>()(auto ref const Size <i>size</i>);
+</big></dt>
+<dd>Set the maximum Size of the Window<br><br>
+
+</dd>
+<dt><big><a name="Window.getMaximumSize"></a>nothrow @nogc Size <u>getMaximumSize</u>();
+</big></dt>
+<dd>Returns the maximum Size of the Window<br><br>
 
 </dd>
 <dt><big><a name="Window.getStyle"></a>nothrow @nogc uint <u>getStyle</u>();
@@ -268,32 +349,48 @@ if the current Event queue has the Quit Event.<br><br>
 the old <i>title</i><br><br>
 
 </dd>
-<dt><big><a name="Window.setSize"></a>nothrow @nogc void <u>setSize</u>(uint <i>width</i>, uint <i>height</i>);
-</big></dt>
-<dd>Set a new size to this window<br><br>
-
-</dd>
-<dt><big><a name="Window.getSize"></a>nothrow @nogc Size <u>getSize</u>();
-</big></dt>
-<dd>Returns the size (width and height) of the Window<br><br>
-
-</dd>
 <dt><big><a name="Window.setIcon"></a>@nogc void <u>setIcon</u>(ref Surface <i>srfc</i>);
 </big></dt>
 <dd>Set an icon for this window.<br><br>
 
 </dd>
-<dt><big><a name="Window.setFullscreen"></a>nothrow @nogc bool <u>setFullscreen</u>(int <i>style</i>);
+<dt><big><a name="Window.getDisplayIndex"></a>nothrow @nogc int <u>getDisplayIndex</u>();
 </big></dt>
-<dd>Use this function to (re)set Window's fullscreen states.
- <i>style</i> may be Style.Fullscreen for "real" fullscreen with a display mode change
- or Style.Desktop for "fake" fullscreen that takes the size of the desktop
- Use 0 for windowed mode.<br><br>
+<dd>Returns the index of the display which contains the center of the window
+<br><br>
+<b>Note:</b><br>
+If something went wrong (e.g. your Window is invalid), a negative value is returned<br><br>
 
 </dd>
-<dt><big><a name="Window.toggleFullscreen"></a>nothrow @nogc void <u>toggleFullscreen</u>();
+<dt><big><a name="Window.setDisplayMode"></a>nothrow @nogc void <u>setDisplayMode</u>()(auto ref const DisplayMode <i>mode</i>);
 </big></dt>
-<dd>Toggle between Fullscreen and windowed mode, depending on the current state.<br><br>
+<dd>Set the DisplayMode when the Window is visible at fullscreen.<br><br>
+
+</dd>
+<dt><big><a name="Window.getDisplayMode"></a>nothrow @nogc DisplayMode <u>getDisplayMode</u>();
+</big></dt>
+<dd>Returns the DisplayMode when the Window is visible at fullscreen.<br><br>
+
+</dd>
+<dt><big><a name="Window.setFullscreen"></a>nothrow @nogc bool <u>setFullscreen</u>(int <i>style</i>, bool <i>adaptProjection</i> = true);
+</big></dt>
+<dd>Use this function to (re)set Window's fullscreen states.
+<br><br>
+<i>style</i> may be Style.Fullscreen for "real" fullscreen with a display mode change
+ or Style.Desktop for "fake" fullscreen that takes the size of the desktop
+ Use 0 for windowed mode.
+<br><br>
+
+ if <i>adaptProjection</i> is <b>true</b> (which is the default) the projection will automatically adapted.
+ set it to <b>false</b> if you want to specify your own projection afterwards.<br><br>
+
+</dd>
+<dt><big><a name="Window.toggleFullscreen"></a>nothrow @nogc void <u>toggleFullscreen</u>(bool <i>adaptProjection</i> = true);
+</big></dt>
+<dd>Toggle between Fullscreen and windowed mode, depending on the current state.
+<br><br>
+if <i>adaptProjection</i> is <b>true</b> (which is the default) the projection will automatically adapted.
+ set it to <b>false</b> if you want to specify your own projection afterwards.<br><br>
 
 </dd>
 <dt><big><a name="Window.isFullscreen"></a>nothrow @nogc bool <u>isFullscreen</u>();

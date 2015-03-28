@@ -28,7 +28,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>The refresh rate of this video mode<br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.this"></a>pure nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>hz</i>);
+<dt><big><a name="DisplayMode.this"></a>pure nothrow @nogc this(uint <i>width</i>, uint <i>height</i>, ubyte <i>hz</i> = 60);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -38,32 +38,59 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd><u>opEquals</u><br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.getDesktopMode"></a>static nothrow @nogc DisplayMode <u>getDesktopMode</u>(ubyte <i>display</i> = 1);
+<dt><big><a name="DisplayMode.getDesktopMode"></a>static nothrow @nogc DisplayMode <u>getDesktopMode</u>(ubyte <i>display</i> = 0);
 </big></dt>
-<dd><b>Returns:</b><br>
-the desktop video mode<br><br>
+<dd>Returns the desktop video mode at the given <i>display</i>
+<br><br>
+<b>Note:</b><br>
+There's a difference between this and getMode when your application runs in fullscreen
+       and has changed the resolution. In that case this function will return the previous
+       native <i>display</i> mode, and not the current <i>display</i> mode.<br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.getMode"></a>static nothrow @nogc DisplayMode <u>getMode</u>(uint <i>index</i>, ubyte <i>display</i> = 1);
+<dt><big><a name="DisplayMode.getMode"></a>static nothrow @nogc DisplayMode <u>getMode</u>(uint <i>index</i>, ubyte <i>display</i> = 0);
 </big></dt>
-<dd><b>Returns:</b><br>
-the video mode on the given <i>index</i><br><br>
+<dd>Returns the video mode at the given <i>index</i> and <i>display</i><br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.listModes"></a>static nothrow DisplayMode[] <u>listModes</u>(ubyte <i>display</i> = 1);
+<dt><big><a name="DisplayMode.getCurrentMode"></a>static nothrow @nogc DisplayMode <u>getCurrentMode</u>(ubyte <i>display</i> = 0);
 </big></dt>
-<dd><b>Returns:</b><br>
-A List of all valid supported video modes<br><br>
+<dd>Returns the current video mode at the given <i>display</i><br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.numOfModes"></a>static nothrow @nogc int <u>numOfModes</u>(ubyte <i>display</i> = 1);
+<dt><big><a name="DisplayMode.listModes"></a>static nothrow DisplayMode[] <u>listModes</u>(ubyte <i>display</i> = 0);
 </big></dt>
-<dd>Returns how many valid <i>display</i> modes are supported<br><br>
+<dd>Returns a List of all valid supported video modes at the given <i>display</i><br><br>
 
 </dd>
-<dt><big><a name="DisplayMode.numOfDisplays"></a>static nothrow @nogc int <u>numOfDisplays</u>();
+<dt><big><a name="DisplayMode.getDisplayBounds"></a>static nothrow @nogc Rect <u>getDisplayBounds</u>(ubyte <i>display</i> = 0);
+</big></dt>
+<dd>Returns the desktop area represented by the given <i>display</i>, with the primary <i>display</i> located at 0|0.<br><br>
+
+</dd>
+<dt><big><a name="DisplayMode.getDisplayName"></a>static nothrow @nogc string <u>getDisplayName</u>(ubyte <i>display</i> = 0);
+</big></dt>
+<dd>Returns the name of the given <i>display</i><br><br>
+
+</dd>
+<dt><big><a name="DisplayMode.getNumOfModes"></a>static nothrow @nogc int <u>getNumOfModes</u>(ubyte <i>display</i> = 0);
+</big></dt>
+<dd>Returns how many valid <i>display</i> modes are supported at the given <i>display</i><br><br>
+
+</dd>
+<dt><big><a name="DisplayMode.getNumOfDisplays"></a>static nothrow @nogc int <u>getNumOfDisplays</u>();
 </big></dt>
 <dd>Returns how many display are available.<br><br>
+
+</dd>
+<dt><big><a name="DisplayMode.getNumOfVideoDrivers"></a>static nothrow @nogc int <u>getNumOfVideoDrivers</u>();
+</big></dt>
+<dd>Returns how many video drivers are available.<br><br>
+
+</dd>
+<dt><big><a name="DisplayMode.getCurrentVideoDriver"></a>static nothrow @nogc string <u>getCurrentVideoDriver</u>();
+</big></dt>
+<dd>Returns the name of the current video driver.<br><br>
 
 </dd>
 </dl>

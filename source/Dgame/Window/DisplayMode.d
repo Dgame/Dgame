@@ -27,11 +27,24 @@ private:
 
 import derelict.sdl2.sdl;
 
+import Dgame.Math.Rect;
+
 DisplayMode[][] modes;
 
 static this() {
-    immutable int nod = DisplayMode.numOfDisplays();
+    immutable int nod = DisplayMode.getNumOfDisplays();
     modes = new DisplayMode[][](nod);
+}
+
+package(Dgame):
+
+@nogc
+SDL_DisplayMode* _transfer(ref const DisplayMode mode, ref SDL_DisplayMode sdl_mode) pure nothrow {
+    sdl_mode.w = mode.width;
+    sdl_mode.h = mode.height;
+    sdl_mode.refresh_rate = mode.refreshRate;
+
+    return &sdl_mode;
 }
 
 public:
@@ -60,7 +73,7 @@ struct DisplayMode {
      * CTor
      */
     @nogc
-    this(uint width, uint height, ubyte hz) pure nothrow {
+    this(uint width, uint height, ubyte hz = 60) pure nothrow {
         this.width  = width;
         this.height = height;
         this.refreshRate = hz;
@@ -75,10 +88,14 @@ struct DisplayMode {
     }
     
     /**
-     * Returns: the desktop video mode
+     * Returns the desktop video mode at the given display
+     *
+     * Note: There's a difference between this and getMode when your application runs in fullscreen 
+     *       and has changed the resolution. In that case this function will return the previous
+     *       native display mode, and not the current display mode.
      */
     @nogc
-    static DisplayMode getDesktopMode(ubyte display = 1) nothrow {
+    static DisplayMode getDesktopMode(ubyte display = 0) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDesktopDisplayMode(display, &mode);
         if (result != 0) {
@@ -91,10 +108,10 @@ struct DisplayMode {
     }
     
     /**
-     * Returns: the video mode on the given index
+     * Returns the video mode at the given index and display
      */
     @nogc
-    static DisplayMode getMode(uint index, ubyte display = 1) nothrow {
+    static DisplayMode getMode(uint index, ubyte display = 0) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDisplayMode(display, index, &mode);
         if (result != 0) {
@@ -105,26 +122,68 @@ struct DisplayMode {
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
+
+    /**
+     * Returns the current video mode at the given display
+     */
+    @nogc
+    static DisplayMode getCurrentMode(ubyte display = 0) nothrow {
+        SDL_DisplayMode mode = void;
+        immutable int result = SDL_GetCurrentDisplayMode(display, &mode);
+        if (result != 0) {
+            import core.stdc.stdio : printf;
+
+            printf("An error occured: %s\n", SDL_GetError());
+        }
+        
+        return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
+    }
     
     /**
-     * Returns: A List of all valid supported video modes
+     * Returns a List of all valid supported video modes at the given display
      */
-    static DisplayMode[] listModes(ubyte display = 1) nothrow {
+    static DisplayMode[] listModes(ubyte display = 0) nothrow {
         if (modes[display].length != 0)
             return modes[display];
         
-        for (int i = 0; i < DisplayMode.numOfModes(display); ++i) {
+        immutable uint num = DisplayMode.getNumOfModes(display);
+        modes[display].reserve(num);
+
+        for (int i = 0; i < num; ++i) {
             modes[display] ~= DisplayMode.getMode(i, display);
         }
         
         return modes[display];
     }
-    
+
     /**
-     * Returns how many valid display modes are supported
+     * Returns the desktop area represented by the given display, with the primary display located at 0|0.
      */
     @nogc
-    static int numOfModes(ubyte display = 1) nothrow {
+    static Rect getDisplayBounds(ubyte display = 0) nothrow {
+        SDL_Rect rect = void;
+        SDL_GetDisplayBounds(display, &rect);
+
+        return Rect(rect.x, rect.y, rect.w, rect.h);
+    }
+
+    /**
+     * Returns the name of the given display
+     */
+    @nogc
+    static string getDisplayName(ubyte display = 0) nothrow {
+        import core.stdc.string : strlen;
+
+        const char* p = SDL_GetDisplayName(display);
+
+        return cast(immutable) p[0 .. strlen(p)];
+    }
+    
+    /**
+     * Returns how many valid display modes are supported at the given display
+     */
+    @nogc
+    static int getNumOfModes(ubyte display = 0) nothrow {
         return SDL_GetNumDisplayModes(display);
     }
     
@@ -132,7 +191,27 @@ struct DisplayMode {
      * Returns how many display are available.
      */
     @nogc
-    static int numOfDisplays() nothrow {
+    static int getNumOfDisplays() nothrow {
         return SDL_GetNumVideoDisplays();
+    }
+
+    /**
+     * Returns how many video drivers are available.
+     */
+    @nogc
+    static int getNumOfVideoDrivers() nothrow {
+        return SDL_GetNumVideoDrivers();
+    }
+
+    /**
+     * Returns the name of the current video driver.
+     */
+    @nogc
+    static string getCurrentVideoDriver() nothrow {
+        import core.stdc.string : strlen;
+
+        const char* p = SDL_GetCurrentVideoDriver();
+
+        return cast(immutable) p[0 .. strlen(p)];
     }
 }

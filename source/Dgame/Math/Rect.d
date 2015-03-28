@@ -223,12 +223,19 @@ struct Rect {
     }
     
     /**
-     * Replace current size.
+     * Replace the current size.
      */
     @nogc
     void setSize(uint width, uint height) pure nothrow {
         this.width  = width;
         this.height = height;
+    }
+
+    /**
+     * Replace the current size.
+     */
+    @nogc
+        this.setSize(size.width, size.height);
     }
     
     /**

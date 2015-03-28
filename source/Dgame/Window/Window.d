@@ -161,6 +161,8 @@ public:
             this.projection.ortho(Rect(0, 0, rect.width, rect.height));
             this.loadProjection();
 
+            glViewport(0, 0, rect.width, rect.height);
+
             this.setClearColor(Color4b.White);
             this.setVerticalSync(VerticalSync.Disable);
         }
@@ -189,7 +191,7 @@ public:
      * Load the projection Matrix, so that any change / transformation of the Matrix will now be visible
      */
     @nogc
-    void loadProjection() const {
+    void loadProjection() const nothrow {
         glMatrixMode(GL_PROJECTION);
         glLoadMatrixf(this.projection.getValues().ptr);
         glMatrixMode(GL_MODELVIEW);
@@ -254,18 +256,16 @@ public:
     Surface capture(Texture.Format fmt = Texture.Format.BGRA) nothrow {
         if (this.getStyle() & Style.OpenGL) {
             const Size size = this.getSize();
+            Surface my_capture = Surface(size.width, size.height);
 
-            Surface mycapture = Surface(size.width, size.height);
+            glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, my_capture.pixels);
             
-            glReadBuffer(GL_FRONT);
-            
-            ubyte* pixels = cast(ubyte*) mycapture.pixels;
-            glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, pixels);
-            
+            // Flip it
+
             immutable uint lineWidth = size.width * 4;
             immutable uint hlw = size.height * lineWidth;
 
-            ubyte[] tmpLine = m3.m3.make!(ubyte[])(lineWidth);
+            void[] tmpLine = m3.m3.make!(void[])(lineWidth);
             scope(exit) m3.m3.destruct(tmpLine);
 
             for (uint i = 0; i < size.height / 2; ++i) {
@@ -275,19 +275,57 @@ public:
                 immutable uint switchIdx1 = hlw - tmpIdx2;
                 immutable uint switchIdx2 = hlw - tmpIdx1;
                 
-                tmpLine[0 .. lineWidth] = pixels[tmpIdx1 .. tmpIdx2];
-                ubyte[] switchLine = pixels[switchIdx1 .. switchIdx2];
+                tmpLine[0 .. lineWidth] = my_capture.pixels[tmpIdx1 .. tmpIdx2];
+                void[] switchLine = my_capture.pixels[switchIdx1 .. switchIdx2];
                 
-                pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
-                pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
+                my_capture.pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
+                my_capture.pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
             }
             
-            return mycapture;
+            return my_capture;
         }
 
-        SDL_Surface* wnd_srfc = SDL_GetWindowSurface(_window);
+        return Surface(SDL_GetWindowSurface(_window));
+    }
 
-        return Surface(wnd_srfc);
+    /**
+     * Restore the size and position, if the Window is minimized or maximized.
+     */
+    @nogc
+    void restore() nothrow {
+        SDL_RestoreWindow(_window);
+    }
+
+    /**
+     * Raises the Window above other Windows and set the input focus.
+     */
+    @nogc
+    void raise() nothrow {
+        SDL_RaiseWindow(_window);
+    }
+
+    /**
+     *Make the window as large as possible.
+     */
+    @nogc
+    void maximize() nothrow {
+        SDL_MaximizeWindow(_window);
+    }
+
+    /**
+     * Minimize the Window to an iconic representation.
+     */
+    @nogc
+    void minimize() nothrow {
+        SDL_MinimizeWindow(_window);
+    }
+
+    /**
+     * Set the border state of the Window.
+     */
+    @nogc
+    void setBorder(bool enable) nothrow {
+        SDL_SetWindowBordered(_window, enable ? SDL_TRUE : SDL_FALSE);
     }
 
     /**
@@ -305,13 +343,21 @@ public:
     bool hasMouseFocus() const nothrow {
         return SDL_GetMouseFocus() == _window;
     }
+
+    /**
+     * Set a new position to this window
+     */
+    @nogc
+    void setPosition(int x, int y) nothrow {
+        SDL_SetWindowPosition(_window, x, y);
+    }
     
     /**
      * Set a new position to this window
      */
     @nogc
     void setPosition()(auto ref const Vector2i vec) nothrow {
-        SDL_SetWindowPosition(_window, vec.x, vec.y);
+        this.setPosition(vec.x, vec.y);
     }
     
     /**
@@ -323,6 +369,100 @@ public:
         SDL_GetWindowPosition(_window, &x, &y);
         
         return Vector2i(x, y);
+    }
+
+    /**
+     * Set a new size to this window
+     */
+    @nogc
+    void setSize(uint width, uint height) nothrow {
+        SDL_SetWindowSize(_window, width, height);
+    }
+
+    /**
+     * Set a new size to this window
+     */
+    @nogc
+    void setSize()(auto ref const Size size) nothrow {
+        this.setSize(size.width, size.height);
+    }
+    
+    /**
+     * Returns the size (width and height) of the Window
+     */
+    @nogc
+    Size getSize() nothrow {
+        int w, h;
+        SDL_GetWindowSize(_window, &w, &h);
+        
+        return Size(w, h);
+    }
+
+static if (SDL_VERSION_ATLEAST(2, 0, 1)) {
+    /**
+     * Returns the size of the underlying drawable area (e.g. for use with glViewport).
+     * This method may only differ from getSize if you are using High-DPI.
+     */
+    @nogc
+    Size getDrawableSize() nothrow {
+        int w, h;
+        SDL_GL_GetDrawableSize(_window, &w, &h);
+
+        return Size(w, h);
+    }
+}
+    /**
+     * Set the minimum Size for the Window
+     */
+    @nogc
+    void setMinimumSize(uint width, uint height) nothrow {
+        SDL_SetWindowMinimumSize(_window, width, height);
+    }
+
+    /**
+     * Set the minimum Size for the Window
+     */
+    @nogc
+    void setMinimumSize()(auto ref const Size size) nothrow {
+        this.setMinimumSize(size.width, size.height);
+    }
+
+    /**
+     * Returns the minimum Size of the Window
+     */
+    @nogc
+    Size getMinimumSize() nothrow {
+        int w, h;
+        SDL_GetWindowMinimumSize(_window, &w, &h);
+
+        return Size(w, h);
+    }
+
+    /**
+     * Set the maximum Size of the Window
+     */
+    @nogc
+    void setMaximumSize(uint width, uint height) nothrow {
+        SDL_SetWindowMaximumSize(_window, width, height);
+    }
+
+    /**
+     * Set the maximum Size of the Window
+     */
+    @nogc
+    void setMaximumSize()(auto ref const Size size) nothrow {
+        this.setMaximumSize(size.width, size.height);
+    }
+
+    /**
+     * Returns the maximum Size of the Window
+     */
+    @nogc
+    Size getMaximumSize() nothrow {
+        int w, h;
+        SDL_GetWindowMaximumSize(_window, &w, &h);
+
+        return Size(w, h);
     }
 
     /**
@@ -471,25 +611,6 @@ public:
         
         return old_title;
     }
-    
-    /**
-     * Set a new size to this window
-     */
-    @nogc
-    void setSize(uint width, uint height) nothrow {
-        SDL_SetWindowSize(_window, width, height);
-    }
-    
-    /**
-     * Returns the size (width and height) of the Window
-     */
-    @nogc
-    Size getSize() nothrow {
-        int w, h;
-        SDL_GetWindowSize(_window, &w, &h);
-        
-        return Size(w, h);
-    }
 
     /**
      * Set an icon for this window.
@@ -499,25 +620,77 @@ public:
         srfc.setAsIconOf(_window);
     }
 
+    /**
+     * Returns the index of the display which contains the center of the window
+     *
+     * Note: If something went wrong (e.g. your Window is invalid), a negative value is returned
+     */
+    @nogc
+    int getDisplayIndex() nothrow {
+        return SDL_GetWindowDisplayIndex(_window);
+    }
+
+    /**
+     * Set the DisplayMode when the Window is visible at fullscreen.
+     */
+    @nogc
+    void setDisplayMode()(auto ref const DisplayMode mode) nothrow {
+        SDL_DisplayMode sdl_mode = void;
+        immutable int result = SDL_SetWindowDisplayMode(_window, _transfer(mode, sdl_mode));
+        if (result != 0) {
+            import core.stdc.stdio : printf;
+
+            printf("Could not set the display mode: %s\n", SDL_GetError());
+        }
+    }
+
+    /**
+     * Returns the DisplayMode when the Window is visible at fullscreen.
+     */
+    @nogc
+    DisplayMode getDisplayMode() nothrow {
+        SDL_DisplayMode mode = void;
+        immutable int result = SDL_GetWindowDisplayMode(_window, &mode);
+        if (result != 0) {
+            import core.stdc.stdio : printf;
+
+            printf("Could not get the display mode: %s\n", SDL_GetError());
+        }
+
+        return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
+    }
+
     enum uint FullScreenMask = Style.Fullscreen | Style.Desktop;
 
     /**
      * Use this function to (re)set Window's fullscreen states.
+     *
      * style may be Style.Fullscreen for "real" fullscreen with a display mode change
      * or Style.Desktop for "fake" fullscreen that takes the size of the desktop
      * Use 0 for windowed mode.
+     *
+     * if adaptProjection is true (which is the default) the projection will automatically adapted.
+     * set it to false if you want to specify your own projection afterwards.
      */
     @nogc
-    bool setFullscreen(int style) nothrow {
+    bool setFullscreen(int style, bool adaptProjection = true) nothrow {
         if (style & this.getStyle())
             return true;
         
         if (style & FullScreenMask || style == 0) {
-            if (SDL_SetWindowFullscreen(this._window, style) != 0) {
+            immutable int result = SDL_SetWindowFullscreen(this._window, style);
+            if (result != 0) {
                 import core.stdc.stdio : printf;
 
                 printf("Could not enable fullscreen: %s\n", SDL_GetError());
                 return false;
+            } else if (adaptProjection) {
+                const Size size = this.getSize();
+
+                this.projection.loadIdentity().ortho(Rect(0, 0, size.width, size.height));
+                this.loadProjection();
+
+                glViewport(0, 0, size.width, size.height);
             }
 
             return true;
@@ -528,13 +701,16 @@ public:
     
     /**
      * Toggle between Fullscreen and windowed mode, depending on the current state.
+     *
+     * if adaptProjection is true (which is the default) the projection will automatically adapted.
+     * set it to false if you want to specify your own projection afterwards.
      */
     @nogc
-    void toggleFullscreen() nothrow {
+    void toggleFullscreen(bool adaptProjection = true) nothrow {
         if (this.getStyle() & FullScreenMask)
-            this.setFullscreen(0);
+            this.setFullscreen(0, adaptProjection);
         else
-            this.setFullscreen(Style.Fullscreen);
+            this.setFullscreen(Style.Fullscreen, adaptProjection);
     }
     
     /**

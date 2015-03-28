@@ -166,7 +166,7 @@ void main() {
             } else if (event.type == Event.Type.KeyDown) {
                 if (event.keyboard.key == Keyboard.Code.Esc)
                     wnd.push(Event.Type.Quit);
-                else if (event.keyboard.key == Keyboard.Code.Printscreen)
+                else if (event.keyboard.key == Keyboard.Code.S)
                     wnd.capture().saveToFile("samples/images/capture.png");
                 else if (event.keyboard.key == Keyboard.Code.Space) {
                     explosion_sound.play();
@@ -175,7 +175,12 @@ void main() {
                     frames.selectFrame(idx);
                     writeln(idx);
                     idx++;
-                }
+                } else if (event.keyboard.key == Keyboard.Code.Comma)
+                    writeln("Window is on display ", wnd.getDisplayIndex());
+                else if (event.keyboard.key == Keyboard.Code.F)
+                    wnd.toggleFullscreen();
+                else if (event.keyboard.key == Keyboard.Code.D)
+                    wnd.setFullscreen(Window.Style.Desktop);
             }
         }
 
