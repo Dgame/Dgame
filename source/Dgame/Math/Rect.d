@@ -235,6 +235,7 @@ struct Rect {
      * Replace the current size.
      */
     @nogc
+    void setSize()(auto ref const Size size) pure nothrow {
         this.setSize(size.width, size.height);
     }
     
