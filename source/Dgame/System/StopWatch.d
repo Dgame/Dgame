@@ -47,10 +47,10 @@ float asMinutes(uint n) pure nothrow {
  * Convert the Clock milliseconds to hours
  */
 @nogc
-ushort asHours(uint n) pure nothrow {
+uint asHours(uint n) pure nothrow {
     immutable float mins = asMinutes(n);
     
-    return mins >= 60 ? cast(ushort)(mins / 60) : 0;
+    return mins >= 60 ? cast(uint)(mins / 60) : 0;
 }
 
 /**
@@ -112,7 +112,7 @@ struct Time {
     /**
      * Hours = Minutes / 60
      */
-    ushort hours;
+    uint hours;
 
     /**
      * CTor

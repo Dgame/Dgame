@@ -67,12 +67,27 @@ bool _isSDLInited = false;
 
 package(Dgame):
 
-@nogc
 void _initSDL() {
     if (_isSDLInited)
         return;
 
     import core.stdc.stdio : printf;
+
+    debug printf("Derelict loaded SDL version: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+
+    SDL_version ver = void;
+    SDL_GetVersion(&ver);
+    immutable uint sdlver = SDL_VERSIONNUM(ver.major, ver.minor, ver.patch);
+    if (sdlver < SDL_VERSIONNUM(2, 0, 2)) {
+        assert_fmt(sdlver >= SDL_VERSIONNUM(2, 0, 0), "Dgame need at least SDL 2.0.0\n");
+
+        printf("Your SDL version (%d.%d.%d) is outdated. Please update as soon as possible to SDL version 2.0.2 or higher.\n",
+               ver.major, ver.minor, ver.patch);
+        printf("Reload SDL with version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
+
+        DerelictSDL2.unload();
+        DerelictSDL2.load(SharedLibVersion(ver.major, ver.minor, ver.patch));
+    }
 
     scope(exit) _isSDLInited = true;
 
@@ -81,7 +96,6 @@ void _initSDL() {
     assert_fmt(result == 0, "Error: SDL could not be initialized: %s\n", SDL_GetError());
 
     // Initialize SDL_image
-
     result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
     assert_fmt(result != 0, "Error: Failed to init the required jpg and png support: %s\n", IMG_GetError());
     
@@ -173,7 +187,7 @@ void _initGL() {
     else
         enum GLVersion NEEDED_GL_VERSION = GLVersion.GL30;
 
-    assert_fmt(glver >= NEEDED_GL_VERSION, "Your OpenGL version (%d) is too low.", glver);
+    assert_fmt(glver >= NEEDED_GL_VERSION, "Your OpenGL version (%d) is too low. Need at least OpenGL 3.0.", glver);
 
     glDisable(GL_DITHER);
     glDisable(GL_LIGHTING);
