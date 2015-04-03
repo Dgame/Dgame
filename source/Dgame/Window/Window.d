@@ -51,10 +51,6 @@ import Dgame.Window.Internal.Init;
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
 
-static if (!SDL_VERSION_ATLEAST(2, 0, 1))
-    enum int SDL_WINDOW_ALLOW_HIGHDPI = 0;
-
-
 enum int DefPosX = 100;
 enum int DefPosY = 100;
 
@@ -398,7 +394,6 @@ public:
         return Size(w, h);
     }
 
-static if (SDL_VERSION_ATLEAST(2, 0, 1)) {
     /**
      * Returns the size of the underlying drawable area (e.g. for use with glViewport).
      * This method may only differ from getSize if you are using High-DPI.
@@ -410,7 +405,7 @@ static if (SDL_VERSION_ATLEAST(2, 0, 1)) {
 
         return Size(w, h);
     }
-}
+    
     /**
      * Set the minimum Size for the Window
      */

@@ -73,20 +73,11 @@ void _initSDL() {
 
     import core.stdc.stdio : printf;
 
-    debug printf("Derelict loaded SDL version: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+    debug {
+        SDL_version sdlver = void;
+        SDL_GetVersion(&sdlver);
 
-    SDL_version ver = void;
-    SDL_GetVersion(&ver);
-    immutable uint sdlver = SDL_VERSIONNUM(ver.major, ver.minor, ver.patch);
-    if (sdlver < SDL_VERSIONNUM(2, 0, 2)) {
-        assert_fmt(sdlver >= SDL_VERSIONNUM(2, 0, 0), "Dgame need at least SDL 2.0.0\n");
-
-        printf("Your SDL version (%d.%d.%d) is outdated. Please update as soon as possible to SDL version 2.0.2 or higher.\n",
-               ver.major, ver.minor, ver.patch);
-        printf("Reload SDL with version %d.%d.%d\n", ver.major, ver.minor, ver.patch);
-
-        DerelictSDL2.unload();
-        DerelictSDL2.load(SharedLibVersion(ver.major, ver.minor, ver.patch));
+        printf("SDL version: %d.%d.%d\n", sdlver.major, sdlver.minor, sdlver.patch);
     }
 
     scope(exit) _isSDLInited = true;

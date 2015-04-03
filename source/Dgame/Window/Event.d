@@ -104,14 +104,10 @@ struct MouseButtonEvent {
      * Mouse State. See: Dgame.Input.Mouse.
      */
     Mouse.State state;
-
-static if (SDL_VERSION_ATLEAST(2, 0, 2)) {
     /**
      * 1 for single-click, 2 for double-click, etc.
      */
     ubyte clicks;
-}
-
     /**
      * Current x position.
      */
@@ -271,10 +267,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
                 event.mouse.button.state = Mouse.State.Released;
             
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
-
-            static if (SDL_VERSION_ATLEAST(2, 0, 2)) {
-                event.mouse.button.clicks = sdl_event.button.clicks;
-            }
+            event.mouse.button.clicks = sdl_event.button.clicks;
             
             event.mouse.button.x = sdl_event.button.x;
             event.mouse.button.y = sdl_event.button.y;
