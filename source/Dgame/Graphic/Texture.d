@@ -322,6 +322,9 @@ public:
         this.update(memory.ptr);
     }
 
+    /**
+     * Returns the byte size of the Texture
+     */
     @nogc
     size_t getByteSize() const pure nothrow {
         if (_depth > 0)
