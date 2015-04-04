@@ -44,6 +44,11 @@ shared static this() {
 }
 
 shared static ~this() {
+    if (SDL_WasInit(SDL_INIT_JOYSTICK) != 0)
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+    if (SDL_WasInit(SDL_INIT_GAMECONTROLLER) != 0)
+        SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
+
     // quit SDL_image
     IMG_Quit();
     // quit SDL_ttf
@@ -83,8 +88,13 @@ void _initSDL() {
     scope(exit) _isSDLInited = true;
 
     // Initialize SDL2
-    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC);
+    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     assert_fmt(result == 0, "Error: SDL could not be initialized: %s\n", SDL_GetError());
+
+    if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0)
+        printf("Warning: No Joystick support\n");
+    if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0)
+        printf("Warning: No GameController support\n");
 
     // Initialize SDL_image
     result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
