@@ -298,8 +298,8 @@ public:
         void[] mem = m3.m3.make!(void[])(msize);
         scope(exit) m3.m3.destruct(mem);
 
-        void[] memory = this.getMemory(mem[0 .. msize]);
-        assert(memory.length, "Cannot set a colorkey for an empty Texture.");
+        void[] memory = this.getPixels(mem[0 .. msize]);
+        assert(memory.length != 0, "Cannot set a colorkey for an empty Texture.");
 
         // Go through pixels
         for (uint i = 0; i < memory.length; ++i) {
@@ -321,86 +321,46 @@ public:
         
         this.update(memory.ptr);
     }
+
+    @nogc
+    size_t getByteSize() const pure nothrow {
+        if (_depth > 0)
+            return _width * _height * (_depth / 8);
+        return 0;
+    }
     
     /**
-     * Returns the pixel of this Texture or null if this Texture isn't valid.
-     * If memory is not null and has the same width and height as the Texture,
-     * it is used to store the pixel data.
-     * Otherwise it <b>allocates</b> GC memory.
+     * Returns the pixel data of this Texture or null if this Texture isn't valid.
+     * pixels is used to store the pixel data.
      */
     @nogc
-    void[] getMemory(void[] memory) const nothrow {
-        immutable uint msize = _width * _height * (_depth / 8);
+    void[] getPixels(void[] pixels) const nothrow {
+        immutable size_t msize = this.getByteSize();
         if (msize == 0)
             return null;
 
-        assert(memory.length < msize, "Your given memory is too short.");
+        assert(pixels.length >= msize, "Your given memory is too short.");
 
         this.bind();
 
-        glGetTexImage(GL_TEXTURE_2D, 0, _format, GL_UNSIGNED_BYTE, memory.ptr);
+        glGetTexImage(GL_TEXTURE_2D, 0, _format, GL_UNSIGNED_BYTE, pixels.ptr);
 
-        return memory;
+        return pixels;
     }
 
     /**
      * Returns the pixel of this Texture or null if this Texture isn't valid.
-     * If memory is not null and has the same width and height as the Texture,
-     * it is used to store the pixel data.
-     * Otherwise it <b>allocates</b> GC memory.
+     *
+     * Note: this method <b>allocates</b> GC memory.
      */
-    void[] getMemory() const nothrow {
-        immutable uint msize = _width * _height * (_depth / 8);
+    void[] getPixels() const nothrow {
+        immutable size_t msize = this.getByteSize();
         if (msize == 0)
             return null;
-        
-        this.bind();
 
-        void[] memory = new void[msize];
-        glGetTexImage(GL_TEXTURE_2D, 0, _format, GL_UNSIGNED_BYTE, memory.ptr);
-        
-        return memory;
-    }
+        void[] pixels = new void[msize];
 
-    /**
-     * Returns a subTexture of this Texture.
-     */
-    @nogc
-    Texture subTexture()(auto ref const Rect rect) const nothrow {
-        assert(_texId != 0, "Texture is not initialized.");
-        assert(rect.x <= _width, "rect.x is out of range.");
-        assert(rect.y <= _height, "rect.y is out of range.");
-        assert(rect.width <= _width, "rect.width is out of range.");
-        assert(rect.height <= _height, "rect.height is out of range.");
-        assert(rect.x >= 0, "rect.x is negative");
-        assert(rect.y >= 0, "rect.y is negative.");
-        assert(_format != Format.None, "Invalid format");
-
-        immutable ubyte bits = _depth / 8;
-        immutable uint msize = _width * _height * bits;
-
-        void[] mem = m3.m3.make!(void[])(msize);
-        ubyte[] buf = m3.m3.make!(ubyte[])(msize);
-
-        scope(exit) {
-            m3.m3.destruct(mem);
-            m3.m3.destruct(buf);
-        }
-
-        void[] memory = this.getMemory(mem[0 .. msize]);
-
-        immutable uint[2] pitch = [_width * bits, rect.width * bits];
-        immutable uint diff = pitch[0] - pitch[1];
-
-        immutable uint from = pitch[0] * rect.y + rect.x * bits;
-        immutable uint too = from + (rect.height * pitch[0]);
-
-        for (uint i = from, j = 0; i < too - pitch[1]; i += pitch[1], j += pitch[1]) {
-            buffer[j .. j + pitch[1]] = cast(ubyte[]) memory[i .. i + pitch[1]];
-            i += diff;
-        }
-
-        return Texture(buffer.ptr, rect.width, rect.height, 0, _format);
+        return this.getPixels(pixels);
     }
 
     /**
@@ -419,7 +379,7 @@ public:
         void[] mem = m3.m3.make!(void[])(msize);
         scope(exit) m3.m3.destruct(mem);
 
-        void[] memory = tex.getMemory(mem[0 .. msize]);
+        void[] memory = tex.getPixels(mem[0 .. msize]);
 
         this.update(memory.ptr, rect, tex.format);
     }

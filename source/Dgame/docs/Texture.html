@@ -159,25 +159,18 @@ Format enum.<br><br>
 <dd>Set a colorkey.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getMemory"></a>const nothrow @nogc void[] <u>getMemory</u>(void[] <i>memory</i>);
+<dt><big><a name="Texture.getPixels"></a>const nothrow @nogc void[] <u>getPixels</u>(void[] <i>pixels</i>);
 </big></dt>
-<dd>Returns the pixel of this Texture or <b>null</b> if this Texture isn't valid.
- If <i>memory</i> is not <b>null</b> and has the same width and height as the Texture,
- it is used to store the pixel data.
- Otherwise it <b>allocates</b> GC <i>memory</i>.<br><br>
+<dd>Returns the pixel data of this Texture or <b>null</b> if this Texture isn't valid.
+ <i>pixels</i> is used to store the pixel data.<br><br>
 
 </dd>
-<dt><big><a name="Texture.getMemory.2"></a>const nothrow void[] <u>getMemory</u>();
+<dt><big><a name="Texture.getPixels.2"></a>const nothrow void[] <u>getPixels</u>();
 </big></dt>
 <dd>Returns the pixel of this Texture or <b>null</b> if this Texture isn't valid.
- If memory is not <b>null</b> and has the same width and height as the Texture,
- it is used to store the pixel data.
- Otherwise it <b>allocates</b> GC memory.<br><br>
-
-</dd>
-<dt><big><a name="Texture.subTexture"></a>const nothrow @nogc Texture <u>subTexture</u>()(auto ref const Rect <i>rect</i>);
-</big></dt>
-<dd>Returns a <u>subTexture</u> of this Texture.<br><br>
+<br><br>
+<b>Note:</b><br>
+this method <b>allocates</b> GC memory.<br><br>
 
 </dd>
 <dt><big><a name="Texture.copy"></a>const nothrow @nogc void <u>copy</u>(ref const Texture <i>tex</i>, const Rect* <i>rect</i> = null);
