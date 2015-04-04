@@ -83,7 +83,7 @@ public:
     }
     
     /**
-     * Supported Keyboard States
+     * Keyboard States
      */
     enum State {
         Pressed  = SDL_PRESSED, /// Key is pressed.

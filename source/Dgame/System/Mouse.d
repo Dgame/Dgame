@@ -29,6 +29,7 @@ import derelict.sdl2.types;
 import derelict.sdl2.functions;
 
 import Dgame.Graphic.Surface;
+import Dgame.Math.Vector2;
 
 public:
 
@@ -52,22 +53,11 @@ public:
     }
     
     /**
-     * Supported mouse states
+     * Mouse States
      */
     enum State : ubyte {
         Released, /// 
         Pressed /// 
-    }
-    
-    /**
-     * Supported mouse motion states
-     */
-    enum MotionStates : ubyte {
-        Left = 0x1, /// 
-        Middle = 0x2, /// 
-        Right = 0x4, /// 
-        X1 = 0x8, /// 
-        X2 = 0x10 /// 
     }
 
     /**
@@ -95,42 +85,10 @@ public:
 
     private static Cursor _cursor;
 
-    static ~this() {
+    @nogc
+    static ~this() nothrow {
         if (_cursor)
             SDL_FreeCursor(_cursor);
-    }
-    
-    /**
-     * Returns the mouse state and (if y and y aren't null) the current position.
-     * 
-     * See: Mouse.State enum
-     */
-    @nogc
-    static uint getState(int* x = null, int* y = null) nothrow {
-        return SDL_GetMouseState(x, y);
-    }
-
-static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
-    /**
-     * Returns the global mouse state and (if y and y aren't null) the global position.
-     * 
-     * See: Mouse.State enum
-     */
-    @nogc
-    static uint getGlobalState(int* x = null, int* y = null) nothrow {
-        return SDL_GetGlobalMouseState(x, y);
-    }
-}
-
-    /**
-     * Returns the relative mouse state and (if y and y aren't null) the relative position.
-     * This means the difference of the positions since the last call of this method.
-     * 
-     * See: Mouse.RelativeState enum
-     */
-    @nogc
-    static uint getRelativeState(int* x = null, int* y = null) nothrow {
-        return SDL_GetRelativeMouseState(x, y);
     }
     
     /**
@@ -140,18 +98,107 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      */
     @nogc
     static bool isPressed(Button btn) nothrow {
-        return (Mouse.getState() & SDL_BUTTON(btn)) != 0;
+        return (SDL_GetMouseState(null, null) & SDL_BUTTON(btn)) != 0;
+    }
+
+    /**
+     * Returns the current cursor position
+     */
+    @nogc
+    static Vector2i getCursorPosition() nothrow {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        
+        return Vector2i(x, y);
+    }
+
+    /**
+     * Returns the relative cursor position.
+     * x and y are set to the mouse deltas since the last call
+     */
+    @nogc
+    static Vector2i getRelativeCursorPosition() nothrow {
+        int x, y;
+        SDL_GetRelativeMouseState(&x, &y);
+
+        return Vector2i(x, y);
+    }
+
+static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
+    /**
+     * Returns the global cursor position.
+     * x and y will be reported relative to the top-left of the Desktop
+     */
+    @nogc
+    static Vector2i getGlobalCursorPosition() nothrow {
+        int x, y;
+        SDL_GetGlobalMouseState(&x, &y);
+
+        return Vector2i(x, y);
+    }
+}
+
+    /**
+     * Set the cursor position inside the window.
+     *
+     * Note: A call to this function generates a mouse motion event.
+     */
+    @nogc
+    static void setCursorPosition(int x, int y) nothrow {
+        SDL_Window* wnd = SDL_GetMouseFocus();
+        if (wnd !is null)
+            SDL_WarpMouseInWindow(wnd, x, y);
+    }
+
+    /**
+     * Set the cursor position inside the window.
+     *
+     * Note: A call to this function generates a mouse motion event.
+     */
+    @nogc
+    static void setCursorPosition()(auto ref const Vector2i pos) nothrow {
+        this.setCursorPosition(pos.x, pos.y);
+    }
+
+static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
+    /**
+     * Set the cursor position in global screen space.
+     *
+     * Note: A call to this function generates a mouse motion event.
+     */
+    @nogc
+    static void setGlobalCursorPosition(int x, int y) nothrow {
+        SDL_WarpMouseGlobal(x, y);
+    }
+
+    /**
+     * Set the cursor position in global screen space.
+     *
+     * Note: A call to this function generates a mouse motion event.
+     */
+    @nogc
+    static void setGlobalCursorPosition()(auto ref const Vector2i pos) nothrow {
+        this.setGlobalCursorPosition(pos.x, pos.y);
+    }
+}
+
+    /**
+     * Returns if the Relative mouse mode is enabled/supported.
+     */
+    @nogc
+    static bool hasRelativeMouse() nothrow {
+        return SDL_GetRelativeMouseMode() == SDL_TRUE;
     }
     
     /**
-     * Returns the cursor position as static array.
+     * Tries to enable/disable the relative mouse mode.
+     * While the mouse is in relative mode, the cursor is hidden,
+     * and the driver will try to report continuous motion in the current Window.
+     * Only relative motion events will be delivered, the mouse position will not change.
      */
     @nogc
-    static int[2] getCursorPosition() nothrow {
-        int x, y;
-        Mouse.getState(&x, &y);
-        
-        return [x, y];
+    static bool enableRelativeMouse(bool enable) nothrow {
+        return SDL_SetRelativeMouseMode(enable) == 0;
     }
     
     /**
@@ -222,36 +269,5 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
     @nogc
     static Cursor getDefaultCursor() nothrow {
         return SDL_GetDefaultCursor();
-    }
-    
-    /**
-     * Set the cursor position inside the window.
-     */
-    @nogc
-    static void setCursorPosition(int x, int y) nothrow {
-        SDL_Window* wnd = SDL_GetMouseFocus();
-        if (wnd !is null)
-            SDL_WarpMouseInWindow(wnd, x, y);
-    }
-    
-    /**
-     * Alias for setting cursor position
-     */
-    alias warp = setCursorPosition;
-    
-    /**
-     * Returns if the Relative mouse mode is enabled/supported.
-     */
-    @nogc
-    static bool hasRelativeMouse() nothrow {
-        return SDL_GetRelativeMouseMode() == SDL_TRUE;
-    }
-    
-    /**
-     * Tries to enable/disable the relative mouse mode.
-     */
-    @nogc
-    static bool enableRelativeMouse(bool enable) nothrow {
-        return SDL_SetRelativeMouseMode(enable) == 0;
     }
 }
