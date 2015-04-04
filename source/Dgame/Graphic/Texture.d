@@ -51,8 +51,10 @@ struct Texture {
         RGBA = GL_RGBA, /// Alias for GL_RGBA
         BGR = GL_BGR,   /// Alias for GL_BGR
         BGRA = GL_BGRA, /// Alias for GL_BGRA
+        RGB8 = GL_RGB8,   /// 8 Bit RGB Format
+        RGB16 = GL_RGB16, /// 16 Bit RGB Format
+        RGBA8 = GL_RGBA8, /// 8 Bit RGBA Format
         RGBA16 = GL_RGBA16, /// 16 Bit RGBA Format
-        RGBA8 = GL_RGBA8,   /// 8 Bit RGBA Format
         Alpha = GL_ALPHA,   /// Alias for GL_ALPHA
         Luminance = GL_LUMINANCE,   /// Alias for GL_LUMINANCE
         LuminanceAlpha = GL_LUMINANCE_ALPHA /// Alias for GL_LUMINANCE_ALPHA
@@ -83,7 +85,7 @@ public:
      * CTor
      */
     @nogc
-    this(void* memory, uint  width, uint height, Format fmt) nothrow {
+    this(void* memory, uint width, uint height, Format fmt) nothrow {
         this.loadFromMemory(memory, width, height, fmt);
     }
 
@@ -270,19 +272,24 @@ public:
 
         _format = fmt == Format.None ? bitsToFormat(depth) : fmt;
         assert(_format != Format.None, "Need Texture.Format or depth > 24");
-        _depth = formatToBits(_format);
-        
-        this.bind();
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-        glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, _format, GL_UNSIGNED_BYTE, memory);
 
-        _width  = width;
-        _height = height;
+        if (width == _width && height == _height)
+            this.update(memory);
+        else {
+            _depth = formatToBits(_format);
+            
+            this.bind();
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+            glTexImage2D(GL_TEXTURE_2D, 0, depth / 8, width, height, 0, _format, GL_UNSIGNED_BYTE, memory);
+
+            _width  = width;
+            _height = height;
+        }
     }
 
     /**
@@ -294,12 +301,11 @@ public:
             return;
 
         // Get the pixel memory
-        immutable uint msize = _width * _height * (_depth / 8);
+        immutable uint msize = this.getByteSize();
         void[] mem = m3.m3.make!(void[])(msize);
         scope(exit) m3.m3.destruct(mem);
 
         void[] memory = this.getPixels(mem[0 .. msize]);
-        assert(memory.length != 0, "Cannot set a colorkey for an empty Texture.");
 
         // Go through pixels
         for (uint i = 0; i < memory.length; ++i) {
@@ -367,64 +373,38 @@ public:
     }
 
     /**
-     * Copy another Texture to this.
-     * The second parameter is a pointer to the destination rect.
-     * Is it is null this means the whole tex is copied.
-     */
-    @nogc
-    void copy(ref const Texture tex, const Rect* rect = null) const nothrow {
-        assert(_texId != 0, "Texture must be initialized for copying");
-        assert(_width != 0 && _height != 0, "width or height is 0.");
-
-        immutable ubyte bits = tex.depth / 8;
-        immutable uint msize = tex.width * tex.height * bits;
-
-        void[] mem = m3.m3.make!(void[])(msize);
-        scope(exit) m3.m3.destruct(mem);
-
-        void[] memory = tex.getPixels(mem[0 .. msize]);
-
-        this.update(memory.ptr, rect, tex.format);
-    }
-
-    /**
      * Update the pixel data of this Texture.
      * The second parameter is a pointer to the area which is updated.
      * If it is null (default) the whole Texture will be updated.
      * The third parameter is the format of the pixels.
      */
     @nogc
-    void update(const void* memory, const Rect* rect = null,  Format fmt = Format.None) const nothrow {
+    void update(const void* memory, const Rect* rect = null, Format fmt = Format.None) const nothrow {
         if (_texId == 0)
             return;
 
-        assert(memory, "Pixels is null.");
+        assert(memory, "Invalid memory");
         assert(_width != 0 && _height != 0, "width or height is 0.");
 
-        uint width, height;
-        int x, y;
+        fmt = fmt == Format.None ? _format : fmt;
+
+        uint width = _width, height = _height;
+        int x = 0, y = 0;
         
         if (rect !is null) {
-            assert(rect.width <= _width && rect.height <= _height, 
-                    "Rect is greater as the Texture.");
-            assert(rect.x < _width && rect.y < _height, 
-                    "x or y of the Rect is greater as the Texture.");
+            assert(rect.width <= _width && rect.height <= _height, "Rect is greater as the Texture.");
+            assert(rect.x < _width && rect.y < _height, "x or y of the Rect is greater as the Texture.");
             
             width  = rect.width;
             height = rect.height;
             
             x = rect.x;
             y = rect.y;
-        } else {
-            width  = _width;
-            height = _height;
-            
-            x = y = 0;
         }
 
         this.bind();
         
-        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, (fmt == Format.None ? _format : fmt), GL_UNSIGNED_BYTE, memory);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, fmt, GL_UNSIGNED_BYTE, memory);
     }
 }
 

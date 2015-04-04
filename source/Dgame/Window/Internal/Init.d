@@ -83,7 +83,7 @@ void _initSDL() {
     scope(exit) _isSDLInited = true;
 
     // Initialize SDL2
-    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC);
     assert_fmt(result == 0, "Error: SDL could not be initialized: %s\n", SDL_GetError());
 
     // Initialize SDL_image

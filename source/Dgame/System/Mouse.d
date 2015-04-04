@@ -51,14 +51,6 @@ public:
         X2 = 5, /// 
         Other /// 
     }
-    
-    /**
-     * Mouse States
-     */
-    enum State : ubyte {
-        Released, /// 
-        Pressed /// 
-    }
 
     /**
      * Possible System cursors

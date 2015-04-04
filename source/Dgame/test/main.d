@@ -50,6 +50,13 @@ void main() {
     Texture wiki_tex = Texture(wiki_srfc);
     writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
+    Joystick controller;
+    //Check for joysticks
+    if (Joystick.count() < 1)
+        writeln("Warning: No joysticks connected!");
+    else
+        controller = Joystick.open(0);
+
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);
 
@@ -181,6 +188,17 @@ void main() {
                     wnd.toggleFullscreen();
                 else if (event.keyboard.key == Keyboard.Code.D)
                     wnd.setFullscreen(Window.Style.Desktop);
+            } else if (event.type == Event.Type.JoyAxisMotion) {
+                writeln("Joystick #", event.joy.motion.which,
+                        " moved about ", event.joy.motion.value,
+                        " around axis ", event.joy.motion.axis);
+            } else if (event.type == Event.Type.JoyHatMotion) {
+                writeln("Joystick #", event.joy.hat.which,
+                        " moved about ", event.joy.hat.value,
+                        " around hat ", event.joy.hat.hat);
+            } else if (event.type == Event.Type.JoyButtonDown) {
+                writeln("Joystick #", event.joy.button.which,
+                        " pressed button ", event.joy.button.button);
             }
         }
 

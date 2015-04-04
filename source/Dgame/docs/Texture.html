@@ -37,12 +37,20 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Alias for GL_BGRA<br><br>
 
 </dd>
-<dt><big><a name="Texture.Format.RGBA16"></a><u>RGBA16</u></big></dt>
-<dd>16 Bit RGBA Format<br><br>
+<dt><big><a name="Texture.Format.RGB8"></a><u>RGB8</u></big></dt>
+<dd>8 Bit RGB Format<br><br>
+
+</dd>
+<dt><big><a name="Texture.Format.RGB16"></a><u>RGB16</u></big></dt>
+<dd>16 Bit RGB Format<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.RGBA8"></a><u>RGBA8</u></big></dt>
 <dd>8 Bit RGBA Format<br><br>
+
+</dd>
+<dt><big><a name="Texture.Format.RGBA16"></a><u>RGBA16</u></big></dt>
+<dd>16 Bit RGBA Format<br><br>
 
 </dd>
 <dt><big><a name="Texture.Format.Alpha"></a><u>Alpha</u></big></dt>
@@ -159,6 +167,11 @@ Format enum.<br><br>
 <dd>Set a colorkey.<br><br>
 
 </dd>
+<dt><big><a name="Texture.getByteSize"></a>const pure nothrow @nogc size_t <u>getByteSize</u>();
+</big></dt>
+<dd>Returns the byte size of the Texture<br><br>
+
+</dd>
 <dt><big><a name="Texture.getPixels"></a>const nothrow @nogc void[] <u>getPixels</u>(void[] <i>pixels</i>);
 </big></dt>
 <dd>Returns the pixel data of this Texture or <b>null</b> if this Texture isn't valid.
@@ -171,13 +184,6 @@ Format enum.<br><br>
 <br><br>
 <b>Note:</b><br>
 this method <b>allocates</b> GC memory.<br><br>
-
-</dd>
-<dt><big><a name="Texture.copy"></a>const nothrow @nogc void <u>copy</u>(ref const Texture <i>tex</i>, const Rect* <i>rect</i> = null);
-</big></dt>
-<dd>Copy another Texture to this.
- The second parameter is a pointer to the destination <i>rect</i>.
- Is it is <b>null</b> this means the whole <i>tex</i> is copied.<br><br>
 
 </dd>
 <dt><big><a name="Texture.update"></a>const nothrow @nogc void <u>update</u>(const void* <i>memory</i>, const Rect* <i>rect</i> = null, Format <i>fmt</i> = Format.None);

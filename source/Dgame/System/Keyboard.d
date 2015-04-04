@@ -83,14 +83,6 @@ public:
     }
     
     /**
-     * Keyboard States
-     */
-    enum State {
-        Pressed  = SDL_PRESSED, /// Key is pressed.
-        Released = SDL_RELEASED /// Key is released.
-    }
-    
-    /**
      * All supported Keyboard modifiers.
      */
     enum Mod {

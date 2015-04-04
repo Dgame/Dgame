@@ -76,6 +76,18 @@ Window has been minimized.<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="State"></a>enum <u>State</u>: ubyte;
+</big></dt>
+<dd>States<br><br>
+
+<dl><dt><big><a name="State.Released"></a><u>Released</u></big></dt>
+<dd><br><br>
+</dd>
+<dt><big><a name="State.Pressed"></a><u>Pressed</u></big></dt>
+<dd><br><br>
+</dd>
+</dl>
+</dd>
 <dt><big><a name="WindowEvent"></a>struct <u>WindowEvent</u>;
 </big></dt>
 <dd>The Window Event structure.<br><br>
@@ -91,9 +103,12 @@ Window has been minimized.<br><br>
 </big></dt>
 <dd>The Keyboard Event structure.<br><br>
 
-<dl><dt><big><a name="KeyboardEvent.state"></a>Keyboard.State <u>state</u>;
+<dl><dt><big><a name="KeyboardEvent.state"></a>State <u>state</u>;
 </big></dt>
-<dd>Keyboard State. See: Dgame.Input.Keyboard.<br><br>
+<dd>State of the key
+<br><br>
+<b>See:</b><br>
+State enum<br><br>
 
 </dd>
 <dt><big><a name="KeyboardEvent.code"></a>Keyboard.Code <u>code</u>;
@@ -127,9 +142,12 @@ Window has been minimized.<br><br>
 <dd>The mouse <u>button</u> which is pressed or released.<br><br>
 
 </dd>
-<dt><big><a name="MouseButtonEvent.state"></a>Mouse.State <u>state</u>;
+<dt><big><a name="MouseButtonEvent.state"></a>State <u>state</u>;
 </big></dt>
-<dd>Mouse State. See: Dgame.Input.Mouse.<br><br>
+<dd>State of the button
+<br><br>
+<b>See:</b><br>
+State enum<br><br>
 
 </dd>
 <dt><big><a name="MouseButtonEvent.clicks"></a>ubyte <u>clicks</u>;
@@ -153,9 +171,12 @@ Window has been minimized.<br><br>
 </big></dt>
 <dd>The Mouse motion Event structure.<br><br>
 
-<dl><dt><big><a name="MouseMotionEvent.state"></a>Mouse.State <u>state</u>;
+<dl><dt><big><a name="MouseMotionEvent.state"></a>State <u>state</u>;
 </big></dt>
-<dd>Mouse State. See: Dgame.Input.Mouse.<br><br>
+<dd>State of the button
+<br><br>
+<b>See:</b><br>
+State enum<br><br>
 
 </dd>
 <dt><big><a name="MouseMotionEvent.x"></a>int <u>x</u>;
@@ -192,6 +213,86 @@ Window has been minimized.<br><br>
 <dt><big><a name="MouseWheelEvent.y"></a>int <u>y</u>;
 </big></dt>
 <dd>The amount scrolled vertically, positive away from the user and negative toward the user<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="JoyAxisEvent"></a>struct <u>JoyAxisEvent</u>;
+</big></dt>
+<dd>The Joystick axis motion Event structure<br><br>
+
+<dl><dt><big><a name="JoyAxisEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+<dt><big><a name="JoyAxisEvent.axis"></a>ubyte <u>axis</u>;
+</big></dt>
+<dd>The index of the <u>axis</u> that changed
+ Typically 0 is the x <u>axis</u>, 1 is the y <u>axis</u> etc.<br><br>
+
+</dd>
+<dt><big><a name="JoyAxisEvent.value"></a>short <u>value</u>;
+</big></dt>
+<dd>The current position of the axis (range: -32768 to 32767)<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="JoyButtonEvent"></a>struct <u>JoyButtonEvent</u>;
+</big></dt>
+<dd>The Joystick abutton Event structure<br><br>
+
+<dl><dt><big><a name="JoyButtonEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+<dt><big><a name="JoyButtonEvent.button"></a>ubyte <u>button</u>;
+</big></dt>
+<dd>The index of the <u>button</u> that changed<br><br>
+
+</dd>
+<dt><big><a name="JoyButtonEvent.state"></a>State <u>state</u>;
+</big></dt>
+<dd>State of the button
+<br><br>
+<b>See:</b><br>
+State enum<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="JoyHatEvent"></a>struct <u>JoyHatEvent</u>;
+</big></dt>
+<dd>The Joystick hat Event structure<br><br>
+
+<dl><dt><big><a name="JoyHatEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+<dt><big><a name="JoyHatEvent.hat"></a>ubyte <u>hat</u>;
+</big></dt>
+<dd>The index of the <u>hat</u> that changed<br><br>
+
+</dd>
+<dt><big><a name="JoyHatEvent.value"></a>Joystick.Hat <u>value</u>;
+</big></dt>
+<dd>The new position of the hat
+<br><br>
+See Joystick.Hat enum<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="JoyDeviceEvent"></a>struct <u>JoyDeviceEvent</u>;
+</big></dt>
+<dd>The Joystick device Event structure<br><br>
+
+<dl><dt><big><a name="JoyDeviceEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
 
 </dd>
 </dl>
@@ -278,6 +379,32 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="Event.JoystickUnion"></a>union <u>JoystickUnion</u>;
+</big></dt>
+<dd>JoyStick union<br><br>
+
+<dl><dt><big><a name="Event.JoystickUnion.motion"></a>JoyAxisEvent <u>motion</u>;
+</big></dt>
+<dd>Joystick <u>motion</u> Event<br><br>
+
+</dd>
+<dt><big><a name="Event.JoystickUnion.button"></a>JoyButtonEvent <u>button</u>;
+</big></dt>
+<dd>Joystick <u>button</u> Event<br><br>
+
+</dd>
+<dt><big><a name="Event.JoystickUnion.hat"></a>JoyHatEvent <u>hat</u>;
+</big></dt>
+<dd>Joystick <u>hat</u> Event<br><br>
+
+</dd>
+<dt><big><a name="Event.JoystickUnion.device"></a>JoyDeviceEvent <u>device</u>;
+</big></dt>
+<dd>Joystick <u>device</u> Event<br><br>
+
+</dd>
+</dl>
+</dd>
 <dt><big><a name="Event.keyboard"></a>KeyboardEvent <u>keyboard</u>;
 </big></dt>
 <dd>Keyboard Event<br><br>
@@ -291,6 +418,11 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dt><big><a name="Event.mouse"></a>MouseUnion <u>mouse</u>;
 </big></dt>
 <dd>Mouse Events<br><br>
+
+</dd>
+<dt><big><a name="Event.joy"></a>JoystickUnion <u>joy</u>;
+</big></dt>
+<dd>Joystick Events<br><br>
 
 </dd>
 </dl>

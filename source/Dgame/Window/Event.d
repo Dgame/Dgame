@@ -29,6 +29,7 @@ import derelict.sdl2.sdl;
 
 import Dgame.System.Mouse;
 import Dgame.System.Keyboard;
+import Dgame.System.Joystick;
 
 public:
 
@@ -56,6 +57,14 @@ enum WindowEventId : ubyte {
 }
 
 /**
+ * States
+ */
+enum State : ubyte {
+    Released, /// 
+    Pressed /// 
+}
+
+/**
  * The Window Event structure.
  */
 struct WindowEvent {
@@ -70,9 +79,11 @@ struct WindowEvent {
  */
 struct KeyboardEvent {
     /**
-     * Keyboard State. See: Dgame.Input.Keyboard.
+     * State of the key
+     *
+     * See: State enum
      */
-    Keyboard.State state;
+    State state;
     /**
      * The Key which is released or pressed.
      */
@@ -101,9 +112,11 @@ struct MouseButtonEvent {
      */
     Mouse.Button button;
     /**
-     * Mouse State. See: Dgame.Input.Mouse.
+     * State of the button
+     *
+     * See: State enum
      */
-    Mouse.State state;
+    State state;
     /**
      * 1 for single-click, 2 for double-click, etc.
      */
@@ -123,9 +136,11 @@ struct MouseButtonEvent {
  */
 struct MouseMotionEvent {
     /**
-     * Mouse State. See: Dgame.Input.Mouse.
+     * State of the button
+     *
+     * See: State enum
      */
-    Mouse.State state;
+    State state;
     /**
      * Current x position.
      */
@@ -163,7 +178,75 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      */
     bool flipped;
 }
+}
 
+/**
+ * The Joystick axis motion Event structure
+ */
+struct JoyAxisEvent {
+    /**
+     * The instance id of the joystick which reported the event
+     */
+    int which;
+    /**
+     * The index of the axis that changed
+     * Typically 0 is the x axis, 1 is the y axis etc.
+     */
+    ubyte axis;
+    /**
+     * The current position of the axis (range: -32768 to 32767)
+     */
+    short value;
+}
+
+/**
+ * The Joystick abutton Event structure
+ */
+struct JoyButtonEvent {
+    /**
+     * The instance id of the joystick which reported the event
+     */
+    int which;
+    /**
+     * The index of the button that changed
+     */
+    ubyte button;
+    /**
+     * State of the button
+     *
+     * See: State enum
+     */
+    State state;
+}
+
+/**
+ * The Joystick hat Event structure
+ */
+struct JoyHatEvent {
+    /**
+     * The instance id of the joystick which reported the event
+     */
+    int which;
+    /**
+     * The index of the hat that changed
+     */
+    ubyte hat;
+    /**
+     * The new position of the hat
+     *
+     * See Joystick.Hat enum
+     */
+    Joystick.Hat value;
+}
+
+/**
+ * The Joystick device Event structure
+ */
+struct JoyDeviceEvent {
+    /**
+     * The instance id of the joystick which reported the event
+     */
+    int which;
 }
 
 /**
@@ -185,6 +268,12 @@ struct Event {
         MouseButtonDown = SDL_MOUSEBUTTONDOWN,  /// A mouse button is pressed.
         MouseButtonUp = SDL_MOUSEBUTTONUP,  /// A mouse button is released.
         MouseWheel = SDL_MOUSEWHEEL,    /// The mouse wheel has scolled.
+        JoyAxisMotion = SDL_JOYAXISMOTION, // A Joystick axis has moved
+        JoyButtonDown = SDL_JOYBUTTONDOWN, // A Joystick button is pressed
+        JoyButtonUp = SDL_JOYBUTTONUP,  // A Joystick button is released
+        JoyHatMotion = SDL_JOYHATMOTION, // A Joystick hat has moved
+        JoyDeviceAdded = SDL_JOYDEVICEADDED, // A Joystick was added
+        JoyDeviceRemoved = SDL_JOYDEVICEREMOVED, // A Joystick was removed
     }
 
     /**
@@ -208,11 +297,22 @@ struct Event {
         MouseMotionEvent motion; /// Mouse motion Event
         MouseWheelEvent  wheel; /// Mouse wheel Event
     }
+
+    /**
+     * JoyStick union
+     */
+    union JoystickUnion {
+        JoyAxisEvent motion; /// Joystick motion Event
+        JoyButtonEvent button; /// Joystick button Event
+        JoyHatEvent hat; /// Joystick hat Event
+        JoyDeviceEvent device; /// Joystick device Event
+    }
     
     union {
         KeyboardEvent keyboard; /// Keyboard Event
         WindowEvent window; /// Window Event
         MouseUnion mouse; /// Mouse Events
+        JoystickUnion joy; /// Joystick Events
     }
 }
 
@@ -225,25 +325,23 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
     switch (sdl_event.type) {
         case Event.Type.KeyDown:
         case Event.Type.KeyUp:
+            if (sdl_event.key.state == SDL_PRESSED)
+                event.keyboard.state = State.Pressed;
+            else
+                event.keyboard.state = State.Released;
+
             event.type = sdl_event.type == Event.Type.KeyDown ? Event.Type.KeyDown : Event.Type.KeyUp;
-            
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
-            
             event.keyboard.code = cast(Keyboard.Code) sdl_event.key.keysym.sym;
-            
             event.keyboard.repeat = sdl_event.key.repeat != 0;
-            event.keyboard.state = cast(Keyboard.State) sdl_event.key.state;
-            
             event.keyboard.mod = Keyboard.getModifier();
-            
+
             return true;
         case Event.Type.Window:
             event.type = Event.Type.Window;
-            
             event.windowId = sdl_event.window.windowID;
             event.timestamp = sdl_event.window.timestamp;
-            
             event.window.eventId = cast(WindowEventId) sdl_event.window.event;
             
             return true;
@@ -257,46 +355,39 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
                 event.type = Event.Type.MouseButtonUp;
             else
                 event.type = Event.Type.MouseButtonDown;
+
+            if (sdl_event.button.state == SDL_PRESSED)
+                event.mouse.button.state = State.Pressed;
+            else
+                event.mouse.button.state = State.Released;
             
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
-
-            if (sdl_event.button.state == SDL_PRESSED)
-                event.mouse.button.state = Mouse.State.Pressed;
-            else
-                event.mouse.button.state = Mouse.State.Released;
-            
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
             event.mouse.button.clicks = sdl_event.button.clicks;
-            
             event.mouse.button.x = sdl_event.button.x;
             event.mouse.button.y = sdl_event.button.y;
             
             return true;
         case Event.Type.MouseMotion:
+                if (sdl_event.motion.state == SDL_PRESSED)
+                event.mouse.motion.state = State.Pressed;
+            else
+                event.mouse.motion.state = State.Released;
+
             event.type = Event.Type.MouseMotion;
-            
             event.timestamp = sdl_event.motion.timestamp;
             event.windowId  = sdl_event.motion.windowID;
-            
-            if (sdl_event.motion.state == SDL_PRESSED)
-                event.mouse.motion.state = Mouse.State.Pressed;
-            else
-                event.mouse.motion.state = Mouse.State.Released;
-            
             event.mouse.motion.x = sdl_event.motion.x;
             event.mouse.motion.y = sdl_event.motion.y;
-            
             event.mouse.motion.rel_x = sdl_event.motion.xrel;
             event.mouse.motion.rel_y = sdl_event.motion.yrel;
             
             return true;
         case Event.Type.MouseWheel:
             event.type = Event.Type.MouseWheel;
-            
             event.timestamp = sdl_event.wheel.timestamp;
             event.windowId  = sdl_event.wheel.windowID;
-            
             event.mouse.wheel.x = sdl_event.wheel.x;
             event.mouse.wheel.y = sdl_event.wheel.y;
 
@@ -305,7 +396,52 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             }
             
             return true;
-        default:
-            return false;
+        case Event.Type.JoyAxisMotion:
+            event.type = Event.Type.JoyAxisMotion;
+            event.timestamp = sdl_event.jaxis.timestamp;
+            event.joy.motion.which = sdl_event.jaxis.which;
+            event.joy.motion.axis = sdl_event.jaxis.axis;
+            event.joy.motion.value = sdl_event.jaxis.value;
+
+            return true;
+        case Event.Type.JoyButtonDown:
+        case Event.Type.JoyButtonUp:
+            if (sdl_event.type == Event.Type.JoyButtonUp)
+                event.type = Event.Type.JoyButtonUp;
+            else
+                event.type = Event.Type.JoyButtonDown;
+
+            if (sdl_event.jbutton.state == SDL_PRESSED)
+                event.joy.button.state = State.Pressed;
+            else
+                event.joy.button.state = State.Released;
+
+            event.timestamp = sdl_event.jbutton.timestamp;
+            event.joy.button.which = sdl_event.jbutton.which;
+            event.joy.button.button = sdl_event.jbutton.button;
+
+            return true;
+        case Event.Type.JoyHatMotion:
+            event.type = Event.Type.JoyHatMotion;
+            event.timestamp = sdl_event.jhat.timestamp;
+            event.joy.hat.hat = sdl_event.jhat.hat;
+            event.joy.hat.value = cast(Joystick.Hat) sdl_event.jhat.value;
+            event.joy.hat.which = sdl_event.jhat.which;
+
+            return true;
+        case Event.Type.JoyDeviceAdded:
+        case Event.Type.JoyDeviceRemoved:
+            if (sdl_event.type == Event.Type.JoyDeviceAdded)
+                event.type = Event.Type.JoyDeviceAdded;
+            else
+                event.type = Event.Type.JoyDeviceRemoved;
+
+            event.timestamp = sdl_event.jdevice.timestamp;
+            event.joy.device.which = sdl_event.jdevice.which;
+
+            return true;
+        default: break;
     }
+
+    return false;
 }
