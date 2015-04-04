@@ -51,11 +51,13 @@ void main() {
     writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
     Joystick controller;
-    //Check for joysticks
+    // Check for joysticks
     if (Joystick.count() < 1)
         writeln("Warning: No joysticks connected!");
     else
         controller = Joystick.open(0);
+
+    writeln(controller.getName());
 
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);

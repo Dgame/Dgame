@@ -130,6 +130,8 @@ public:
         import core.stdc.string : strlen;
 
         const char* p = SDL_JoystickName(_joystick);
+        if (!p)
+            return null;
 
         return cast(immutable) p[0 .. strlen(p)];
     }
@@ -191,6 +193,8 @@ public:
         import core.stdc.string : strlen;
 
         const char* p = SDL_JoystickNameForIndex(device);
+        if (!p)
+            return null;
 
         return cast(immutable) p[0 .. strlen(p)];
     }
