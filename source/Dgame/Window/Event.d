@@ -38,8 +38,8 @@ public:
  * States
  */
 enum State : ubyte {
-    Released, /// 
-    Pressed /// 
+    Released = SDL_RELEASED, /// 
+    Pressed = SDL_PRESSED /// 
 }
 
 /**
@@ -426,14 +426,10 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
     switch (sdl_event.type) {
         case Event.Type.KeyDown:
         case Event.Type.KeyUp:
-            if (sdl_event.key.state == SDL_PRESSED)
-                event.keyboard.state = State.Pressed;
-            else
-                event.keyboard.state = State.Released;
-
             event.type = sdl_event.type == Event.Type.KeyDown ? Event.Type.KeyDown : Event.Type.KeyUp;
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
+            event.keyboard.state = cast(State) sdl_event.key.state;
             event.keyboard.code = cast(Keyboard.Code) sdl_event.key.keysym.sym;
             event.keyboard.repeat = sdl_event.key.repeat != 0;
             event.keyboard.mod = Keyboard.getModifier();
@@ -467,18 +463,10 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.MouseButtonDown:
         case Event.Type.MouseButtonUp:
-            if (sdl_event.type == Event.Type.MouseButtonUp)
-                event.type = Event.Type.MouseButtonUp;
-            else
-                event.type = Event.Type.MouseButtonDown;
-
-            if (sdl_event.button.state == SDL_PRESSED)
-                event.mouse.button.state = State.Pressed;
-            else
-                event.mouse.button.state = State.Released;
-            
+            event.type = sdl_event.type == Event.Type.MouseButtonUp ? Event.Type.MouseButtonUp : Event.Type.MouseButtonDown;
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
+            event.mouse.button.state = cast(State) sdl_event.button.state;
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
             event.mouse.button.clicks = sdl_event.button.clicks;
             event.mouse.button.x = sdl_event.button.x;
@@ -486,14 +474,10 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             
             return true;
         case Event.Type.MouseMotion:
-                if (sdl_event.motion.state == SDL_PRESSED)
-                event.mouse.motion.state = State.Pressed;
-            else
-                event.mouse.motion.state = State.Released;
-
             event.type = Event.Type.MouseMotion;
             event.timestamp = sdl_event.motion.timestamp;
             event.windowId  = sdl_event.motion.windowID;
+            event.mouse.motion.state = cast(State) sdl_event.motion.state;
             event.mouse.motion.x = sdl_event.motion.x;
             event.mouse.motion.y = sdl_event.motion.y;
             event.mouse.motion.rel_x = sdl_event.motion.xrel;
@@ -522,17 +506,9 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.JoystickButtonDown:
         case Event.Type.JoystickButtonUp:
-            if (sdl_event.type == Event.Type.JoystickButtonUp)
-                event.type = Event.Type.JoystickButtonUp;
-            else
-                event.type = Event.Type.JoystickButtonDown;
-
-            if (sdl_event.jbutton.state == SDL_PRESSED)
-                event.joystick.button.state = State.Pressed;
-            else
-                event.joystick.button.state = State.Released;
-
+            event.type  = sdl_event.type == Event.Type.JoystickButtonUp ? Event.Type.JoystickButtonUp : Event.Type.JoystickButtonDown;
             event.timestamp = sdl_event.jbutton.timestamp;
+            event.joystick.button.state = cast(State) sdl_event.jbutton.state;
             event.joystick.button.which = sdl_event.jbutton.which;
             event.joystick.button.button = sdl_event.jbutton.button;
 
@@ -547,11 +523,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.JoystickDeviceAdded:
         case Event.Type.JoystickDeviceRemoved:
-            if (sdl_event.type == Event.Type.JoystickDeviceAdded)
-                event.type = Event.Type.JoystickDeviceAdded;
-            else
-                event.type = Event.Type.JoystickDeviceRemoved;
-
+            event.type = sdl_event.type == Event.Type.JoystickDeviceAdded ? Event.Type.JoystickDeviceAdded : Event.Type.JoystickDeviceRemoved;
             event.timestamp = sdl_event.jdevice.timestamp;
             event.joystick.device.which = sdl_event.jdevice.which;
 
@@ -566,18 +538,9 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.ControllerButtonDown:
         case Event.Type.ControllerButtonUp:
+            event.type = sdl_event.type == Event.Type.ControllerButtonUp ? Event.Type.ControllerButtonUp : Event.Type.ControllerButtonDown;
             event.timestamp = sdl_event.cbutton.timestamp;
-
-            if (sdl_event.type == Event.Type.ControllerButtonUp)
-                event.type = Event.Type.ControllerButtonUp;
-            else
-                event.type = Event.Type.ControllerButtonDown;
-
-            if (sdl_event.cbutton.state == SDL_PRESSED)
-                event.controller.button.state = State.Pressed;
-            else
-                event.controller.button.state = State.Released;
-
+            event.controller.button.state = cast(State) sdl_event.cbutton.state;
             event.controller.button.which = sdl_event.cbutton.which;
             event.controller.button.button = cast(GameController.Button) sdl_event.cbutton.button;
 
