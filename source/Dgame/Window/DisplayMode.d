@@ -175,6 +175,8 @@ struct DisplayMode {
         import core.stdc.string : strlen;
 
         const char* p = SDL_GetDisplayName(display);
+        if (!p)
+            return null;
 
         return cast(immutable) p[0 .. strlen(p)];
     }
@@ -211,6 +213,8 @@ struct DisplayMode {
         import core.stdc.string : strlen;
 
         const char* p = SDL_GetCurrentVideoDriver();
+        if (!p)
+            return null;
 
         return cast(immutable) p[0 .. strlen(p)];
     }

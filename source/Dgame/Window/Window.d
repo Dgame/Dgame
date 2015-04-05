@@ -590,6 +590,8 @@ public:
         import core.stdc.string : strlen;
 
         const char* p = SDL_GetWindowTitle(_window);
+        if (!p)
+            return null;
 
         return cast(immutable) p[0 .. strlen(p)];
     }
