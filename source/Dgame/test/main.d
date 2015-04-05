@@ -55,7 +55,7 @@ void main() {
     if (Joystick.count() < 1)
         writeln("Warning: No joysticks connected!");
     else {
-        controller = Joystick.open(0);
+        controller = Joystick(0);
 
         writeln("Game Controller Name: ", controller.getName());
     }

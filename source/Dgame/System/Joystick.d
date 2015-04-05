@@ -169,14 +169,6 @@ public:
     }
 
     /**
-     * Open the Joystick with the given device index
-     */
-    @nogc
-    static Joystick open(int device) nothrow {
-        return Joystick(device);
-    }
-
-    /**
      * Use this function to update the current state of the open joysticks.
      * This is called automatically by the event loop
      */
