@@ -35,29 +35,6 @@ import Dgame.System.GameController;
 public:
 
 /**
- * Specific Window Events.
- */
-enum WindowEventId : ubyte {
-    None,   /// Nothing happens
-    Shown,  /// Window has been shown
-    Hidden, /// Window has been hidden
-    Exposed,    /// Window has been exposed and should be redrawn
-    Moved,  /// Window has been moved to data1, data2 
-    Resized,    /// Window has been resized to data1Xdata2
-    SizeChanged,    /// The window size has changed, 
-                    /// either as a result of an API call or through 
-                    /// the system or user changing the window size. */
-    Minimized,  /// Window has been minimized.
-    Maximized,  /// Window has been maximized.
-    Restored,   /// Window has been restored to normal size and position.
-    Enter,  /// Window has gained mouse focus.
-    Leave,  /// Window has lost mouse focus.
-    FocusGained,    /// Window has gained keyboard focus.
-    FocusLost,  /// Window has lost keyboard focus.
-    Closed  /// The window manager requests that the window be closed.
-}
-
-/**
  * States
  */
 enum State : ubyte {
@@ -98,9 +75,29 @@ struct WindowSizeEvent {
  */
 struct WindowEvent {
     /**
-     * The Window Event id.
+     * All supported Window Event Types
      */
-    WindowEventId eventId;
+    enum Type {
+        Shown = SDL_WINDOWEVENT_SHOWN,  /// Window has been shown
+        Hidden = SDL_WINDOWEVENT_HIDDEN, /// Window has been hidden
+        Exposed = SDL_WINDOWEVENT_EXPOSED,    /// Window has been exposed and should be redrawn
+        Moved = SDL_WINDOWEVENT_MOVED,  /// Window has been moved
+        Resized = SDL_WINDOWEVENT_RESIZED,    /// Window has been resized
+        SizeChanged = SDL_WINDOWEVENT_SIZE_CHANGED, /// Window size has changed; this event is followed by Type.Resized
+        Minimized = SDL_WINDOWEVENT_MINIMIZED,  /// Window has been minimized
+        Maximized = SDL_WINDOWEVENT_MAXIMIZED,  /// Window has been maximized
+        Restored = SDL_WINDOWEVENT_RESTORED,   /// Window has been restored to normal size and position
+        Enter = SDL_WINDOWEVENT_ENTER,  /// Window has gained mouse focus
+        Leave = SDL_WINDOWEVENT_LEAVE,  /// Window has lost mouse focus
+        FocusGained = SDL_WINDOWEVENT_FOCUS_GAINED,    /// Window has gained keyboard focus
+        FocusLost = SDL_WINDOWEVENT_FOCUS_LOST,  /// Window has lost keyboard focus
+        Close = SDL_WINDOWEVENT_CLOSE /// The window manager requests that the window be closed
+    }
+
+    /**
+     * The Type of the Window Event
+     */
+    Type event;
 
     union {
         WindowSizeEvent size; /// Size Event
@@ -448,18 +445,20 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.timestamp = sdl_event.window.timestamp;
             
             switch (sdl_event.window.event) {
-                case SDL_WINDOWEVENT_MOVED:
+                case WindowEvent.Type.Moved:
                     event.window.motion.x = sdl_event.window.data1;
                     event.window.motion.y = sdl_event.window.data2;
 
                     break;
-                case SDL_WINDOWEVENT_RESIZED:
+                case WindowEvent.Type.Resized:
                     event.window.size.width = sdl_event.window.data1;
                     event.window.size.height = sdl_event.window.data2;
 
                     break;
                 default: break;
             }
+
+            event.window.event = cast(WindowEvent.Type) sdl_event.window.event;
             
             return true;
         case Event.Type.Quit:
