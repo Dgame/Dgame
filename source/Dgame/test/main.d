@@ -54,10 +54,11 @@ void main() {
     // Check for joysticks
     if (Joystick.count() < 1)
         writeln("Warning: No joysticks connected!");
-    else
+    else {
         controller = Joystick.open(0);
 
-    writeln(controller.getName());
+        writeln("Game Controller Name: ", controller.getName());
+    }
 
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);
@@ -190,17 +191,17 @@ void main() {
                     wnd.toggleFullscreen();
                 else if (event.keyboard.key == Keyboard.Code.D)
                     wnd.setFullscreen(Window.Style.Desktop);
-            } else if (event.type == Event.Type.JoyAxisMotion) {
-                writeln("Joystick #", event.joy.motion.which,
-                        " moved about ", event.joy.motion.value,
-                        " around axis ", event.joy.motion.axis);
-            } else if (event.type == Event.Type.JoyHatMotion) {
-                writeln("Joystick #", event.joy.hat.which,
-                        " moved about ", event.joy.hat.value,
-                        " around hat ", event.joy.hat.hat);
-            } else if (event.type == Event.Type.JoyButtonDown) {
-                writeln("Joystick #", event.joy.button.which,
-                        " pressed button ", event.joy.button.button);
+            } else if (event.type == Event.Type.JoystickAxisMotion) {
+                writeln("Joystick #", event.joystick.motion.which,
+                        " moved about ", event.joystick.motion.value,
+                        " around axis ", event.joystick.motion.axis);
+            } else if (event.type == Event.Type.JoystickHatMotion) {
+                writeln("Joystick #", event.joystick.hat.which,
+                        " moved about ", event.joystick.hat.value,
+                        " around hat ", event.joystick.hat.hat);
+            } else if (event.type == Event.Type.JoystickButtonDown) {
+                writeln("Joystick #", event.joystick.button.which,
+                        " pressed button ", event.joystick.button.button);
             }
         }
 

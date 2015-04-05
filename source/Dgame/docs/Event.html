@@ -88,6 +88,38 @@ Window has been minimized.<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="WindowMoveEvent"></a>struct <u>WindowMoveEvent</u>;
+</big></dt>
+<dd>The Window move Event structure.<br><br>
+
+<dl><dt><big><a name="WindowMoveEvent.x"></a>int <u>x</u>;
+</big></dt>
+<dd>The new <u>x</u> position<br><br>
+
+</dd>
+<dt><big><a name="WindowMoveEvent.y"></a>int <u>y</u>;
+</big></dt>
+<dd>The new <u>y</u> position<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="WindowSizeEvent"></a>struct <u>WindowSizeEvent</u>;
+</big></dt>
+<dd>The Window size Event structure.<br><br>
+
+<dl><dt><big><a name="WindowSizeEvent.width"></a>int <u>width</u>;
+</big></dt>
+<dd>The new <u>width</u><br><br>
+
+</dd>
+<dt><big><a name="WindowSizeEvent.height"></a>int <u>height</u>;
+</big></dt>
+<dd>The new <u>height</u><br><br>
+
+</dd>
+</dl>
+</dd>
 <dt><big><a name="WindowEvent"></a>struct <u>WindowEvent</u>;
 </big></dt>
 <dd>The Window Event structure.<br><br>
@@ -95,6 +127,16 @@ Window has been minimized.<br><br>
 <dl><dt><big><a name="WindowEvent.eventId"></a>WindowEventId <u>eventId</u>;
 </big></dt>
 <dd>The Window Event id.<br><br>
+
+</dd>
+<dt><big><a name="WindowEvent.size"></a>WindowSizeEvent <u>size</u>;
+</big></dt>
+<dd>Size Event<br><br>
+
+</dd>
+<dt><big><a name="WindowEvent.motion"></a>WindowMoveEvent <u>motion</u>;
+</big></dt>
+<dd>Motion Event<br><br>
 
 </dd>
 </dl>
@@ -217,43 +259,43 @@ State enum<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="JoyAxisEvent"></a>struct <u>JoyAxisEvent</u>;
+<dt><big><a name="JoystickAxisEvent"></a>struct <u>JoystickAxisEvent</u>;
 </big></dt>
 <dd>The Joystick axis motion Event structure<br><br>
 
-<dl><dt><big><a name="JoyAxisEvent.which"></a>int <u>which</u>;
+<dl><dt><big><a name="JoystickAxisEvent.which"></a>int <u>which</u>;
 </big></dt>
 <dd>The instance id of the joystick <u>which</u> reported the event<br><br>
 
 </dd>
-<dt><big><a name="JoyAxisEvent.axis"></a>ubyte <u>axis</u>;
+<dt><big><a name="JoystickAxisEvent.axis"></a>ubyte <u>axis</u>;
 </big></dt>
 <dd>The index of the <u>axis</u> that changed
  Typically 0 is the x <u>axis</u>, 1 is the y <u>axis</u> etc.<br><br>
 
 </dd>
-<dt><big><a name="JoyAxisEvent.value"></a>short <u>value</u>;
+<dt><big><a name="JoystickAxisEvent.value"></a>short <u>value</u>;
 </big></dt>
 <dd>The current position of the axis (range: -32768 to 32767)<br><br>
 
 </dd>
 </dl>
 </dd>
-<dt><big><a name="JoyButtonEvent"></a>struct <u>JoyButtonEvent</u>;
+<dt><big><a name="JoystickButtonEvent"></a>struct <u>JoystickButtonEvent</u>;
 </big></dt>
-<dd>The Joystick abutton Event structure<br><br>
+<dd>The Joystick button Event structure<br><br>
 
-<dl><dt><big><a name="JoyButtonEvent.which"></a>int <u>which</u>;
+<dl><dt><big><a name="JoystickButtonEvent.which"></a>int <u>which</u>;
 </big></dt>
 <dd>The instance id of the joystick <u>which</u> reported the event<br><br>
 
 </dd>
-<dt><big><a name="JoyButtonEvent.button"></a>ubyte <u>button</u>;
+<dt><big><a name="JoystickButtonEvent.button"></a>ubyte <u>button</u>;
 </big></dt>
-<dd>The index of the <u>button</u> that changed<br><br>
+<dd>The index of the <u>button</u> which is pressed or released<br><br>
 
 </dd>
-<dt><big><a name="JoyButtonEvent.state"></a>State <u>state</u>;
+<dt><big><a name="JoystickButtonEvent.state"></a>State <u>state</u>;
 </big></dt>
 <dd>State of the button
 <br><br>
@@ -263,21 +305,21 @@ State enum<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="JoyHatEvent"></a>struct <u>JoyHatEvent</u>;
+<dt><big><a name="JoystickHatEvent"></a>struct <u>JoystickHatEvent</u>;
 </big></dt>
 <dd>The Joystick hat Event structure<br><br>
 
-<dl><dt><big><a name="JoyHatEvent.which"></a>int <u>which</u>;
+<dl><dt><big><a name="JoystickHatEvent.which"></a>int <u>which</u>;
 </big></dt>
 <dd>The instance id of the joystick <u>which</u> reported the event<br><br>
 
 </dd>
-<dt><big><a name="JoyHatEvent.hat"></a>ubyte <u>hat</u>;
+<dt><big><a name="JoystickHatEvent.hat"></a>ubyte <u>hat</u>;
 </big></dt>
 <dd>The index of the <u>hat</u> that changed<br><br>
 
 </dd>
-<dt><big><a name="JoyHatEvent.value"></a>Joystick.Hat <u>value</u>;
+<dt><big><a name="JoystickHatEvent.value"></a>Joystick.Hat <u>value</u>;
 </big></dt>
 <dd>The new position of the hat
 <br><br>
@@ -286,11 +328,68 @@ See Joystick.Hat enum<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="JoyDeviceEvent"></a>struct <u>JoyDeviceEvent</u>;
+<dt><big><a name="JoystickDeviceEvent"></a>struct <u>JoystickDeviceEvent</u>;
 </big></dt>
 <dd>The Joystick device Event structure<br><br>
 
-<dl><dt><big><a name="JoyDeviceEvent.which"></a>int <u>which</u>;
+<dl><dt><big><a name="JoystickDeviceEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="ControllerAxisEvent"></a>struct <u>ControllerAxisEvent</u>;
+</big></dt>
+<dd>The Game Controller axis Event structure<br><br>
+
+<dl><dt><big><a name="ControllerAxisEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+<dt><big><a name="ControllerAxisEvent.axis"></a>GameController.Axis <u>axis</u>;
+</big></dt>
+<dd>The index of the <u>axis</u> that changed
+ Typically 0 is the x <u>axis</u>, 1 is the y <u>axis</u> etc.<br><br>
+
+</dd>
+<dt><big><a name="ControllerAxisEvent.value"></a>short <u>value</u>;
+</big></dt>
+<dd>The current position of the axis (range: -32768 to 32767)<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="ControllerButtonEvent"></a>struct <u>ControllerButtonEvent</u>;
+</big></dt>
+<dd>The Game Controller button Event structure<br><br>
+
+<dl><dt><big><a name="ControllerButtonEvent.which"></a>int <u>which</u>;
+</big></dt>
+<dd>The instance id of the joystick <u>which</u> reported the event<br><br>
+
+</dd>
+<dt><big><a name="ControllerButtonEvent.button"></a>GameController.Button <u>button</u>;
+</big></dt>
+<dd>The GameController <u>button</u> which is pressed or released<br><br>
+
+</dd>
+<dt><big><a name="ControllerButtonEvent.state"></a>State <u>state</u>;
+</big></dt>
+<dd>State of the button
+<br><br>
+<b>See:</b><br>
+State enum<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="ControllerDeviceEvent"></a>struct <u>ControllerDeviceEvent</u>;
+</big></dt>
+<dd>The Game Controller device Event structure<br><br>
+
+<dl><dt><big><a name="ControllerDeviceEvent.which"></a>int <u>which</u>;
 </big></dt>
 <dd>The instance id of the joystick <u>which</u> reported the event<br><br>
 
@@ -381,26 +480,47 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 <dt><big><a name="Event.JoystickUnion"></a>union <u>JoystickUnion</u>;
 </big></dt>
-<dd>JoyStick union<br><br>
+<dd>Joystick union<br><br>
 
-<dl><dt><big><a name="Event.JoystickUnion.motion"></a>JoyAxisEvent <u>motion</u>;
+<dl><dt><big><a name="Event.JoystickUnion.motion"></a>JoystickAxisEvent <u>motion</u>;
 </big></dt>
 <dd>Joystick <u>motion</u> Event<br><br>
 
 </dd>
-<dt><big><a name="Event.JoystickUnion.button"></a>JoyButtonEvent <u>button</u>;
+<dt><big><a name="Event.JoystickUnion.button"></a>JoystickButtonEvent <u>button</u>;
 </big></dt>
 <dd>Joystick <u>button</u> Event<br><br>
 
 </dd>
-<dt><big><a name="Event.JoystickUnion.hat"></a>JoyHatEvent <u>hat</u>;
+<dt><big><a name="Event.JoystickUnion.hat"></a>JoystickHatEvent <u>hat</u>;
 </big></dt>
 <dd>Joystick <u>hat</u> Event<br><br>
 
 </dd>
-<dt><big><a name="Event.JoystickUnion.device"></a>JoyDeviceEvent <u>device</u>;
+<dt><big><a name="Event.JoystickUnion.device"></a>JoystickDeviceEvent <u>device</u>;
 </big></dt>
 <dd>Joystick <u>device</u> Event<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="Event.ControllerUnion"></a>union <u>ControllerUnion</u>;
+</big></dt>
+<dd>Game Controller union<br><br>
+
+<dl><dt><big><a name="Event.ControllerUnion.motion"></a>ControllerAxisEvent <u>motion</u>;
+</big></dt>
+<dd>Controller <u>motion</u> Event<br><br>
+
+</dd>
+<dt><big><a name="Event.ControllerUnion.button"></a>ControllerButtonEvent <u>button</u>;
+</big></dt>
+<dd>Controller <u>button</u> Event<br><br>
+
+</dd>
+<dt><big><a name="Event.ControllerUnion.device"></a>ControllerDeviceEvent <u>device</u>;
+</big></dt>
+<dd>Controller <u>device</u> Event<br><br>
 
 </dd>
 </dl>
@@ -420,9 +540,14 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Mouse Events<br><br>
 
 </dd>
-<dt><big><a name="Event.joy"></a>JoystickUnion <u>joy</u>;
+<dt><big><a name="Event.joystick"></a>JoystickUnion <u>joystick</u>;
 </big></dt>
 <dd>Joystick Events<br><br>
+
+</dd>
+<dt><big><a name="Event.controller"></a>ControllerUnion <u>controller</u>;
+</big></dt>
+<dd>Controller Events<br><br>
 
 </dd>
 </dl>

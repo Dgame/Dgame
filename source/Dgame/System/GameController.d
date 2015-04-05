@@ -123,6 +123,20 @@ public:
     }
 
     /**
+     * Returns the mapping of the GameController
+     */
+    @nogc
+    string getMapping() nothrow {
+        import core.stdc.string : strlen;
+
+        const char* p =  SDL_GameControllerMapping(_controller);
+        if (!p)
+            return null;
+
+        return cast(immutable) p[0 .. strlen(p)];
+    }
+
+    /**
      * Returns the Joystick interface of the GameController
      */
     @nogc
