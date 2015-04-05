@@ -37,7 +37,7 @@ public:
 /**
  * States
  */
-enum State : ubyte {
+enum State {
     Released = SDL_RELEASED, /// 
     Pressed = SDL_PRESSED /// 
 }
