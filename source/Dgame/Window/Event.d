@@ -352,19 +352,19 @@ struct Event {
         MouseButtonUp = SDL_MOUSEBUTTONUP,  /// A mouse button is released.
         MouseWheel = SDL_MOUSEWHEEL,    /// The mouse wheel has scolled.
 
-        JoystickAxisMotion = SDL_JOYAXISMOTION, // A Joystick axis has moved
-        JoystickButtonDown = SDL_JOYBUTTONDOWN, // A Joystick button is pressed
-        JoystickButtonUp = SDL_JOYBUTTONUP,  // A Joystick button is released
-        JoystickHatMotion = SDL_JOYHATMOTION, // A Joystick hat has moved
-        JoystickDeviceAdded = SDL_JOYDEVICEADDED, // A Joystick was added
-        JoystickDeviceRemoved = SDL_JOYDEVICEREMOVED, // A Joystick was removed
+        JoystickAxisMotion = SDL_JOYAXISMOTION, /// A Joystick axis has moved
+        JoystickButtonDown = SDL_JOYBUTTONDOWN, /// A Joystick button is pressed
+        JoystickButtonUp = SDL_JOYBUTTONUP,  /// A Joystick button is released
+        JoystickHatMotion = SDL_JOYHATMOTION, /// A Joystick hat has moved
+        JoystickDeviceAdded = SDL_JOYDEVICEADDED, /// A Joystick was added
+        JoystickDeviceRemoved = SDL_JOYDEVICEREMOVED, /// A Joystick was removed
         
-        ControllerAxisMotion = SDL_CONTROLLERAXISMOTION, // A GameController axis has moved
-        ControllerButtonDown = SDL_CONTROLLERBUTTONDOWN, // A GameController button is pressed
-        ControllerButtonUp = SDL_CONTROLLERBUTTONUP,  // A GameController button is released
-        ControllerDeviceAdded = SDL_CONTROLLERDEVICEADDED, // A GameController was added
-        ControllerDeviceRemoved = SDL_CONTROLLERDEVICEREMOVED, // A GameController was removed
-        ControllerDeviceMapped = SDL_CONTROLLERDEVICEREMAPPED, // A GameController was mapped
+        ControllerAxisMotion = SDL_CONTROLLERAXISMOTION, /// A GameController axis has moved
+        ControllerButtonDown = SDL_CONTROLLERBUTTONDOWN, /// A GameController button is pressed
+        ControllerButtonUp = SDL_CONTROLLERBUTTONUP,  /// A GameController button is released
+        ControllerDeviceAdded = SDL_CONTROLLERDEVICEADDED, /// A GameController was added
+        ControllerDeviceRemoved = SDL_CONTROLLERDEVICEREMOVED, /// A GameController was removed
+        ControllerDeviceMapped = SDL_CONTROLLERDEVICEREMAPPED, /// A GameController was mapped
     }
 
     /**
@@ -426,7 +426,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
     switch (sdl_event.type) {
         case Event.Type.KeyDown:
         case Event.Type.KeyUp:
-            event.type = sdl_event.type == Event.Type.KeyDown ? Event.Type.KeyDown : Event.Type.KeyUp;
+            event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
             event.keyboard.state = cast(State) sdl_event.key.state;
@@ -463,7 +463,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.MouseButtonDown:
         case Event.Type.MouseButtonUp:
-            event.type = sdl_event.type == Event.Type.MouseButtonUp ? Event.Type.MouseButtonUp : Event.Type.MouseButtonDown;
+            event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
             event.mouse.button.state = cast(State) sdl_event.button.state;
@@ -506,7 +506,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.JoystickButtonDown:
         case Event.Type.JoystickButtonUp:
-            event.type  = sdl_event.type == Event.Type.JoystickButtonUp ? Event.Type.JoystickButtonUp : Event.Type.JoystickButtonDown;
+            event.type  = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.jbutton.timestamp;
             event.joystick.button.state = cast(State) sdl_event.jbutton.state;
             event.joystick.button.which = sdl_event.jbutton.which;
@@ -523,7 +523,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.JoystickDeviceAdded:
         case Event.Type.JoystickDeviceRemoved:
-            event.type = sdl_event.type == Event.Type.JoystickDeviceAdded ? Event.Type.JoystickDeviceAdded : Event.Type.JoystickDeviceRemoved;
+            event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.jdevice.timestamp;
             event.joystick.device.which = sdl_event.jdevice.which;
 
@@ -538,7 +538,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             return true;
         case Event.Type.ControllerButtonDown:
         case Event.Type.ControllerButtonUp:
-            event.type = sdl_event.type == Event.Type.ControllerButtonUp ? Event.Type.ControllerButtonUp : Event.Type.ControllerButtonDown;
+            event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.cbutton.timestamp;
             event.controller.button.state = cast(State) sdl_event.cbutton.state;
             event.controller.button.which = sdl_event.cbutton.which;
@@ -549,14 +549,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
         case Event.Type.ControllerDeviceRemoved:
         case Event.Type.ControllerDeviceMapped:
             event.timestamp = sdl_event.cdevice.timestamp;
-
-            if (sdl_event.type == Event.Type.ControllerDeviceAdded)
-                event.type = Event.Type.ControllerDeviceAdded;
-            else if (sdl_event.type == Event.Type.ControllerDeviceRemoved)
-                event.type = Event.Type.ControllerDeviceRemoved;
-            else
-                event.type = Event.Type.ControllerDeviceMapped;
-
+            event.type = cast(Event.Type) sdl_event.cdevice.type;
             event.controller.device.which = sdl_event.cdevice.which;
 
             return true;

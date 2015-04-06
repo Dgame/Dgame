@@ -670,7 +670,7 @@ public:
      * set it to false if you want to specify your own projection afterwards.
      */
     @nogc
-    bool setFullscreen(int style, bool adaptProjection = true) nothrow {
+    bool setFullscreen(uint style, bool adaptProjection = true) nothrow {
         if (style & this.getStyle())
             return true;
         
