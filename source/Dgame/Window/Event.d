@@ -330,6 +330,42 @@ struct ControllerDeviceEvent {
 }
 
 /**
+ * The Finger Touch Event structure
+ */
+struct TouchFingerEvent {
+    /**
+     * The id of the touch device
+     */
+    long touchId;
+    /**
+     * The id of the finger who touched the device
+     */
+    long fingerId;
+    /**
+     * The x coordinate of the touch event, in range of 0 .. 1
+     * Multiply it with the width if the Window to get the real x coordinate
+     */
+    float x;
+    /**
+     * The y coordinate of the touch event, in range of 0 .. 1
+     * Multiply it with the height if the Window to get the real y coordinate
+     */
+    float y;
+    /**
+     * The distance of the x coordinate (since the last event) in range of 0 .. 1
+     */
+    float dx;
+    /**
+     * The distance of the y coordinate (since the last event) in range of 0 .. 1
+     */
+    float dy;
+    /**
+     * The quantity of pressure applied in range of 0 .. 1
+     */
+    float pressure;
+}
+
+/**
  * The Event structure.
  * Event defines a system event and it's parameters
  *
@@ -365,6 +401,10 @@ struct Event {
         ControllerDeviceAdded = SDL_CONTROLLERDEVICEADDED, /// A GameController was added
         ControllerDeviceRemoved = SDL_CONTROLLERDEVICEREMOVED, /// A GameController was removed
         ControllerDeviceMapped = SDL_CONTROLLERDEVICEREMAPPED, /// A GameController was mapped
+
+        FingerMotion = SDL_FINGERMOTION, /// A finger was moved onto the touch device
+        FingerDown = SDL_FINGERDOWN, /// A finger is pressed onto the touch device
+        FingerUp = SDL_FINGERUP, /// A finger is released of the touch device
     }
 
     /**
@@ -414,6 +454,7 @@ struct Event {
         MouseUnion mouse; /// Mouse Events
         JoystickUnion joystick; /// Joystick Events
         ControllerUnion controller; /// Controller Events
+        TouchFingerEvent fingerTouch; /// Finger-Touch Events
     }
 }
 
@@ -551,6 +592,20 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.timestamp = sdl_event.cdevice.timestamp;
             event.type = cast(Event.Type) sdl_event.cdevice.type;
             event.controller.device.which = sdl_event.cdevice.which;
+
+            return true;
+        case Event.Type.FingerMotion:
+        case Event.Type.FingerDown:
+        case Event.Type.FingerUp:
+            event.timestamp = sdl_event.tfinger.timestamp;
+            event.type = cast(Event.Type) sdl_event.tfinger.type;
+            event.fingerTouch.touchId = sdl_event.tfinger.touchId;
+            event.fingerTouch.fingerId = sdl_event.tfinger.fingerId;
+            event.fingerTouch.x = sdl_event.tfinger.x;
+            event.fingerTouch.y = sdl_event.tfinger.y;
+            event.fingerTouch.dx = sdl_event.tfinger.dx;
+            event.fingerTouch.dy = sdl_event.tfinger.dy;
+            event.fingerTouch.pressure = sdl_event.tfinger.pressure;
 
             return true;
         default: break;

@@ -19,7 +19,18 @@ pragma(msg, Vertex.sizeof);
 void main() {
     Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 0));
     //wnd.setVerticalSync(Window.VerticalSync.Enable);
-    
+/*
+    immutable int display_count = DisplayMode.getNumOfDisplays();
+    writeln("Display count = ", display_count);
+    writeln("All Display modes:");
+
+    for (ubyte i = 0; i < display_count; i++) {
+        writeln("Modes of Display #", i);
+        foreach (ref const DisplayMode dm; DisplayMode.listModes(i)) {
+            writeln("\t", dm.width, ':', dm.height, ':', dm.refreshRate);
+        }
+    }
+*/
     uint[256] xpixels = [
         255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
         0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,

@@ -29,12 +29,10 @@ import derelict.sdl2.sdl;
 
 import Dgame.Math.Rect;
 
-DisplayMode[][] modes;
+import Dgame.Internal.Error;
 
-static this() {
-    immutable int nod = DisplayMode.getNumOfDisplays();
-    modes = new DisplayMode[][](nod);
-}
+// All modes
+DisplayMode[][] modes;
 
 package(Dgame):
 
@@ -98,11 +96,8 @@ struct DisplayMode {
     static DisplayMode getDesktopMode(ubyte display = 0) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDesktopDisplayMode(display, &mode);
-        if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("An error occured: %s\n", SDL_GetError());
-        }
+        if (result != 0)
+            print_fmt("An error occured: %s\n", SDL_GetError());
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
@@ -114,11 +109,8 @@ struct DisplayMode {
     static DisplayMode getMode(uint index, ubyte display = 0) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetDisplayMode(display, index, &mode);
-        if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("An error occured: %s\n", SDL_GetError());
-        }
+        if (result != 0)
+            print_fmt("An error occured: %s\n", SDL_GetError());
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
@@ -130,11 +122,8 @@ struct DisplayMode {
     static DisplayMode getCurrentMode(ubyte display = 0) nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetCurrentDisplayMode(display, &mode);
-        if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("An error occured: %s\n", SDL_GetError());
-        }
+        if (result != 0)
+            print_fmt("An error occured: %s\n", SDL_GetError());
         
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
@@ -143,14 +132,19 @@ struct DisplayMode {
      * Returns a List of all valid supported video modes at the given display
      */
     static DisplayMode[] listModes(ubyte display = 0) nothrow {
+        if (modes.length == 0) {
+            immutable int nod = DisplayMode.getNumOfDisplays();
+            modes = new DisplayMode[][](nod);
+        }
+        
         if (modes[display].length != 0)
             return modes[display];
         
-        immutable uint num = DisplayMode.getNumOfModes(display);
-        modes[display].reserve(num);
+        immutable int num = DisplayMode.getNumOfModes(display);
+        modes[display] = new DisplayMode[](num);
 
         for (int i = 0; i < num; ++i) {
-            modes[display] ~= DisplayMode.getMode(i, display);
+            modes[display][i] = DisplayMode.getMode(i, display);
         }
         
         return modes[display];

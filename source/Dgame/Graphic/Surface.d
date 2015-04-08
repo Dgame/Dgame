@@ -176,11 +176,10 @@ public:
     @nogc
     bool loadFromFile(string filename) nothrow {
         import std.file : exists;
-        import core.stdc.stdio : printf;
 
         immutable bool ex = exists(filename);
         if (!ex) {
-            printf("File %s does not exists.\n", filename.ptr);
+            print_fmt("File %s does not exists.\n", filename.ptr);
             return false;
         }
 
@@ -188,7 +187,7 @@ public:
 
         _surface = IMG_Load(filename.ptr);
         if (!_surface) {
-            printf("Could not load image %s. Error: %s.\n", filename.ptr, SDL_GetError());
+            print_fmt("Could not load image %s. Error: %s.\n", filename.ptr, SDL_GetError());
             return false;
         }
         
@@ -209,9 +208,7 @@ public:
 
         _surface = SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
         if (!_surface) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not load image. Error: %s.\n", SDL_GetError());
+            print_fmt("Could not load image. Error: %s.\n", SDL_GetError());
             return false;
         }
         
@@ -227,9 +224,7 @@ public:
     bool saveToFile(string filename) nothrow {
         immutable int result = IMG_SavePNG(_surface, filename.ptr);
         if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
+            print_fmt("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
             return false;
         }
 
@@ -339,8 +334,7 @@ public:
             return true;
         }
 
-        import core.stdc.stdio : printf;
-        printf("Image could not be adapted: %s\n", SDL_GetError());
+        print_fmt("Image could not be adapted: %s\n", SDL_GetError());
 
         return false;
     }
@@ -615,11 +609,9 @@ public:
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
         immutable bool result = SDL_BlitScaled(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
-        if (!result) {
-            import core.stdc.stdio : printf;
+        if (!result)
+            print_fmt("Could not blit surface: %s\n", SDL_GetError());
 
-            printf("Could not blit surface: %s\n", SDL_GetError());
-        }
 
         return result;
     }
@@ -643,11 +635,8 @@ public:
         SDL_Rect* dst_ptr = dst ? _transfer(*dst, b) : null;
         
         immutable bool result = SDL_BlitSurface(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
-        if (!result) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not blit surface: %s\n", SDL_GetError());
-        }
+        if (!result)
+            print_fmt("Could not blit surface: %s\n", SDL_GetError());
 
         return result;
     }
@@ -671,9 +660,9 @@ public:
         
         return Surface(sub);
     }
-
+    
     @nogc
-    /+package(Dgame)+/void setAsIconOf(SDL_Window* wnd) nothrow {
+    package(Dgame) void setAsIconOf(SDL_Window* wnd) nothrow {
         assert(wnd, "Invalid SDL_Window");
         assert(_surface, "Invalid SDL_Surface");
 
@@ -681,7 +670,7 @@ public:
     }
 
     @nogc
-    /+package(Dgame)+/SDL_Cursor* setAsCursorAt(int hx, int hy) nothrow {
+    package(Dgame) SDL_Cursor* setAsCursorAt(int hx, int hy) nothrow {
         return SDL_CreateColorCursor(_surface, hx, hy);
     }
 }

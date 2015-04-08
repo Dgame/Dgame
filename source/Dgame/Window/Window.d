@@ -48,6 +48,8 @@ import Dgame.Window.GLSettings;
 import Dgame.Window.DisplayMode;
 import Dgame.Window.Internal.Init;
 
+import Dgame.Internal.Error;
+
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
 
@@ -634,11 +636,8 @@ public:
     void setDisplayMode()(auto ref const DisplayMode mode) nothrow {
         SDL_DisplayMode sdl_mode = void;
         immutable int result = SDL_SetWindowDisplayMode(_window, _transfer(mode, sdl_mode));
-        if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not set the display mode: %s\n", SDL_GetError());
-        }
+        if (result != 0)
+            print_fmt("Could not set the display mode: %s\n", SDL_GetError());
     }
 
     /**
@@ -648,11 +647,8 @@ public:
     DisplayMode getDisplayMode() nothrow {
         SDL_DisplayMode mode = void;
         immutable int result = SDL_GetWindowDisplayMode(_window, &mode);
-        if (result != 0) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not get the display mode: %s\n", SDL_GetError());
-        }
+        if (result != 0)
+            print_fmt("Could not get the display mode: %s\n", SDL_GetError());
 
         return DisplayMode(mode.w, mode.h, cast(ubyte) mode.refresh_rate);
     }
@@ -677,9 +673,7 @@ public:
         if (style & FullScreenMask || style == 0) {
             immutable int result = SDL_SetWindowFullscreen(this._window, style);
             if (result != 0) {
-                import core.stdc.stdio : printf;
-
-                printf("Could not enable fullscreen: %s\n", SDL_GetError());
+                print_fmt("Could not enable fullscreen: %s\n", SDL_GetError());
                 return false;
             } else if (adaptProjection) {
                 const Size size = this.getSize();

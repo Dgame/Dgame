@@ -35,23 +35,26 @@ import Dgame.Graphic.Surface;
 
 import Dgame.Internal.Error;
 
+char[] buffer;
+
 @nogc
-char* toStringz(string text, char[] buf) nothrow {
-    assert(text.length != 0);
-    assert(buf.length != 0);
+static ~this() nothrow {
+    //print_fmt("Free font buffer: %d\n", buffer.length);
+    m3.m3.destruct(buffer.ptr);
+}
 
-    if (text.length < buf.length) {
-        buf[0 .. text.length] = text;
-        buf[text.length] = '\0';
-
+@nogc
+char* make(size_t n, char[] buf) nothrow {
+    if (buf.length > n)
         return buf.ptr;
-    }
 
-    char[] arr = m3.m3.make!(char[])(text.length + 1);
-    arr[0 .. text.length] = text;
-    arr[text.length] = '\0';
+    if (buffer.length > n)
+        return buffer.ptr;
 
-    return arr.ptr;
+    //print_fmt("(Re)Order font buffer: %d\n", n + 1);
+    buffer = m3.m3.reserve!(char[])(buffer, n + 1);
+
+    return buffer.ptr;
 }
 
 public:
@@ -129,9 +132,7 @@ public:
         _fontSize = fontSize == 0 ? DefaultSize : fontSize;
         _ttf = TTF_OpenFont(filename.ptr, _fontSize);
         if (!_ttf) {
-            import core.stdc.stdio : printf;
-
-            printf("Error by loading TTF_Font: %s\n", TTF_GetError());
+            print_fmt("Error by loading TTF_Font %s: %s\n", filename.ptr, TTF_GetError());
             return false;
         }
 
@@ -170,7 +171,6 @@ public:
     @nogc
     Surface render()(string text, auto ref const Color4b fg, auto ref const Color4b bg, Mode mode = Mode.Solid) nothrow {
         assert(_ttf, "Font is invalid");
-        assert(text.length != 0, "Empty text");
 
         SDL_Color a = void;
         SDL_Color b = void;
@@ -179,22 +179,20 @@ public:
         _transfer(bg, b);
 
         char[256] buf = void;
-        char* ptr = null;
-        if (text[$ - 1] != '\0')
-            ptr = toStringz(text, buf[]);
-
-        scope(exit) if (ptr && ptr !is buf.ptr) m3.m3.destruct(ptr);
+        char* ptr = make(text.length, buf[]);
+        ptr[0 .. text.length] = text[];
+        ptr[text.length] = '\0';
 
         SDL_Surface* srfc;
         final switch (mode) {
             case Mode.Solid:
-                srfc = TTF_RenderUTF8_Solid(_ttf, ptr ? ptr : text.ptr, a);
+                srfc = TTF_RenderUTF8_Solid(_ttf, ptr, a);
                 break;
             case Mode.Shaded:
-                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr ? ptr : text.ptr, a, b);
+                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr, a, b);
                 break;
             case Mode.Blended:
-                srfc = TTF_RenderUTF8_Blended(_ttf, ptr ? ptr : text.ptr, a);
+                srfc = TTF_RenderUTF8_Blended(_ttf, ptr, a);
                 break;
         }
 

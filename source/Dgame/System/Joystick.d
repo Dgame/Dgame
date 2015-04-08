@@ -6,6 +6,8 @@ import derelict.sdl2.sdl;
 
 import Dgame.Math.Vector2;
 
+import Dgame.Internal.Error;
+
 public:
 
 /**
@@ -46,11 +48,8 @@ public:
     @nogc
     this(int device) nothrow {
         _joystick = SDL_JoystickOpen(device);
-        if (!_joystick) {
-            import core.stdc.stdio : printf;
-
-            printf("Warning: Unable to open joystick %d! Error: %s\n", device, SDL_GetError());
-        }
+        if (!_joystick)
+            print_fmt("Warning: Unable to open joystick %d! Error: %s\n", device, SDL_GetError());
     }
 
     /**

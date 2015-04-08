@@ -27,6 +27,8 @@ private:
 
 import derelict.sdl2.mixer;
 
+import Dgame.Internal.Error;
+
 public:
 
 /**
@@ -89,9 +91,7 @@ public:
     bool loadFromFile(string filename) nothrow {
         _chunk = Mix_LoadWAV(filename.ptr);
         if (!_chunk) {
-            import core.stdc.stdio : printf;
-
-            printf("Could not load file: %s\n", Mix_GetError());
+            print_fmt("Could not load file: %s\n", Mix_GetError());
             return false;
         }
 

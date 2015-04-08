@@ -76,13 +76,11 @@ void _initSDL() {
     if (_isSDLInited)
         return;
 
-    import core.stdc.stdio : printf;
-
     debug {
         SDL_version sdlver = void;
         SDL_GetVersion(&sdlver);
 
-        printf("SDL version: %d.%d.%d\n", sdlver.major, sdlver.minor, sdlver.patch);
+        print_fmt("SDL version: %d.%d.%d\n", sdlver.major, sdlver.minor, sdlver.patch);
     }
 
     scope(exit) _isSDLInited = true;
@@ -92,18 +90,18 @@ void _initSDL() {
     assert_fmt(result == 0, "Error: SDL could not be initialized: %s\n", SDL_GetError());
 
     if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0)
-        printf("Warning: No Joystick support\n");
+        print_fmt("Warning: No Joystick support\n");
     if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0)
-        printf("Warning: No GameController support\n");
+        print_fmt("Warning: No GameController support\n");
 
     // Initialize SDL_image
     result = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
     assert_fmt(result != 0, "Error: Failed to init the required jpg and png support: %s\n", IMG_GetError());
     
     if ((result & IMG_INIT_JPG) == 0)
-        printf("Warning: No jpg support: %s\n", IMG_GetError());
+        print_fmt("Warning: No jpg support: %s\n", IMG_GetError());
     else if ((result & IMG_INIT_PNG) == 0)
-        printf("Warning: No png support: %s\n", IMG_GetError());
+        print_fmt("Warning: No png support: %s\n", IMG_GetError());
 
     // Initialize SDL_ttf
     result = TTF_Init();
@@ -114,9 +112,9 @@ void _initSDL() {
     assert_fmt(result != 0, "Error: Failed to init the required ogg and mp3 support: %s\n", Mix_GetError());
     
     if ((result & MIX_INIT_OGG) == 0)
-        printf("Warning: No ogg support: %s\n", Mix_GetError());
+        print_fmt("Warning: No ogg support: %s\n", Mix_GetError());
     else if ((result & MIX_INIT_MP3) == 0)
-        printf("Warning: No mp3 support: %s\n", Mix_GetError());
+        print_fmt("Warning: No mp3 support: %s\n", Mix_GetError());
 
     result = Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
     assert_fmt(result == 0, "Warning: Could not open Mix_OpenAudio: %s\n", Mix_GetError());
@@ -125,13 +123,11 @@ void _initSDL() {
     
     immutable int channels = Mix_AllocateChannels(256);
     if (channels < 256)
-        printf("Warning: Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
+        print_fmt("Warning: Could not reserve 256 channels, only %d. %s\n", channels, Mix_GetError());
 }
 
 @nogc
 void _initGLAttr(ref GLSettings gl_settings) {
-    import core.stdc.stdio : printf;
-
     // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
     version (OSX) {
         if (gl_settings.majorVersion == 0) {
@@ -156,7 +152,7 @@ void _initGLAttr(ref GLSettings gl_settings) {
         glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
 
         if (gl_settings.antiAliasLevel > max_samples) {
-            printf("Your anti-alias level (%d) is too high and will be reduced to %d.\n",gl_settings.antiAliasLevel, max_samples);
+            print_fmt("Your anti-alias level (%d) is too high and will be reduced to %d.\n",gl_settings.antiAliasLevel, max_samples);
             gl_settings.antiAliasLevel = cast(ubyte) max_samples;
         }
 
@@ -175,13 +171,11 @@ void _initGL() {
     if (_isGLInited)
         return;
 
-    debug import core.stdc.stdio : printf;
-
     scope(exit) _isGLInited = true;
 
     immutable GLVersion glver = DerelictGL.reload();
     const char* glverstr = glGetString(GL_VERSION);
-    debug printf("Derelict loaded GL version: %d (%d), available GL version: %s\n", DerelictGL.loadedVersion, glver, glverstr);
+    debug print_fmt("Derelict loaded GL version: %d (%d), available GL version: %s\n", DerelictGL.loadedVersion, glver, glverstr);
     
     version (OSX)
         enum GLVersion NEEDED_GL_VERSION = GLVersion.GL21;

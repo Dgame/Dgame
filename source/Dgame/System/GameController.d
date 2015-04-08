@@ -6,6 +6,8 @@ import derelict.sdl2.sdl;
 
 import Dgame.System.Joystick;
 
+import Dgame.Internal.Error;
+
 public:
 
 /**
@@ -59,11 +61,8 @@ public:
     @nogc
     this(int device) nothrow {
         _controller = SDL_GameControllerOpen(device);
-        if (!_controller) {
-            import core.stdc.stdio : printf;
-
-            printf("Warning: Unable to open game controller %d! Error: %s\n", device, SDL_GetError());
-        }        
+        if (!_controller)
+            print_fmt("Warning: Unable to open game controller %d! Error: %s\n", device, SDL_GetError());
     }
 
     /**
