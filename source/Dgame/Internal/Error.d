@@ -1,5 +1,7 @@
 module Dgame.Internal.Error;
 
+package(Dgame):
+
 @nogc
 void assert_fmt(Args...)(bool cond, string msg, auto ref Args args) nothrow {
     import core.stdc.stdio : sprintf;

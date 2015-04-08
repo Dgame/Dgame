@@ -26,12 +26,13 @@ module Dgame.Graphic.Texture;
 private:
 
 import derelict.opengl3.gl;
-static import m3.m3;
 
 import Dgame.Math.Rect;
 
 import Dgame.Graphic.Surface;
 import Dgame.Graphic.Color;
+
+import Dgame.Internal.m3;
 
 public:
 
@@ -302,8 +303,8 @@ public:
 
         // Get the pixel memory
         immutable uint msize = this.getByteSize();
-        void[] mem = m3.m3.make!(void[])(msize);
-        scope(exit) m3.m3.destruct(mem);
+        void[] mem = make!(void[])(msize);
+        scope(exit) unmake(mem);
 
         void[] memory = this.getPixels(mem[0 .. msize]);
 

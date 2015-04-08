@@ -28,8 +28,6 @@ private:
 import derelict.sdl2.sdl;
 import derelict.opengl3.gl;
 
-static import m3.m3;
-
 import Dgame.Graphic.Color;
 import Dgame.Graphic.Drawable;
 import Dgame.Graphic.Surface;
@@ -49,6 +47,7 @@ import Dgame.Window.DisplayMode;
 import Dgame.Window.Internal.Init;
 
 import Dgame.Internal.Error;
+import Dgame.Internal.m3;
 
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
@@ -263,8 +262,8 @@ public:
             immutable uint lineWidth = size.width * 4;
             immutable uint hlw = size.height * lineWidth;
 
-            void[] tmpLine = m3.m3.make!(void[])(lineWidth);
-            scope(exit) m3.m3.destruct(tmpLine);
+            void[] tmpLine = make!(void[])(lineWidth);
+            scope(exit) unmake(tmpLine);
 
             for (uint i = 0; i < size.height / 2; ++i) {
                 immutable uint tmpIdx1 = i * lineWidth;

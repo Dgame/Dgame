@@ -25,8 +25,6 @@ module Dgame.System.Font;
 
 private:
 
-static import m3.m3;
-
 import derelict.sdl2.types;
 import derelict.sdl2.ttf;
 
@@ -34,25 +32,26 @@ import Dgame.Graphic.Color;
 import Dgame.Graphic.Surface;
 
 import Dgame.Internal.Error;
+import Dgame.Internal.m3;
 
 char[] buffer;
 
 @nogc
 static ~this() nothrow {
     //print_fmt("Free font buffer: %d\n", buffer.length);
-    m3.m3.destruct(buffer.ptr);
+    unmake(buffer);
 }
 
 @nogc
-char* make(size_t n, char[] buf) nothrow {
-    if (buf.length > n)
+char* make(size_t len, char[] buf) nothrow {
+    if (buf.length > len)
         return buf.ptr;
 
-    if (buffer.length > n)
+    if (buffer.length > len)
         return buffer.ptr;
 
-    //print_fmt("(Re)Order font buffer: %d\n", n + 1);
-    buffer = m3.m3.reserve!(char[])(buffer, n + 1);
+    //print_fmt("(Re)Order font buffer: %d\n", len + 1);
+    buffer = remake(buffer, len + 1);
 
     return buffer.ptr;
 }
