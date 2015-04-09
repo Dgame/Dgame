@@ -124,12 +124,9 @@
 </big></dt>
 <dd>The Keyboard Event structure.<br><br>
 
-<dl><dt><big><a name="KeyboardEvent.state"></a>Event.State <u>state</u>;
+<dl><dt><big><a name="KeyboardEvent.isPressed"></a>bool <u>isPressed</u>;
 </big></dt>
-<dd>State of the key
-<br><br>
-<b>See:</b><br>
-Event.State enum<br><br>
+<dd><b>true</b>, if the key is pressed<br><br>
 
 </dd>
 <dt><big><a name="KeyboardEvent.key"></a>Keyboard.Key <u>key</u>;
@@ -142,9 +139,9 @@ Event.State enum<br><br>
 <dd>The Key modifier.<br><br>
 
 </dd>
-<dt><big><a name="KeyboardEvent.repeat"></a>bool <u>repeat</u>;
+<dt><big><a name="KeyboardEvent.isRepeat"></a>bool <u>isRepeat</u>;
 </big></dt>
-<dd><b>true</b>, if this is a key <u>repeat</u>.<br><br>
+<dd><b>true</b>, if this is a key repeat.<br><br>
 
 </dd>
 <dt><big><a name="KeyboardEvent.code"></a>deprecated alias <u>code</u> = key;
@@ -163,12 +160,9 @@ Event.State enum<br><br>
 <dd>The mouse <u>button</u> which is pressed or released.<br><br>
 
 </dd>
-<dt><big><a name="MouseButtonEvent.state"></a>Event.State <u>state</u>;
+<dt><big><a name="MouseButtonEvent.isPressed"></a>bool <u>isPressed</u>;
 </big></dt>
-<dd>State of the button
-<br><br>
-<b>See:</b><br>
-Event.State enum<br><br>
+<dd><b>true</b>, if the button is pressed<br><br>
 
 </dd>
 <dt><big><a name="MouseButtonEvent.clicks"></a>ubyte <u>clicks</u>;
@@ -192,12 +186,9 @@ Event.State enum<br><br>
 </big></dt>
 <dd>The Mouse motion Event structure.<br><br>
 
-<dl><dt><big><a name="MouseMotionEvent.state"></a>Event.State <u>state</u>;
+<dl><dt><big><a name="MouseMotionEvent.isPressed"></a>bool <u>isPressed</u>;
 </big></dt>
-<dd>State of the button
-<br><br>
-<b>See:</b><br>
-Event.State enum<br><br>
+<dd><b>true</b>, if the button is pressed<br><br>
 
 </dd>
 <dt><big><a name="MouseMotionEvent.x"></a>int <u>x</u>;
@@ -274,12 +265,9 @@ Event.State enum<br><br>
 <dd>The index of the <u>button</u> which is pressed or released<br><br>
 
 </dd>
-<dt><big><a name="JoystickButtonEvent.state"></a>Event.State <u>state</u>;
+<dt><big><a name="JoystickButtonEvent.isPressed"></a>bool <u>isPressed</u>;
 </big></dt>
-<dd>State of the button
-<br><br>
-<b>See:</b><br>
-Event.State enum<br><br>
+<dd><b>true</b>, if the button is pressed<br><br>
 
 </dd>
 </dl>
@@ -354,12 +342,9 @@ See Joystick.Hat enum<br><br>
 <dd>The GameController <u>button</u> which is pressed or released<br><br>
 
 </dd>
-<dt><big><a name="ControllerButtonEvent.state"></a>Event.State <u>state</u>;
+<dt><big><a name="ControllerButtonEvent.isPressed"></a>bool <u>isPressed</u>;
 </big></dt>
-<dd>State of the button
-<br><br>
-<b>See:</b><br>
-Event.State enum<br><br>
+<dd><b>true</b>, if the button is pressed<br><br>
 
 </dd>
 </dl>
@@ -521,18 +506,6 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dt><big><a name="Event.Type.FingerUp"></a><u>FingerUp</u></big></dt>
 <dd>A finger is released of the touch device<br><br>
 
-</dd>
-</dl>
-</dd>
-<dt><big><a name="Event.State"></a>enum <u>State</u>: int;
-</big></dt>
-<dd>States<br><br>
-
-<dl><dt><big><a name="Event.State.Released"></a><u>Released</u></big></dt>
-<dd><br><br>
-</dd>
-<dt><big><a name="Event.State.Pressed"></a><u>Pressed</u></big></dt>
-<dd><br><br>
 </dd>
 </dl>
 </dd>

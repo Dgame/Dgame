@@ -102,11 +102,9 @@ struct WindowEvent {
  */
 struct KeyboardEvent {
     /**
-     * State of the key
-     *
-     * See: Event.State enum
+     * true, if the key is pressed
      */
-    Event.State state;
+    bool isPressed;
     /**
      * The Key which is released or pressed.
      */
@@ -118,8 +116,7 @@ struct KeyboardEvent {
     /**
      * true, if this is a key repeat.
      */
-    bool repeat;
-
+    bool isRepeat;
     /**
      * An alias
      */
@@ -136,11 +133,9 @@ struct MouseButtonEvent {
      */
     Mouse.Button button;
     /**
-     * State of the button
-     *
-     * See: Event.State enum
+     * true, if the button is pressed
      */
-    Event.State state;
+    bool isPressed;
     /**
      * 1 for single-click, 2 for double-click, etc.
      */
@@ -160,11 +155,9 @@ struct MouseButtonEvent {
  */
 struct MouseMotionEvent {
     /**
-     * State of the button
-     *
-     * See: Event.State enum
+     * true, if the button is pressed
      */
-    Event.State state;
+    bool isPressed;
     /**
      * Current x position.
      */
@@ -200,7 +193,7 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
     /**
      * If true, the values in x and y will be opposite. Multiply by -1 to change them back.
      */
-    bool flipped;
+    bool isFlipped;
 }
 }
 
@@ -236,11 +229,9 @@ struct JoystickButtonEvent {
      */
     ubyte button;
     /**
-     * State of the button
-     *
-     * See: Event.State enum
+     * true, if the button is pressed
      */
-    Event.State state;
+    bool isPressed;
 }
 
 /**
@@ -305,11 +296,9 @@ struct ControllerButtonEvent {
      */
     GameController.Button button;
     /**
-     * State of the button
-     *
-     * See: Event.State enum
+     * true, if the button is pressed
      */
-    Event.State state;
+    bool isPressed;
 }
 
 /**
@@ -401,14 +390,6 @@ struct Event {
     }
 
     /**
-     * States
-     */
-    enum State {
-        Released = SDL_RELEASED, /// 
-        Pressed = SDL_PRESSED /// 
-    }
-
-    /**
      * The type of the Event
      */
     Type type;
@@ -471,9 +452,9 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
-            event.keyboard.state = cast(Event.State) sdl_event.key.state;
+            event.keyboard.isPressed = sdl_event.key.state == SDL_PRESSED;
             event.keyboard.key = cast(Keyboard.Key) sdl_event.key.keysym.sym;
-            event.keyboard.repeat = sdl_event.key.repeat != 0;
+            event.keyboard.isRepeat = sdl_event.key.repeat != 0;
             event.keyboard.mod = Keyboard.getModifier();
 
             return true;
@@ -508,7 +489,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
-            event.mouse.button.state = cast(Event.State) sdl_event.button.state;
+            event.mouse.button.isPressed = sdl_event.button.state == SDL_PRESSED;
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
             event.mouse.button.clicks = sdl_event.button.clicks;
             event.mouse.button.x = sdl_event.button.x;
@@ -519,7 +500,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = Event.Type.MouseMotion;
             event.timestamp = sdl_event.motion.timestamp;
             event.windowId  = sdl_event.motion.windowID;
-            event.mouse.motion.state = cast(Event.State) sdl_event.motion.state;
+            event.mouse.motion.isPressed = sdl_event.motion.state == SDL_PRESSED;
             event.mouse.motion.x = sdl_event.motion.x;
             event.mouse.motion.y = sdl_event.motion.y;
             event.mouse.motion.rel_x = sdl_event.motion.xrel;
@@ -534,7 +515,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.mouse.wheel.y = sdl_event.wheel.y;
 
             static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
-                event.mouse.wheel.flipped = sdl_event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
+                event.mouse.wheel.isFlipped = sdl_event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED;
             }
             
             return true;
@@ -550,7 +531,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
         case Event.Type.JoystickButtonUp:
             event.type  = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.jbutton.timestamp;
-            event.joystick.button.state = cast(Event.State) sdl_event.jbutton.state;
+            event.joystick.button.isPressed = sdl_event.jbutton.state == SDL_PRESSED;
             event.joystick.button.which = sdl_event.jbutton.which;
             event.joystick.button.button = sdl_event.jbutton.button;
 
@@ -582,7 +563,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
         case Event.Type.ControllerButtonUp:
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.cbutton.timestamp;
-            event.controller.button.state = cast(Event.State) sdl_event.cbutton.state;
+            event.controller.button.isPressed = sdl_event.cbutton.state == SDL_PRESSED;
             event.controller.button.which = sdl_event.cbutton.which;
             event.controller.button.button = cast(GameController.Button) sdl_event.cbutton.button;
 
