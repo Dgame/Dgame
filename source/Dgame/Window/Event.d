@@ -35,14 +35,6 @@ import Dgame.System.GameController;
 public:
 
 /**
- * States
- */
-enum State {
-    Released = SDL_RELEASED, /// 
-    Pressed = SDL_PRESSED /// 
-}
-
-/**
  * The Window move Event structure.
  */
 struct WindowMoveEvent {
@@ -112,9 +104,9 @@ struct KeyboardEvent {
     /**
      * State of the key
      *
-     * See: State enum
+     * See: Event.State enum
      */
-    State state;
+    Event.State state;
     /**
      * The Key which is released or pressed.
      */
@@ -146,9 +138,9 @@ struct MouseButtonEvent {
     /**
      * State of the button
      *
-     * See: State enum
+     * See: Event.State enum
      */
-    State state;
+    Event.State state;
     /**
      * 1 for single-click, 2 for double-click, etc.
      */
@@ -170,9 +162,9 @@ struct MouseMotionEvent {
     /**
      * State of the button
      *
-     * See: State enum
+     * See: Event.State enum
      */
-    State state;
+    Event.State state;
     /**
      * Current x position.
      */
@@ -246,9 +238,9 @@ struct JoystickButtonEvent {
     /**
      * State of the button
      *
-     * See: State enum
+     * See: Event.State enum
      */
-    State state;
+    Event.State state;
 }
 
 /**
@@ -315,9 +307,9 @@ struct ControllerButtonEvent {
     /**
      * State of the button
      *
-     * See: State enum
+     * See: Event.State enum
      */
-    State state;
+    Event.State state;
 }
 
 /**
@@ -409,6 +401,14 @@ struct Event {
     }
 
     /**
+     * States
+     */
+    enum State {
+        Released = SDL_RELEASED, /// 
+        Pressed = SDL_PRESSED /// 
+    }
+
+    /**
      * The type of the Event
      */
     Type type;
@@ -471,7 +471,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
-            event.keyboard.state = cast(State) sdl_event.key.state;
+            event.keyboard.state = cast(Event.State) sdl_event.key.state;
             event.keyboard.key = cast(Keyboard.Key) sdl_event.key.keysym.sym;
             event.keyboard.repeat = sdl_event.key.repeat != 0;
             event.keyboard.mod = Keyboard.getModifier();
@@ -508,7 +508,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.button.timestamp;
             event.windowId  = sdl_event.button.windowID;
-            event.mouse.button.state = cast(State) sdl_event.button.state;
+            event.mouse.button.state = cast(Event.State) sdl_event.button.state;
             event.mouse.button.button = cast(Mouse.Button) sdl_event.button.button;
             event.mouse.button.clicks = sdl_event.button.clicks;
             event.mouse.button.x = sdl_event.button.x;
@@ -519,7 +519,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.type = Event.Type.MouseMotion;
             event.timestamp = sdl_event.motion.timestamp;
             event.windowId  = sdl_event.motion.windowID;
-            event.mouse.motion.state = cast(State) sdl_event.motion.state;
+            event.mouse.motion.state = cast(Event.State) sdl_event.motion.state;
             event.mouse.motion.x = sdl_event.motion.x;
             event.mouse.motion.y = sdl_event.motion.y;
             event.mouse.motion.rel_x = sdl_event.motion.xrel;
@@ -550,7 +550,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
         case Event.Type.JoystickButtonUp:
             event.type  = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.jbutton.timestamp;
-            event.joystick.button.state = cast(State) sdl_event.jbutton.state;
+            event.joystick.button.state = cast(Event.State) sdl_event.jbutton.state;
             event.joystick.button.which = sdl_event.jbutton.which;
             event.joystick.button.button = sdl_event.jbutton.button;
 
@@ -582,7 +582,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
         case Event.Type.ControllerButtonUp:
             event.type = cast(Event.Type) sdl_event.type;
             event.timestamp = sdl_event.cbutton.timestamp;
-            event.controller.button.state = cast(State) sdl_event.cbutton.state;
+            event.controller.button.state = cast(Event.State) sdl_event.cbutton.state;
             event.controller.button.which = sdl_event.cbutton.which;
             event.controller.button.button = cast(GameController.Button) sdl_event.cbutton.button;
 
