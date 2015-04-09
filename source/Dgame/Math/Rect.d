@@ -29,18 +29,6 @@ import derelict.sdl2.sdl;
 
 import Dgame.Math.Vector2;
 
-// @@ pure FIX @@
-@nogc
-bool SDL_RectEmpty(const SDL_Rect* X) pure nothrow {
-    return !X || (X.w <= 0) || (X.h <= 0);
-}
-
-// @@ pure FIX @@
-@nogc
-bool SDL_RectEquals(const SDL_Rect* A, const SDL_Rect* B) pure nothrow {
-    return A && B && (A.x == B.x) && (A.y == B.y) && (A.w == B.w) && (A.h == B.h);
-}
-
 package(Dgame):
 
 @nogc
@@ -140,11 +128,11 @@ struct Rect {
     }
     
     /**
-     * Collapse this Rect. Means that the coordinates and the size is set to 0.
+     * Collapse this Rect. Means that the size is set to 0.
      */
     @nogc
     void collapse() pure nothrow {
-        this.width = this.height = this.x = this.y = 0;
+        this.width = this.height = 0;
     }
     
     /**
@@ -152,8 +140,7 @@ struct Rect {
      */
     @nogc
     bool isEmpty() const pure nothrow {
-        SDL_Rect a = void;
-        return SDL_RectEmpty(_transfer(this, a)) == SDL_TRUE;
+        return this.width == 0 || this.height == 0;
     }
     
     /**
@@ -191,10 +178,7 @@ struct Rect {
      */
     @nogc
     bool opEquals(ref const Rect rect) const pure nothrow {
-        SDL_Rect a = void;
-        SDL_Rect b = void;
-
-        return SDL_RectEquals(_transfer(this, a), _transfer(rect, b));
+        return this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height;
     }
     
     /**
