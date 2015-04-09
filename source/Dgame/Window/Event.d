@@ -118,7 +118,7 @@ struct KeyboardEvent {
     /**
      * The Key which is released or pressed.
      */
-    Keyboard.Code code;
+    Keyboard.Key key;
     /**
      * The Key modifier.
      */
@@ -131,7 +131,8 @@ struct KeyboardEvent {
     /**
      * An alias
      */
-    alias key = code;
+    deprecated("Use 'key' instead")
+    alias code = key;
 }
 
 /**
@@ -471,7 +472,7 @@ bool _translate(Event* event, ref const SDL_Event sdl_event) nothrow {
             event.timestamp = sdl_event.key.timestamp;
             event.windowId = sdl_event.key.windowID;
             event.keyboard.state = cast(State) sdl_event.key.state;
-            event.keyboard.code = cast(Keyboard.Code) sdl_event.key.keysym.sym;
+            event.keyboard.key = cast(Keyboard.Key) sdl_event.key.keysym.sym;
             event.keyboard.repeat = sdl_event.key.repeat != 0;
             event.keyboard.mod = Keyboard.getModifier();
 

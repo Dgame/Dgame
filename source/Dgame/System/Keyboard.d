@@ -104,12 +104,18 @@ public:
         Alt     = KMOD_ALT,     /// (Mod.LAlt|Mod.RAlt)
         Gui     = KMOD_GUI,     /// (Mod.LGui|Mod.RGui)
     }
+
+    /**
+     * An alias
+     */
+    deprecated("Use 'Key' instead")
+    alias Code = Key;
     
     /**
      * Supported Keyboard Codes.
      * These are all possible/supported keys.
      */
-    enum Code {
+    enum Key {
         Unknown = SDLK_UNKNOWN, /// 
         
         Return = SDLK_RETURN, /// 

@@ -185,22 +185,22 @@ void main() {
             if (event.type == Event.Type.Quit) {
                 loop = false;
             } else if (event.type == Event.Type.KeyDown) {
-                if (event.keyboard.key == Keyboard.Code.Esc)
+                if (event.keyboard.key == Keyboard.Key.Esc)
                     wnd.push(Event.Type.Quit);
-                else if (event.keyboard.key == Keyboard.Code.S)
+                else if (event.keyboard.key == Keyboard.Key.S)
                     wnd.capture().saveToFile("samples/images/capture.png");
-                else if (event.keyboard.key == Keyboard.Code.Space) {
+                else if (event.keyboard.key == Keyboard.Key.Space) {
                     explosion_sound.play();
                     explosion.slideTextureRect();
-                } else if (event.keyboard.key == Keyboard.Code.Dot) {
+                } else if (event.keyboard.key == Keyboard.Key.Dot) {
                     frames.selectFrame(idx);
                     writeln(idx);
                     idx++;
-                } else if (event.keyboard.key == Keyboard.Code.Comma)
+                } else if (event.keyboard.key == Keyboard.Key.Comma)
                     writeln("Window is on display ", wnd.getDisplayIndex());
-                else if (event.keyboard.key == Keyboard.Code.F)
+                else if (event.keyboard.key == Keyboard.Key.F)
                     wnd.toggleFullscreen();
-                else if (event.keyboard.key == Keyboard.Code.D)
+                else if (event.keyboard.key == Keyboard.Key.D)
                     wnd.setFullscreen(Window.Style.Desktop);
             } else if (event.type == Event.Type.JoystickAxisMotion) {
                 writeln("Joystick #", event.joystick.motion.which,
