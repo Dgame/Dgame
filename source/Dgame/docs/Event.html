@@ -387,6 +387,49 @@ State enum<br><br>
 </dd>
 </dl>
 </dd>
+<dt><big><a name="TouchFingerEvent"></a>struct <u>TouchFingerEvent</u>;
+</big></dt>
+<dd>The Finger Touch Event structure<br><br>
+
+<dl><dt><big><a name="TouchFingerEvent.touchId"></a>long <u>touchId</u>;
+</big></dt>
+<dd>The id of the touch device<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.fingerId"></a>long <u>fingerId</u>;
+</big></dt>
+<dd>The id of the finger who touched the device<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.x"></a>float <u>x</u>;
+</big></dt>
+<dd>The <u>x</u> coordinate of the touch event, in range of 0 .. 1
+ Multiply it with the width if the Window to get the real <u>x</u> coordinate<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.y"></a>float <u>y</u>;
+</big></dt>
+<dd>The <u>y</u> coordinate of the touch event, in range of 0 .. 1
+ Multiply it with the height if the Window to get the real <u>y</u> coordinate<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.dx"></a>float <u>dx</u>;
+</big></dt>
+<dd>The distance of the x coordinate (since the last event) in range of 0 .. 1<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.dy"></a>float <u>dy</u>;
+</big></dt>
+<dd>The distance of the y coordinate (since the last event) in range of 0 .. 1<br><br>
+
+</dd>
+<dt><big><a name="TouchFingerEvent.pressure"></a>float <u>pressure</u>;
+</big></dt>
+<dd>The quantity of <u>pressure</u> applied in range of 0 .. 1<br><br>
+
+</dd>
+</dl>
+</dd>
 <dt><big><a name="Event"></a>struct <u>Event</u>;
 </big></dt>
 <dd>The <u>Event</u> structure.
@@ -477,6 +520,18 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 <dt><big><a name="Event.Type.ControllerDeviceMapped"></a><u>ControllerDeviceMapped</u></big></dt>
 <dd>A GameController was mapped<br><br>
+
+</dd>
+<dt><big><a name="Event.Type.FingerMotion"></a><u>FingerMotion</u></big></dt>
+<dd>A finger was moved onto the touch device<br><br>
+
+</dd>
+<dt><big><a name="Event.Type.FingerDown"></a><u>FingerDown</u></big></dt>
+<dd>A finger is pressed onto the touch device<br><br>
+
+</dd>
+<dt><big><a name="Event.Type.FingerUp"></a><u>FingerUp</u></big></dt>
+<dd>A finger is released of the touch device<br><br>
 
 </dd>
 </dl>
@@ -587,6 +642,11 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dt><big><a name="Event.controller"></a>ControllerUnion <u>controller</u>;
 </big></dt>
 <dd>Controller Events<br><br>
+
+</dd>
+<dt><big><a name="Event.fingerTouch"></a>TouchFingerEvent <u>fingerTouch</u>;
+</big></dt>
+<dd>Finger-Touch Events<br><br>
 
 </dd>
 </dl>
