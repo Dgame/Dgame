@@ -14,15 +14,7 @@
             "targetType": "library",
             "targetName": "Dgame",
             "targetPath": "lib",
-            "excludedSourceFiles": ["test/*.d"]
+            "excludedSourceFiles": ["source/Dgame/test/*.d"]
         }
-    ],
-    "buildTypes": {
-        "debug": {
-            "buildOptions": ["debugMode", "debugInfoC", "alwaysStackFrame", "warnings"]
-        },
-        "release": {
-            "buildOptions": ["releaseMode", "inline", "optimize", "noBoundsCheck", "warnings"]
-        }
-    }
+    ]
 }

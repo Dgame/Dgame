@@ -100,7 +100,11 @@ Font.Style enum<br><br>
 <dd>Draws the text on a Surface by using this Font and the given Mode (default is Mode.Solid)
  The text (and the Surface) is colorized by fg / bg Color.
 <br><br>
-Returns a Surface with the text or throws an Error<br><br>
+<b>Note:</b><br>
+The background color is ignored if your mode is Font.Mode.Solid
+<br><br>
+
+ Returns a Surface with the text or throws an Error<br><br>
 
 </dd>
 </dl>

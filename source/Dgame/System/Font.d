@@ -165,6 +165,8 @@ public:
      * Draws the text on a Surface by using this Font and the given Mode (default is Mode.Solid)
      * The text (and the Surface) is colorized by fg / bg Color.
      *
+     * Note: The background color is ignored if your mode is Font.Mode.Solid
+     *
      * Returns a Surface with the text or throws an Error
      */
     @nogc

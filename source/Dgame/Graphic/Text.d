@@ -104,6 +104,8 @@ public:
     Color4b foreground = Color4b.Black;
     /**
      * The background color. Default is Color4b.White.
+     *
+     * Note: The background color is ignored if your mode is Font.Mode.Solid
      */
     Color4b background = Color4b.White;
     /**
