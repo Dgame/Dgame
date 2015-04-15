@@ -123,7 +123,7 @@ struct Vector2(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("return Vector2!(T)(vec.x " ~ op ~ " this.x, vec.y " ~ op ~ " this.y);");
+                mixin("return Vector2!(T)(this.x " ~ op ~ " vec.x, this.y " ~ op ~ " vec.y);");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -140,7 +140,7 @@ struct Vector2(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("return Vector2!(T)(cast(T)(num " ~ op ~ " this.x), cast(T)(num " ~ op ~ " this.y));");
+                mixin("return Vector2!(T)(cast(T)(this.x " ~ op ~ " num), cast(T)(this.y " ~ op ~ " num));");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
@@ -254,12 +254,12 @@ unittest {
     assert(vec.y == 72);
     assert(!vec.isEmpty());
 
-    Vector2i vec2 = vec * 3;
+    const Vector2i vec2 = vec * 3;
 
     assert(vec2.x == 3 * vec.x);
     assert(vec2.y == 3 * vec.y);
 
-    Vector2i vec3 = vec2 + vec;
+    const Vector2i vec3 = vec2 + vec;
 
     assert(vec3.x == vec.x + vec2.x);
     assert(vec3.y == vec.y + vec2.y);
@@ -267,12 +267,12 @@ unittest {
     assert(vec == vec);
     assert(vec2 != vec3);
 
-    Vector2i vec4 = -vec;
+    const Vector2i vec4 = -vec;
 
     assert(vec4.x == -62);
     assert(vec4.y == -72);
 
-    Vector2f vconv = vec4;
+    const Vector2f vconv = vec4;
 
     assert(vec4.x == vconv.x && vec4.y == vconv.y);
 
@@ -283,4 +283,11 @@ unittest {
     Vector2i v2 = Vector2i(2.3, 4.2);
     immutable float l2 = v2.length;
     const Vector2i v2n = v2.normalize();
+
+    const Vector2f vec5 = Vector2f(80, 64);
+    const Vector2f vec6 = Vector2f(32, 32);
+    const Vector2f vec7 = Vector2f(2.5, 2);
+
+    assert(vec5 / vec6 == vec7);
+    assert(vec5 / vec6.x == vec7);
 }
