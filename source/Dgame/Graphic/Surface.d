@@ -90,7 +90,7 @@ private:
         assert(memory, "Memory is empty.");
         assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
 
-        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, 0, 0, 0, 0);
+        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
     }
 
 public:

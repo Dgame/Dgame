@@ -72,9 +72,23 @@ struct Color4b {
         this.blue  = blue;
         this.alpha = alpha;
     }
+
+    /**
+     * CTor
+     * 
+     * Expect ABGR as format
+     */
+    @nogc
+    this(uint hexValue) pure nothrow {
+        this.alpha = (hexValue >> 24) & 0xff;
+        this.blue  = (hexValue >> 16) & 0xff;
+        this.green = (hexValue >>  8) & 0xff;
+        this.red   = hexValue & 0xff;
+    }
     
     /**
      * CTor
+     *
      * Expect that every component is in range 0.0 .. 1.0
      */
     @nogc
@@ -125,6 +139,22 @@ struct Color4b {
     ubyte[3] asRGB() const pure nothrow {
         return [this.red, this.green, this.blue];
     }
+
+    /**
+     * Returns the RGBA color information as hex value (in ABGR format)
+     */
+    @nogc
+    uint asHex() const pure nothrow {
+        return ((this.alpha & 0xff) << 24) + ((this.blue & 0xff) << 16) + ((this.green & 0xff) << 8) + (this.red & 0xff);
+    }
+}
+
+unittest {
+    const Color4b red_col = Color4b.Red;
+    immutable uint hex_red = red_col.asHex();
+
+    assert(hex_red == 0xff0000ff);
+    assert(Color4b(hex_red) == red_col);
 }
 
 /**

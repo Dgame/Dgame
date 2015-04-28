@@ -31,23 +31,25 @@ void main() {
         }
     }
 */
+    immutable uint black = Color4b.Black.asHex();
+    immutable uint blue = Color4b.Blue.asHex();
     uint[256] xpixels = [
-        255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
-        0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
-        0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
-        0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0,
-        0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0,
-        0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0,
-        0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0,
-        0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0,
-        255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255,
+        blue, black, black, black, black, black, black, black, black, black, black, black, black, black, black, blue,
+        black, blue, black, black, black, black, black, black, black, black, black, black, black, black, blue, black,
+        black, black, blue, black, black, black, black, black, black, black, black, black, black, blue, black, black,
+        black, black, black, blue, black, black, black, black, black, black, black, black, blue, black, black, black,
+        black, black, black, black, blue, black, black, black, black, black, black, blue, black, black, black, black,
+        black, black, black, black, black, blue, black, black, black, black, blue, black, black, black, black, black,
+        black, black, black, black, black, black, blue, black, black, blue, black, black, black, black, black, black,
+        black, black, black, black, black, black, black, blue, blue, black, black, black, black, black, black, black,
+        black, black, black, black, black, black, black, blue, blue, black, black, black, black, black, black, black,
+        black, black, black, black, black, black, blue, black, black, blue, black, black, black, black, black, black,
+        black, black, black, black, black, blue, black, black, black, black, blue, black, black, black, black, black,
+        black, black, black, black, blue, black, black, black, black, black, black, blue, black, black, black, black,
+        black, black, black, blue, black, black, black, black, black, black, black, black, blue, black, black, black,
+        black, black, blue, black, black, black, black, black, black, black, black, black, black, blue, black, black,
+        black, blue, black, black, black, black, black, black, black, black, black, black, black, black, blue, black,
+        blue, black, black, black, black, black, black, black, black, black, black, black, black, black, black, blue,
     ];
 
     Surface xs = Surface(xpixels.ptr, 16, 16);
