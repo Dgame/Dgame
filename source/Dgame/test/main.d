@@ -57,6 +57,10 @@ void main() {
 
     wnd.setIcon(xs);
 
+    Surface blit_test = Surface(32, 32);
+    blit_test.blit(xs);
+    blit_test.saveToFile("samples/images/blit_test.png");
+
     Surface wiki_srfc = Surface("samples/images/wiki.png");
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 
