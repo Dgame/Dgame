@@ -62,15 +62,19 @@ struct Surface {
         Blue  = 4, /// Blue Mask
         Alpha = 8  /// Alpha Mask
     }
-    
-    enum ubyte RMask = 0;
-    enum ubyte GMask = 0;
-    enum ubyte BMask = 0;
-    
-    version (LittleEndian)
+
+    version (LittleEndian) {
+        enum uint RMask = 0x000000ff;
+        enum uint GMask = 0x0000ff00;
+        enum uint BMask = 0x00ff0000;
         enum uint AMask = 0xff000000;
-    else
+    }
+    else {
+        enum uint RMask = 0xff000000;
+        enum uint GMask = 0x00ff0000;
+        enum uint BMask = 0x0000ff00;
         enum uint AMask = 0x000000ff;
+    }
 
 private:
     SDL_Surface* _surface;
@@ -237,7 +241,7 @@ public:
      * If it's null, the whole Surface is filled.
      */
     @nogc
-    void fill()(auto ref const Color col, const Rect* rect = null) nothrow {
+    void fill()(auto ref const Color4b col, const Rect* rect = null) nothrow {
         if (!_surface)
             return;
 
