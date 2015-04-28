@@ -90,7 +90,7 @@ private:
         assert(memory, "Memory is empty.");
         assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
 
-        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
+        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, 0, 0, 0, 0);
     }
 
 public:
@@ -118,8 +118,6 @@ public:
      */
     @nogc
     this(uint width, uint height, ubyte depth = 32) nothrow {
-        assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
-
         _surface = Surface.create(width, height, depth);
 
         assert(_surface, "Invalid SDL_Surface.");
@@ -131,8 +129,6 @@ public:
      */
     @nogc
     this(void* memory, uint width, uint height, ubyte depth = 32) nothrow {
-        assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
-
         _surface = Surface.create(memory, width, height, depth);
 
         assert(_surface, "Invalid SDL_Surface.");
