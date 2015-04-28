@@ -62,7 +62,7 @@ struct Surface {
         Blue  = 4, /// Blue Mask
         Alpha = 8  /// Alpha Mask
     }
-    
+
     version (LittleEndian) {
         enum uint RMask = 0x000000ff;
         enum uint GMask = 0x0000ff00;
@@ -241,7 +241,7 @@ public:
      * If it's null, the whole Surface is filled.
      */
     @nogc
-    void fill()(auto ref const Color col, const Rect* rect = null) nothrow {
+    void fill()(auto ref const Color4b col, const Rect* rect = null) nothrow {
         if (!_surface)
             return;
 
