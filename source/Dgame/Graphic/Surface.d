@@ -68,8 +68,7 @@ struct Surface {
         enum uint GMask = 0x0000ff00;
         enum uint BMask = 0x00ff0000;
         enum uint AMask = 0xff000000;
-    }
-    else {
+    } else {
         enum uint RMask = 0xff000000;
         enum uint GMask = 0x00ff0000;
         enum uint BMask = 0x0000ff00;
