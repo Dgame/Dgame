@@ -118,7 +118,9 @@ public:
      * CTor
      * Position of the Window is default 100x, 100y and the VerticalSync is disabled
      */
-    this(uint width, uint height, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+    this(uint width, uint height, string title, uint style = Style.Default,
+         GLSettings gl_settings = GLSettings.init)
+    {
         this(Rect(DefPosX, DefPosY, width, height), title, style, gl_settings);
     }
 
@@ -126,7 +128,9 @@ public:
     * CTor
     * Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate > 0
     */
-    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default,
+           GLSettings gl_settings = GLSettings.init)
+    {
         this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style, gl_settings);
 
         if (mode.refreshRate > 0)
@@ -137,7 +141,9 @@ public:
      * CTor
      * Position is specifiable and the VerticalSync is disabled
      */
-    this()(auto ref const Rect rect, string title, uint style = Style.Default, GLSettings gl_settings = GLSettings.init) {
+    this()(auto ref const Rect rect, string title, uint style = Style.Default,
+           GLSettings gl_settings = GLSettings.init)
+    {
         if (_count == 0)
             _initSDL();
 

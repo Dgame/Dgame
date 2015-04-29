@@ -75,15 +75,20 @@ struct Color4b {
 
     /**
      * CTor
-     * 
-     * Expect ABGR as format
      */
     @nogc
     this(uint hexValue) pure nothrow {
-        this.alpha = (hexValue >> 24) & 0xff;
-        this.blue  = (hexValue >> 16) & 0xff;
-        this.green = (hexValue >>  8) & 0xff;
-        this.red   = hexValue & 0xff;
+        version (LittleEndian) {
+            this.alpha = (hexValue >> 24) & 0xff;
+            this.blue  = (hexValue >> 16) & 0xff;
+            this.green = (hexValue >>  8) & 0xff;
+            this.red   = hexValue & 0xff;
+        } else {
+            this.red   = (hexValue >> 24) & 0xff;
+            this.green = (hexValue >> 16) & 0xff;
+            this.blue  = (hexValue >>  8) & 0xff;
+            this.alpha = hexValue & 0xff;
+        }
     }
     
     /**
@@ -141,11 +146,14 @@ struct Color4b {
     }
 
     /**
-     * Returns the RGBA color information as hex value (in ABGR format)
+     * Returns the RGBA color information as hex value
      */
     @nogc
     uint asHex() const pure nothrow {
-        return ((this.alpha & 0xff) << 24) + ((this.blue & 0xff) << 16) + ((this.green & 0xff) << 8) + (this.red & 0xff);
+        version (LittleEndian)
+            return ((this.alpha & 0xff) << 24) + ((this.blue & 0xff) << 16) + ((this.green & 0xff) << 8) + (this.red & 0xff);
+        else
+            return ((this.red & 0xff) << 24) + ((this.green & 0xff) << 16) + ((this.blue & 0xff) << 8) + (this.alpha & 0xff);
     }
 }
 

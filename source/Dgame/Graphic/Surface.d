@@ -35,7 +35,55 @@ import Dgame.Graphic.Color;
 
 import Dgame.Internal.Error;
 
+@nogc
+void verifyDepth(ubyte depth) pure nothrow {
+    assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
+}
+
 public:
+
+/**
+ * The RGBA-Mask are the bitmasks used to extract that color from a pixel.
+ * It is used to e.g. define the background of a newly created Surface.
+ * Using zeros for the RGB-Masks sets a default value, based on the depth
+ * But using zero for the Aalpha-Mask results in an Alpha-Mask of 0.
+ * By default Surfaces with an Alpha-Mask are set up for blending.
+ * You can change the blend mode with Surface.setBlendMode.
+ */
+struct Masks {
+    /**
+     * The default value. Same as Masks.init.
+     * The RGBA-Masks depend on the endianness (byte order) of the machine
+     */
+    static immutable Masks Default = Masks.init;
+    /**
+     * The RGBA-Masks are zero
+     */
+    static immutable Masks Zero = Masks(0, 0, 0, 0);
+
+    version (LittleEndian) {
+        uint red = 0x000000ff; /// the red mask, default is 0x000000ff
+        uint green = 0x0000ff00; /// the green mask, default is 0x0000ff00
+        uint blue = 0x00ff0000; /// the blue mask, default is 0x00ff0000
+        uint alpha = 0xff000000; /// the alpha mask, default is 0xff000000
+    } else {
+        uint red = 0xff000000; /// the red mask, default is 0xff000000
+        uint green = 0x00ff0000; /// the green mask, default is 0x00ff0000
+        uint blue = 0x0000ff00; /// the blue mask, default is 0x0000ff00
+        uint alpha = 0x000000ff; /// the alpha mask, default is 0x000000ff
+    }
+
+    /**
+     * CTor
+     */
+    @nogc
+    this(uint red, uint green, uint blue, uint alpha) pure nothrow {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
+    }
+}
 
 /**
  * Surface is a wrapper for a SDL_Surface and can load and save images.
@@ -63,34 +111,23 @@ struct Surface {
         Alpha = 8  /// Alpha Mask
     }
 
-    version (LittleEndian) {
-        enum uint RMask = 0x000000ff;
-        enum uint GMask = 0x0000ff00;
-        enum uint BMask = 0x00ff0000;
-        enum uint AMask = 0xff000000;
-    } else {
-        enum uint RMask = 0xff000000;
-        enum uint GMask = 0x00ff0000;
-        enum uint BMask = 0x0000ff00;
-        enum uint AMask = 0x000000ff;
-    }
-
 private:
     SDL_Surface* _surface;
 
     @nogc
-    static SDL_Surface* create(uint width, uint height, ubyte depth = 32) nothrow {
-        assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
+    static SDL_Surface* create(uint width, uint height, ubyte depth, ref const Masks mask) nothrow {
+        verifyDepth(depth);
 
-        return SDL_CreateRGBSurface(0, width, height, depth, RMask, GMask, BMask, AMask);
+        return SDL_CreateRGBSurface(0, width, height, depth, mask.red, mask.green, mask.blue, mask.alpha);
     }
     
     @nogc
-    static SDL_Surface* create(void* memory, uint width, uint height, ubyte depth = 32) nothrow {
+    static SDL_Surface* create(void* memory, uint width, uint height, ubyte depth, ref const Masks mask) nothrow {
+        verifyDepth(depth);
         assert(memory, "Memory is empty.");
-        assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
 
-        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
+        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, 
+                                        (depth / 8) * width, mask.red, mask.green, mask.blue, mask.alpha);
     }
 
 public:
@@ -98,9 +135,9 @@ public:
      * CTor
      */
     @nogc
-    this(SDL_Surface* srfc) pure nothrow {
-        assert(srfc, "Invalid SDL_Surface.");
-        assert(srfc.pixels, "Invalid pixel data.");
+    this(SDL_Surface* srfc) nothrow {
+        assert_fmt(srfc !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
+        assert_fmt(srfc.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
 
         _surface = srfc;
     }
@@ -117,22 +154,22 @@ public:
      * Make a new Surface of the given width, height and depth.
      */
     @nogc
-    this(uint width, uint height, ubyte depth = 32) nothrow {
-        _surface = Surface.create(width, height, depth);
+    this(uint width, uint height, ubyte depth = 32, const Masks mask = Masks.init) nothrow {
+        _surface = Surface.create(width, height, depth, mask);
 
-        assert(_surface, "Invalid SDL_Surface.");
-        assert(_surface.pixels, "Invalid pixel data.");
+        assert_fmt(_surface !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
+        assert_fmt(_surface.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
     }
     
     /**
      * Make an new Surface of the given memory, width, height and depth.
      */
     @nogc
-    this(void* memory, uint width, uint height, ubyte depth = 32) nothrow {
-        _surface = Surface.create(memory, width, height, depth);
+    this(void* memory, uint width, uint height, ubyte depth = 32, const Masks mask = Masks.init) nothrow {
+        _surface = Surface.create(memory, width, height, depth, mask);
 
-        assert(_surface, "Invalid SDL_Surface.");
-        assert(_surface.pixels, "Invalid pixel data.");
+        assert_fmt(_surface !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
+        assert_fmt(_surface.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
     }
     
     /**
@@ -199,13 +236,14 @@ public:
      * Load from memory.
      */
     @nogc
-    bool loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32) nothrow {
+    bool loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32,
+                        const Masks mask = Masks.init) nothrow
+    {
         assert(memory, "Memory is empty.");
-        assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
 
         SDL_FreeSurface(_surface); // free old surface
 
-        _surface = SDL_CreateRGBSurfaceFrom(memory, width, height, depth, (depth / 8) * width, RMask, GMask, BMask, AMask);
+        _surface = Surface.create(memory, width, height, depth, mask);
         if (!_surface) {
             print_fmt("Could not load image. Error: %s.\n", SDL_GetError());
             return false;
@@ -610,7 +648,6 @@ public:
         immutable bool result = SDL_BlitScaled(srfc._surface, src_ptr, _surface, dst_ptr) == 0;
         if (!result)
             print_fmt("Could not blit surface: %s\n", SDL_GetError());
-
 
         return result;
     }
