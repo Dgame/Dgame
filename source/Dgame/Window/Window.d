@@ -695,6 +695,9 @@ public:
 package(Dgame):
     @nogc
     void draw(Geometry geo, const Texture* texture, const Vertex[] vertices) const nothrow {
+        if (vertices.length == 0)
+            return;
+
         if (texture) {
             glEnable(GL_TEXTURE_2D);
             texture.bind();
@@ -714,9 +717,6 @@ package(Dgame):
 
     @nogc
     void draw(Geometry geo, ref const Matrix4 mat, const Texture* texture, const Vertex[] vertices) const nothrow {
-        if (vertices.length == 0)
-            return;
-
         glPushMatrix();
         scope(exit) glPopMatrix();
 
