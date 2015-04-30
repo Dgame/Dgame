@@ -705,7 +705,8 @@ package(Dgame):
         if (texture)
             glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
 
-        glDrawArrays(geo, 0, vertices.length);
+        // prevent 64 bit bug, because *.length is size_t and therefore on 64 bit platforms ulong
+        glDrawArrays(geo, 0, cast(uint) vertices.length);
 
         if (texture)
             texture.unbind();
