@@ -57,7 +57,7 @@ void main() {
 
     wnd.setIcon(xs);
 
-    uint[256] sdl_pixels = [
+    ushort[256] sdl_pixels = [
         0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
         0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
         0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
@@ -92,7 +92,7 @@ void main() {
         0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff
     ];
 
-    Surface sdl_logo = Surface(sdl_pixels.ptr, 16, 16, 32, Masks.Zero);
+    Surface sdl_logo = Surface(sdl_pixels.ptr, 16, 16, 16, Masks(0x0f00, 0x00f0, 0x000f, 0xf000));
     sdl_logo.saveToFile("samples/images/sdl_logo.png");
 
     Surface blit_test = Surface(64, 64);
@@ -105,6 +105,7 @@ void main() {
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 
     Texture wiki_tex = Texture(wiki_srfc);
+    wiki_tex.setSmooth(true);
     writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
     Joystick controller;
