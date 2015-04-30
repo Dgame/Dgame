@@ -55,11 +55,10 @@ public:
         Line  /// Show only the lines
     }
 
-private:
+protected:
     Texture* _texture;
     Vertex[] _vertices;
 
-protected:
     @nogc
     override void draw(ref const Window wnd) nothrow {
         glPushAttrib(GL_ENABLE_BIT | GL_POLYGON_BIT | GL_LINE_BIT);
@@ -86,8 +85,7 @@ protected:
             break;
         }
 
-        // prevent 64 bit bug, because *.length is size_t and therefore on 64 bit platforms ulong
-        wnd.draw(this.geometry, super.getMatrix(), _texture, _vertices.ptr, cast(uint) _vertices.length);
+        wnd.draw(this.geometry, super.getMatrix(), _texture, _vertices);
     }
 
 public:
@@ -176,7 +174,6 @@ final:
     @nogc
     void setTexture(Texture* texture) pure nothrow {
         _texture = texture;
-
         if (texture)
             this.setTextureRect(Rect(0, 0, texture.width, texture.height));
     }

@@ -550,31 +550,6 @@ public:
         d.draw(this);
     }
 
-    @nogc
-    void draw(Geometry geo, ref const Matrix4 mat, const Texture* texture, const Vertex* vertices, uint vCount) const nothrow {
-        if (vCount == 0)
-            return;
-
-        glPushMatrix();
-        scope(exit) glPopMatrix();
-
-        glLoadMatrixf(mat.getValues().ptr);
-
-        if (texture) {
-            glEnable(GL_TEXTURE_2D);
-            texture.bind();
-        }
-
-        glVertexPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].position.x);
-        glColorPointer(4, GL_FLOAT, Vertex.sizeof, &vertices[0].color.red);
-        if (texture)
-            glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
-        glDrawArrays(geo, 0, vCount);
-
-        if (texture)
-            texture.unbind();
-    }
-
     /**
      * Make all changes visible on screen
      */
@@ -715,5 +690,37 @@ public:
     @nogc
     bool isFullscreen() nothrow {
         return (this.getStyle() & FullScreenMask) != 0;
+    }
+
+package(Dgame):
+    @nogc
+    void draw(Geometry geo, const Texture* texture, const Vertex[] vertices) const nothrow {
+        if (texture) {
+            glEnable(GL_TEXTURE_2D);
+            texture.bind();
+        }
+
+        glVertexPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].position.x);
+        glColorPointer(4, GL_FLOAT, Vertex.sizeof, &vertices[0].color.red);
+        if (texture)
+            glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
+
+        glDrawArrays(geo, 0, vertices.length);
+
+        if (texture)
+            texture.unbind();
+    }
+
+    @nogc
+    void draw(Geometry geo, ref const Matrix4 mat, const Texture* texture, const Vertex[] vertices) const nothrow {
+        if (vertices.length == 0)
+            return;
+
+        glPushMatrix();
+        scope(exit) glPopMatrix();
+
+        glLoadMatrixf(mat.getValues().ptr);
+
+        this.draw(geo, texture, vertices);
     }
 }

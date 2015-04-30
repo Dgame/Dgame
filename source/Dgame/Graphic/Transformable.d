@@ -121,6 +121,48 @@ final:
     }
 
     /**
+     * Returns the x coordinate <b>by value</b>
+     * 
+     * Note: if you want to change the coordinate, use either move or setPosition
+     */
+    @nogc
+    @property
+    float x() const pure nothrow {
+        return _position.x;
+    }
+
+    /**
+     * Set a new x coordinate
+     */
+    @nogc
+    @property
+    void x(float cx) pure nothrow {
+        _position.x = cx;
+        _notifyTransform();
+    }
+
+    /**
+     * Returns the y coordinate <b>by value</b>
+     * 
+     * Note: if you want to change the coordinate, use either move or setPosition
+     */
+    @nogc
+    @property
+    float y() const pure nothrow {
+        return _position.y;
+    }
+
+    /**
+     * Set a new y coordinate
+     */
+    @nogc
+    @property
+    void y(float cy) pure nothrow {
+        _position.y = cy;
+        _notifyTransform();
+    }
+
+    /**
      * Set the center position
      */
     @nogc

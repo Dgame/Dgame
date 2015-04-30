@@ -50,7 +50,7 @@ protected:
 
     @nogc
     override void draw(ref const Window wnd) nothrow {
-        wnd.draw(Geometry.TriangleStrip, super.getMatrix(), _texture, _vertices.ptr, 4);
+        wnd.draw(Geometry.TriangleStrip, super.getMatrix(), _texture, _vertices[]);
     }
 
     @nogc

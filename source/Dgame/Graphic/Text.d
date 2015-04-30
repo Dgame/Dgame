@@ -78,8 +78,8 @@ protected:
             _vertices[3].position.y = th;
         }
 
-        immutable ubyte vCount = _text.length != 0 ? 4 : 0;
-        wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices.ptr, vCount);
+        if (_text.length != 0)
+            wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices[]);
     }
 
     @nogc
