@@ -206,11 +206,20 @@ public:
     }
     
     /**
-     * Set smooth filter for the (next) load.
+     * Set smooth filter.
      */
     @nogc
-    void setSmooth(bool enable) pure nothrow {
-        _isSmooth = enable;
+    void setSmooth(bool smooth) nothrow {
+        if (smooth != _isSmooth) {
+            _isSmooth = smooth;
+            
+            if (_texId != 0) {
+                this.bind();
+                
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
+            }
+        }
     }
     
     /**
@@ -222,7 +231,7 @@ public:
     }
     
     /**
-     * Set repeating for the (next) load.
+     * Set repeating.
      **/
     @nogc
     void setRepeat(bool repeat) nothrow {

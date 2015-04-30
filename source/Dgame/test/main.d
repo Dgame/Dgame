@@ -105,6 +105,7 @@ void main() {
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 
     Texture wiki_tex = Texture(wiki_srfc);
+    wiki_tex.setSmooth(true);
     writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
     Joystick controller;
