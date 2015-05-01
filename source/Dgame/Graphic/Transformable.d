@@ -66,8 +66,8 @@ final:
     @nogc
     ref const(Matrix4) getMatrix() pure nothrow {
         if (_was_transformed) {
-            const Vector2f global_center = _position + _local_center;
-            _matrix.loadIdentity().rotate(_rotation, global_center).scale(_scale, global_center).translate(_position);
+            const Vector2f global_center = _position - _local_center;
+            _matrix.loadIdentity().translate(global_center).rotate(_rotation, _local_center).scale(_scale, _local_center);
             _was_transformed = false;
         }
 
