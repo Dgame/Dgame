@@ -32,29 +32,7 @@ import Dgame.Graphic.Color;
 import Dgame.Graphic.Surface;
 
 import Dgame.Internal.Error;
-import Dgame.Internal.m3;
-
-char[] buffer;
-
-@nogc
-static ~this() nothrow {
-    //print_fmt("Free font buffer: %d\n", buffer.length);
-    unmake(buffer);
-}
-
-@nogc
-char* make(size_t len, char[] buf) nothrow {
-    if (buf.length > len)
-        return buf.ptr;
-
-    if (buffer.length > len)
-        return buffer.ptr;
-
-    //print_fmt("(Re)Order font buffer: %d\n", len + 1);
-    buffer = remake(buffer, len + 1);
-
-    return buffer.ptr;
-}
+import Dgame.Internal.d2c;
 
 public:
 
@@ -129,9 +107,9 @@ public:
     @nogc
     bool loadFromFile(string filename, ubyte fontSize) nothrow {
         _fontSize = fontSize == 0 ? DefaultSize : fontSize;
-        _ttf = TTF_OpenFont(filename.ptr, _fontSize);
+        _ttf = TTF_OpenFont(toStringz(filename), _fontSize);
         if (!_ttf) {
-            print_fmt("Error by loading TTF_Font %s: %s\n", filename.ptr, TTF_GetError());
+            print_fmt("Error by loading TTF_Font %s: %s\n", toStringz(filename), TTF_GetError());
             return false;
         }
 
@@ -179,21 +157,16 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
-        char[256] buf = void;
-        char* ptr = make(text.length, buf[]);
-        ptr[0 .. text.length] = text[];
-        ptr[text.length] = '\0';
-
         SDL_Surface* srfc;
         final switch (mode) {
             case Mode.Solid:
-                srfc = TTF_RenderUTF8_Solid(_ttf, ptr, a);
+                srfc = TTF_RenderUTF8_Solid(_ttf, toStringz(text), a);
                 break;
             case Mode.Shaded:
-                srfc = TTF_RenderUTF8_Shaded(_ttf, ptr, a, b);
+                srfc = TTF_RenderUTF8_Shaded(_ttf, toStringz(text), a, b);
                 break;
             case Mode.Blended:
-                srfc = TTF_RenderUTF8_Blended(_ttf, ptr, a);
+                srfc = TTF_RenderUTF8_Blended(_ttf, toStringz(text), a);
                 break;
         }
 

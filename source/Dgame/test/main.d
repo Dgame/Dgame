@@ -101,6 +101,12 @@ void main() {
     blit_test.blit(sdl_logo, null, &dest);
     blit_test.saveToFile("samples/images/blit_test.png");
 
+    string filenameWithTail = "samples/images/XS.png;trailing chars goes here";
+    string cleanFilename = filenameWithTail[0 .. 21];
+    writeln("Clean filename is ", cleanFilename);
+    Surface xs2 = Surface(cleanFilename);
+    xs2.saveToFile("samples/images/xs2.png");
+
     Surface wiki_srfc = Surface("samples/images/wiki.png");
     wiki_srfc.saveToFile("samples/images/wiki_copy.png");
 

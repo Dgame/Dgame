@@ -48,6 +48,7 @@ import Dgame.Window.Internal.Init;
 
 import Dgame.Internal.Error;
 import Dgame.Internal.m3;
+import Dgame.Internal.d2c;
 
 static if (!SDL_VERSION_ATLEAST(2, 0, 4))
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
@@ -150,7 +151,7 @@ public:
         if (style & Style.OpenGL)
             _initGLAttr(gl_settings);
 
-        _window = SDL_CreateWindow(title.ptr, rect.x, rect.y, rect.width, rect.height, style);
+        _window = SDL_CreateWindow(toStringz(title), rect.x, rect.y, rect.width, rect.height, style);
         assert(_window, "SDL_Window could not be created.");
 
         if (style & Style.OpenGL) {
@@ -586,7 +587,7 @@ public:
     @nogc
     string setTitle(string title) nothrow {
         string old_title = this.getTitle();
-        SDL_SetWindowTitle(_window, title.ptr);
+        SDL_SetWindowTitle(_window, toStringz(title));
         
         return old_title;
     }

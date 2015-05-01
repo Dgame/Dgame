@@ -34,6 +34,7 @@ import Dgame.Math.Vector2;
 import Dgame.Graphic.Color;
 
 import Dgame.Internal.Error;
+import Dgame.Internal.d2c;
 
 @nogc
 void verifyDepth(ubyte depth) pure nothrow {
@@ -215,15 +216,15 @@ public:
 
         immutable bool ex = exists(filename);
         if (!ex) {
-            print_fmt("File %s does not exists.\n", filename.ptr);
+            print_fmt("File %s does not exists.\n", toStringz(filename));
             return false;
         }
 
         SDL_FreeSurface(_surface); // free old surface
 
-        _surface = IMG_Load(filename.ptr);
+        _surface = IMG_Load(toStringz(filename));
         if (!_surface) {
-            print_fmt("Could not load image %s. Error: %s.\n", filename.ptr, SDL_GetError());
+            print_fmt("Could not load image %s. Error: %s.\n", toStringz(filename), SDL_GetError());
             return false;
         }
         
@@ -259,9 +260,9 @@ public:
      */
     @nogc
     bool saveToFile(string filename) nothrow {
-        immutable int result = IMG_SavePNG(_surface, filename.ptr);
+        immutable int result = IMG_SavePNG(_surface, toStringz(filename));
         if (result != 0) {
-            print_fmt("Could not save image %s. Error: %s.\n", filename.ptr, SDL_GetError());
+            print_fmt("Could not save image %s. Error: %s.\n", toStringz(filename), SDL_GetError());
             return false;
         }
 
