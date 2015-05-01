@@ -126,6 +126,11 @@ void main() {
 
     Sprite wiki = new Sprite(wiki_tex);
     wiki.setPosition(300, 300);
+    
+    Texture ship_tex = Texture(Surface("samples/images/starship_sprite.png"));
+    Spritesheet ship = new Spritesheet(ship_tex, Rect(0, 0, 64, 64));
+    ship.setPosition(200, 50);
+    ship.setCenter(32, 32);
 
     Shape qs = new Shape(
         Geometry.Quad,
@@ -249,6 +254,8 @@ void main() {
                     frames.selectFrame(idx);
                     writeln(idx);
                     idx++;
+
+                    ship.rotate(20);
                 } else if (event.keyboard.key == Keyboard.Key.Comma)
                     writeln("Window is on display ", wnd.getDisplayIndex());
                 else if (event.keyboard.key == Keyboard.Key.F)
@@ -271,6 +278,7 @@ void main() {
 
         wnd.clear();
 
+        wnd.draw(ship);
         wnd.draw(wiki);
 
         wnd.draw(qs);
