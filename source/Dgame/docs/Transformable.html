@@ -29,12 +29,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 <dt><big><a name="Transformable.setPosition"></a>final pure nothrow @nogc void <u>setPosition</u>(float <i>x</i>, float <i>y</i>);
 </big></dt>
-<dd>Set the position<br><br>
+<dd>Sets the position<br><br>
 
 </dd>
 <dt><big><a name="Transformable.setPosition.2"></a>pure nothrow @nogc void <u>setPosition</u>()(auto ref const Vector2f <i>pos</i>);
 </big></dt>
-<dd>Set the position<br><br>
+<dd>Sets the position<br><br>
 
 </dd>
 <dt><big><a name="Transformable.move"></a>final pure nothrow @nogc void <u>move</u>(float <i>x</i>, float <i>y</i>);
@@ -62,7 +62,7 @@ if you want to change the coordinate, use either move or setPosition<br><br>
 </dd>
 <dt><big><a name="Transformable.x.2"></a>final pure nothrow @nogc @property void <u>x</u>(float <i>cx</i>);
 </big></dt>
-<dd>Set a new <u>x</u> coordinate<br><br>
+<dd>Sets a new <u>x</u> coordinate<br><br>
 
 </dd>
 <dt><big><a name="Transformable.y"></a>final const pure nothrow @nogc @property float <u>y</u>();
@@ -75,35 +75,78 @@ if you want to change the coordinate, use either move or setPosition<br><br>
 </dd>
 <dt><big><a name="Transformable.y.2"></a>final pure nothrow @nogc @property void <u>y</u>(float <i>cy</i>);
 </big></dt>
-<dd>Set a new <u>y</u> coordinate<br><br>
+<dd>Sets a new <u>y</u> coordinate<br><br>
 
 </dd>
-<dt><big><a name="Transformable.setCenter"></a>final pure nothrow @nogc void <u>setCenter</u>(float <i>x</i>, float <i>y</i>);
+<dt><big><a name="Transformable.setRotationCenter"></a>final pure nothrow @nogc void <u>setRotationCenter</u>(float <i>x</i>, float <i>y</i>);
 </big></dt>
-<dd>Set the center position<br><br>
+<dd>Sets the center position
+<br><br>
+<b>Note:</b><br>
+if you use this function with setOrigin,
+       the origin takes the place of the rotation center.<br><br>
 
 </dd>
-<dt><big><a name="Transformable.setCenter.2"></a>pure nothrow @nogc void <u>setCenter</u>()(auto ref const Vector2f <i>center</i>);
+<dt><big><a name="Transformable.setRotationCenter.2"></a>pure nothrow @nogc void <u>setRotationCenter</u>()(auto ref const Vector2f <i>center</i>);
 </big></dt>
-<dd>Set the center position<br><br>
+<dd>Sets the center of the rotation
+<br><br>
+<b>Note:</b><br>
+if you use this function with setOrigin,
+       the origin takes the place of the rotation center.<br><br>
 
 </dd>
-<dt><big><a name="Transformable.getCenter"></a>final const pure nothrow @nogc ref const(Vector2f) <u>getCenter</u>();
+<dt><big><a name="Transformable.getRotationCenter"></a>final const pure nothrow @nogc ref const(Vector2f) <u>getRotationCenter</u>();
 </big></dt>
-<dd>Returns the current center position<br><br>
+<dd>Returns the current rotation center<br><br>
 
 </dd>
-<dt><big><a name="Transformable.setScale"></a>final pure nothrow @nogc void <u>setScale</u>(float <i>scale</i>);
+<dt><big><a name="Transformable.setOrigin"></a>final pure nothrow @nogc void <u>setOrigin</u>(float <i>x</i>, float <i>y</i>);
 </big></dt>
-<dd>Set the scaling (for both, x and y)<br><br>
+<dd>Sets the origin. The origin is a offset which is added to the position
+ and serves as center position for scaling and rotation.
+<br><br>
+<b>Note:</b><br>
+If you use this with setRotationCenter
+       the origin will suppress the rotation center and takes it's place.<br><br>
 
 </dd>
-<dt><big><a name="Transformable.scale"></a>final pure nothrow @nogc void <u>scale</u>(float <u>scale</u>);
+<dt><big><a name="Transformable.setOrigin.2"></a>pure nothrow @nogc void <u>setOrigin</u>()(auto ref const Vector2f <i>origin</i>);
+</big></dt>
+<dd>Sets the origin. The origin is a offset which is added to the position
+ and serves as center position for scaling and rotation.
+<br><br>
+<b>Note:</b><br>
+If you use this with setRotationCenter
+       the origin will suppress the rotation center and takes it's place.<br><br>
+
+</dd>
+<dt><big><a name="Transformable.getOrigin"></a>final const pure nothrow @nogc ref const(Vector2f) <u>getOrigin</u>();
+</big></dt>
+<dd>Returns the current origin<br><br>
+
+</dd>
+<dt><big><a name="Transformable.setScale"></a>final pure nothrow @nogc void <u>setScale</u>(float <i>x</i>, float <i>y</i>);
+</big></dt>
+<dd>Sets the scaling (for both, <i>x</i> and <i>y</i>)<br><br>
+
+</dd>
+<dt><big><a name="Transformable.setScale.2"></a>pure nothrow @nogc void <u>setScale</u>()(auto ref const Vector2f <i>scale</i>);
+</big></dt>
+<dd>Sets the scaling (for both, x and y)<br><br>
+
+</dd>
+<dt><big><a name="Transformable.scale"></a>pure nothrow @nogc void <u>scale</u>()(auto ref const Vector2f <i>offset</i>);
 </big></dt>
 <dd>Inc-/Decrease the scaling<br><br>
 
 </dd>
-<dt><big><a name="Transformable.getScale"></a>final const pure nothrow @nogc float <u>getScale</u>();
+<dt><big><a name="Transformable.scale.2"></a>final pure nothrow @nogc void <u>scale</u>(float <u>scale</u>);
+</big></dt>
+<dd>Inc-/Decrease the scaling<br><br>
+
+</dd>
+<dt><big><a name="Transformable.getScale"></a>final const pure nothrow @nogc ref const(Vector2f) <u>getScale</u>();
 </big></dt>
 <dd>Returns the current scaling<br><br>
 

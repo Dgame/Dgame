@@ -177,6 +177,6 @@ final:
             h = _texRect.height;
         }
 
-        return Rect(cast(int) _position.x, cast(int) _position.y, w, h);
+        return Rect(cast(int) super.x, cast(int) super.y, w, h);
     }
 }

@@ -129,8 +129,8 @@ void main() {
     
     Texture ship_tex = Texture(Surface("samples/images/starship_sprite.png"));
     Spritesheet ship = new Spritesheet(ship_tex, Rect(0, 0, 64, 64));
-    ship.setPosition(200, 50);
-    ship.setCenter(32, 32);
+    ship.setPosition(200, 32);
+    ship.setRotationCenter(32, 32);
 
     Shape qs = new Shape(
         Geometry.Quad,
@@ -183,6 +183,7 @@ void main() {
     texQuad.setTexture(&wiki_tex);
     texQuad.setColor(Color4b.Green.withTransparency(125));
     texQuad.setPosition(175, 425);
+    texQuad.setRotationCenter(70, 70);
     texQuad.setRotation(25);
 
     Shape tri = new Shape(
@@ -193,6 +194,24 @@ void main() {
             Vertex(Vector2f(  0, 300), Vector2f.init, Color4b.Blue),
         ]
     );
+
+    Shape s1 = new Shape(Geometry.Quad, [Vertex(0, 0), Vertex(100, 0), Vertex(100, 100), Vertex(0, 100)]);
+    s1.setColor(Color4b.Green);
+    //s1.setRotationCenter(50, 50);
+    s1.setOrigin(50, 50);
+    s1.setRotation(45);
+    s1.setPosition(240, 320);
+
+    Shape s2 = new Shape(Geometry.Quad, [Vertex(0, 0), Vertex(50, 0), Vertex(50, 50), Vertex(0, 50)]);
+    s2.setColor(Color4b.Blue);
+    //s2.setRotationCenter(25, 25);
+    s2.setOrigin(25, 25);
+    s2.setPosition(240, 320);
+
+    Shape s3 = new Shape(10, Vector2f(0, 0));
+    s3.setColor(Color4b.Red);
+    s3.setRotation(90);
+    s3.setPosition(240, 320);
 
     Font fnt = Font("samples/font/arial.ttf", 22);
     Text curFps = new Text(fnt);
@@ -286,6 +305,10 @@ void main() {
         wnd.draw(many);
         wnd.draw(texQuad);
         wnd.draw(tri);
+
+        wnd.draw(s1);
+        wnd.draw(s2);
+        wnd.draw(s3);
 
         wnd.draw(explosion);
         wnd.draw(frames);

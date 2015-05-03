@@ -175,9 +175,9 @@ public:
      * Scale the Matrix about factor scale
      */
     @nogc
-    ref Matrix4 scale(float scale) pure nothrow {
-        const Matrix4 scaling = Matrix4(scale, 0, 0,
-                                        0, scale, 0,
+    ref Matrix4 scale()(auto ref const Vector2f scale) pure nothrow {
+        const Matrix4 scaling = Matrix4(scale.x, 0, 0,
+                                        0, scale.y, 0,
                                         0, 0, 1);
 
         return merge(this, scaling);
@@ -187,9 +187,9 @@ public:
      * Scale the Matrix about factor scale about the given center position
      */
     @nogc
-    ref Matrix4 scale()(float scale, auto ref const Vector2f center) pure nothrow {
-        const Matrix4 scaling = Matrix4(scale, 0, center.x * (1 - scale),
-                                        0, scale, center.y * (1 - scale),
+    ref Matrix4 scale()(auto ref const Vector2f scale, auto ref const Vector2f center) pure nothrow {
+        const Matrix4 scaling = Matrix4(scale.x, 0, center.x * (1 - scale.x),
+                                        0, scale.y, center.y * (1 - scale.y),
                                         0, 0, 1);
         return merge(this, scaling);
     }

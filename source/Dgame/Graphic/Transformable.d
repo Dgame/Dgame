@@ -41,21 +41,22 @@ public:
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
 class Transformable {
-protected:
-    Vector2f _local_center;
+private:
     Vector2f _position;
+    Vector2f _rotationCenter;
+    Vector2f _origin;
+    Vector2f _scale = Vector2f(1, 1);
 
-    float _scale = 1;
-    float _rotation = 0;
+    float _rotationAngle = 0;
 
+    Matrix4 _matrix;
+    bool _was_transformed = true;
+
+protected:
     @nogc
     final void _notifyTransform() pure nothrow {
         _was_transformed = true;
     }
-
-private:
-    Matrix4 _matrix;
-    bool _was_transformed = true;
 
 public:
 final:
@@ -66,8 +67,11 @@ final:
     @nogc
     ref const(Matrix4) getMatrix() pure nothrow {
         if (_was_transformed) {
-            const Vector2f global_center = _position + _local_center;
-            _matrix.loadIdentity().rotate(_rotation, global_center).scale(_scale, global_center).translate(_position);
+            const Vector2f* center = _origin.isEmpty() ? &_rotationCenter : &_origin;
+            _matrix.loadIdentity()
+                   .translate(_position - _origin)
+                   .rotate(_rotationAngle, *center)
+                   .scale(_scale, *center);
             _was_transformed = false;
         }
 
@@ -75,7 +79,7 @@ final:
     }
 
     /**
-     * Set the position
+     * Sets the position
      */
     @nogc
     void setPosition(float x, float y) pure nothrow {
@@ -85,7 +89,7 @@ final:
     }
 
     /**
-     * Set the position
+     * Sets the position
      */
     @nogc
     void setPosition()(auto ref const Vector2f pos) pure nothrow {
@@ -132,7 +136,7 @@ final:
     }
 
     /**
-     * Set a new x coordinate
+     * Sets a new x coordinate
      */
     @nogc
     @property
@@ -153,7 +157,7 @@ final:
     }
 
     /**
-     * Set a new y coordinate
+     * Sets a new y coordinate
      */
     @nogc
     @property
@@ -163,38 +167,97 @@ final:
     }
 
     /**
-     * Set the center position
+     * Sets the center position
+     *
+     * Note: if you use this function with setOrigin,
+     *       the origin takes the place of the rotation center.
      */
     @nogc
-    void setCenter(float x, float y) pure nothrow {
-        _local_center.x = x;
-        _local_center.y = y;
+    void setRotationCenter(float x, float y) pure nothrow {
+        _rotationCenter.x = x;
+        _rotationCenter.y = y;
         _notifyTransform();
     }
 
     /**
-     * Set the center position
+     * Sets the center of the rotation
+     *
+     * Note: if you use this function with setOrigin,
+     *       the origin takes the place of the rotation center.
      */
     @nogc
-    void setCenter()(auto ref const Vector2f center) pure nothrow {
-        _local_center = center;
+    void setRotationCenter()(auto ref const Vector2f center) pure nothrow {
+        _rotationCenter = center;
         _notifyTransform();
     }
 
     /**
-     * Returns the current center position
+     * Returns the current rotation center
      */
     @nogc
-    ref const(Vector2f) getCenter() const  pure nothrow {
-        return _local_center;
+    ref const(Vector2f) getRotationCenter() const  pure nothrow {
+        return _rotationCenter;
     }
 
     /**
-     * Set the scaling (for both, x and y)
+     * Sets the origin. The origin is a offset which is added to the position
+     * and serves as center position for scaling and rotation.
+     *
+     * Note: If you use this with setRotationCenter
+     *       the origin will suppress the rotation center and takes it's place.
      */
     @nogc
-    void setScale(float scale) pure nothrow  {
+    void setOrigin(float x, float y) pure nothrow {
+        _origin.x = x;
+        _origin.y = y;
+        _notifyTransform();
+    }
+
+    /**
+     * Sets the origin. The origin is a offset which is added to the position
+     * and serves as center position for scaling and rotation.
+     *
+     * Note: If you use this with setRotationCenter
+     *       the origin will suppress the rotation center and takes it's place.
+     */
+    @nogc
+    void setOrigin()(auto ref const Vector2f origin) pure nothrow {
+        _origin = origin;
+    }
+
+    /**
+     * Returns the current origin
+     */
+    @nogc
+    ref const(Vector2f) getOrigin() const  pure nothrow {
+        return _origin;
+    }
+
+    /**
+     * Sets the scaling (for both, x and y)
+     */
+    @nogc
+    void setScale(float x, float y) pure nothrow  {
+        _scale.x = x;
+        _scale.y = y;
+        _notifyTransform();
+    }
+
+    /**
+     * Sets the scaling (for both, x and y)
+     */
+    @nogc
+    void setScale()(auto ref const Vector2f scale) pure nothrow  {
         _scale = scale;
+        _notifyTransform();
+    }
+
+    /**
+     * Inc-/Decrease the scaling
+     */
+    @nogc
+    void scale()(auto ref const Vector2f offset) pure nothrow {
+        _scale += offset;
         _notifyTransform();
     }
 
@@ -211,7 +274,7 @@ final:
      * Returns the current scaling
      */
     @nogc
-    float getScale() const pure nothrow {
+    ref const(Vector2f) getScale() const pure nothrow {
         return _scale;
     }
 
@@ -220,9 +283,9 @@ final:
      */
     @nogc
     void setRotation(float rotation) pure nothrow {
-        _rotation = rotation;
-        if (_rotation < 0 || _rotation > 360)
-            _rotation = 0;
+        _rotationAngle = rotation;
+        if (_rotationAngle < 0 || _rotationAngle > 360)
+            _rotationAngle = 0;
         _notifyTransform();
     }
 
@@ -232,9 +295,9 @@ final:
      */
     @nogc
     void rotate(float rotation) pure nothrow {
-        _rotation += rotation;
-        if (_rotation > 360 || _rotation < -360)
-            _rotation %= 360;
+        _rotationAngle += rotation;
+        if (_rotationAngle > 360 || _rotationAngle < -360)
+            _rotationAngle %= 360;
         _notifyTransform();
     }
 
@@ -243,6 +306,6 @@ final:
      */
     @nogc
     float getRotation() const pure nothrow {
-        return _rotation;
+        return _rotationAngle;
     }
 }

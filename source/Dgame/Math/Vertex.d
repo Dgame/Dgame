@@ -71,6 +71,15 @@ struct Vertex {
      * CTor
      */
     @nogc
+    this()(auto ref const Vector2f pos, auto ref const Vector2f coords) pure nothrow {
+        this.position = pos;
+        this.texCoord = coords;
+    }
+
+    /**
+     * CTor
+     */
+    @nogc
     this()(auto ref const Vector2f pos) pure nothrow {
         this.position = pos;
     }
