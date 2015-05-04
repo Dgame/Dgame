@@ -44,7 +44,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 <dt><big><a name="Transformable.move.2"></a>pure nothrow @nogc void <u>move</u>()(auto ref const Vector2f <i>offset</i>);
 </big></dt>
-<dd>Move the position by offset<br><br>
+<dd>Move the position by offset (x, y)<br><br>
 
 </dd>
 <dt><big><a name="Transformable.getPosition"></a>final const pure nothrow @nogc ref const(Vector2f) <u>getPosition</u>();
@@ -131,7 +131,7 @@ If you use this with setRotationCenter
 <dd>Sets the scaling (for both, <i>x</i> and <i>y</i>)<br><br>
 
 </dd>
-<dt><big><a name="Transformable.setScale.2"></a>pure nothrow @nogc void <u>setScale</u>()(auto ref const Vector2f <i>scale</i>);
+<dt><big><a name="Transformable.setScale.2"></a>pure nothrow @nogc void <u>setScale</u>()(auto ref const Vector2f <i>offset</i>);
 </big></dt>
 <dd>Sets the scaling (for both, x and y)<br><br>
 
@@ -141,7 +141,7 @@ If you use this with setRotationCenter
 <dd>Inc-/Decrease the scaling<br><br>
 
 </dd>
-<dt><big><a name="Transformable.scale.2"></a>final pure nothrow @nogc void <u>scale</u>(float <u>scale</u>);
+<dt><big><a name="Transformable.scale.2"></a>final pure nothrow @nogc void <u>scale</u>(float <i>offset</i>);
 </big></dt>
 <dd>Inc-/Decrease the scaling<br><br>
 

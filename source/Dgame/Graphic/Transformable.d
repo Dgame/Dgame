@@ -108,7 +108,7 @@ final:
     }
 
     /**
-     * Move the position by offset
+     * Move the position by offset (x, y)
      */
     @nogc
     void move()(auto ref const Vector2f offset) pure nothrow {
@@ -223,6 +223,7 @@ final:
     @nogc
     void setOrigin()(auto ref const Vector2f origin) pure nothrow {
         _origin = origin;
+        _notifyTransform();
     }
 
     /**
@@ -247,8 +248,8 @@ final:
      * Sets the scaling (for both, x and y)
      */
     @nogc
-    void setScale()(auto ref const Vector2f scale) pure nothrow  {
-        _scale = scale;
+    void setScale()(auto ref const Vector2f offset) pure nothrow  {
+        _scale = offset;
         _notifyTransform();
     }
 
@@ -265,8 +266,8 @@ final:
      * Inc-/Decrease the scaling
      */
     @nogc
-    void scale(float scale) pure nothrow {
-        _scale += scale;
+    void scale(float offset) pure nothrow {
+        _scale += offset;
         _notifyTransform();
     }
 
