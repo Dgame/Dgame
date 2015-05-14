@@ -31,7 +31,7 @@ import Dgame.Math.Vector2;
 public:
 
 /**
- * A Vertex a coordinate, a color and a coordinate to the Texture
+ * A Vertex is a coordinate, a color and a coordinate to the Texture
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */

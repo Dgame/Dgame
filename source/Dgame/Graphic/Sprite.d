@@ -55,14 +55,10 @@ protected:
 
     @nogc
     final void _updateVertices() pure nothrow {
-        float tx = 0, ty = 0, tw = 1, th = 1;
-
-        if (!_texRect.isEmpty()) {
-            tx = float(_texRect.x) / _texture.width;
-            ty = float(_texRect.y) / _texture.height;
-            tw = float(_texRect.width) / _texture.width;
-            th = float(_texRect.height) / _texture.height;
-        }
+        immutable float tx = float(_texRect.x) / _texture.width;
+        immutable float ty = float(_texRect.y) / _texture.height;
+        immutable float tw = float(_texRect.width) / _texture.width;
+        immutable float th = float(_texRect.height) / _texture.height;
 
         immutable float tx_tw = tx + tw;
         immutable float ty_th = ty + th;

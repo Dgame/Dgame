@@ -4,8 +4,11 @@ private:
 
 import Dgame.Graphic.Drawable;
 import Dgame.Graphic.Texture;
+import Dgame.Graphic.Color;
 
 import Dgame.Math.Vertex;
+import Dgame.Math.Vector2;
+import Dgame.Math.Rect;
 import Dgame.Math.Geometry;
 
 import Dgame.Window.Window;
@@ -20,7 +23,7 @@ private:
 protected:
     @nogc
     override void draw(ref const Window wnd) nothrow {
-        wnd.draw(Geometry.Triangle, _texture, _vertices);
+        wnd.draw(Geometry.TriangleStrip, _texture, _vertices);
     }
 
 public:
@@ -60,6 +63,13 @@ final:
     /**
      * Appends four Vertices arounds the given position with the given texture coordinates
      */
+    void append()(auto ref const Vector2f position) pure nothrow {
+        this.append(position, Rect(0, 0, _texture.width, _texture.height));
+    }
+
+    /**
+     * Appends four Vertices arounds the given position with the given texture coordinates
+     */
     void append()(auto ref const Vector2f position, auto ref const Rect texRect) pure nothrow {
         immutable float tx = float(texRect.x) / _texture.width;
         immutable float ty = float(texRect.y) / _texture.height;
@@ -68,14 +78,34 @@ final:
 
         immutable float tx_tw = tx + tw;
         immutable float ty_th = ty + th;
-        immutable float cx_tw = position.x + _texRect.width;
-        immutable float cy_th = position.y + _texRect.height;
+        immutable float cx_tw = position.x + texRect.width;
+        immutable float cy_th = position.y + texRect.height;
 
         _vertices.reserve(4);
-        _vertices ~= Vertex(position, Vector2f(tx, ty));
-        _vertices ~= Vertex(Vector2f(cx_tw, position.y), Vector2f(tx_tw, ty));
-        _vertices ~= Vertex(Vector2f(position.x, cy_th), Vector2f(tx, ty_th));
-        _vertices ~= Vertex(Vector2f(cx_tw, cy_th), Vector2f(tx_tw, ty_th));
+
+        _vertices ~= Vertex(
+            position,
+            Vector2f(tx, ty),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(cx_tw, position.y),
+            Vector2f(tx_tw, ty),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(position.x, cy_th),
+            Vector2f(tx, ty_th),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(cx_tw, cy_th),
+            Vector2f(tx_tw, ty_th),
+            Color4f.White
+        );
     }
 
     /**

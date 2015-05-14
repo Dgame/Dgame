@@ -11,3 +11,4 @@ import Dgame.Graphic.Surface;
 import Dgame.Graphic.Text;
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Transformable;
+import Dgame.Graphic.VertexArray;
