@@ -32,7 +32,6 @@ import derelict.sdl2.image;
 import derelict.sdl2.mixer;
 
 import Dgame.Window.GLSettings;
-
 import Dgame.Internal.Error;
 
 shared static this() {
@@ -127,36 +126,50 @@ void _initSDL() {
 }
 
 @nogc
-void _initGLAttr(ref GLSettings gl_settings) {
-    // Mac does not allow deprecated functions / constants, so we have to set the version manually to 2.1
+void _initGLAttr(ref GLSettings gl) {
     version (OSX) {
-        if (gl_settings.majorVersion == 0) {
-            gl_settings.majorVersion = 2;
-            gl_settings.minorVersion = 1;
+        if (gl.majorVersion == 0) {
+            gl.majorVersion = 2;
+            gl.minorVersion = 1;
         }
     }
 
-    if (gl_settings.majorVersion != 0) {
-        int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_settings.majorVersion);
+    if (gl.majorVersion != 0) {
+        int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl.majorVersion);
         assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
 
-        result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_settings.minorVersion);
+        result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl.minorVersion);
         assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
     }
 
-    if (gl_settings.antiAliasLevel > 0) {
+    final switch (gl.profile) {
+        case GLSettings.Profile.None:
+            break;
+        case GLSettings.Profile.Core:
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+            break;
+        case GLSettings.Profile.Compatibility:
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+            break;
+        case GLSettings.Profile.ES:
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+            break;
+    }
+
+    if (gl.antiAliasLevel > 0) {
         int result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
         assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
 
         int max_samples;
         glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
 
-        if (gl_settings.antiAliasLevel > max_samples) {
-            print_fmt("Your anti-alias level (%d) is too high and will be reduced to %d.\n",gl_settings.antiAliasLevel, max_samples);
-            gl_settings.antiAliasLevel = cast(ubyte) max_samples;
+        if (gl.antiAliasLevel > max_samples) {
+            print_fmt("Your anti-alias level (%d) is too high and will be reduced to %d.\n",gl.antiAliasLevel, max_samples);
+            gl.antiAliasLevel = cast(ubyte) max_samples;
         }
 
-        result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl_settings.antiAliasLevel);
+        result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl.antiAliasLevel);
         assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
     }
 

@@ -30,6 +30,7 @@ import derelict.opengl3.gl;
 
 import Dgame.Graphic.Color;
 import Dgame.Graphic.Drawable;
+import Dgame.Graphic.Masks;
 import Dgame.Graphic.Surface;
 import Dgame.Graphic.Texture;
 
@@ -50,8 +51,9 @@ import Dgame.Internal.Error;
 import Dgame.Internal.m3;
 import Dgame.Internal.d2c;
 
-static if (!SDL_VERSION_ATLEAST(2, 0, 4))
+static if (!SDL_VERSION_ATLEAST(2, 0, 4)) {
     enum int SDL_WINDOW_MOUSE_CAPTURE = 0;
+}
 
 enum int DefPosX = 100;
 enum int DefPosY = 100;
@@ -119,20 +121,16 @@ public:
      * CTor
      * Position of the Window is default 100x, 100y and the VerticalSync is disabled
      */
-    this(uint width, uint height, string title, uint style = Style.Default,
-         GLSettings gl_settings = GLSettings.init)
-    {
-        this(Rect(DefPosX, DefPosY, width, height), title, style, gl_settings);
+    this(uint width, uint height, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
+        this(Rect(DefPosX, DefPosY, width, height), title, style);
     }
 
     /**
     * CTor
     * Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate > 0
     */
-    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default,
-           GLSettings gl_settings = GLSettings.init)
-    {
-        this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style, gl_settings);
+    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
+        this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style);
 
         if (mode.refreshRate > 0)
             this.setVerticalSync(VerticalSync.Enable);
@@ -142,16 +140,19 @@ public:
      * CTor
      * Position is specifiable and the VerticalSync is disabled
      */
-    this()(auto ref const Rect rect, string title, uint style = Style.Default,
-           GLSettings gl_settings = GLSettings.init)
-    {
+    this()(auto ref const Rect view, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
         if (_count == 0)
             _initSDL();
 
         if (style & Style.OpenGL)
-            _initGLAttr(gl_settings);
-
-        _window = SDL_CreateWindow(toStringz(title), rect.x, rect.y, rect.width, rect.height, style);
+            _initGLAttr(gl);
+        
+        _window = SDL_CreateWindow(
+            toStringz(title),
+            view.x, view.y,
+            view.width, view.height,
+            style
+        );
         assert(_window, "SDL_Window could not be created.");
 
         if (style & Style.OpenGL) {
@@ -162,10 +163,12 @@ public:
             if (_count == 0)
                 _initGL();
 
-            this.projection.ortho(Rect(0, 0, rect.width, rect.height));
+            const Rect rect = Rect(0, 0, view.width, view.height);
+
+            this.projection.ortho(rect);
             this.loadProjection();
 
-            glViewport(0, 0, rect.width, rect.height);
+            glViewport(rect.x, rect.y, rect.width, rect.height);
 
             this.setClearColor(Color4b.White);
             this.setVerticalSync(VerticalSync.Disable);
@@ -260,18 +263,18 @@ public:
     Surface capture(Texture.Format fmt = Texture.Format.BGRA) nothrow {
         if (this.getStyle() & Style.OpenGL) {
             const Size size = this.getSize();
-            Surface my_capture = Surface(size.width, size.height);
+            Surface my_capture = Surface(size.width, size.height, 32, Masks.Zero);
 
+            glReadBuffer(GL_FRONT);
             glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, my_capture.pixels);
             
-            // Flip it
-
             immutable uint lineWidth = size.width * 4;
             immutable uint hlw = size.height * lineWidth;
 
             void[] tmpLine = make!(void[])(lineWidth);
             scope(exit) unmake(tmpLine);
 
+            // Flip it
             for (uint i = 0; i < size.height / 2; ++i) {
                 immutable uint tmpIdx1 = i * lineWidth;
                 immutable uint tmpIdx2 = (i + 1) * lineWidth;

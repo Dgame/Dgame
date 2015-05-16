@@ -17,7 +17,29 @@ if anti aliasing is activated you will notice a drastic reduction of your framer
 <b>Author:</b><br>
 Randy Schuett (rswhite4@googlemail.com)<br><br>
 
-<dl><dt><big><a name="GLSettings.majorVersion"></a>ubyte <u>majorVersion</u>;
+<dl><dt><big><a name="GLSettings.Profile"></a>enum <u>Profile</u>: ubyte;
+</big></dt>
+<dd>The profile of the OpenGL Context<br><br>
+
+<dl><dt><big><a name="GLSettings.Profile.Compatibility"></a><u>Compatibility</u></big></dt>
+<dd>OpenGL compatibility profile - deprecated functions are allowed (default)<br><br>
+
+</dd>
+<dt><big><a name="GLSettings.Profile.Core"></a><u>Core</u></big></dt>
+<dd>OpenGL core profile - deprecated functions are disabled<br><br>
+
+</dd>
+<dt><big><a name="GLSettings.Profile.ES"></a><u>ES</u></big></dt>
+<dd>OpenGL <u>ES</u> profile - only a subset of the base OpenGL functionality is available<br><br>
+
+</dd>
+<dt><big><a name="GLSettings.Profile.None"></a><u>None</u></big></dt>
+<dd>profile depends on platform<br><br>
+
+</dd>
+</dl>
+</dd>
+<dt><big><a name="GLSettings.majorVersion"></a>ubyte <u>majorVersion</u>;
 </big></dt>
 <dd>Major Version of OpenGL. 0 means highest possible.<br><br>
 
@@ -37,6 +59,11 @@ A too high value may crash your application at the beginning
 <br><br>
 
  Typical values are 2, 4 or 8<br><br>
+
+</dd>
+<dt><big><a name="GLSettings.profile"></a>Profile <u>profile</u>;
+</big></dt>
+<dd>The OpenGL Context <u>profile</u>. Default is Profile.Compatibility<br><br>
 
 </dd>
 <dt><big><a name="GLSettings.this"></a>pure nothrow @nogc this(ubyte <i>major</i>, ubyte <i>minor</i>, ubyte <i>antiAlias</i>);
