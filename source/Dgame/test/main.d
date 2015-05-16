@@ -133,7 +133,7 @@ void main() {
     ship.setRotationCenter(32, 32);
 
     Shape qs = new Shape(
-        Geometry.Quad,
+        Geometry.Quads,
         [
             Vertex( 75,  75),
             Vertex(175,  75),
@@ -148,7 +148,7 @@ void main() {
     Shape circle = new Shape(25, Vector2f(180, 380));
     circle.setColor(Color4b.Green);
 
-    Shape many = new Shape(Geometry.Quad,
+    Shape many = new Shape(Geometry.Quads,
         [
             Vertex(55, 55),
             Vertex(60, 55),
@@ -172,7 +172,7 @@ void main() {
     many.setColor(Color4b.Red);
 
     Shape texQuad = new Shape(
-        Geometry.Quad,
+        Geometry.Quads,
         [
             Vertex(  0,  0),
             Vertex(140,  0),
@@ -195,14 +195,14 @@ void main() {
         ]
     );
 
-    Shape s1 = new Shape(Geometry.Quad, [Vertex(0, 0), Vertex(100, 0), Vertex(100, 100), Vertex(0, 100)]);
+    Shape s1 = new Shape(Geometry.Quads, [Vertex(0, 0), Vertex(100, 0), Vertex(100, 100), Vertex(0, 100)]);
     s1.setColor(Color4b.Green);
     //s1.setRotationCenter(50, 50);
     s1.setOrigin(50, 50);
     s1.setRotation(45);
     s1.setPosition(240, 320);
 
-    Shape s2 = new Shape(Geometry.Quad, [Vertex(0, 0), Vertex(50, 0), Vertex(50, 50), Vertex(0, 50)]);
+    Shape s2 = new Shape(Geometry.Quads, [Vertex(0, 0), Vertex(50, 0), Vertex(50, 50), Vertex(0, 50)]);
     s2.setColor(Color4b.Blue);
     //s2.setRotationCenter(25, 25);
     s2.setOrigin(25, 25);

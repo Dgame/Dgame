@@ -34,9 +34,9 @@ public:
  * Geometry describes different geometric representations.
  */
 enum Geometry {
-    Quad = GL_QUADS,	/// Declare that the stored vertices are Quads.
+    Quads = GL_QUADS,	/// Declare that the stored vertices are Quads.
     QuadStrip = GL_QUAD_STRIP,	/// Declare that the stored vertices are Quad Strips
-    Triangle = GL_TRIANGLES,	/// Declare that the stored vertices are Triangles.
+    Triangles = GL_TRIANGLES,	/// Declare that the stored vertices are Triangles.
     TriangleStrip = GL_TRIANGLE_STRIP,	/// Declare that the stored vertices are Triangles Strips
     TriangleFan = GL_TRIANGLE_FAN,	/// Declare that the stored vertices are Triangles Fans.
     Lines = GL_LINES,	/// Declare that the stored vertices are Lines.
