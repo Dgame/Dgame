@@ -40,8 +40,6 @@ import Dgame.Math.Matrix4;
 import Dgame.Math.Rect;
 import Dgame.Math.Geometry;
 
-import Dgame.System.StopWatch;
-
 import Dgame.Window.Event;
 import Dgame.Window.GLSettings;
 import Dgame.Window.DisplayMode;
