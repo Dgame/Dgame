@@ -154,6 +154,14 @@ final:
     }
 
     /**
+     * Clear all Vertices but preserve the storage and capacity
+     */
+    void clear() nothrow {
+        _vertices.length = 0;
+        _vertices.assumeSafeAppend();
+    }
+
+    /**
      * Stores a Vertex
      */
     void append()(auto ref const Vertex vertex) pure nothrow {
