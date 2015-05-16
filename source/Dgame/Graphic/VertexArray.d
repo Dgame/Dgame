@@ -87,6 +87,61 @@ final:
     }
 
     /**
+     * Append a whole Quad.
+     * This method provides a simple way to add a quadratic texture-view.
+     * And this as easily as if you would work with a sprite.
+     *
+     * Note: This method only works for Geometry.Quads.
+     */
+    void appendQuad()(auto ref const Vector2f position, auto ref const Rect texRect) pure nothrow {
+        assert(this.geometry == Geometry.Quads, "This method supports only Geometry.Quads");
+
+        immutable float tx = float(texRect.x) / _texture.width;
+        immutable float ty = float(texRect.y) / _texture.height;
+        immutable float tw = float(texRect.width) / _texture.width;
+        immutable float th = float(texRect.height) / _texture.height;
+
+        immutable float tx_tw = tx + tw;
+        immutable float ty_th = ty + th;
+        immutable float cx_tw = position.x + texRect.width;
+        immutable float cy_th = position.y + texRect.height;
+
+        _vertices.reserve(4);
+
+        _vertices ~= Vertex(
+            position,
+            Vector2f(tx, ty),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(cx_tw, position.y),
+            Vector2f(tx_tw, ty),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(cx_tw, cy_th),
+            Vector2f(tx_tw, ty_th),
+            Color4f.White
+        );
+
+        _vertices ~= Vertex(
+            Vector2f(position.x, cy_th),
+            Vector2f(tx, ty_th),
+            Color4f.White
+        );
+    }
+
+    /**
+     * Returns all Vertices
+     */
+    @nogc
+    inout(Vertex[]) getVertices() inout pure nothrow {
+        return _vertices;
+    }
+
+    /**
      * Returns all Vertices
      */
     @nogc

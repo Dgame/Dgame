@@ -86,6 +86,20 @@ this is redundant if you have already enabled anti-aliasing<br><br>
 <dd>Stores multiple Vertices<br><br>
 
 </dd>
+<dt><big><a name="Shape.getVertices"></a>final inout pure nothrow @nogc inout(Vertex[]) <u>getVertices</u>();
+</big></dt>
+<dd>Returns all Vertices<br><br>
+
+</dd>
+<dt><big><a name="Shape.setColor"></a>pure nothrow @nogc void <u>setColor</u>()(auto ref const Color4b <i>col</i>);
+</big></dt>
+<dd>Set the color of <b>all</b> Vertices
+<br><br>
+<b>Note:</b><br>
+If you only want to set specific Vertices to a specific color, you should use getVertices()
+       and adapt the specific entries.<br><br>
+
+</dd>
 <dt><big><a name="Shape.setTexture"></a>final pure nothrow @nogc void <u>setTexture</u>(Texture* <i>texture</i>);
 </big></dt>
 <dd>Set or reset a Texture<br><br>
@@ -114,20 +128,6 @@ this is redundant if you have already enabled anti-aliasing<br><br>
 <dt><big><a name="Shape.getClipRect"></a>final const pure nothrow @nogc Rect <u>getClipRect</u>();
 </big></dt>
 <dd>Returns the clip Rect<br><br>
-
-</dd>
-<dt><big><a name="Shape.getVertices"></a>final inout pure nothrow @nogc inout(Vertex[]) <u>getVertices</u>();
-</big></dt>
-<dd>Returns all Vertices<br><br>
-
-</dd>
-<dt><big><a name="Shape.setColor"></a>pure nothrow @nogc void <u>setColor</u>()(auto ref const Color4b <i>col</i>);
-</big></dt>
-<dd>Set the color of <b>all</b> Vertices
-<br><br>
-<b>Note:</b><br>
-If you only want to set specific Vertices to a specific color, you should use getVertices()
-       and adapt the specific entries.<br><br>
 
 </dd>
 </dl>

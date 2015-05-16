@@ -48,6 +48,21 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Stores a Vertex<br><br>
 
 </dd>
+<dt><big><a name="VertexArray.appendQuad"></a>pure nothrow void <u>appendQuad</u>()(auto ref const Vector2f <i>position</i>, auto ref const Rect <i>texRect</i>);
+</big></dt>
+<dd>Append a whole Quad.
+ This method provides a simple way to add a quadratic texture-view.
+ And this as easily as if you would work with a sprite.
+<br><br>
+<b>Note:</b><br>
+This method only works for Geometry.Quads.<br><br>
+
+</dd>
+<dt><big><a name="VertexArray.getVertices"></a>final inout pure nothrow @nogc inout(Vertex[]) <u>getVertices</u>();
+</big></dt>
+<dd>Returns all Vertices<br><br>
+
+</dd>
 <dt><big><a name="VertexArray.opIndex"></a>final inout pure nothrow @nogc ref inout(Vertex) <u>opIndex</u>(size_t <i>index</i>);
 </big></dt>
 <dd>Returns all Vertices<br><br>

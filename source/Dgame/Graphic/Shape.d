@@ -175,6 +175,27 @@ final:
         _vertices.reserve(vertices.length);
         _vertices ~= vertices;
     }
+    
+    /**
+     * Returns all Vertices
+     */
+    @nogc
+    inout(Vertex[]) getVertices() inout pure nothrow {
+        return _vertices;
+    }
+
+    /**
+     * Set the color of <b>all</b> Vertices
+     *
+     * Note: If you only want to set specific Vertices to a specific color, you should use getVertices()
+     *       and adapt the specific entries.
+     */
+    @nogc
+    void setColor()(auto ref const Color4b col) pure nothrow {
+        foreach (ref Vertex v; _vertices) {
+            v.color = Color4f(col);
+        }
+    }
 
     /**
      * Set or reset a Texture
@@ -264,26 +285,5 @@ final:
         rect.move(Vector2i(super.getPosition()));
 
         return rect;
-    }
-
-    /**
-     * Returns all Vertices
-     */
-    @nogc
-    inout(Vertex[]) getVertices() inout pure nothrow {
-        return _vertices;
-    }
-
-    /**
-     * Set the color of <b>all</b> Vertices
-     *
-     * Note: If you only want to set specific Vertices to a specific color, you should use getVertices()
-     *       and adapt the specific entries.
-     */
-    @nogc
-    void setColor()(auto ref const Color4b col) pure nothrow {
-        foreach (ref Vertex v; _vertices) {
-            v.color = Color4f(col);
-        }
     }
 }
