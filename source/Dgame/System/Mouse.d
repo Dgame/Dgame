@@ -138,7 +138,7 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
     @nogc
     static void setCursorPosition(int x, int y) nothrow {
         SDL_Window* wnd = SDL_GetMouseFocus();
-        if (wnd !is null)
+        if (wnd)
             SDL_WarpMouseInWindow(wnd, x, y);
     }
 

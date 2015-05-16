@@ -401,7 +401,7 @@ public:
         uint width = _width, height = _height;
         int x = 0, y = 0;
         
-        if (rect !is null) {
+        if (rect) {
             assert(rect.width <= _width && rect.height <= _height, "Rect is greater as the Texture.");
             assert(rect.x < _width && rect.y < _height, "x or y of the Rect is greater as the Texture.");
             

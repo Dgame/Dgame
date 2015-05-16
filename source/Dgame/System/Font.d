@@ -34,6 +34,8 @@ import Dgame.Graphic.Surface;
 import Dgame.Internal.Error;
 import Dgame.Internal.d2c;
 
+enum ubyte MinDepth = 24;
+
 public:
 
 /**
@@ -157,31 +159,25 @@ public:
         _transfer(fg, a);
         _transfer(bg, b);
 
-        SDL_Surface* srfc;
+        SDL_Surface* sdl_srfc;
         final switch (mode) {
             case Mode.Solid:
-                srfc = TTF_RenderUTF8_Solid(_ttf, toStringz(text), a);
+                sdl_srfc = TTF_RenderUTF8_Solid(_ttf, toStringz(text), a);
                 break;
             case Mode.Shaded:
-                srfc = TTF_RenderUTF8_Shaded(_ttf, toStringz(text), a, b);
+                sdl_srfc = TTF_RenderUTF8_Shaded(_ttf, toStringz(text), a, b);
                 break;
             case Mode.Blended:
-                srfc = TTF_RenderUTF8_Blended(_ttf, toStringz(text), a);
+                sdl_srfc = TTF_RenderUTF8_Blended(_ttf, toStringz(text), a);
                 break;
         }
 
-        assert_fmt(srfc !is null, "Error by rendering text: %s", TTF_GetError());
+        assert_fmt(sdl_srfc, "Error by rendering text: %s", TTF_GetError());
 
-        if (srfc.format.BitsPerPixel < 24) {
-            SDL_PixelFormat fmt;
-            fmt.BitsPerPixel = 24;
-            
-            Surface opt = Surface(srfc);
-            opt.adaptTo(&fmt);
+        Surface srfc = Surface(sdl_srfc);
+        if (srfc.bits < MinDepth)
+            srfc.adaptTo(MinDepth);
 
-            return opt;
-        }
-
-        return Surface(srfc);
+        return srfc;
     }
 }

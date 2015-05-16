@@ -191,7 +191,7 @@ struct Rect {
         SDL_Rect a = void;
         SDL_Rect b = void;
 
-        if (overlap is null)
+        if (!overlap)
             return SDL_HasIntersection(_transfer(this, a), _transfer(rect, b)) == SDL_TRUE;
 
         SDL_Rect c = void;

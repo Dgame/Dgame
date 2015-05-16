@@ -32,59 +32,12 @@ import Dgame.Math.Rect;
 import Dgame.Math.Vector2;
 
 import Dgame.Graphic.Color;
+import Dgame.Graphic.Masks;
 
 import Dgame.Internal.Error;
 import Dgame.Internal.d2c;
 
-@nogc
-void verifyDepth(ubyte depth) pure nothrow {
-    assert(depth == 8 || depth == 16 || depth == 24 || depth == 32, "Invalid depth.");
-}
-
 public:
-
-/**
- * The RGBA-Mask are the bitmasks used to extract that color from a pixel.
- * It is used to e.g. define the background of a newly created Surface.
- * Using zeros for the RGB-Masks sets a default value, based on the depth
- * But using zero for the Aalpha-Mask results in an Alpha-Mask of 0.
- * By default Surfaces with an Alpha-Mask are set up for blending.
- * You can change the blend mode with Surface.setBlendMode.
- */
-struct Masks {
-    /**
-     * The default value. Same as Masks.init.
-     * The RGBA-Masks depend on the endianness (byte order) of the machine
-     */
-    static immutable Masks Default = Masks.init;
-    /**
-     * The RGBA-Masks are zero
-     */
-    static immutable Masks Zero = Masks(0, 0, 0, 0);
-
-    version (LittleEndian) {
-        uint red = 0x000000ff; /// the red mask, default is 0x000000ff
-        uint green = 0x0000ff00; /// the green mask, default is 0x0000ff00
-        uint blue = 0x00ff0000; /// the blue mask, default is 0x00ff0000
-        uint alpha = 0xff000000; /// the alpha mask, default is 0xff000000
-    } else {
-        uint red = 0xff000000; /// the red mask, default is 0xff000000
-        uint green = 0x00ff0000; /// the green mask, default is 0x00ff0000
-        uint blue = 0x0000ff00; /// the blue mask, default is 0x0000ff00
-        uint alpha = 0x000000ff; /// the alpha mask, default is 0x000000ff
-    }
-
-    /**
-     * CTor
-     */
-    @nogc
-    this(uint red, uint green, uint blue, uint alpha) pure nothrow {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-    }
-}
 
 /**
  * Surface is a wrapper for a SDL_Surface and can load and save images.
@@ -101,34 +54,32 @@ struct Surface {
         Add    = SDL_BLENDMODE_ADD,   /// dst = (src * A) + dst
         Mod    = SDL_BLENDMODE_MOD    /// dst = src * dst
     }
-    
-    /**
-     * Supported Color Masks
-     */
-    enum Mask : ubyte {
-        Red   = 1, /// Red Mask
-        Green = 2, /// Green Mask
-        Blue  = 4, /// Blue Mask
-        Alpha = 8  /// Alpha Mask
-    }
 
 private:
     SDL_Surface* _surface;
 
     @nogc
-    static SDL_Surface* create(uint width, uint height, ubyte depth, ref const Masks mask) nothrow {
-        verifyDepth(depth);
+    static SDL_Surface* create(ref const Masks masks, uint width, uint height, ubyte depth, void* memory) nothrow {
+        SDL_Surface* surface;
+        if (memory) {
+            surface = SDL_CreateRGBSurfaceFrom(
+                memory,
+                width, height, depth, 
+                (depth / 8) * width,
+                masks.red, masks.green, masks.blue, masks.alpha
+            );
+        } else {
+            surface = SDL_CreateRGBSurface(
+                0,
+                width, height, depth,
+                masks.red, masks.green, masks.blue, masks.alpha
+            );
+        }
 
-        return SDL_CreateRGBSurface(0, width, height, depth, mask.red, mask.green, mask.blue, mask.alpha);
-    }
-    
-    @nogc
-    static SDL_Surface* create(void* memory, uint width, uint height, ubyte depth, ref const Masks mask) nothrow {
-        verifyDepth(depth);
-        assert(memory, "Memory is empty.");
+        assert_fmt(surface, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
+        assert_fmt(surface.pixels, "Invalid pixel data. Error: %s\n", SDL_GetError());
 
-        return SDL_CreateRGBSurfaceFrom(memory, width, height, depth, 
-                                        (depth / 8) * width, mask.red, mask.green, mask.blue, mask.alpha);
+        return surface;
     }
 
 public:
@@ -137,8 +88,8 @@ public:
      */
     @nogc
     this(SDL_Surface* srfc) nothrow {
-        assert_fmt(srfc !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
-        assert_fmt(srfc.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
+        assert_fmt(srfc, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
+        assert_fmt(srfc.pixels, "Invalid pixel data. Error: %s\n", SDL_GetError());
 
         _surface = srfc;
     }
@@ -155,22 +106,16 @@ public:
      * Make a new Surface of the given width, height and depth.
      */
     @nogc
-    this(uint width, uint height, ubyte depth = 32, const Masks mask = Masks.init) nothrow {
-        _surface = Surface.create(width, height, depth, mask);
-
-        assert_fmt(_surface !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
-        assert_fmt(_surface.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
+    this(uint width, uint height, ubyte depth = 32, const Masks masks = Masks.init) nothrow {
+        _surface = Surface.create(masks, width, height, depth, null);
     }
     
     /**
      * Make an new Surface of the given memory, width, height and depth.
      */
     @nogc
-    this(void* memory, uint width, uint height, ubyte depth = 32, const Masks mask = Masks.init) nothrow {
-        _surface = Surface.create(memory, width, height, depth, mask);
-
-        assert_fmt(_surface !is null, "Invalid SDL_Surface. Error: %s\n", SDL_GetError());
-        assert_fmt(_surface.pixels !is null, "Invalid pixel data. Error: %s\n", SDL_GetError());
+    this(void* memory, uint width, uint height, ubyte depth = 32, const Masks masks = Masks.init) nothrow {
+        _surface = Surface.create(masks, width, height, depth, memory);
     }
     
     /**
@@ -237,20 +182,9 @@ public:
      * Load from memory.
      */
     @nogc
-    bool loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32,
-                        const Masks mask = Masks.init) nothrow
-    {
-        assert(memory, "Memory is empty.");
-
+    bool loadFromMemory(void* memory, ushort width, ushort height, ubyte depth = 32, const Masks masks = Masks.init) nothrow {
         SDL_FreeSurface(_surface); // free old surface
-
-        _surface = Surface.create(memory, width, height, depth, mask);
-        if (!_surface) {
-            print_fmt("Could not load image. Error: %s.\n", SDL_GetError());
-            return false;
-        }
-        
-        assert(_surface.pixels, "Invalid pixel data.");
+        _surface = Surface.create(masks, width, height, depth, memory);
 
         return true;
     }
@@ -283,7 +217,6 @@ public:
         const SDL_Rect* ptr = rect ? _transfer(*rect, a) : null;
 
         immutable uint key = SDL_MapRGBA(_surface.format, col.red, col.green, col.blue, col.alpha);
-        
         SDL_FillRect(_surface, ptr, key);
     }
     
@@ -309,9 +242,7 @@ public:
      */
     @nogc
     bool lock() nothrow {
-        if (_surface && SDL_LockSurface(_surface) == 0)
-            return true;
-        return false;
+        return _surface && SDL_LockSurface(_surface) == 0;
     }
     
     /**
@@ -343,28 +274,24 @@ public:
     
     /**
      * Use this function to adapt the format of another Surface to this surface.
-     * Works like <code>SDL_DisplayFormat</code>.
      */
     @nogc
-    void adaptTo(ref Surface srfc) nothrow {
-        assert(srfc.isValid(), "Could not adapt to invalid surface.");
-        assert(this.isValid(), "Could not adapt a invalid surface.");
-
-        this.adaptTo(srfc.format);
+    bool adaptTo(ref Surface srfc) nothrow {
+        return this.adaptTo(srfc.bits);
     }
     
     /**
-     * Use this function to adapt the format of another Surface to this surface.
-     * Works like <code>SLD_DisplayFormat</code>.
+     * Use this function to adapt the format of another Surface depth to this surface.
      */
     @nogc
-    bool adaptTo(const SDL_PixelFormat* fmt) nothrow {
+    bool adaptTo(ubyte depth) nothrow {
         if (!_surface)
             return false;
 
-        assert(fmt, "Null format is invalid.");
+        SDL_PixelFormat fmt;
+        fmt.BitsPerPixel = depth;
 
-        SDL_Surface* adapted = SDL_ConvertSurface(_surface, fmt, 0);
+        SDL_Surface* adapted = SDL_ConvertSurface(_surface, &fmt, 0);
         if (adapted) {
             SDL_FreeSurface(_surface);
             _surface = adapted;
@@ -390,7 +317,8 @@ public:
     }
     
     /**
-     * Returns the current colorkey.
+     * Returns the current colorkey,
+     * or Color4b.Black, if the Surface is invalid
      */
     @nogc
     Color4b getColorkey() nothrow {
@@ -463,9 +391,10 @@ public:
      */
     @nogc
     void setClipRect()(auto ref const Rect clip) nothrow {
-        SDL_Rect a = void;
-        if (_surface)
+        if (_surface) {
+            SDL_Rect a = void;
             SDL_SetClipRect(_surface, _transfer(clip, a));
+        }
     }
     
     /**
@@ -523,61 +452,35 @@ public:
     int pitch() const pure nothrow {
         return _surface ? _surface.pitch : 0;
     }
-    
+
     /**
-     * Returns the PixelFormat
+     * Returns the Surface color Masks
      */
-    @property
     @nogc
-    const(SDL_PixelFormat*) format() const pure nothrow {
+    Masks getMasks() const pure nothrow {
         if (!_surface)
-            return null;
-        return _surface.format;
+            return Masks.Zero;
+
+        return Masks(
+            _surface.format.Rmask,
+            _surface.format.Gmask,
+            _surface.format.Bmask,
+            _surface.format.Amask
+        );
     }
-    
+
     /**
-     * Returns if the given color match the color of the given mask of the surface.
-     *
-     * See: Surface.Mask enum.
+     * Returns the pixel at the given coordinates.
      */
     @nogc
-    bool isMask()(Mask mask, auto ref const Color4b col) const nothrow {
+    int getPixelAt(int x, int y) const nothrow {
         if (!_surface)
-            return false;
+            return -1;
 
-        immutable uint map = SDL_MapRGBA(_surface.format, col.red, col.green, col.blue, col.alpha);
-
-        return this.isMask(mask, map);
-    }
-    
-    /**
-     * Returns if the given converted color match the color of the given mask of the surface.
-     *
-     * See: Surface.Mask enum.
-     */
-    @nogc
-    bool isMask(Mask mask, uint col) const pure nothrow {
-        if (!_surface)
-            return false;
-
-        bool[4] result;
-        ubyte index = 0;
+        uint* pixels = cast(uint*) this.pixels;
+        assert(pixels, "No pixel at this point.");
         
-        if (mask & Mask.Red)
-            result[index++] = _surface.format.Rmask == col;
-        if (mask & Mask.Green)
-            result[index++] = _surface.format.Gmask == col;
-        if (mask & Mask.Blue)
-            result[index++] = _surface.format.Bmask == col;
-        if (mask & Mask.Alpha)
-            result[index++] = _surface.format.Amask == col;
-        
-        for (ubyte i = 0; i < index; ++i) {
-            if (!result[i])
-                return false;
-        }
-        
-        return true;
+        return pixels[(y * _surface.w) + x];
     }
     
     /**
@@ -585,13 +488,7 @@ public:
      */
     @nogc
     int getPixelAt()(auto ref const Vector2i pos) const nothrow {
-        if (!_surface)
-            return -1;
-
-        immutable uint* pixels = cast(uint*) this.pixels;
-        assert(pixels, "No pixel at this point.");
-        
-        return pixels[(pos.y * _surface.w) + pos.x];
+        return this.getPixelAt(pos.x, pos.y);
     }
     
     /**
@@ -602,10 +499,32 @@ public:
         if (!_surface)
             return;
 
-        immutable uint* pixels = cast(uint*) this.pixels();
+        uint* pixels = cast(uint*) this.pixels();
         assert(pixels, "No pixel at this point.");
         
         pixels[(pos.y * _surface.w) + pos.x] = pixel;
+    }
+
+    /**
+     * Returns the color on the given position,
+     * or Color4b.Black if the position is out of range.
+     */
+    @nogc
+    Color4b getColorAt(int x, int y) const nothrow {
+        if (!_surface)
+            return Color4b.Black;
+
+        immutable uint len = this.width * this.height;
+        if ((x * y) <= len) {
+            immutable uint pixel = this.getPixelAt(x, y);
+            
+            ubyte r, g, b, a;
+            SDL_GetRGBA(pixel, _surface.format, &r, &g, &b, &a);
+            
+            return Color4b(r, g, b, a);
+        }
+
+        return Color4b.Black;
     }
     
     /**
@@ -613,18 +532,7 @@ public:
      */
     @nogc
     Color4b getColorAt()(auto ref const Vector2i pos) const nothrow {
-        if (!_surface)
-            return Color4b.Black;
-
-        immutable uint len = this.width * this.height;
-        if ((pos.x * pos.y) <= len) {
-            immutable uint pixel = this.getPixelAt(pos);
-            
-            ubyte r, g, b, a;
-            SDL_GetRGBA(pixel, _surface.format, &r, &g, &b, &a);
-            
-            return Color4b(r, g, b, a);
-        }
+        return this.getColorAt(pos.x, pos.y);
     }
     
     /**

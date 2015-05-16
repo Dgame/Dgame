@@ -3,6 +3,11 @@ module Dgame.Internal.Error;
 package(Dgame):
 
 @nogc
+void assert_fmt(Args...)(void* ptr, string msg, auto ref Args args) nothrow {
+	return assert_fmt(ptr !is null, msg, args);
+}
+
+@nogc
 void assert_fmt(Args...)(bool cond, string msg, auto ref Args args) nothrow {
     import core.stdc.stdio : sprintf;
 
