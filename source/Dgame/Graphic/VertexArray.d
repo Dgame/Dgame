@@ -106,7 +106,8 @@ final:
         immutable float cx_tw = position.x + texRect.width;
         immutable float cy_th = position.y + texRect.height;
 
-        _vertices.reserve(4);
+        if ((_vertices.capacity - _vertices.length) < 4)
+            _vertices.reserve(4);
 
         _vertices ~= Vertex(
             position,
