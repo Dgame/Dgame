@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *******************************************************************************************
  */
-module Dgame.Math.Matrix4;
+module Dgame.Math.Matrix4x4;
 
 private:
 
@@ -37,8 +37,8 @@ bool feq(float a, float b) pure nothrow {
 }
 
 @nogc
-ref Matrix4 merge(ref Matrix4 lhs, ref const Matrix4 rhs) pure nothrow {
-    lhs = Matrix4(
+ref Matrix4x4 merge(ref Matrix4x4 lhs, ref const Matrix4x4 rhs) pure nothrow {
+    lhs = Matrix4x4(
         lhs[0] * rhs[0] + lhs[4] * rhs[1] + lhs[12] * rhs[3],
         lhs[0] * rhs[4] + lhs[4] * rhs[5] + lhs[12] * rhs[7],
         lhs[0] * rhs[12] + lhs[4] * rhs[13] + lhs[12] * rhs[15],
@@ -56,11 +56,11 @@ public:
 
 /**
  * A Matrix is a structure which may describe different transformation.
- * Note: Matrix.init is the identity Matrix.
+ * Note: Matrix4x4.init is the identity Matrix.
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
-struct Matrix4 {
+struct Matrix4x4 {
 private:
     float[16] _values = [
         1, 0, 0, 0,
@@ -74,14 +74,14 @@ public:
      * CTor
      */
     @nogc
-    this(float a00, float a01, float a02,
-         float a10, float a11, float a12,
-         float a20, float a21, float a22) pure nothrow
+    this(float a, float b, float c,
+         float d, float e, float f,
+         float g, float h, float i) pure nothrow
     {
-        _values[0] = a00; _values[4] = a01; _values[8] = 0; _values[12] = a02;
-        _values[1] = a10; _values[5] = a11; _values[9] = 0; _values[13] = a12;
+        _values[0] = a; _values[4] = b; _values[8] = 0; _values[12] = c;
+        _values[1] = d; _values[5] = e; _values[9] = 0; _values[13] = f;
         _values[2] = 0; _values[6] = 0; _values[10] = 1; _values[14] = 0;
-        _values[3] = a20; _values[7] = a21; _values[11] = 0; _values[15] = a22;
+        _values[3] = g; _values[7] = h; _values[11] = 0; _values[15] = i;
     }
 
     /**
@@ -89,11 +89,11 @@ public:
      * If the current matrix has a determinant of approximately zero, the identity Matrix (.init) is returned.
      */
     @nogc
-    Matrix4 getInverse() const pure nothrow {
+    Matrix4x4 getInverse() const pure nothrow {
         immutable float my_det = this.det();
 
         if (!feq(my_det, 0)) {
-            return Matrix4((_values[15] * _values[5] - _values[7] * _values[13]) / my_det,
+            return Matrix4x4((_values[15] * _values[5] - _values[7] * _values[13]) / my_det,
                           -(_values[15] * _values[4] - _values[7] * _values[12]) / my_det,
                           (_values[13] * _values[4] - _values[5] * _values[12]) / my_det,
                           -(_values[15] * _values[1] - _values[3] * _values[13]) / my_det,
@@ -104,14 +104,14 @@ public:
                           (_values[5] * _values[0] - _values[1] * _values[4]) / my_det);
         }
 
-        return Matrix4.init;
+        return Matrix4x4.init;
     }
 
     /**
      * Reset the current Matrix to the identity Matrix
      */
     @nogc
-    ref Matrix4 loadIdentity() pure nothrow {
+    ref Matrix4x4 loadIdentity() pure nothrow {
         _values[0] = 1.0f; _values[4] = 0.0f; _values[8] = 0.0f; _values[12] = 0.0f;
         _values[1] = 0.0f; _values[5] = 1.0f; _values[9] = 0.0f; _values[13] = 0.0f;
         _values[2] = 0.0f; _values[6] = 0.0f; _values[10] = 1.0f; _values[14] = 0.0f;
@@ -134,8 +134,8 @@ public:
      * Translate the Matrix
      */
     @nogc
-    ref Matrix4 translate()(auto ref const Vector2f vec) pure nothrow {
-        const Matrix4 translation = Matrix4(1, 0, vec.x,
+    ref Matrix4x4 translate()(auto ref const Vector2f vec) pure nothrow {
+        const Matrix4x4 translation = Matrix4x4(1, 0, vec.x,
                                             0, 1, vec.y,
                                             0, 0, 1);
         return merge(this, translation);
@@ -145,12 +145,12 @@ public:
      * Rotate the Matrix about angle (in degree!)
      */
     @nogc
-    ref Matrix4 rotate(float angle) pure nothrow {
+    ref Matrix4x4 rotate(float angle) pure nothrow {
         immutable float rad = angle * std.math.PI / 180f;
         immutable float cos = std.math.cos(rad);
         immutable float sin = std.math.sin(rad);
 
-        const Matrix4 rotation = Matrix4(cos, -sin, 0,
+        const Matrix4x4 rotation = Matrix4x4(cos, -sin, 0,
                                         sin, cos, 0,
                                         0, 0, 1);
         return merge(this, rotation);
@@ -160,12 +160,12 @@ public:
      * Rotate the Matrix about angle (in degree!) about the given center position
      */
     @nogc
-    ref Matrix4 rotate()(float angle, auto ref const Vector2f center) pure nothrow {
+    ref Matrix4x4 rotate()(float angle, auto ref const Vector2f center) pure nothrow {
         immutable float rad = angle * std.math.PI / 180f;
         immutable float cos = std.math.cos(rad);
         immutable float sin = std.math.sin(rad);
 
-        const Matrix4 rotation = Matrix4(cos, -sin, center.x * (1 - cos) + center.y * sin,
+        const Matrix4x4 rotation = Matrix4x4(cos, -sin, center.x * (1 - cos) + center.y * sin,
                                          sin, cos, center.y * (1 - cos) - center.x * sin,
                                          0, 0, 1);
         return merge(this, rotation);
@@ -175,8 +175,8 @@ public:
      * Scale the Matrix about factor scale
      */
     @nogc
-    ref Matrix4 scale()(auto ref const Vector2f scale) pure nothrow {
-        const Matrix4 scaling = Matrix4(scale.x, 0, 0,
+    ref Matrix4x4 scale()(auto ref const Vector2f scale) pure nothrow {
+        const Matrix4x4 scaling = Matrix4x4(scale.x, 0, 0,
                                         0, scale.y, 0,
                                         0, 0, 1);
 
@@ -187,8 +187,8 @@ public:
      * Scale the Matrix about factor scale about the given center position
      */
     @nogc
-    ref Matrix4 scale()(auto ref const Vector2f scale, auto ref const Vector2f center) pure nothrow {
-        const Matrix4 scaling = Matrix4(scale.x, 0, center.x * (1 - scale.x),
+    ref Matrix4x4 scale()(auto ref const Vector2f scale, auto ref const Vector2f center) pure nothrow {
+        const Matrix4x4 scaling = Matrix4x4(scale.x, 0, center.x * (1 - scale.x),
                                         0, scale.y, center.y * (1 - scale.y),
                                         0, 0, 1);
         return merge(this, scaling);
@@ -205,7 +205,7 @@ public:
         const Vector3f right = dir.cross(up).normalize();
         const Vector3f up2 = right.cross(dir).normalize();
 
-        Matrix4 mat;
+        Matrix4x4 mat;
         mat.values[0] = right.x;
         mat.values[4] = right.y;
         mat.values[8] = right.z;
@@ -238,7 +238,7 @@ public:
     void perspective(float fov, float ratio, float nearp, float farp) pure nothrow {
         immutable float f = 1f / std.math.tan(fov * (std.math.PI / 360f));
 
-        Matrix4 mat;
+        Matrix4x4 mat;
         mat[0] = f / ratio;
         mat[5] = f;
         mat[10] = (farp + nearp) / (nearp - farp);
@@ -261,7 +261,7 @@ public:
             immutable float inv_y = 1.0 / (cast(float) rect.x - rect.height);
             immutable float inv_x = 1.0 / (cast(float) rect.width - rect.y);
 
-            Matrix4 mat;
+            Matrix4x4 mat;
             // first column
             mat[0] = 2.0 * inv_x;
             // second
@@ -301,8 +301,8 @@ public:
      * Supported operations: only *
      */
     @nogc
-    Matrix4 opBinary(string op : "*")(ref const Matrix4 mat) const pure nothrow {
-        Matrix4 cpy = this;
+    Matrix4x4 opBinary(string op : "*")(ref const Matrix4x4 mat) const pure nothrow {
+        Matrix4x4 cpy = this;
         merge(cpy, mat);
 
         return cpy;
@@ -312,7 +312,7 @@ public:
      * Supported operations: only *=
      */
     @nogc
-    ref Matrix4 opOpAssign(string op : "*")(ref const Matrix4 math) pure nothrow {
+    ref Matrix4x4 opOpAssign(string op : "*")(ref const Matrix4x4 math) pure nothrow {
         return merge(this, math);
     }
 
@@ -320,7 +320,7 @@ public:
      * Compares two Matrices approximately
      */
     @nogc
-    bool opEquals(ref const Matrix4 mat) const pure nothrow {
+    bool opEquals(ref const Matrix4x4 mat) const pure nothrow {
         for (ubyte i = 0; i < 16; i++) {
             if (!feq(mat[i], _values[i]))
                 return false;

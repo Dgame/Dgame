@@ -6,15 +6,17 @@ import Dgame.Audio;
 import Dgame.System;
 import Dgame.Window;
 
-pragma(msg, Color4b.sizeof);
-pragma(msg, Color4f.sizeof);
-pragma(msg, Matrix4.sizeof);
-pragma(msg, Window.sizeof);
-pragma(msg, Surface.sizeof);
-pragma(msg, Texture.sizeof);
-pragma(msg, Vector2i.sizeof);
-pragma(msg, Vector2f.sizeof);
-pragma(msg, Vertex.sizeof);
+debug {
+    pragma(msg, Color4b.sizeof);
+    pragma(msg, Color4f.sizeof);
+    pragma(msg, Matrix4x4.sizeof);
+    pragma(msg, Window.sizeof);
+    pragma(msg, Surface.sizeof);
+    pragma(msg, Texture.sizeof);
+    pragma(msg, Vector2i.sizeof);
+    pragma(msg, Vector2f.sizeof);
+    pragma(msg, Vertex.sizeof);
+}
 
 void main() {
     Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 0));

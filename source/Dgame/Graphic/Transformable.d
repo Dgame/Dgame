@@ -26,7 +26,7 @@ module Dgame.Graphic.Transformable;
 private:
 
 import Dgame.Math.Vector2;
-import Dgame.Math.Matrix4;
+import Dgame.Math.Matrix4x4;
 
 public:
 
@@ -49,7 +49,7 @@ private:
 
     float _rotationAngle = 0;
 
-    Matrix4 _matrix;
+    Matrix4x4 _matrix;
     bool _was_transformed = true;
 
 protected:
@@ -65,7 +65,7 @@ final:
      * If any transformations was made, the matrix is updated before
      */
     @nogc
-    ref const(Matrix4) getMatrix() pure nothrow {
+    ref const(Matrix4x4) getMatrix() pure nothrow {
         if (_was_transformed) {
             const Vector2f* center = _origin.isEmpty() ? &_rotationCenter : &_origin;
             _matrix.loadIdentity()

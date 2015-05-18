@@ -36,7 +36,7 @@ import Dgame.Graphic.Texture;
 
 import Dgame.Math.Vertex;
 import Dgame.Math.Vector2;
-import Dgame.Math.Matrix4;
+import Dgame.Math.Matrix4x4;
 import Dgame.Math.Rect;
 import Dgame.Math.Geometry;
 
@@ -111,9 +111,9 @@ public:
      *
      * Note: This is intended for advanced users only.
      *
-     * See: Matrix4
+     * See: Matrix4x4
      */
-    Matrix4 projection;
+    Matrix4x4 projection;
 
     /**
      * CTor
@@ -718,7 +718,7 @@ package(Dgame):
     }
 
     @nogc
-    void draw(Geometry geo, ref const Matrix4 mat, const Texture* texture, const Vertex[] vertices) const nothrow {
+    void draw(Geometry geo, ref const Matrix4x4 mat, const Texture* texture, const Vertex[] vertices) const nothrow {
         glPushMatrix();
         scope(exit) glPopMatrix();
 

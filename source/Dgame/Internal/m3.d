@@ -5,9 +5,8 @@ package(Dgame):
 @nogc
 T make(T : U[], U)(size_t len) nothrow {
     import core.stdc.stdlib : malloc;
-    import std.traits : isBasicType;
-
-    static assert(isBasicType!(U), "Only basic types allowed");
+    
+    static assert(!is(U : V[], V), "Only basic types are allowed");
 
     void* p = malloc(len * T.sizeof);
     return p ? (cast(U*) p)[0 .. len] : null;
@@ -16,9 +15,8 @@ T make(T : U[], U)(size_t len) nothrow {
 @nogc
 T remake(T : U[], U)(ref T arr, size_t len) nothrow {
     import core.stdc.stdlib : realloc;
-    import std.traits : isBasicType;
-
-    static assert(isBasicType!(U), "Only basic types allowed");
+    
+    static assert(!is(U : V[], V), "Only basic types are allowed");
 
     immutable size_t new_len = len + arr.length;
 
@@ -29,9 +27,8 @@ T remake(T : U[], U)(ref T arr, size_t len) nothrow {
 @nogc
 void unmake(T : U[], U)(ref T arr) nothrow {
     import core.stdc.stdlib : free;
-    import std.traits : isBasicType;
-
-    static assert(isBasicType!(U), "Only basic types allowed");
+    
+    static assert(!is(U : V[], V), "Only basic types are allowed");
 
     free(arr.ptr);
 }
