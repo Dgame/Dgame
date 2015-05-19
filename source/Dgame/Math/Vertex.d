@@ -45,7 +45,7 @@ struct Vertex {
      */ 
     Vector2f texCoord;
     /**
-     * The current Color. Default is Black
+     * The current Color. Default is Color4f.Black
      */
     Color4f color = Color4f.Black;
 
