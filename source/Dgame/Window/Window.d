@@ -213,11 +213,11 @@ public:
     }
 
     /**
-     * Clears the given buffer (or'ed together)
+     * Clears the screen with the color you specified in setClearColor
      */
     @nogc
-    void clear(uint flags = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) const nothrow {
-        glClear(flags);
+    void clear() const nothrow {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     /**

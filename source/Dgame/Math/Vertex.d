@@ -53,18 +53,10 @@ struct Vertex {
      * CTor
      */
     @nogc
-    this()(auto ref const Vector2f pos, auto ref const Vector2f coords, auto ref const Color4f col) pure nothrow {
-        this.position = pos;
-        this.texCoord = coords;
-        this.color = col;
-    }
-
-    /**
-     * CTor
-     */
-    @nogc
     this()(auto ref const Vector2f pos, auto ref const Vector2f coords, auto ref const Color4b col) pure nothrow {
-        this(pos, coords, Color4f(col));
+        this(pos, coords);
+
+        this.color = col;
     }
 
     /**

@@ -36,17 +36,29 @@ char[] file_get_contents(string filename) nothrow {
 
 public:
 
+/**
+ * The Shader struct manages a OpenGL Shader instance
+ * The Shader can be loaded and compiled. But to use it, you must pass the Shader to the Program (see below).
+ *
+ * Author: Randy Schuett (rswhite4@googlemail.com)
+ */
 struct Shader {
 private:
     uint _shader;
 
 public:
+    /**
+     * The supported Shader-Types
+     */
     enum Type {
-        Vertex = GL_VERTEX_SHADER,
-        Geometry = GL_GEOMETRY_SHADER,
-        Fragment = GL_FRAGMENT_SHADER,
+        Vertex = GL_VERTEX_SHADER, /// To use as a Vertex-Shader
+        Geometry = GL_GEOMETRY_SHADER, /// To use as a Geometry-Shader
+        Fragment = GL_FRAGMENT_SHADER, /// To use as a Fragment-Shader
     }
 
+    /**
+     * CTor
+     */
     @nogc
     this(Type type, string filename = null) nothrow {
         glCreateShader(type);
@@ -54,20 +66,34 @@ public:
             this.loadFromFile(filename);
     }
 
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
 
+    /**
+     * DTor
+     */
     @nogc
     ~this() nothrow {
         glDeleteShader(_shader);
     }
 
+    /**
+     * Returns the internal Shader ID
+     */
     @nogc
     @property
     uint ID() const pure nothrow {
         return _shader;
     }
 
+    /**
+     * Load the Shader-Source from a file.
+     *
+     * Note: The Shader will not be automatically compiled, use compile to do that by yourself
+     */
     @nogc
     void loadFromFile(string filename) const nothrow {
         char[] buffer = file_get_contents(filename);
@@ -76,12 +102,22 @@ public:
         this.loadFrom(buffer);
     }
 
+    /**
+     * Load the Shader-Source from a slice
+     *
+     * Note: The Shader will not be automatically compiled, use compile to do that by yourself
+     */
     @nogc
     void loadFrom(char[] content) const nothrow {
         const char* ptr = content.ptr;
         glShaderSource(_shader, 1, &ptr, null);
     }
 
+    /**
+     * Compiles the Shader
+     *
+     * Returns if the compilation was successful
+     */
     @nogc
     bool compile() const nothrow {
         glCompileShader(_shader);
@@ -107,6 +143,12 @@ public:
     }
 }
 
+/**
+ * The Program struct manages a OpenGL-Shader-Program. Multiple Shaders can be attached to it.
+ * The Program links the attached Shaders and then they can be used.
+ *
+ * Author: Randy Schuett (rswhite4@googlemail.com)
+ */
 struct Program {
 private:
     uint _program;
@@ -118,20 +160,45 @@ private:
     }
 
 public:
+    /**
+     * CTor
+     * Takes multiple Shader instances and links them together
+     *
+     * Note: The shaders must be already compiled.
+     */
+    @nogc
+    this(const Shader[] shaders...) nothrow {
+        this.link(shaders);
+    }
+
+    /**
+     * Postblit is disabled
+     */
     @disable
     this(this);
 
+    /**
+     * DTor
+     */
     @nogc
     ~this() nothrow {
         glDeleteProgram(_program);
     }
 
+    /**
+     * Returns the internal Program ID
+     */
     @nogc
     @property
     uint ID() const pure nothrow {
         return _program;
     }
 
+    /**
+     * Links multiple Shaders together.
+     *
+     * Note: The shaders must be already compiled.
+     */
     @nogc
     bool link(const Shader[] shaders...) nothrow {
         _init();
@@ -170,16 +237,25 @@ public:
         return true;
     }
 
+    /**
+     * Bind and use the current program
+     */
     @nogc
-    void bind() const nothrow {
+    void use() const nothrow {
         glUseProgram(_program);
     }
 
+    /**
+     * Unbind the current program. It is no longer used.
+     */
     @nogc
-    void unbind() const nothrow {
+    void disuse() const nothrow {
         glUseProgram(0);
     }
 
+    /**
+     * Set between 1 and 4 parameter and binds them to variables of the Shaders
+     */
     @nogc
     bool setParameter(string name, const float[] values...) const nothrow {
         immutable int loc = glGetUniformLocation(_program, toStringz(name));
@@ -188,7 +264,7 @@ public:
             return false;
         }
 
-        this.bind();
+        this.use();
 
         switch (values.length) {
             case 1:
@@ -210,21 +286,34 @@ public:
         return true;
     }
 
+    /**
+     * Bind a Vector2f to a specific variable name of the Shaders
+     */
     @nogc
     bool setParameter()(string name, auto ref const Vector2f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y);
     }
 
+    /**
+     * Bind a Vector3f to a specific variable name of the Shaders
+     */
     @nogc
     bool setParameter()(string name, auto ref const Vector3f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y, vec.z);
     }
 
+    /**
+     * Bind a Color4b to a specific variable name of the Shaders
+     */
     @nogc
-    bool setParameter()(string name, auto ref const Color4f col) const nothrow {
+    bool setParameter()(string name, auto ref const Color4b color) const nothrow {
+        const Color4f col = color;
         return this.setParameter(col.red, col.green, col.blue, col.alpha);
     }
 
+    /**
+     * Bind a Matrix4x4 to a specific variable name of the Shaders
+     */
     @nogc
     bool setParameter(string name, ref const Matrix4x4 mat) const nothrow {
         immutable int loc = glGetUniformLocation(_program, toStringz(name));
@@ -233,7 +322,7 @@ public:
             return false;
         }
 
-        this.bind();
+        this.use();
 
         glUniformMatrix4fv(loc, 1, GL_FALSE, mat.getValues().ptr);
 
