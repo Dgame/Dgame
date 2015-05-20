@@ -13,3 +13,5 @@ import Dgame.Graphic.Text;
 import Dgame.Graphic.Texture;
 import Dgame.Graphic.Transformable;
 import Dgame.Graphic.VertexArray;
+import Dgame.Graphic.Shader;
+import Dgame.Graphic.ShaderProgram;
