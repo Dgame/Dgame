@@ -150,7 +150,7 @@ public:
      * Returns a Surface with the text or throws an Error
      */
     @nogc
-    Surface render()(string text, auto ref const Color4b fg, auto ref const Color4b bg, Mode mode = Mode.Solid) nothrow {
+    Surface render(string text, const Color4b fg, const Color4b bg, Mode mode = Mode.Solid) nothrow {
         assert(_ttf, "Font is invalid");
 
         SDL_Color a = void;

@@ -62,7 +62,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(auto ref const Vector3!(U) vec) pure nothrow if (!is(U == T)) {
+    this(U)(ref const Vector3!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y, vec.z);
     }
 

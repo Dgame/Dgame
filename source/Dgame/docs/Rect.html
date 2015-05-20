@@ -112,7 +112,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Returns an union of the given and this Rect.<br><br>
 
 </dd>
-<dt><big><a name="Rect.contains"></a>const pure nothrow @nogc bool <u>contains</u>()(auto ref const Vector2i <i>vec</i>);
+<dt><big><a name="Rect.contains"></a>const pure nothrow @nogc bool <u>contains</u>(const Vector2i <i>vec</i>);
 </big></dt>
 <dd>Checks whether this Rect <u>contains</u> the given coordinates.<br><br>
 
@@ -140,9 +140,9 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Replace the current size.<br><br>
 
 </dd>
-<dt><big><a name="Rect.setSize.2"></a>pure nothrow @nogc void <u>setSize</u>()(auto ref const Size <i>size</i>);
+<dt><big><a name="Rect.setSize.2"></a>pure nothrow @nogc void <u>setSize</u>(const Size <i>size</i>);
 </big></dt>
-<dd>Replace the current size.<br><br>
+<dd>Replace the current <i>size</i>.<br><br>
 
 </dd>
 <dt><big><a name="Rect.getSize"></a>const pure nothrow @nogc Size <u>getSize</u>();
@@ -160,9 +160,9 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Set a new position with coordinates.<br><br>
 
 </dd>
-<dt><big><a name="Rect.setPosition.2"></a>pure nothrow @nogc void <u>setPosition</u>()(auto ref const Vector2i <i>position</i>);
+<dt><big><a name="Rect.setPosition.2"></a>pure nothrow @nogc void <u>setPosition</u>(const Vector2i <i>position</i>);
 </big></dt>
-<dd>Set a new position with a vector.<br><br>
+<dd>Set a new <i>position</i> with a vector.<br><br>
 
 </dd>
 <dt><big><a name="Rect.getPosition"></a>const pure nothrow @nogc Vector2i <u>getPosition</u>();
@@ -170,7 +170,7 @@ compares two rectangles on their coordinates and their size (but not explicit ty
 <dd>Returns the current position as Vector2<br><br>
 
 </dd>
-<dt><big><a name="Rect.move"></a>pure nothrow @nogc void <u>move</u>()(auto ref const Vector2i <i>vec</i>);
+<dt><big><a name="Rect.move"></a>pure nothrow @nogc void <u>move</u>(const Vector2i <i>vec</i>);
 </big></dt>
 <dd>Move the object.<br><br>
 

@@ -97,7 +97,7 @@ struct Color4b {
      * Expect that every component is in range 0.0 .. 1.0
      */
     @nogc
-    this()(auto ref const Color4f col) pure nothrow
+    this(const Color4f col) pure nothrow
     in {
         assert(col.red   >= 0f && col.red   <= 1f);
         assert(col.green >= 0f && col.green <= 1f);
@@ -219,7 +219,7 @@ struct Color4f {
      * CTor
      */
     @nogc
-    this()(auto ref const Color4b col) pure nothrow {
+    this(ref const Color4b col) pure nothrow {
         this(col.red, col.green, col.blue, col.alpha);
     }
 

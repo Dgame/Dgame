@@ -92,7 +92,7 @@ final:
      * Sets the position
      */
     @nogc
-    void setPosition()(auto ref const Vector2f pos) pure nothrow {
+    void setPosition(const Vector2f pos) pure nothrow {
         _position = pos;
         _notifyTransform();
     }
@@ -111,7 +111,7 @@ final:
      * Move the position by offset (x, y)
      */
     @nogc
-    void move()(auto ref const Vector2f offset) pure nothrow {
+    void move(const Vector2f offset) pure nothrow {
         _position += offset;
         _notifyTransform();
     }
@@ -186,7 +186,7 @@ final:
      *       the origin takes the place of the rotation center.
      */
     @nogc
-    void setRotationCenter()(auto ref const Vector2f center) pure nothrow {
+    void setRotationCenter(const Vector2f center) pure nothrow {
         _rotationCenter = center;
         _notifyTransform();
     }
@@ -221,7 +221,7 @@ final:
      *       the origin will suppress the rotation center and takes it's place.
      */
     @nogc
-    void setOrigin()(auto ref const Vector2f origin) pure nothrow {
+    void setOrigin(const Vector2f origin) pure nothrow {
         _origin = origin;
         _notifyTransform();
     }
@@ -248,7 +248,7 @@ final:
      * Sets the scaling (for both, x and y)
      */
     @nogc
-    void setScale()(auto ref const Vector2f offset) pure nothrow  {
+    void setScale(const Vector2f offset) pure nothrow  {
         _scale = offset;
         _notifyTransform();
     }
@@ -257,7 +257,7 @@ final:
      * Inc-/Decrease the scaling
      */
     @nogc
-    void scale()(auto ref const Vector2f offset) pure nothrow {
+    void scale(const Vector2f offset) pure nothrow {
         _scale += offset;
         _notifyTransform();
     }

@@ -43,12 +43,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Clear all Vertices but preserve the storage and capacity<br><br>
 
 </dd>
-<dt><big><a name="VertexArray.append"></a>pure nothrow void <u>append</u>()(auto ref const Vertex <i>vertex</i>);
+<dt><big><a name="VertexArray.append"></a>final pure nothrow void <u>append</u>(const Vertex <i>vertex</i>);
 </big></dt>
 <dd>Stores a Vertex<br><br>
 
 </dd>
-<dt><big><a name="VertexArray.appendQuad"></a>pure nothrow void <u>appendQuad</u>()(auto ref const Vector2f <i>position</i>, auto ref const Rect <i>texRect</i>);
+<dt><big><a name="VertexArray.appendQuad"></a>final pure nothrow void <u>appendQuad</u>(const Vector2f <i>position</i>, const Rect <i>texRect</i>);
 </big></dt>
 <dd>Append a whole Quad.
  This method provides a simple way to add a quadratic texture-view.

@@ -103,7 +103,7 @@ final:
      * CTor
      */
     @nogc
-    this()(ref Texture tex, auto ref const Vector2f pos) pure nothrow {
+    this(ref Texture tex, const Vector2f pos) pure nothrow {
         this(tex);
 
         super.setPosition(pos);
@@ -134,7 +134,7 @@ final:
      * Set a Color for the Sprite which is painted over the displayed Texture.
      */
     @nogc
-    void setColor()(auto ref const Color4b col) pure nothrow {
+    void setColor(const Color4b col) pure nothrow {
         foreach (ref Vertex v; _vertices) {
             v.color = Color4f(col);
         }
@@ -145,7 +145,7 @@ final:
      * so that only this specific view will be drawn.
      */
     @nogc
-    void setTextureRect()(auto ref const Rect texRect) {
+    void setTextureRect(const Rect texRect) pure nothrow {
         _texRect = texRect;
         _updateVertices();
     }
