@@ -2,7 +2,9 @@ module Dgame.Graphic.ShaderProgram;
 
 import derelict.opengl3.gl;
 
+import Dgame.Graphic.Color;
 import Dgame.Graphic.Shader;
+
 import Dgame.Math.Vector2;
 import Dgame.Math.Vector3;
 import Dgame.Math.Matrix4x4;
@@ -158,7 +160,7 @@ public:
      * Bind a Vector2f to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Vector2f vec) const nothrow {
+    bool setParameter(string name, const Vector2f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y);
     }
 
@@ -166,7 +168,7 @@ public:
      * Bind a Vector3f to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Vector3f vec) const nothrow {
+    bool setParameter(string name, const Vector3f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y, vec.z);
     }
 
@@ -174,9 +176,9 @@ public:
      * Bind a Color4b to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Color4b color) const nothrow {
+    bool setParameter(string name, const Color4b color) const nothrow {
         const Color4f col = color;
-        return this.setParameter(col.red, col.green, col.blue, col.alpha);
+        return this.setParameter(name, col.red, col.green, col.blue, col.alpha);
     }
 
     /**
