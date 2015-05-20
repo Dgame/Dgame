@@ -3,8 +3,8 @@ module Dgame.Graphic.Shader;
 private:
 
 import derelict.opengl3.gl;
-import Dgame.Internal.m3;
 
+import Dgame.Internal.m3;
 import Dgame.Internal.Error;
 
 @nogc
@@ -92,20 +92,12 @@ public:
      */
     @nogc
     void loadFromFile(string filename) const nothrow {
+        assert(_shader != 0, "Shader was not created so far");
+
         char[] buffer = file_get_contents(filename);
         scope(exit) unmake(buffer);
 
-        this.loadFrom(buffer);
-    }
-
-    /**
-     * Load the Shader-Source from a slice
-     *
-     * Note: The Shader will not be automatically compiled, use compile to do that by yourself
-     */
-    @nogc
-    void loadFrom(char[] content) const nothrow {
-        const char* ptr = content.ptr;
+        const char* ptr = buffer.ptr;
         glShaderSource(_shader, 1, &ptr, null);
     }
 
@@ -116,6 +108,8 @@ public:
      */
     @nogc
     bool compile() const nothrow {
+        assert(_shader != 0, "Shader was not created so far");
+
         glCompileShader(_shader);
 
         int isCompiled = 0;

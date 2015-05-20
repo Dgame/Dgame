@@ -700,10 +700,8 @@ package(Dgame):
         if (vertices.length == 0)
             return;
 
-        if (texture) {
-            glEnable(GL_TEXTURE_2D);
+        if (texture)
             texture.bind();
-        }
 
         glVertexPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].position.x);
         glColorPointer(4, GL_FLOAT, Vertex.sizeof, &vertices[0].color.red);
