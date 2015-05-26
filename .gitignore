@@ -163,7 +163,7 @@ pip-log.txt
 .mr.developer.cfg
 
 # Mac crap
+
 .DS_Store
-.dub/dub.json
 dub.selections.json
-test/.dub/dub.json
+.dub/
