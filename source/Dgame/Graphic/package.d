@@ -2,6 +2,7 @@ module Dgame.Graphic;
 
 public:
 
+import Dgame.Graphic.Blend;
 import Dgame.Graphic.Color;
 import Dgame.Graphic.Drawable;
 import Dgame.Graphic.Shape;
