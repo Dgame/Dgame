@@ -134,7 +134,7 @@ public:
      * Translate the Matrix
      */
     @nogc
-    ref Matrix4x4 translate()(auto ref const Vector2f vec) pure nothrow {
+    ref Matrix4x4 translate(const Vector2f vec) pure nothrow {
         const Matrix4x4 translation = Matrix4x4(1, 0, vec.x,
                                             0, 1, vec.y,
                                             0, 0, 1);
@@ -160,7 +160,7 @@ public:
      * Rotate the Matrix about angle (in degree!) about the given center position
      */
     @nogc
-    ref Matrix4x4 rotate()(float angle, auto ref const Vector2f center) pure nothrow {
+    ref Matrix4x4 rotate(float angle, const Vector2f center) pure nothrow {
         immutable float rad = angle * std.math.PI / 180f;
         immutable float cos = std.math.cos(rad);
         immutable float sin = std.math.sin(rad);
@@ -175,7 +175,7 @@ public:
      * Scale the Matrix about factor scale
      */
     @nogc
-    ref Matrix4x4 scale()(auto ref const Vector2f scale) pure nothrow {
+    ref Matrix4x4 scale(const Vector2f scale) pure nothrow {
         const Matrix4x4 scaling = Matrix4x4(scale.x, 0, 0,
                                         0, scale.y, 0,
                                         0, 0, 1);
@@ -187,7 +187,7 @@ public:
      * Scale the Matrix about factor scale about the given center position
      */
     @nogc
-    ref Matrix4x4 scale()(auto ref const Vector2f scale, auto ref const Vector2f center) pure nothrow {
+    ref Matrix4x4 scale(const Vector2f scale, const Vector2f center) pure nothrow {
         const Matrix4x4 scaling = Matrix4x4(scale.x, 0, center.x * (1 - scale.x),
                                         0, scale.y, center.y * (1 - scale.y),
                                         0, 0, 1);
@@ -200,31 +200,31 @@ public:
      * See: <a href="http://3dgep.com/understanding-the-view-matrix/#Look_At_Camera">here</a>
      */
     @nogc
-    void lookAt()(auto ref const Vector3f eye, auto ref const Vector3f look, auto ref const Vector3f up) pure nothrow {
+    void lookAt(const Vector3f eye, const Vector3f look, const Vector3f up) pure nothrow {
         const Vector3f dir = (look - eye).normalize();
         const Vector3f right = dir.cross(up).normalize();
         const Vector3f up2 = right.cross(dir).normalize();
 
         Matrix4x4 mat;
-        mat.values[0] = right.x;
-        mat.values[4] = right.y;
-        mat.values[8] = right.z;
-        mat.values[12] = -right.dot(eye);
+        mat[0] = right.x;
+        mat[4] = right.y;
+        mat[8] = right.z;
+        mat[12] = -right.dot(eye);
 
-        mat.values[1] = up2.x;
-        mat.values[5] = up2.y;
-        mat.values[9] = up2.z;
-        mat.values[13] = -up2.dot(eye);
+        mat[1] = up2.x;
+        mat[5] = up2.y;
+        mat[9] = up2.z;
+        mat[13] = -up2.dot(eye);
 
-        mat.values[2] = -dir.x;
-        mat.values[6] = -dir.y;
-        mat.values[10] = -dir.z;
-        mat.values[14] = dir.dot(eye);
+        mat[2] = -dir.x;
+        mat[6] = -dir.y;
+        mat[10] = -dir.z;
+        mat[14] = dir.dot(eye);
 
-        mat.values[3] = 0;
-        mat.values[7] = 0;
-        mat.values[11] = 0;
-        mat.values[15] = 1;
+        mat[3] = 0;
+        mat[7] = 0;
+        mat[11] = 0;
+        mat[15] = 1;
 
         merge(this, mat);
     }
@@ -255,7 +255,7 @@ public:
      * See: <a href="http://www.songho.ca/opengl/gl_projectionmatrix.html#ortho">here</a>
      */
     @nogc
-    bool ortho()(auto ref const Rect rect, float zNear = 1, float zFar = -1) pure nothrow {
+    bool ortho(const Rect rect, float zNear = 1, float zFar = -1) pure nothrow {
         if (!rect.isEmpty()) {
             immutable float inv_z = 1.0 / (zFar - zNear);
             immutable float inv_y = 1.0 / (cast(float) rect.x - rect.height);

@@ -95,16 +95,16 @@ Font.Style enum<br><br>
 Font.Style enum<br><br>
 
 </dd>
-<dt><big><a name="Font.render"></a>nothrow @nogc Surface <u>render</u>()(string <i>text</i>, auto ref const Color4b <i>fg</i>, auto ref const Color4b <i>bg</i>, Mode <i>mode</i> = Mode.Solid);
+<dt><big><a name="Font.render"></a>nothrow @nogc Surface <u>render</u>(string <i>text</i>, const Color4b <i>fg</i>, const Color4b <i>bg</i>, Mode <i>mode</i> = Mode.Solid);
 </big></dt>
-<dd>Draws the text on a Surface by using this Font and the given Mode (default is Mode.Solid)
- The text (and the Surface) is colorized by fg / bg Color.
+<dd>Draws the <i>text</i> on a Surface by using this Font and the given Mode (default is Mode.Solid)
+ The <i>text</i> (and the Surface) is colorized by <i>fg</i> / <i>bg</i> Color.
 <br><br>
 <b>Note:</b><br>
-The background color is ignored if your mode is not Font.Mode.Shaded
+The background color is ignored if your <i>mode</i> is not Font.Mode.Shaded
 <br><br>
 
- Returns a Surface with the text or throws an Error<br><br>
+ Returns a Surface with the <i>text</i> or throws an Error<br><br>
 
 </dd>
 </dl>

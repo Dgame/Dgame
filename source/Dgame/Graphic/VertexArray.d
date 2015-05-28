@@ -82,7 +82,7 @@ final:
     /**
      * Stores a Vertex
      */
-    void append()(auto ref const Vertex vertex) pure nothrow {
+    void append(const Vertex vertex) pure nothrow {
         _vertices ~= vertex;
     }
 
@@ -93,7 +93,7 @@ final:
      *
      * Note: This method only works for Geometry.Quads.
      */
-    void appendQuad()(auto ref const Vector2f position, auto ref const Rect texRect) pure nothrow {
+    void appendQuad(const Vector2f position, const Rect texRect) pure nothrow {
         assert(this.geometry == Geometry.Quads, "This method supports only Geometry.Quads");
 
         immutable float tx = float(texRect.x) / _texture.width;
@@ -112,25 +112,25 @@ final:
         _vertices ~= Vertex(
             position,
             Vector2f(tx, ty),
-            Color4f.White
+            Color4b.White
         );
 
         _vertices ~= Vertex(
             Vector2f(cx_tw, position.y),
             Vector2f(tx_tw, ty),
-            Color4f.White
+            Color4b.White
         );
 
         _vertices ~= Vertex(
             Vector2f(cx_tw, cy_th),
             Vector2f(tx_tw, ty_th),
-            Color4f.White
+            Color4b.White
         );
 
         _vertices ~= Vertex(
             Vector2f(position.x, cy_th),
             Vector2f(tx, ty_th),
-            Color4f.White
+            Color4b.White
         );
     }
 

@@ -79,7 +79,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Save the current pixel data to the file.<br><br>
 
 </dd>
-<dt><big><a name="Surface.fill"></a>nothrow @nogc void <u>fill</u>()(auto ref const Color4b <i>col</i>, const Rect* <i>rect</i> = null);
+<dt><big><a name="Surface.fill"></a>nothrow @nogc void <u>fill</u>(const Color4b <i>col</i>, const Rect* <i>rect</i> = null);
 </big></dt>
 <dd>Fills a specific area of the surface with the given color.
  The second parameter is a pointer to the area.
@@ -130,7 +130,7 @@ whether the call succeeded or not<br><br>
 <dd>Use this function to adapt the format of another Surface <i>depth</i> to this surface.<br><br>
 
 </dd>
-<dt><big><a name="Surface.setColorkey"></a>nothrow @nogc void <u>setColorkey</u>()(auto ref const Color4b <i>col</i>);
+<dt><big><a name="Surface.setColorkey"></a>nothrow @nogc void <u>setColorkey</u>(const Color4b <i>col</i>);
 </big></dt>
 <dd>Set the colorkey.<br><br>
 
@@ -167,9 +167,9 @@ whether the call succeeded or not<br><br>
  The clip rect is the area of the surface which is drawn.<br><br>
 
 </dd>
-<dt><big><a name="Surface.setClipRect"></a>nothrow @nogc void <u>setClipRect</u>()(auto ref const Rect <i>clip</i>);
+<dt><big><a name="Surface.setClipRect"></a>nothrow @nogc void <u>setClipRect</u>(const Rect <i>clip</i>);
 </big></dt>
-<dd>Set the clip rect.<br><br>
+<dd>Set the <i>clip</i> rect.<br><br>
 
 </dd>
 <dt><big><a name="Surface.width"></a>const pure nothrow @nogc @property int <u>width</u>();
@@ -214,14 +214,14 @@ whether the call succeeded or not<br><br>
 <dd>Returns the pixel at the given coordinates.<br><br>
 
 </dd>
-<dt><big><a name="Surface.getPixelAt.2"></a>const nothrow @nogc int <u>getPixelAt</u>()(auto ref const Vector2i <i>pos</i>);
+<dt><big><a name="Surface.getPixelAt.2"></a>const nothrow @nogc int <u>getPixelAt</u>(const Vector2i <i>pos</i>);
 </big></dt>
 <dd>Returns the pixel at the given coordinates.<br><br>
 
 </dd>
-<dt><big><a name="Surface.putPixelAt"></a>nothrow @nogc void <u>putPixelAt</u>()(auto ref const Vector2i <i>pos</i>, uint <i>pixel</i>);
+<dt><big><a name="Surface.putPixelAt"></a>nothrow @nogc void <u>putPixelAt</u>(const Vector2i <i>pos</i>, uint <i>pixel</i>);
 </big></dt>
-<dd>Put a new pixel at the given coordinates.<br><br>
+<dd>Put a new <i>pixel</i> at the given coordinates.<br><br>
 
 </dd>
 <dt><big><a name="Surface.getColorAt"></a>const nothrow @nogc Color4b <u>getColorAt</u>(int <i>x</i>, int <i>y</i>);
@@ -230,7 +230,7 @@ whether the call succeeded or not<br><br>
  or Color4b.Black if the position is out of range.<br><br>
 
 </dd>
-<dt><big><a name="Surface.getColorAt.2"></a>const nothrow @nogc Color4b <u>getColorAt</u>()(auto ref const Vector2i <i>pos</i>);
+<dt><big><a name="Surface.getColorAt.2"></a>const nothrow @nogc Color4b <u>getColorAt</u>(const Vector2i <i>pos</i>);
 </big></dt>
 <dd>Returns the color on the given position.<br><br>
 
@@ -254,9 +254,9 @@ whether the call succeeded or not<br><br>
  <b>null</b> means, that the whole <i>srfc</i> is copied to (0|0).<br><br>
 
 </dd>
-<dt><big><a name="Surface.subSurface"></a>nothrow @nogc Surface <u>subSurface</u>()(auto ref const Rect <i>rect</i>);
+<dt><big><a name="Surface.subSurface"></a>nothrow @nogc Surface <u>subSurface</u>(const Rect <i>rect</i>);
 </big></dt>
-<dd>Returns a subsurface from this surface. rect represents the viewport.
+<dd>Returns a subsurface from this surface. <i>rect</i> represents the viewport.
  The subsurface is a separate Surface object.<br><br>
 
 </dd>

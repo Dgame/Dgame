@@ -209,7 +209,7 @@ public:
      * If it's null, the whole Surface is filled.
      */
     @nogc
-    void fill()(auto ref const Color4b col, const Rect* rect = null) nothrow {
+    void fill(const Color4b col, const Rect* rect = null) nothrow {
         if (!_surface)
             return;
 
@@ -308,7 +308,7 @@ public:
      * Set the colorkey.
      */
     @nogc
-    void setColorkey()(auto ref const Color4b col) nothrow {
+    void setColorkey(const Color4b col) nothrow {
         if (!_surface)
             return;
 
@@ -390,7 +390,7 @@ public:
      * Set the clip rect.
      */
     @nogc
-    void setClipRect()(auto ref const Rect clip) nothrow {
+    void setClipRect(const Rect clip) nothrow {
         if (_surface) {
             SDL_Rect a = void;
             SDL_SetClipRect(_surface, _transfer(clip, a));
@@ -487,7 +487,7 @@ public:
      * Returns the pixel at the given coordinates.
      */
     @nogc
-    int getPixelAt()(auto ref const Vector2i pos) const nothrow {
+    int getPixelAt(const Vector2i pos) const nothrow {
         return this.getPixelAt(pos.x, pos.y);
     }
     
@@ -495,7 +495,7 @@ public:
      * Put a new pixel at the given coordinates.
      */
     @nogc
-    void putPixelAt()(auto ref const Vector2i pos, uint pixel) nothrow {
+    void putPixelAt(const Vector2i pos, uint pixel) nothrow {
         if (!_surface)
             return;
 
@@ -531,7 +531,7 @@ public:
      * Returns the color on the given position.
      */
     @nogc
-    Color4b getColorAt()(auto ref const Vector2i pos) const nothrow {
+    Color4b getColorAt(const Vector2i pos) const nothrow {
         return this.getColorAt(pos.x, pos.y);
     }
     
@@ -591,11 +591,11 @@ public:
      * The subsurface is a separate Surface object.
      */
     @nogc
-    Surface subSurface()(auto ref const Rect rect) nothrow {
+    Surface subSurface(const Rect rect) nothrow {
         assert(!rect.isEmpty(), "Cannot take a empty subsurface.");
         assert(_surface, "Cannot take a subsurface from null.");
 
-        SDL_Surface* sub = this.create(rect.width, rect.height);
+        SDL_Surface* sub = this.create(Masks.Zero, rect.width, rect.height, 32, null);
         assert(sub, "Failed to construct a sub surface.");
 
         SDL_Rect clip = void;

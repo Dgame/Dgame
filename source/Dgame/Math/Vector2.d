@@ -66,7 +66,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(auto ref const Vector2!(U) vec) pure nothrow if (!is(U == T)) {
+    this(U)(ref const Vector2!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y);
     }
     
@@ -292,7 +292,7 @@ unittest {
     assert(vec5 / vec6.x == vec7);
 
     const Vector2i vec8 = Vector2i(32, 32);
-    const Vector2f vec9 = (vec8 / 32) * 32;
+    const Vector2i vec9 = (vec8 / 32) * 32;
 
     assert(vec9.x == vec8.x && vec9.y == vec8.y);
 }

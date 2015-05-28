@@ -72,7 +72,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Texture.this.2"></a>nothrow @nogc this()(auto ref const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.this.2"></a>nothrow @nogc this(const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -152,7 +152,7 @@ Format enum.<br><br>
 <dd>Returns if repeating is enabled.<br><br>
 
 </dd>
-<dt><big><a name="Texture.loadFrom"></a>nothrow @nogc void <u>loadFrom</u>()(auto ref const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
+<dt><big><a name="Texture.loadFrom"></a>nothrow @nogc void <u>loadFrom</u>(const Surface <i>srfc</i>, Format <i>fmt</i> = Format.None);
 </big></dt>
 <dd>Load from Surface<br><br>
 
@@ -162,9 +162,9 @@ Format enum.<br><br>
 <dd>Load from <i>memory</i>.<br><br>
 
 </dd>
-<dt><big><a name="Texture.setColorkey"></a>nothrow @nogc void <u>setColorkey</u>()(auto ref const Color4b <i>colorkey</i>);
+<dt><big><a name="Texture.setColorkey"></a>nothrow @nogc void <u>setColorkey</u>(const Color4b <i>colorkey</i>);
 </big></dt>
-<dd>Set a colorkey.<br><br>
+<dd>Set a <i>colorkey</i>.<br><br>
 
 </dd>
 <dt><big><a name="Texture.getByteSize"></a>const pure nothrow @nogc size_t <u>getByteSize</u>();

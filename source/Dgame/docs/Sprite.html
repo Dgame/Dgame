@@ -17,7 +17,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Sprite.this.2"></a>pure nothrow @nogc this()(ref Texture <i>tex</i>, auto ref const Vector2f <i>pos</i>);
+<dt><big><a name="Sprite.this.2"></a>final pure nothrow @nogc this(ref Texture <i>tex</i>, const Vector2f <i>pos</i>);
 </big></dt>
 <dd>CTor<br><br>
 
@@ -32,12 +32,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Returns a pointer to the current Texture<br><br>
 
 </dd>
-<dt><big><a name="Sprite.setColor"></a>pure nothrow @nogc void <u>setColor</u>()(auto ref const Color4b <i>col</i>);
+<dt><big><a name="Sprite.setColor"></a>final pure nothrow @nogc void <u>setColor</u>(const Color4b <i>col</i>);
 </big></dt>
 <dd>Set a Color for the Sprite which is painted over the displayed Texture.<br><br>
 
 </dd>
-<dt><big><a name="Sprite.setTextureRect"></a>@nogc void <u>setTextureRect</u>()(auto ref const Rect <i>texRect</i>);
+<dt><big><a name="Sprite.setTextureRect"></a>final pure nothrow @nogc void <u>setTextureRect</u>(const Rect <i>texRect</i>);
 </big></dt>
 <dd>Set the Texture Rect. With this you can define a specific view of the Texture,
  so that only this specific view will be drawn.<br><br>

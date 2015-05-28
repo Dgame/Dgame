@@ -127,7 +127,7 @@ public:
     * CTor
     * Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate > 0
     */
-    this()(auto ref const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
+    this(const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
         this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style);
 
         if (mode.refreshRate > 0)
@@ -138,7 +138,7 @@ public:
      * CTor
      * Position is specifiable and the VerticalSync is disabled
      */
-    this()(auto ref const Rect view, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
+    this(const Rect view, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
         if (_count == 0)
             _initSDL();
 
@@ -207,7 +207,7 @@ public:
      * This is also the background color of the window.
      */
     @nogc
-    void setClearColor()(auto ref const Color4b col) const nothrow {
+    void setClearColor(const Color4b col) const nothrow {
         immutable float[4] rgba = Color4f(col).asRGBA();
         glClearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
     }
@@ -361,7 +361,7 @@ public:
      * Set a new position to this window
      */
     @nogc
-    void setPosition()(auto ref const Vector2i vec) nothrow {
+    void setPosition(const Vector2i vec) nothrow {
         this.setPosition(vec.x, vec.y);
     }
     
@@ -388,7 +388,7 @@ public:
      * Set a new size to this window
      */
     @nogc
-    void setSize()(auto ref const Size size) nothrow {
+    void setSize(const Size size) nothrow {
         this.setSize(size.width, size.height);
     }
     
@@ -427,7 +427,7 @@ public:
      * Set the minimum Size for the Window
      */
     @nogc
-    void setMinimumSize()(auto ref const Size size) nothrow {
+    void setMinimumSize(const Size size) nothrow {
         this.setMinimumSize(size.width, size.height);
     }
 
@@ -454,7 +454,7 @@ public:
      * Set the maximum Size of the Window
      */
     @nogc
-    void setMaximumSize()(auto ref const Size size) nothrow {
+    void setMaximumSize(const Size size) nothrow {
         this.setMaximumSize(size.width, size.height);
     }
 
@@ -615,7 +615,7 @@ public:
      * Set the DisplayMode when the Window is visible at fullscreen.
      */
     @nogc
-    void setDisplayMode()(auto ref const DisplayMode mode) nothrow {
+    void setDisplayMode(const DisplayMode mode) nothrow {
         SDL_DisplayMode sdl_mode = void;
         immutable int result = SDL_SetWindowDisplayMode(_window, _transfer(mode, sdl_mode));
         if (result != 0)

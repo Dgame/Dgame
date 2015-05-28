@@ -119,13 +119,13 @@ Matrix4x4<br><br>
  Position of the Window is default 100x, 100y and the VerticalSync is disabled<br><br>
 
 </dd>
-<dt><big><a name="Window.this.2"></a>this()(auto ref const DisplayMode <i>mode</i>, string <i>title</i>, uint <i>style</i> = Style.Default, GLSettings <i>gl</i> = GLSettings.init);
+<dt><big><a name="Window.this.2"></a>this(const DisplayMode <i>mode</i>, string <i>title</i>, uint <i>style</i> = Style.Default, GLSettings <i>gl</i> = GLSettings.init);
 </big></dt>
 <dd>CTor
- Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate &gt; 0<br><br>
+ Position is at 100x, 100y and the VerticalSync is enabled, if <i>mode</i>.refreshRate &gt; 0<br><br>
 
 </dd>
-<dt><big><a name="Window.this.3"></a>this()(auto ref const Rect <i>view</i>, string <i>title</i>, uint <i>style</i> = Style.Default, GLSettings <i>gl</i> = GLSettings.init);
+<dt><big><a name="Window.this.3"></a>this(const Rect <i>view</i>, string <i>title</i>, uint <i>style</i> = Style.Default, GLSettings <i>gl</i> = GLSettings.init);
 </big></dt>
 <dd>CTor
  Position is specifiable and the VerticalSync is disabled<br><br>
@@ -136,7 +136,7 @@ Matrix4x4<br><br>
 <dd>Load the projection Matrix, so that any change / transformation of the Matrix will now be visible<br><br>
 
 </dd>
-<dt><big><a name="Window.setClearColor"></a>const nothrow @nogc void <u>setClearColor</u>()(auto ref const Color4b <i>col</i>);
+<dt><big><a name="Window.setClearColor"></a>const nothrow @nogc void <u>setClearColor</u>(const Color4b <i>col</i>);
 </big></dt>
 <dd>Set the color which this windows use to clear the buffer.
  This is also the background color of the window.<br><br>
@@ -223,7 +223,7 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dd>Set a new position to this window<br><br>
 
 </dd>
-<dt><big><a name="Window.setPosition.2"></a>nothrow @nogc void <u>setPosition</u>()(auto ref const Vector2i <i>vec</i>);
+<dt><big><a name="Window.setPosition.2"></a>nothrow @nogc void <u>setPosition</u>(const Vector2i <i>vec</i>);
 </big></dt>
 <dd>Set a new position to this window<br><br>
 
@@ -238,9 +238,9 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dd>Set a new size to this window<br><br>
 
 </dd>
-<dt><big><a name="Window.setSize.2"></a>nothrow @nogc void <u>setSize</u>()(auto ref const Size <i>size</i>);
+<dt><big><a name="Window.setSize.2"></a>nothrow @nogc void <u>setSize</u>(const Size <i>size</i>);
 </big></dt>
-<dd>Set a new size to this window<br><br>
+<dd>Set a new <i>size</i> to this window<br><br>
 
 </dd>
 <dt><big><a name="Window.getSize"></a>nothrow @nogc Size <u>getSize</u>();
@@ -259,7 +259,7 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dd>Set the minimum Size for the Window<br><br>
 
 </dd>
-<dt><big><a name="Window.setMinimumSize.2"></a>nothrow @nogc void <u>setMinimumSize</u>()(auto ref const Size <i>size</i>);
+<dt><big><a name="Window.setMinimumSize.2"></a>nothrow @nogc void <u>setMinimumSize</u>(const Size <i>size</i>);
 </big></dt>
 <dd>Set the minimum Size for the Window<br><br>
 
@@ -274,7 +274,7 @@ wnd.<u>capture</u>().saveToFile(<font color=red>"samples/img/screenshot.png"</fo
 <dd>Set the maximum Size of the Window<br><br>
 
 </dd>
-<dt><big><a name="Window.setMaximumSize.2"></a>nothrow @nogc void <u>setMaximumSize</u>()(auto ref const Size <i>size</i>);
+<dt><big><a name="Window.setMaximumSize.2"></a>nothrow @nogc void <u>setMaximumSize</u>(const Size <i>size</i>);
 </big></dt>
 <dd>Set the maximum Size of the Window<br><br>
 
@@ -362,7 +362,7 @@ the old <i>title</i><br><br>
 If something went wrong (e.g. your Window is invalid), a negative value is returned<br><br>
 
 </dd>
-<dt><big><a name="Window.setDisplayMode"></a>nothrow @nogc void <u>setDisplayMode</u>()(auto ref const DisplayMode <i>mode</i>);
+<dt><big><a name="Window.setDisplayMode"></a>nothrow @nogc void <u>setDisplayMode</u>(const DisplayMode <i>mode</i>);
 </big></dt>
 <dd>Set the DisplayMode when the Window is visible at fullscreen.<br><br>
 

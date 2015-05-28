@@ -131,7 +131,7 @@ final:
     /**
      * CTor for circles
      */
-    this()(size_t radius, auto ref const Vector2f center, size_t vecNum = 30) pure nothrow {
+    this(size_t radius, const Vector2f center, size_t vecNum = 30) pure nothrow {
         import std.math : PI, cos, sin;
 
         assert(vecNum >= 10, "Too few edges for a circle");
@@ -164,7 +164,7 @@ final:
     /**
      * Stores a Vertex
      */
-    void append()(auto ref const Vertex vertex) pure nothrow {
+    void append(const Vertex vertex) pure nothrow {
         _vertices ~= vertex;
     }
 
@@ -191,7 +191,7 @@ final:
      *       and adapt the specific entries.
      */
     @nogc
-    void setColor()(auto ref const Color4b col) pure nothrow {
+    void setColor(const Color4b col) pure nothrow {
         foreach (ref Vertex v; _vertices) {
             v.color = Color4f(col);
         }
@@ -211,11 +211,11 @@ final:
      * Set (or reset) a Texture and set the corresponding Rect
      */
     @nogc
-    void setTexture()(Texture* texture, auto ref const Rect rect) pure nothrow {
+    void setTexture(Texture* texture, const Rect rect) pure nothrow {
         _texture = texture;
 
         if (texture)
-            this.setTextureArea(rect);
+            this.setTextureRect(rect);
     }
 
     /**
@@ -230,7 +230,7 @@ final:
      * Set the corresponding Texture Rect
      */
     @nogc
-    void setTextureRect()(auto ref const Rect rect) pure nothrow {
+    void setTextureRect(const Rect rect) pure nothrow {
         assert(_texture, "No texture defined");
 
         const Rect clip = this.getVertexRect();

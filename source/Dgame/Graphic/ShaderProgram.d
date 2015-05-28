@@ -1,8 +1,33 @@
+/*
+ *******************************************************************************************
+ * Dgame (a D game framework) - Copyright (c) Randy Schütt
+ * 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software.
+ * 
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ * 
+ * 1. The origin of this software must not be misrepresented; you must not claim
+ *    that you wrote the original software. If you use this software in a product,
+ *    an acknowledgment in the product documentation would be appreciated but is
+ *    not required.
+ * 
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 
+ * 3. This notice may not be removed or altered from any source distribution.
+ *******************************************************************************************
+ */
 module Dgame.Graphic.ShaderProgram;
 
 import derelict.opengl3.gl;
 
+import Dgame.Graphic.Color;
 import Dgame.Graphic.Shader;
+
 import Dgame.Math.Vector2;
 import Dgame.Math.Vector3;
 import Dgame.Math.Matrix4x4;
@@ -158,7 +183,7 @@ public:
      * Bind a Vector2f to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Vector2f vec) const nothrow {
+    bool setParameter(string name, const Vector2f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y);
     }
 
@@ -166,7 +191,7 @@ public:
      * Bind a Vector3f to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Vector3f vec) const nothrow {
+    bool setParameter(string name, const Vector3f vec) const nothrow {
         return this.setParameter(name, vec.x, vec.y, vec.z);
     }
 
@@ -174,9 +199,9 @@ public:
      * Bind a Color4b to a specific variable name of the Shaders
      */
     @nogc
-    bool setParameter()(string name, auto ref const Color4b color) const nothrow {
+    bool setParameter(string name, const Color4b color) const nothrow {
         const Color4f col = color;
-        return this.setParameter(col.red, col.green, col.blue, col.alpha);
+        return this.setParameter(name, col.red, col.green, col.blue, col.alpha);
     }
 
     /**

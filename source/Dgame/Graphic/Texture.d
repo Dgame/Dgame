@@ -94,7 +94,7 @@ public:
      * CTor
      */
     @nogc
-    this()(auto ref const Surface srfc, Format fmt = Format.None) nothrow {
+    this(const Surface srfc, Format fmt = Format.None) nothrow {
         this.loadFrom(srfc, fmt);
     }
 
@@ -259,7 +259,7 @@ public:
      * Load from Surface
      */
     @nogc
-    void loadFrom()(auto ref const Surface srfc, Format fmt = Format.None) nothrow {
+    void loadFrom(const Surface srfc, Format fmt = Format.None) nothrow {
         assert(srfc.isValid(), "Cannot load invalid Surface");
 
         if (fmt == Format.None) {
@@ -306,7 +306,7 @@ public:
      * Set a colorkey.
      */
     @nogc
-    void setColorkey()(auto ref const Color4b colorkey) nothrow {
+    void setColorkey(const Color4b colorkey) nothrow {
         if (_texId == 0)
             return;
 

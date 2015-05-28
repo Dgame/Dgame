@@ -66,7 +66,7 @@ this is redundant if you have already enabled anti-aliasing<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Shape.this.3"></a>pure nothrow this()(size_t <i>radius</i>, auto ref const Vector2f <i>center</i>, size_t <i>vecNum</i> = 30);
+<dt><big><a name="Shape.this.3"></a>final pure nothrow this(size_t <i>radius</i>, const Vector2f <i>center</i>, size_t <i>vecNum</i> = 30);
 </big></dt>
 <dd>CTor for circles<br><br>
 
@@ -76,7 +76,7 @@ this is redundant if you have already enabled anti-aliasing<br><br>
 <dd>Clear all Vertices but preserve the storage and capacity<br><br>
 
 </dd>
-<dt><big><a name="Shape.append"></a>pure nothrow void <u>append</u>()(auto ref const Vertex <i>vertex</i>);
+<dt><big><a name="Shape.append"></a>final pure nothrow void <u>append</u>(const Vertex <i>vertex</i>);
 </big></dt>
 <dd>Stores a Vertex<br><br>
 
@@ -91,7 +91,7 @@ this is redundant if you have already enabled anti-aliasing<br><br>
 <dd>Returns all Vertices<br><br>
 
 </dd>
-<dt><big><a name="Shape.setColor"></a>pure nothrow @nogc void <u>setColor</u>()(auto ref const Color4b <i>col</i>);
+<dt><big><a name="Shape.setColor"></a>final pure nothrow @nogc void <u>setColor</u>(const Color4b <i>col</i>);
 </big></dt>
 <dd>Set the color of <b>all</b> Vertices
 <br><br>
@@ -105,7 +105,7 @@ If you only want to set specific Vertices to a specific color, you should use ge
 <dd>Set or reset a Texture<br><br>
 
 </dd>
-<dt><big><a name="Shape.setTexture.2"></a>pure nothrow @nogc void <u>setTexture</u>()(Texture* <i>texture</i>, auto ref const Rect <i>rect</i>);
+<dt><big><a name="Shape.setTexture.2"></a>final pure nothrow @nogc void <u>setTexture</u>(Texture* <i>texture</i>, const Rect <i>rect</i>);
 </big></dt>
 <dd>Set (or reset) a Texture and set the corresponding Rect<br><br>
 
@@ -115,7 +115,7 @@ If you only want to set specific Vertices to a specific color, you should use ge
 <dd>Returns the current texture or <b>null</b><br><br>
 
 </dd>
-<dt><big><a name="Shape.setTextureRect"></a>pure nothrow @nogc void <u>setTextureRect</u>()(auto ref const Rect <i>rect</i>);
+<dt><big><a name="Shape.setTextureRect"></a>final pure nothrow @nogc void <u>setTextureRect</u>(const Rect <i>rect</i>);
 </big></dt>
 <dd>Set the corresponding Texture Rect<br><br>
 

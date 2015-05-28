@@ -148,8 +148,8 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      * Note: A call to this function generates a mouse motion event.
      */
     @nogc
-    static void setCursorPosition()(auto ref const Vector2i pos) nothrow {
-        this.setCursorPosition(pos.x, pos.y);
+    static void setCursorPosition(const Vector2i pos) nothrow {
+        Mouse.setCursorPosition(pos.x, pos.y);
     }
 
 static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
@@ -169,8 +169,8 @@ static if (SDL_VERSION_ATLEAST(2, 0, 4)) {
      * Note: A call to this function generates a mouse motion event.
      */
     @nogc
-    static void setGlobalCursorPosition()(auto ref const Vector2i pos) nothrow {
-        this.setGlobalCursorPosition(pos.x, pos.y);
+    static void setGlobalCursorPosition(const Vector2i pos) nothrow {
+        Mouse.setGlobalCursorPosition(pos.x, pos.y);
     }
 }
 
