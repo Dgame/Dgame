@@ -66,7 +66,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(ref const Vector2!(U) vec) pure nothrow if (!is(U == T)) {
+    this(U)(const Vector2!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y);
     }
     
@@ -74,7 +74,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Supported operation: +=, -=, *=, /= and %=
      */
     @nogc
-    ref Vector2!(T) opOpAssign(string op)(ref const Vector2!(T) vec) pure nothrow {
+    ref Vector2!(T) opOpAssign(string op)(const Vector2!(T) vec) pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -116,7 +116,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Supported operation: +, -, *, / and %
      */
     @nogc
-    Vector2!(T) opBinary(string op)(ref const Vector2!(T) vec) const pure nothrow {
+    Vector2!(T) opBinary(string op)(const Vector2!(T) vec) const pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -158,7 +158,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Compares two vectors by checking whether the coordinates are equals.
      */
     @nogc
-    bool opEquals(ref const Vector2!(T) vec) const pure nothrow {
+    bool opEquals(const Vector2!(T) vec) const pure nothrow {
         return vec.x == this.x && vec.y == this.y;
     }
 
@@ -174,7 +174,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Calculate the scalar product.
      */
     @nogc
-    float scalar(ref const Vector2!(T) vec) const pure nothrow {
+    float scalar(const Vector2!(T) vec) const pure nothrow {
         return this.x * vec.x + this.y * vec.y;
     }
     
@@ -200,7 +200,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Otherwise, radiant is used.
      */
     @nogc
-    float angle(ref const Vector2!(T) vec, bool degrees = true) const pure nothrow {
+    float angle(const Vector2!(T) vec, bool degrees = true) const pure nothrow {
         immutable float angle = std.math.acos(this.scalar(vec) / (this.length * vec.length));
         if (degrees)
             return angle * 180f / std.math.PI;
@@ -212,7 +212,7 @@ struct Vector2(T) if (isNumeric!(T)) {
      * Calculate the diff between two vectors.
      */
     @nogc
-    float diff(ref const Vector2!(T) vec) const pure nothrow {
+    float diff(const Vector2!(T) vec) const pure nothrow {
         return std.math.sqrt(std.math.pow(this.x - vec.x, 2f) + std.math.pow(this.y - vec.y, 2f));
     }
     
@@ -292,7 +292,7 @@ unittest {
     assert(vec5 / vec6.x == vec7);
 
     const Vector2i vec8 = Vector2i(32, 32);
-    const Vector2i vec9 = (vec8 / 32) * 32;
+    const Vector2f vec9 = (vec8 / 32) * 32;
 
     assert(vec9.x == vec8.x && vec9.y == vec8.y);
 }

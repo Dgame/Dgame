@@ -37,12 +37,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector3.this.3"></a>pure nothrow @nogc this(U)(ref const Vector3!U <i>vec</i>) if (!is(U == T));
+<dt><big><a name="Vector3.this.3"></a>pure nothrow @nogc this(U)(const Vector3!U <i>vec</i>) if (!is(U == T));
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector3.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Compares two vectors by checking whether the coordinates are equals.<br><br>
 
@@ -52,7 +52,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Checks if this vector is empty. This means that his coordinates are 0.<br><br>
 
 </dd>
-<dt><big><a name="Vector3.scalar"></a>const pure nothrow @nogc float <u>scalar</u>(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.scalar"></a>const pure nothrow @nogc float <u>scalar</u>(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>scalar</u> product.<br><br>
 
@@ -67,12 +67,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Calculate the <u>length</u>.<br><br>
 
 </dd>
-<dt><big><a name="Vector3.diff"></a>const pure nothrow @nogc float <u>diff</u>(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.diff"></a>const pure nothrow @nogc float <u>diff</u>(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>diff</u> between two vectors.<br><br>
 
 </dd>
-<dt><big><a name="Vector3.opOpAssign"></a>pure nothrow @nogc ref Vector3!T <u>opOpAssign</u>(string op)(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.opOpAssign"></a>pure nothrow @nogc ref Vector3!T <u>opOpAssign</u>(string op)(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
@@ -82,7 +82,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="Vector3.opBinary"></a>const pure nothrow @nogc Vector3!T <u>opBinary</u>(string op)(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.opBinary"></a>const pure nothrow @nogc Vector3!T <u>opBinary</u>(string op)(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
@@ -92,7 +92,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
 </dd>
-<dt><big><a name="Vector3.cross"></a>const pure nothrow @nogc Vector3!T <u>cross</u>(ref const Vector3!T <i>vec</i>);
+<dt><big><a name="Vector3.cross"></a>const pure nothrow @nogc Vector3!T <u>cross</u>(const Vector3!T <i>vec</i>);
 </big></dt>
 <dd>Returns the <u>cross</u> product of this and another Vector.<br><br>
 
@@ -102,7 +102,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Normalize the vector in which the coordinates are divided by the length.<br><br>
 
 </dd>
-<dt><big><a name="Vector3.rotate"></a>const pure nothrow Vector3!T <u>rotate</u>(float <i>angle</i>, ref const Vector3!T <i>rot</i>);
+<dt><big><a name="Vector3.rotate"></a>const pure nothrow Vector3!T <u>rotate</u>(float <i>angle</i>, const Vector3!T <i>rot</i>);
 </big></dt>
 <dd>Rotate the current Vector by an <i>angle</i> and rotation Vector and returns the result<br><br>
 

@@ -62,7 +62,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * CTor
      */
     @nogc
-    this(U)(ref const Vector3!(U) vec) pure nothrow if (!is(U == T)) {
+    this(U)(const Vector3!(U) vec) pure nothrow if (!is(U == T)) {
         this(vec.x, vec.y, vec.z);
     }
 
@@ -70,7 +70,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Compares two vectors by checking whether the coordinates are equals.
      */
     @nogc
-    bool opEquals(ref const Vector3!(T) vec) const pure nothrow {
+    bool opEquals(const Vector3!(T) vec) const pure nothrow {
         return vec.x == this.x && vec.y == this.y && vec.z == this.z;
     }
 
@@ -86,7 +86,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Calculate the scalar product.
      */
     @nogc
-    float scalar(ref const Vector3!(T) vec) const pure nothrow {
+    float scalar(const Vector3!(T) vec) const pure nothrow {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
     }
     
@@ -110,7 +110,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Calculate the diff between two vectors.
      */
     @nogc
-    float diff(ref const Vector3!(T) vec) const pure nothrow {
+    float diff(const Vector3!(T) vec) const pure nothrow {
         return std.math.sqrt(std.math.pow(this.x - vec.x, 2f) + std.math.pow(this.y - vec.y, 2f) + std.math.pow(this.z - vec.z, 2f));
     }
 
@@ -118,7 +118,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Supported operation: +=, -=, *=, /= and %=
      */
     @nogc
-    ref Vector3!(T) opOpAssign(string op)(ref const Vector3!(T) vec) pure nothrow {
+    ref Vector3!(T) opOpAssign(string op)(const Vector3!(T) vec) pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -162,7 +162,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Supported operation: +, -, *, / and %
      */
     @nogc
-    Vector3!(T) opBinary(string op)(ref const Vector3!(T) vec) const pure nothrow {
+    Vector3!(T) opBinary(string op)(const Vector3!(T) vec) const pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -196,7 +196,7 @@ struct Vector3(T) if (isNumeric!(T)) {
      * Returns the cross product of this and another Vector.
      */
     @nogc
-    Vector3!(T) cross(ref const Vector3!(T) vec) const pure nothrow {
+    Vector3!(T) cross(const Vector3!(T) vec) const pure nothrow {
         return Vector3!(T)(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
     }
 
@@ -213,7 +213,7 @@ struct Vector3(T) if (isNumeric!(T)) {
     /**
      * Rotate the current Vector by an angle and rotation Vector and returns the result
      */
-    Vector3!(T) rotate(float angle, ref const Vector3!(T) rot) const pure nothrow {
+    Vector3!(T) rotate(float angle, const Vector3!(T) rot) const pure nothrow {
         immutable float len1 = this.length;
         immutable float len2 = rot.length;
 

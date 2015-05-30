@@ -111,7 +111,7 @@ struct Rect {
      * Supported operations: +, -, *, /, %
      */
     @nogc
-    Rect opBinary(string op)(ref const Rect rect) const pure nothrow {
+    Rect opBinary(string op)(const Rect rect) const pure nothrow {
         switch (op) {
             case "+":
             case "-":
@@ -147,7 +147,7 @@ struct Rect {
      * Returns an union of the given and this Rect.
      */
     @nogc
-    Rect getUnion(ref const Rect rect) const {
+    Rect getUnion(const Rect rect) const {
         SDL_Rect a = void;
         SDL_Rect b = void;
         SDL_Rect c = void;
@@ -177,7 +177,7 @@ struct Rect {
      * opEquals: compares two rectangles on their coordinates and their size (but not explicit type).
      */
     @nogc
-    bool opEquals(ref const Rect rect) const pure nothrow {
+    bool opEquals(const Rect rect) const pure nothrow {
         return this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height;
     }
     
@@ -187,7 +187,7 @@ struct Rect {
      * the colliding rectangle is stored there.
      */
     @nogc
-    bool intersects(ref const Rect rect, Rect* overlap = null) const {
+    bool intersects(const Rect rect, Rect* overlap = null) const {
         SDL_Rect a = void;
         SDL_Rect b = void;
 

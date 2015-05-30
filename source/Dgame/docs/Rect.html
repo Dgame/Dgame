@@ -92,7 +92,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Rect.opBinary"></a>const pure nothrow @nogc Rect <u>opBinary</u>(string op)(ref const Rect <i>rect</i>);
+<dt><big><a name="Rect.opBinary"></a>const pure nothrow @nogc Rect <u>opBinary</u>(string op)(const Rect <i>rect</i>);
 </big></dt>
 <dd>Supported operations: +, -, *, /, %<br><br>
 
@@ -107,7 +107,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Checks if this Rect is empty (if it's collapsed) with SDL_RectEmpty.<br><br>
 
 </dd>
-<dt><big><a name="Rect.getUnion"></a>const @nogc Rect <u>getUnion</u>(ref const Rect <i>rect</i>);
+<dt><big><a name="Rect.getUnion"></a>const @nogc Rect <u>getUnion</u>(const Rect <i>rect</i>);
 </big></dt>
 <dd>Returns an union of the given and this Rect.<br><br>
 
@@ -122,13 +122,13 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Checks whether this Rect <u>contains</u> the given coordinates.<br><br>
 
 </dd>
-<dt><big><a name="Rect.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(ref const Rect <i>rect</i>);
+<dt><big><a name="Rect.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(const Rect <i>rect</i>);
 </big></dt>
 <dd><b>opEquals:</b><br>
 compares two rectangles on their coordinates and their size (but not explicit type).<br><br>
 
 </dd>
-<dt><big><a name="Rect.intersects"></a>const @nogc bool <u>intersects</u>(ref const Rect <i>rect</i>, Rect* <i>overlap</i> = null);
+<dt><big><a name="Rect.intersects"></a>const @nogc bool <u>intersects</u>(const Rect <i>rect</i>, Rect* <i>overlap</i> = null);
 </big></dt>
 <dd>Checks whether this Rect <u>intersects</u> with an other.
  If, and the parameter '<i>overlap</i>' isn't <b>null</b>,

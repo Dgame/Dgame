@@ -32,12 +32,12 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector2.this.3"></a>pure nothrow @nogc this(U)(ref const Vector2!U <i>vec</i>) if (!is(U == T));
+<dt><big><a name="Vector2.this.3"></a>pure nothrow @nogc this(U)(const Vector2!U <i>vec</i>) if (!is(U == T));
 </big></dt>
 <dd>CTor<br><br>
 
 </dd>
-<dt><big><a name="Vector2.opOpAssign"></a>pure nothrow @nogc ref Vector2!T <u>opOpAssign</u>(string op)(ref const Vector2!T <i>vec</i>);
+<dt><big><a name="Vector2.opOpAssign"></a>pure nothrow @nogc ref Vector2!T <u>opOpAssign</u>(string op)(const Vector2!T <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
@@ -47,7 +47,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Supported operation: +=, -=, *=, /= and %=<br><br>
 
 </dd>
-<dt><big><a name="Vector2.opBinary"></a>const pure nothrow @nogc Vector2!T <u>opBinary</u>(string op)(ref const Vector2!T <i>vec</i>);
+<dt><big><a name="Vector2.opBinary"></a>const pure nothrow @nogc Vector2!T <u>opBinary</u>(string op)(const Vector2!T <i>vec</i>);
 </big></dt>
 <dd>Supported operation: +, -, *, / and %<br><br>
 
@@ -62,7 +62,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Returns a negated copy of this Vector.<br><br>
 
 </dd>
-<dt><big><a name="Vector2.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(ref const Vector2!T <i>vec</i>);
+<dt><big><a name="Vector2.opEquals"></a>const pure nothrow @nogc bool <u>opEquals</u>(const Vector2!T <i>vec</i>);
 </big></dt>
 <dd>Compares two vectors by checking whether the coordinates are equals.<br><br>
 
@@ -72,7 +72,7 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Checks if this vector is empty. This means that his coordinates are 0.<br><br>
 
 </dd>
-<dt><big><a name="Vector2.scalar"></a>const pure nothrow @nogc float <u>scalar</u>(ref const Vector2!T <i>vec</i>);
+<dt><big><a name="Vector2.scalar"></a>const pure nothrow @nogc float <u>scalar</u>(const Vector2!T <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>scalar</u> product.<br><br>
 
@@ -87,14 +87,14 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 <dd>Calculate the <u>length</u>.<br><br>
 
 </dd>
-<dt><big><a name="Vector2.angle"></a>const pure nothrow @nogc float <u>angle</u>(ref const Vector2!T <i>vec</i>, bool <i>degrees</i> = true);
+<dt><big><a name="Vector2.angle"></a>const pure nothrow @nogc float <u>angle</u>(const Vector2!T <i>vec</i>, bool <i>degrees</i> = true);
 </big></dt>
 <dd>Calculate the <u>angle</u> between two vectors.
  If the second paramter is <b>true</b>, the return value is converted to <i>degrees</i>.
  Otherwise, radiant is used.<br><br>
 
 </dd>
-<dt><big><a name="Vector2.diff"></a>const pure nothrow @nogc float <u>diff</u>(ref const Vector2!T <i>vec</i>);
+<dt><big><a name="Vector2.diff"></a>const pure nothrow @nogc float <u>diff</u>(const Vector2!T <i>vec</i>);
 </big></dt>
 <dd>Calculate the <u>diff</u> between two vectors.<br><br>
 
