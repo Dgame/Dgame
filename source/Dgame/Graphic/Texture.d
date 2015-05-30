@@ -129,7 +129,7 @@ public:
      */
     @property
     @nogc
-    uint ID() const pure nothrow {
+    uint id() const pure nothrow {
         return _texId;
     }
     

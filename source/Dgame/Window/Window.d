@@ -81,11 +81,12 @@ struct Window {
      * The specific window styles
      */
     enum Style {
+        Default = Shown, /// Default is Shown
         Fullscreen = SDL_WINDOW_FULLSCREEN, /// Window is fullscreened
         Desktop = SDL_WINDOW_FULLSCREEN_DESKTOP,    /// Window has Desktop Fullscreen
-        OpenGL = SDL_WINDOW_OPENGL, /// OpenGL support
         Shown = SDL_WINDOW_SHOWN,   /// Show the Window immediately
-        Borderless = SDL_WINDOW_BORDERLESS, /// Hide the Window immediately
+        Hidden = SDL_WINDOW_HIDDEN, /// Hide the Window immediately
+        Borderless = SDL_WINDOW_BORDERLESS, /// The Window has no border
         Resizeable = SDL_WINDOW_RESIZABLE,  /// Window is resizeable
         Maximized = SDL_WINDOW_MAXIMIZED,   /// Maximize the Window immediately
         Minimized = SDL_WINDOW_MINIMIZED,   /// Minimize the Window immediately
@@ -93,10 +94,7 @@ struct Window {
         InputFocus = SDL_WINDOW_INPUT_FOCUS,    /// The Window has input (keyboard) focus
         MouseFocus = SDL_WINDOW_MOUSE_FOCUS,    /// The Window has mouse focus
         MouseCapture = SDL_WINDOW_MOUSE_CAPTURE, /// window has mouse captured (unrelated to InputGrabbed)
-        HighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /// Window should be created in high-DPI mode if supported
-        Foreign = SDL_WINDOW_FOREIGN,   /// The window was created by some other framework.
-        
-        Default = Shown | OpenGL | HighDPI  /// Default mode is Shown | OpenGL | HighDPI
+        AllowHighDPI = SDL_WINDOW_ALLOW_HIGHDPI, /// Window should be created in high-DPI mode if supported
     }
 
 private:
@@ -142,35 +140,31 @@ public:
         if (_count == 0)
             _initSDL();
 
-        if (style & Style.OpenGL)
-            _initGLAttr(gl);
+        _initGLAttr(gl);
         
         _window = SDL_CreateWindow(
             toStringz(title),
             view.x, view.y,
             view.width, view.height,
-            style
+            style | SDL_WINDOW_OPENGL
         );
         assert(_window, "SDL_Window could not be created.");
 
-        if (style & Style.OpenGL) {
-            _glContext = SDL_GL_CreateContext(_window);
-            assert(_glContext, "SDL_GLContext could not be created.");
-            assert(SDL_GL_MakeCurrent(_window, _glContext) == 0);
-     
-            if (_count == 0)
-                _initGL();
+        _glContext = SDL_GL_CreateContext(_window);
+        assert(_glContext, "SDL_GLContext could not be created.");
+        assert(SDL_GL_MakeCurrent(_window, _glContext) == 0);
+ 
+        _initGL();
 
-            const Rect rect = Rect(0, 0, view.width, view.height);
+        const Rect rect = Rect(0, 0, view.width, view.height);
 
-            this.projection.ortho(rect);
-            this.loadProjection();
+        this.projection.ortho(rect);
+        this.loadProjection();
 
-            glViewport(rect.x, rect.y, rect.width, rect.height);
+        glViewport(rect.x, rect.y, rect.width, rect.height);
 
-            this.setClearColor(Color4b.White);
-            this.setVerticalSync(VerticalSync.Disable);
-        }
+        this.setClearColor(Color4b.White);
+        this.setVerticalSync(VerticalSync.Disable);
 
         _count++;
     }
@@ -259,38 +253,34 @@ public:
      */
     @nogc
     Surface capture(Texture.Format fmt = Texture.Format.BGRA) nothrow {
-        if (this.getStyle() & Style.OpenGL) {
-            const Size size = this.getSize();
-            Surface my_capture = Surface(size.width, size.height, 32, Masks.Zero);
+        const Size size = this.getSize();
+        Surface my_capture = Surface(size.width, size.height, 32, Masks.Zero);
 
-            glReadBuffer(GL_FRONT);
-            glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, my_capture.pixels);
+        glReadBuffer(GL_FRONT);
+        glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, my_capture.pixels);
+        
+        immutable uint lineWidth = size.width * 4;
+        immutable uint hlw = size.height * lineWidth;
+
+        void[] tmpLine = make!(void[])(lineWidth);
+        scope(exit) unmake(tmpLine);
+
+        // Flip it
+        for (uint i = 0; i < size.height / 2; ++i) {
+            immutable uint tmpIdx1 = i * lineWidth;
+            immutable uint tmpIdx2 = (i + 1) * lineWidth;
             
-            immutable uint lineWidth = size.width * 4;
-            immutable uint hlw = size.height * lineWidth;
-
-            void[] tmpLine = make!(void[])(lineWidth);
-            scope(exit) unmake(tmpLine);
-
-            // Flip it
-            for (uint i = 0; i < size.height / 2; ++i) {
-                immutable uint tmpIdx1 = i * lineWidth;
-                immutable uint tmpIdx2 = (i + 1) * lineWidth;
-                
-                immutable uint switchIdx1 = hlw - tmpIdx2;
-                immutable uint switchIdx2 = hlw - tmpIdx1;
-                
-                tmpLine[0 .. lineWidth] = my_capture.pixels[tmpIdx1 .. tmpIdx2];
-                void[] switchLine = my_capture.pixels[switchIdx1 .. switchIdx2];
-                
-                my_capture.pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
-                my_capture.pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
-            }
+            immutable uint switchIdx1 = hlw - tmpIdx2;
+            immutable uint switchIdx2 = hlw - tmpIdx1;
             
-            return my_capture;
+            tmpLine[0 .. lineWidth] = my_capture.pixels[tmpIdx1 .. tmpIdx2];
+            void[] switchLine = my_capture.pixels[switchIdx1 .. switchIdx2];
+            
+            my_capture.pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
+            my_capture.pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
         }
-
-        return Surface(SDL_GetWindowSurface(_window));
+        
+        return my_capture;
     }
 
     /**
@@ -547,9 +537,8 @@ public:
      */
     @nogc
     void draw(Drawable d) const nothrow {
-        assert(d, "Drawable is null");
-
-        d.draw(this);
+        if (d)
+            d.draw(this);
     }
 
     /**
@@ -557,13 +546,9 @@ public:
      */
     @nogc
     void display() nothrow {
-        immutable uint style = this.getStyle();
-        if (style & Style.OpenGL) {
-            if (_count > 1)
-                SDL_GL_MakeCurrent(_window, _glContext);
-            SDL_GL_SwapWindow(_window);
-        } else
-            SDL_UpdateWindowSurface(_window);
+        if (_count > 1)
+            SDL_GL_MakeCurrent(_window, _glContext);
+        SDL_GL_SwapWindow(_window);
     }
 
     /**

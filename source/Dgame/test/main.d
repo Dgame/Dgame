@@ -16,10 +16,11 @@ debug {
     pragma(msg, Vector2i.sizeof);
     pragma(msg, Vector2f.sizeof);
     pragma(msg, Vertex.sizeof);
+    pragma(msg, GLSettings.sizeof);
 }
 
 void main() {
-    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 0));
+    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 2));
     //wnd.setVerticalSync(Window.VerticalSync.Enable);
 /*
     immutable int display_count = DisplayMode.getNumOfDisplays();
@@ -114,7 +115,7 @@ void main() {
 
     Texture wiki_tex = Texture(wiki_srfc);
     wiki_tex.setSmooth(true);
-    writeln(wiki_tex.ID, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
+    writeln(wiki_tex.id, ':', wiki_tex.width, ':', wiki_tex.height, ':', wiki_tex.format);
 
     Joystick controller;
     // Check for joysticks

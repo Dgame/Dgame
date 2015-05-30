@@ -126,7 +126,7 @@ void _initSDL() {
 }
 
 @nogc
-void _initGLAttr(ref GLSettings gl) {
+void _initGLAttr(GLSettings gl) {
     version (OSX) {
         if (gl.majorVersion == 0) {
             gl.majorVersion = 2;

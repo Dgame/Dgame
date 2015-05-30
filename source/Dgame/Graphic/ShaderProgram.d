@@ -98,7 +98,7 @@ public:
 
         // Attach the shaders
         foreach (ref const Shader shader; shaders) {
-            glAttachShader(_program, shader.ID);
+            glAttachShader(_program, shader.id);
         }
 
         //Link our program
@@ -124,7 +124,7 @@ public:
 
         // Always detach shaders after a successful link.
         foreach (ref const Shader shader; shaders) {
-            glDetachShader(_program, shader.ID);
+            glDetachShader(_program, shader.id);
         }
 
         return true;
@@ -134,7 +134,7 @@ public:
      * Bind and use the current program
      */
     @nogc
-    void use() const nothrow {
+    void bind() const nothrow {
         glUseProgram(_program);
     }
 
@@ -142,7 +142,7 @@ public:
      * Unbind the current program. It is no longer used.
      */
     @nogc
-    void disuse() const nothrow {
+    void unbind() const nothrow {
         glUseProgram(0);
     }
 
@@ -157,7 +157,7 @@ public:
             return false;
         }
 
-        this.use();
+        this.bind();
 
         switch (values.length) {
             case 1:
@@ -215,7 +215,7 @@ public:
             return false;
         }
 
-        this.use();
+        this.bind();
 
         glUniformMatrix4fv(loc, 1, GL_FALSE, mat.getValues().ptr);
 

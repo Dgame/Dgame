@@ -104,7 +104,7 @@ public:
      */
     @nogc
     @property
-    uint ID() const pure nothrow {
+    uint id() const pure nothrow {
         return _shader;
     }
 
