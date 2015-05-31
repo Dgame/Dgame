@@ -348,6 +348,34 @@ struct TouchFingerEvent {
 }
 
 /**
+ * Mouse union
+ */
+union MouseUnion {
+    MouseButtonEvent button; /// Mouse button Event
+    MouseMotionEvent motion; /// Mouse motion Event
+    MouseWheelEvent  wheel; /// Mouse wheel Event
+}
+
+/**
+ * Joystick union
+ */
+union JoystickUnion {
+    JoystickAxisEvent motion; /// Joystick motion Event
+    JoystickButtonEvent button; /// Joystick button Event
+    JoystickHatEvent hat; /// Joystick hat Event
+    JoystickDeviceEvent device; /// Joystick device Event
+}
+
+/**
+ * Game Controller union
+ */
+union ControllerUnion {
+    ControllerAxisEvent motion; /// Controller motion Event
+    ControllerButtonEvent button; /// Controller button Event
+    ControllerDeviceEvent device; /// Controller device Event
+}
+
+/**
  * The Event structure.
  * Event defines a system event and it's parameters
  *
@@ -401,34 +429,6 @@ struct Event {
      * The window which has raised this event
      */
     uint windowId;
-
-    /**
-     * Mouse union
-     */
-    union MouseUnion {
-        MouseButtonEvent button; /// Mouse button Event
-        MouseMotionEvent motion; /// Mouse motion Event
-        MouseWheelEvent  wheel; /// Mouse wheel Event
-    }
-
-    /**
-     * Joystick union
-     */
-    union JoystickUnion {
-        JoystickAxisEvent motion; /// Joystick motion Event
-        JoystickButtonEvent button; /// Joystick button Event
-        JoystickHatEvent hat; /// Joystick hat Event
-        JoystickDeviceEvent device; /// Joystick device Event
-    }
-
-    /**
-     * Game Controller union
-     */
-    union ControllerUnion {
-        ControllerAxisEvent motion; /// Controller motion Event
-        ControllerButtonEvent button; /// Controller button Event
-        ControllerDeviceEvent device; /// Controller device Event
-    }
     
     union {
         KeyboardEvent keyboard; /// Keyboard Event

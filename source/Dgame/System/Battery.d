@@ -26,6 +26,35 @@ module Dgame.System.Battery;
 private import derelict.sdl2.sdl;
 
 /**
+ * This structure provide support for battery lifetime if you are on a laptop etc.
+ */
+struct Battery {
+    /**
+     * The Power States
+     */
+    enum State {
+        Unknown   = SDL_POWERSTATE_UNKNOWN, /// Cannot determine power status
+        OnBattery = SDL_POWERSTATE_ON_BATTERY, /// Not plugged in, running on the battery
+        NoBattery = SDL_POWERSTATE_NO_BATTERY, /// plugged in, no battery available
+        Charging  = SDL_POWERSTATE_CHARGING, /// plugged in, charging battery
+        Charged   = SDL_POWERSTATE_CHARGED, /// plugged in, battery charged
+    }
+    
+    /**
+     * Remaining time in seconds, or -1 if cannot determine power status
+     */
+    int seconds;
+    /**
+     * Remaining battery percent, or -1 if cannot determine power status
+     */
+    byte percent;
+    /**
+     * Battery state
+     */
+    State state;
+}
+
+/**
  * The System struct contains the Power struct,
  * which give information about your current battery
  * and several other informations about your system, like the available RAM.
@@ -33,35 +62,6 @@ private import derelict.sdl2.sdl;
  * Author: Randy Schuett (rswhite4@googlemail.com)k
  */
 final abstract class System {
-    /**
-     * This structure provide support for battery lifetime if you are on a laptop etc.
-     */
-    static struct Battery {
-        /**
-         * The Power States
-         */
-        enum State {
-            Unknown   = SDL_POWERSTATE_UNKNOWN, /// Cannot determine power status
-            OnBattery = SDL_POWERSTATE_ON_BATTERY, /// Not plugged in, running on the battery
-            NoBattery = SDL_POWERSTATE_NO_BATTERY, /// plugged in, no battery available
-            Charging  = SDL_POWERSTATE_CHARGING, /// plugged in, charging battery
-            Charged   = SDL_POWERSTATE_CHARGED, /// plugged in, battery charged
-        }
-        
-        /**
-         * Remaining time in seconds, or -1 if cannot determine power status
-         */
-        int seconds;
-        /**
-         * Remaining battery percent, or -1 if cannot determine power status
-         */
-        byte percent;
-        /**
-         * Battery state
-         */
-        State state;
-    }
-    
     /**
      * Returns the PowerInfo structure with the currently power informations
      * 

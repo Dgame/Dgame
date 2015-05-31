@@ -11,15 +11,20 @@ debug {
     pragma(msg, Color4f.sizeof);
     pragma(msg, Matrix4x4.sizeof);
     pragma(msg, Window.sizeof);
+    pragma(msg, Event.sizeof);
     pragma(msg, Surface.sizeof);
     pragma(msg, Texture.sizeof);
     pragma(msg, Font.sizeof);
     pragma(msg, Vector2i.sizeof);
     pragma(msg, Vector3i.sizeof);
+    pragma(msg, Rect.sizeof);
     pragma(msg, Vertex.sizeof);
     pragma(msg, GLContextSettings.sizeof);
     pragma(msg, Shader.sizeof);
     pragma(msg, ShaderProgram.sizeof);
+    pragma(msg, Battery.sizeof);
+    pragma(msg, StopWatch.sizeof);
+    pragma(msg, Time.sizeof);
 }
 
 void main() {
