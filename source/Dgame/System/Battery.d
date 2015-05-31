@@ -61,7 +61,7 @@ struct Battery {
  * 
  * Author: Randy Schuett (rswhite4@googlemail.com)k
  */
-final abstract class System {
+interface System {
     /**
      * Returns the PowerInfo structure with the currently power informations
      * 

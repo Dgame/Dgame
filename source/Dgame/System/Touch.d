@@ -7,35 +7,35 @@ import derelict.sdl2.sdl;
 public:
 
 /**
+ * The Finger structure
+ */
+struct Finger {
+    /**
+     * The Finger ID
+     */
+    long id; // TODO: change to (u)int?
+    /**
+     * The x coordinate in range of 0 .. 1
+     * Multiply it with the width of the Window to get the real x coordinate
+     */
+    float x;
+    /**
+     * The y coordinate in range of 0 .. 1
+     * Multiply it with the height of the Window to get the real y coordinate
+     */
+    float y;
+    /**
+     * The quantity of pressure applied in range of 0 .. 1
+     */
+    float pressure;
+}
+
+/**
  * Represent Touch-Events
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
-final abstract class Touch {
-    /**
-     * The Finger structure
-     */
-    static struct Finger {
-        /**
-         * The Finger ID
-         */
-        long id;
-        /**
-         * The x coordinate in range of 0 .. 1
-         * Multiply it with the width of the Window to get the real x coordinate
-         */
-        float x;
-        /**
-         * The y coordinate in range of 0 .. 1
-         * Multiply it with the height of the Window to get the real y coordinate
-         */
-        float y;
-        /**
-         * The quantity of pressure applied in range of 0 .. 1
-         */
-        float pressure;
-    }
-
+interface Touch {
     /**
      * Returns of many Touch-Devices exist
      */

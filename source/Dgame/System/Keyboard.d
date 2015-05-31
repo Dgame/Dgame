@@ -35,8 +35,7 @@ public:
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
  */
-final abstract class Keyboard {
-public:
+interface Keyboard {
     /**
      * Returns if the given Keyboard.Code is pressed.
      * 
