@@ -82,8 +82,15 @@ final:
     /**
      * Stores a Vertex
      */
-    void append(const Vertex vertex) pure nothrow {
+    void append(ref const Vertex vertex) pure nothrow {
         _vertices ~= vertex;
+    }
+
+    /**
+     * Stores a Vertex
+     */
+    void append(const Vector2f vec) pure nothrow {
+        _vertices ~= Vertex(vec);
     }
 
     /**
