@@ -16,11 +16,11 @@ debug {
     pragma(msg, Vector2i.sizeof);
     pragma(msg, Vector2f.sizeof);
     pragma(msg, Vertex.sizeof);
-    pragma(msg, GLSettings.sizeof);
+    pragma(msg, GLContextSettings.sizeof);
 }
 
 void main() {
-    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default, GLSettings(0, 0, 2));
+    Window wnd = Window(480, 640, "Dgame App - Test", Window.Style.Default);
     //wnd.setVerticalSync(Window.VerticalSync.Enable);
 /*
     immutable int display_count = DisplayMode.getNumOfDisplays();

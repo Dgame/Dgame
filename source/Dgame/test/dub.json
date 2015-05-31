@@ -14,7 +14,7 @@
             "targetName": "dgame-example",
             "targetType": "executable",
             "sourceFiles": ["main.d"],
-            "dflags": ["-Dd../docs", "-allinst"],
+            "dflags": ["-Dd../docs", "-debug"],
             "sourcePaths": ["../"],
             "importPaths": ["../"]
         }

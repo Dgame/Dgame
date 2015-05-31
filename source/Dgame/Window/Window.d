@@ -41,7 +41,7 @@ import Dgame.Math.Rect;
 import Dgame.Math.Geometry;
 
 import Dgame.Window.Event;
-import Dgame.Window.GLSettings;
+import Dgame.Window.GLContextSettings;
 import Dgame.Window.DisplayMode;
 import Dgame.Window.Internal.Init;
 
@@ -117,16 +117,16 @@ public:
      * CTor
      * Position of the Window is default 100x, 100y and the VerticalSync is disabled
      */
-    this(uint width, uint height, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
-        this(Rect(DefPosX, DefPosY, width, height), title, style);
+    this(uint width, uint height, string title, uint style = Style.Default, GLContextSettings gl = GLContextSettings.init) {
+        this(Rect(DefPosX, DefPosY, width, height), title, style, gl);
     }
 
     /**
     * CTor
     * Position is at 100x, 100y and the VerticalSync is enabled, if mode.refreshRate > 0
     */
-    this(const DisplayMode mode, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
-        this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style);
+    this(const DisplayMode mode, string title, uint style = Style.Default, GLContextSettings gl = GLContextSettings.init) {
+        this(Rect(DefPosX, DefPosY, mode.width, mode.height), title, style, gl);
 
         if (mode.refreshRate > 0)
             this.setVerticalSync(VerticalSync.Enable);
@@ -136,7 +136,7 @@ public:
      * CTor
      * Position is specifiable and the VerticalSync is disabled
      */
-    this(const Rect view, string title, uint style = Style.Default, GLSettings gl = GLSettings.init) {
+    this(const Rect view, string title, uint style = Style.Default, GLContextSettings gl = GLContextSettings.init) {
         if (_count == 0)
             _initSDL();
 
