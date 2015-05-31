@@ -149,7 +149,7 @@ final:
             immutable float x = center.x + cos(degInRad) * radius;
             immutable float y = center.y + sin(degInRad) * radius;
             
-            this.append(Vertex(x, y));
+            this.append(Vector2f(x, y));
         }
     }
 
@@ -164,8 +164,15 @@ final:
     /**
      * Stores a Vertex
      */
-    void append(const Vertex vertex) pure nothrow {
+    void append(ref const Vertex vertex) pure nothrow {
         _vertices ~= vertex;
+    }
+
+    /**
+     * Stores a Vertex
+     */
+    void append(const Vector2f vec) pure nothrow {
+        _vertices ~= Vertex(vec);
     }
 
     /**

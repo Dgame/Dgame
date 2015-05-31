@@ -13,10 +13,13 @@ debug {
     pragma(msg, Window.sizeof);
     pragma(msg, Surface.sizeof);
     pragma(msg, Texture.sizeof);
+    pragma(msg, Font.sizeof);
     pragma(msg, Vector2i.sizeof);
-    pragma(msg, Vector2f.sizeof);
+    pragma(msg, Vector3i.sizeof);
     pragma(msg, Vertex.sizeof);
     pragma(msg, GLContextSettings.sizeof);
+    pragma(msg, Shader.sizeof);
+    pragma(msg, ShaderProgram.sizeof);
 }
 
 void main() {
