@@ -37,15 +37,21 @@ struct GLContextSettings {
         GL45 = 45, ///
     }
 
+    enum AntiAlias : ubyte {
+        None = 0,
+        X2 = 2,
+        X4 = 4,
+        X8 = 8,
+        X16 = 16
+    }
+
     /**
-     * Anti aliasing level. 0 means deactivated.
+     * Anti aliasing level. Default is AntiAlias.None
      * 
      * Note: A too high value may crash your application at the beginning
      *       because your driver does not support it.
-     *
-     * Typical values are 2, 4 or 8
      */
-    ubyte antiAlias = 0;
+    AntiAlias antiAlias = AntiAlias.None;
     /**
      * The OpenGL Version. Default is the highest supported version.
      */
@@ -59,7 +65,7 @@ struct GLContextSettings {
      * CTor
      */
     @nogc
-    this(ubyte antiAlias, Version vers = Version.GLXX, Profile profile = Profile.Compatibility) pure nothrow {
+    this(AntiAlias antiAlias, Version vers = Version.GLXX, Profile profile = Profile.Compatibility) pure nothrow {
         this.antiAlias = antiAlias;
         this.vers = vers;
         this.profile = profile;

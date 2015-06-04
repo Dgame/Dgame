@@ -82,16 +82,13 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </dd>
 </dl>
 </dd>
-<dt><big><a name="GLContextSettings.antiAlias"></a>ubyte <u>antiAlias</u>;
+<dt><big><a name="GLContextSettings.antiAlias"></a>AntiAlias <u>antiAlias</u>;
 </big></dt>
-<dd>Anti aliasing level. 0 means deactivated.
+<dd>Anti aliasing level. Default is AntiAlias.None
 <br><br>
 <b>Note:</b><br>
 A too high value may crash your application at the beginning
-       because your driver does not support it.
-<br><br>
-
- Typical values are 2, 4 or 8<br><br>
+       because your driver does not support it.<br><br>
 
 </dd>
 <dt><big><a name="GLContextSettings.vers"></a>Version <u>vers</u>;
@@ -104,7 +101,7 @@ A too high value may crash your application at the beginning
 <dd>The OpenGL Context <u>profile</u>. Default is Profile.Compatibility<br><br>
 
 </dd>
-<dt><big><a name="GLContextSettings.this"></a>pure nothrow @nogc this(ubyte <i>antiAlias</i>, Version <i>vers</i> = Version.GLXX, Profile <i>profile</i> = Profile.Compatibility);
+<dt><big><a name="GLContextSettings.this"></a>pure nothrow @nogc this(AntiAlias <i>antiAlias</i>, Version <i>vers</i> = Version.GLXX, Profile <i>profile</i> = Profile.Compatibility);
 </big></dt>
 <dd>CTor<br><br>
 
