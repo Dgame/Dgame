@@ -22,9 +22,8 @@ struct GLContextSettings {
     /**
      * The supported OpenGL Versions
      */
-    enum Version : byte {
-        Default = -1,
-        GLXX = 0,  /// Highest supported version
+    enum Version : ubyte {
+        Default = 0,  /// 
         GL21 = 21, ///
         GL30 = 30, ///
         GL31 = 31, ///
@@ -54,9 +53,9 @@ struct GLContextSettings {
      */
     AntiAlias antiAlias = AntiAlias.None;
     /**
-     * The OpenGL Version. Default is the highest supported version.
+     * The OpenGL Version. Default is Version.Default
      */
-    Version vers = Version.GLXX;
+    Version vers = Version.Default;
     /**
      * The OpenGL Context profile. Default is Profile.Compatibility
      */
@@ -66,7 +65,7 @@ struct GLContextSettings {
      * CTor
      */
     @nogc
-    this(AntiAlias antiAlias, Version vers = Version.GLXX, Profile profile = Profile.Compatibility) pure nothrow {
+    this(AntiAlias antiAlias, Version vers = Version.Default, Profile profile = Profile.Compatibility) pure nothrow {
         this.antiAlias = antiAlias;
         this.vers = vers;
         this.profile = profile;

@@ -43,9 +43,8 @@ Randy Schuett (rswhite4@googlemail.com)<br><br>
 </big></dt>
 <dd>The supported OpenGL Versions<br><br>
 
-<dl><dt><big><a name="GLContextSettings.Version.GLXX"></a><u>GLXX</u></big></dt>
-<dd>Highest supported version<br><br>
-
+<dl><dt><big><a name="GLContextSettings.Version.Default"></a><u>Default</u></big></dt>
+<dd><br><br>
 </dd>
 <dt><big><a name="GLContextSettings.Version.GL21"></a><u>GL21</u></big></dt>
 <dd><br><br>
@@ -93,7 +92,7 @@ A too high value may crash your application at the beginning
 </dd>
 <dt><big><a name="GLContextSettings.vers"></a>Version <u>vers</u>;
 </big></dt>
-<dd>The OpenGL Version. Default is the highest supported version.<br><br>
+<dd>The OpenGL Version. Default is Version.Default<br><br>
 
 </dd>
 <dt><big><a name="GLContextSettings.profile"></a>Profile <u>profile</u>;
@@ -101,7 +100,7 @@ A too high value may crash your application at the beginning
 <dd>The OpenGL Context <u>profile</u>. Default is Profile.Compatibility<br><br>
 
 </dd>
-<dt><big><a name="GLContextSettings.this"></a>pure nothrow @nogc this(AntiAlias <i>antiAlias</i>, Version <i>vers</i> = Version.GLXX, Profile <i>profile</i> = Profile.Compatibility);
+<dt><big><a name="GLContextSettings.this"></a>pure nothrow @nogc this(AntiAlias <i>antiAlias</i>, Version <i>vers</i> = Version.Default, Profile <i>profile</i> = Profile.Compatibility);
 </big></dt>
 <dd>CTor<br><br>
 
