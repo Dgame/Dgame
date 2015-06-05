@@ -154,13 +154,6 @@ public:
         assert(_glContext, "SDL_GLContext could not be created.");
         assert(SDL_GL_MakeCurrent(_window, _glContext) == 0);
 
-        debug {
-            int major, minor;
-            SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
-            SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
-            print_fmt("OpenGL-Context version %d.%d\n", major, minor);
-        }
- 
         _initGL();
 
         const Rect rect = Rect(0, 0, view.width, view.height);
