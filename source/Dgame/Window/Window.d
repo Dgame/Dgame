@@ -690,8 +690,7 @@ package(Dgame):
 
         glVertexPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].position.x);
         glColorPointer(4, GL_FLOAT, Vertex.sizeof, &vertices[0].color.red);
-        if (texture)
-            glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
+        glTexCoordPointer(2, GL_FLOAT, Vertex.sizeof, &vertices[0].texCoord.x);
 
         // prevent 64 bit bug, because *.length is size_t and therefore on 64 bit platforms ulong
         glDrawArrays(geo, 0, cast(uint) vertices.length);
