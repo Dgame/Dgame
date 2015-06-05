@@ -69,6 +69,50 @@ shared static ~this() {
 bool _isGLInited = false;
 bool _isSDLInited = false;
 
+GLVersion findMaxAvailable() {
+    const char* verstr = glGetString(GL_VERSION);
+    char major = *verstr;
+    char minor = *(verstr + 2);
+
+    switch (major) {
+        case '4':
+            switch (minor) {
+                case '5':
+                    return GLVersion.GL45;
+                case '4':
+                    return GLVersion.GL44;
+                case '3':
+                    return GLVersion.GL43;
+                case '2':
+                    return GLVersion.GL42;
+                case '1':
+                    return GLVersion.GL41;
+                default:
+                    return GLVersion.GL40;
+            }
+        case '3':
+            switch (minor) {
+                case '3':
+                    return GLVersion.GL33;
+                case '2':
+                    return GLVersion.GL32;
+                case '1':
+                    return GLVersion.GL31;
+                default:
+                    return GLVersion.GL30;
+            }
+        case '2':
+            switch (minor) {
+                case '1':
+                    return GLVersion.GL21;
+                default:
+                    return GLVersion.GL20;
+            }
+        default:
+            assert(0, "No valid OpenGL version could not be detected");
+    }
+}
+
 package(Dgame):
 
 void _initSDL() {
@@ -130,6 +174,10 @@ void _initGLAttr(const GLContextSettings gl) {
     ubyte majorVersion, minorVersion;
 
     if (gl.vers == GLContextSettings.Version.GLXX) {
+        const GLVersion vers = findMaxAvailable();
+        majorVersion = vers / 10;
+        minorVersion = vers % 10;
+    } else if (gl.vers == GLContextSettings.Version.Default) {
         version (OSX) {
             majorVersion = 2;
             minorVersion = 1;

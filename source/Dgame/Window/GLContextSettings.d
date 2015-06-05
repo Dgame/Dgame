@@ -22,7 +22,8 @@ struct GLContextSettings {
     /**
      * The supported OpenGL Versions
      */
-    enum Version : ubyte {
+    enum Version : byte {
+        Default = -1,
         GLXX = 0,  /// Highest supported version
         GL21 = 21, ///
         GL30 = 30, ///
