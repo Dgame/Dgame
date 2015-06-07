@@ -311,7 +311,7 @@ public:
             return;
 
         // Get the pixel memory
-        immutable uint msize = this.getByteSize();
+        immutable size_t msize = this.getByteSize();
         void[] mem = make!(void[])(msize);
         scope(exit) unmake(mem);
 

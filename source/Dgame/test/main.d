@@ -106,6 +106,8 @@ void main() {
     Surface sdl_logo = Surface(sdl_pixels.ptr, 16, 16, 16, Masks(0x0f00, 0x00f0, 0x000f, 0xf000));
     sdl_logo.saveToFile("samples/images/sdl_logo.png");
 
+    wnd.setIcon(sdl_logo);
+
     Surface blit_test = Surface(64, 64);
     blit_test.blit(xs);
     Rect dest = Rect(16, 0, 16, 16);
