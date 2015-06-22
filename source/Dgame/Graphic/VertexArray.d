@@ -96,7 +96,7 @@ final:
     /**
      * Append a whole Quad.
      * This method provides a simple way to add a quadratic texture-view.
-     * And this as easily as if you would work with a sprite.
+     * And this as easily as if you would work with a Sprite.
      *
      * Note: This method only works for Geometry.Quads.
      */

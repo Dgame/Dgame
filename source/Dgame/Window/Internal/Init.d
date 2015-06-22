@@ -168,19 +168,12 @@ void _initGLAttr(const GLContextSettings gl) {
         debug print_fmt("Set %d as anti alias level\n", gl.antiAlias);
 
         int result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
+        if (result != 0)
+            print_fmt("Could not enable Anti-Alias: %s\n", SDL_GetError());
 
-        int max_samples;
-        glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-
-        ubyte antiAlias = gl.antiAlias;
-        if (antiAlias > max_samples) {
-            print_fmt("Your anti-alias (%d) is too high and will be reduced to %d.\n",gl.antiAlias, max_samples);
-            antiAlias = cast(ubyte) max_samples;
-        }
-
-        result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, antiAlias);
-        assert_fmt(result == 0, "Error by initializing OpenGL: %s\n", SDL_GetError());
+        result = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, gl.antiAlias);
+        if (result != 0)
+            print_fmt("Could not enable Anti-Alias Level %d: %s\n", gl.antiAlias, SDL_GetError());
     }
 
     int result = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
