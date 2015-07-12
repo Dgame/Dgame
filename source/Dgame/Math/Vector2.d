@@ -102,8 +102,8 @@ struct Vector2(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("this.x " ~ op ~ "= num;");
-                mixin("this.y " ~ op ~ "= num;");
+                mixin("this.x = cast(T)(this.x " ~ op ~ " num);");
+                mixin("this.y = cast(T)(this.y " ~ op ~ " num);");
             break;
             default:
                 assert(0, "Unsupported operator " ~ op);
@@ -223,8 +223,8 @@ struct Vector2(T) if (isNumeric!(T)) {
     ref Vector2!(T) normalize() pure nothrow {
         immutable float len = this.length;
         if (len != 0) {
-            this.x /= len;
-            this.y /= len;
+            this.x = cast(T)(this.x / len);
+            this.y = cast(T)(this.y / len);
         }
         
         return this;

@@ -147,9 +147,9 @@ struct Vector3(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("this.x " ~ op ~ "= num;");
-                mixin("this.y " ~ op ~ "= num;");
-                mixin("this.z " ~ op ~ "= num;");
+                mixin("this.x = cast(T)(this.x " ~ op ~ " num);");
+                mixin("this.y = cast(T)(this.y " ~ op ~ " num);");
+                mixin("this.z = cast(T)(this.z " ~ op ~ " num);");
             break;
             default:
                 assert(0, "Unsupported operator " ~ op);
