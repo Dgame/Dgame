@@ -138,7 +138,7 @@ struct Time {
         time.minutes -= floor(float(time.hours)) * 60;
         time.minutes = floor(time.minutes);
         time.seconds -= floor(min) * 60;
-        time.msecs -= cast(typeof(time.msecs))(floor(sec) * 1000);
+        time.msecs -= cast(uint)(floor(sec) * 1000);
 
         return time;
     }
