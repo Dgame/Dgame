@@ -57,26 +57,7 @@ private:
 protected:
     @nogc
     override void draw(ref const Window wnd) nothrow {
-        if (_text.length != 0 && _redraw) {
-            assert(_font, "No font given");
-
-            _redraw = false;
-
-            Surface srfc = _font.render(_text, this.foreground, this.background, this.mode);
-            _texture.loadFrom(srfc);
-
-            // Update Vertices
-            immutable uint tw = _texture.width;
-            immutable uint th = _texture.height;
-
-            // #2
-            _vertices[1].position.x = tw;
-            // #3
-            _vertices[2].position.y = th;
-            // #4
-            _vertices[3].position.x = tw;
-            _vertices[3].position.y = th;
-        }
+        this.update();
 
         if (_text.length != 0)
             wnd.draw(Geometry.TriangleStrip, super.getMatrix(), &_texture, _vertices[]);
@@ -123,6 +104,36 @@ final:
         _text = str;
 
         _init();
+    }
+
+    /**
+     * Update the Texture and redraw the text, if necessary.
+     * This method is called automatically if the Text is drawn onto the Window.
+     * But if you need specific informations (e.g. width/height) before the draw call,
+     * you can call the method by yourself.
+     */
+    @nogc
+    void update() nothrow {
+        if (_text.length != 0 && _redraw) {
+            assert(_font, "No font given");
+
+            _redraw = false;
+
+            Surface srfc = _font.render(_text, this.foreground, this.background, this.mode);
+            _texture.loadFrom(srfc);
+
+            // Update Vertices
+            immutable uint tw = _texture.width;
+            immutable uint th = _texture.height;
+
+            // #2
+            _vertices[1].position.x = tw;
+            // #3
+            _vertices[2].position.y = th;
+            // #4
+            _vertices[3].position.x = tw;
+            _vertices[3].position.y = th;
+        }
     }
 
     /**
