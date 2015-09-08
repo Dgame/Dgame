@@ -78,7 +78,6 @@ final:
     /**
      * Returns the last update which means the last happened slide
      */
-    @property
     @nogc
     uint lastUpdate() const pure nothrow {
         return _lastUpdate;
@@ -87,10 +86,17 @@ final:
     /**
      * Returns the current execution count
      */
-    @property
     @nogc
     uint executionCounter() const pure nothrow {
         return _execCount;
+    }
+
+    /**
+     * Returns if the execution is completed
+     */
+    @nogc
+    bool isCompleted() const pure nothrow {
+        return this.numOfExecutions >= 0 && _execCount >= this.numOfExecutions;
     }
 
     /**
@@ -102,7 +108,7 @@ final:
      */
     @nogc
     void slideTextureRect() nothrow {
-        if (this.numOfExecutions >= 0 && _execCount >= this.numOfExecutions)
+        if (this.isCompleted())
             return;
 
         if ((_lastUpdate + this.timeout) > StopWatch.getTicks())
@@ -118,6 +124,12 @@ final:
                 _texRect.y = 0;
                 _execCount++;
             }
+        }
+
+        // show the last frame if the execution is completed
+        if (this.isCompleted()) {
+            _texRect.x = _texture.width - _texRect.width;
+            _texRect.y = _texture.height - _texRect.height;
         }
 
         _updateVertices();
