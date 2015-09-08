@@ -110,14 +110,11 @@ final:
 
         _lastUpdate = StopWatch.getTicks();
 
-        if ((_texRect.x + _texRect.width) < _texture.width)
-            _texRect.x += _texRect.width;
-        else {
+        _texRect.x += _texRect.width;
+        if (_texRect.x >= _texture.width) {
             _texRect.x = 0;
-
-            if ((_texRect.y + _texRect.height) < _texture.height)
-                _texRect.y += _texRect.height;
-            else {
+            _texRect.y += _texRect.height;
+            if (_texRect.y >= _texture.height) {
                 _texRect.y = 0;
                 _execCount++;
             }
