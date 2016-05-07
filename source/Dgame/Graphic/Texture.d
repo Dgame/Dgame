@@ -1,23 +1,23 @@
 /*
  *******************************************************************************************
  * Dgame (a D game framework) - Copyright (c) Randy Schütt
- * 
+ *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
  * the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not claim
  *    that you wrote the original software. If you use this software in a product,
  *    an acknowledgment in the product documentation would be appreciated but is
  *    not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  *******************************************************************************************
  */
@@ -60,24 +60,23 @@ struct Texture {
         Luminance = GL_LUMINANCE,   /// Alias for GL_LUMINANCE
         LuminanceAlpha = GL_LUMINANCE_ALPHA /// Alias for GL_LUMINANCE_ALPHA
     }
-    
+
 private:
     uint _texId;
-    
+
     uint _width;
     uint _height;
     ubyte _depth;
-    
+
     bool _isSmooth;
     bool _isRepeated;
-    
+
     Format _format;
 
     @nogc
     void _init() nothrow {
         if (_texId == 0) {
             glGenTextures(1, &_texId);
-            this.bind();
         }
     }
 
@@ -103,7 +102,7 @@ public:
      */
     @disable
     this(this);
-    
+
     /**
      * DTor
      */
@@ -112,7 +111,7 @@ public:
         if (_texId != 0)
             glDeleteTextures(1, &_texId);
     }
-    
+
     /**
      * Returns the currently bound texture id.
      */
@@ -120,10 +119,10 @@ public:
     static int currentlyBound() nothrow {
         int current;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &current);
-        
+
         return current;
     }
-    
+
     /**
      * Returns the Texture Id.
      */
@@ -132,7 +131,7 @@ public:
     uint id() const pure nothrow {
         return _texId;
     }
-    
+
     /**
      * Returns if the texture is used.
      */
@@ -140,7 +139,7 @@ public:
     bool isValid() const pure nothrow {
         return _texId != 0;
     }
-    
+
     /**
      * Returns the width of this Texture
      */
@@ -149,7 +148,7 @@ public:
     uint width() const pure nothrow {
         return _width;
     }
-    
+
     /**
      * Returns the height of this Texture.
      */
@@ -158,7 +157,7 @@ public:
     uint height() const pure nothrow {
         return _height;
     }
-    
+
     /**
      * Returns the depth. May often 24 or 32.
      */
@@ -167,7 +166,7 @@ public:
     ubyte depth() const pure nothrow {
         return _depth;
     }
-    
+
     /**
      * Returns the Format.
      *
@@ -178,7 +177,7 @@ public:
     Format format() const pure nothrow {
         return _format;
     }
-    
+
     /**
      * Binds this Texture.
      * Means this Texture is now activated.
@@ -187,7 +186,7 @@ public:
     void bind() const nothrow {
         glBindTexture(GL_TEXTURE_2D, _texId);
     }
-    
+
     /**
      * Binds this Texture.
      * Means this Texture is now deactivated.
@@ -196,7 +195,7 @@ public:
     void unbind() const nothrow {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    
+
     /**
      * Returns true, if this Texture is currently activated.
      */
@@ -204,7 +203,7 @@ public:
     bool isCurrentlyBound() const nothrow {
         return Texture.currentlyBound() == _texId;
     }
-    
+
     /**
      * Set smooth filter.
      */
@@ -212,16 +211,18 @@ public:
     void setSmooth(bool smooth) nothrow {
         if (smooth != _isSmooth) {
             _isSmooth = smooth;
-            
+
             if (_texId != 0) {
                 this.bind();
-                
+
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
+
+                this.unbind();
             }
         }
     }
-    
+
     /**
      * Returns if smooth filter are activated.
      */
@@ -229,7 +230,7 @@ public:
     bool isSmooth() const pure nothrow {
         return _isSmooth;
     }
-    
+
     /**
      * Set repeating.
      **/
@@ -237,16 +238,18 @@ public:
     void setRepeat(bool repeat) nothrow {
         if (repeat != _isRepeated) {
             _isRepeated = repeat;
-            
+
             if (_texId != 0) {
                 this.bind();
-                
+
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+
+                this.unbind();
             }
         }
     }
-    
+
     /**
      * Returns if repeating is enabled.
      */
@@ -287,9 +290,9 @@ public:
             this.update(memory);
         else {
             _depth = formatToBits(_format);
-            
+
             this.bind();
-            
+
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _isRepeated ? GL_REPEAT : GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _isSmooth ? GL_LINEAR : GL_NEAREST);
@@ -299,6 +302,8 @@ public:
 
             _width  = width;
             _height = height;
+
+            this.unbind();
         }
     }
 
@@ -334,7 +339,7 @@ public:
                 color[3] = 0;
             }
         }
-        
+
         this.update(memory.ptr);
     }
 
@@ -347,7 +352,7 @@ public:
             return _width * _height * (_depth / 8);
         return 0;
     }
-    
+
     /**
      * Returns the pixel data of this Texture or null if this Texture isn't valid.
      * pixels is used to store the pixel data.
@@ -363,6 +368,8 @@ public:
         this.bind();
 
         glGetTexImage(GL_TEXTURE_2D, 0, _format, GL_UNSIGNED_BYTE, pixels.ptr);
+
+        this.unbind();
 
         return pixels;
     }
@@ -400,21 +407,23 @@ public:
 
         uint width = _width, height = _height;
         int x = 0, y = 0;
-        
+
         if (rect) {
             assert(rect.width <= _width && rect.height <= _height, "Rect is greater as the Texture.");
             assert(rect.x < _width && rect.y < _height, "x or y of the Rect is greater as the Texture.");
-            
+
             width  = rect.width;
             height = rect.height;
-            
+
             x = rect.x;
             y = rect.y;
         }
 
         this.bind();
-        
+
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, fmt, GL_UNSIGNED_BYTE, memory);
+
+        this.unbind();
     }
 }
 

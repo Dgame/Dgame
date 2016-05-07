@@ -1,23 +1,23 @@
 /*
  *******************************************************************************************
  * Dgame (a D game framework) - Copyright (c) Randy Schütt
- * 
+ *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
  * the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not claim
  *    that you wrote the original software. If you use this software in a product,
  *    an acknowledgment in the product documentation would be appreciated but is
  *    not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  *******************************************************************************************
  */
@@ -141,7 +141,7 @@ public:
             _initSDL();
 
         _initGLAttr(gl);
-        
+
         _window = SDL_CreateWindow(
             toStringz(title),
             view.x, view.y,
@@ -174,13 +174,13 @@ public:
      */
     @disable
     this(this);
-    
+
     /**
      * DTor
      */
     @nogc
     ~this() nothrow {
-        SDL_GL_DeleteContext(_glContext);  
+        SDL_GL_DeleteContext(_glContext);
         SDL_DestroyWindow(_window);
 
         _count--;
@@ -243,7 +243,7 @@ public:
      * You can also alter the format of the pixel data.
      * Default is <code>Texture.Format.BGRA</code>.
      * This method is predestinated for screenshots.
-     * 
+     *
      * Example:
      * ---
      * Window wnd = ...
@@ -258,7 +258,7 @@ public:
 
         glReadBuffer(GL_FRONT);
         glReadPixels(0, 0, size.width, size.height, fmt, GL_UNSIGNED_BYTE, my_capture.pixels);
-        
+
         immutable uint lineWidth = size.width * 4;
         immutable uint hlw = size.height * lineWidth;
 
@@ -269,17 +269,17 @@ public:
         for (uint i = 0; i < size.height / 2; ++i) {
             immutable uint tmpIdx1 = i * lineWidth;
             immutable uint tmpIdx2 = (i + 1) * lineWidth;
-            
+
             immutable uint switchIdx1 = hlw - tmpIdx2;
             immutable uint switchIdx2 = hlw - tmpIdx1;
-            
+
             tmpLine[0 .. lineWidth] = my_capture.pixels[tmpIdx1 .. tmpIdx2];
             void[] switchLine = my_capture.pixels[switchIdx1 .. switchIdx2];
-            
+
             my_capture.pixels[tmpIdx1 .. tmpIdx2] = switchLine[];
             my_capture.pixels[switchIdx1 .. switchIdx2] = tmpLine[0 .. lineWidth];
         }
-        
+
         return my_capture;
     }
 
@@ -330,7 +330,7 @@ public:
     bool hasKeyboardFocus() const nothrow {
         return SDL_GetKeyboardFocus() == _window;
     }
-    
+
     /**
      * Returns if the mouse focus is on this window.
      */
@@ -346,7 +346,7 @@ public:
     void setPosition(int x, int y) nothrow {
         SDL_SetWindowPosition(_window, x, y);
     }
-    
+
     /**
      * Set a new position to this window
      */
@@ -354,7 +354,7 @@ public:
     void setPosition(const Vector2i vec) nothrow {
         this.setPosition(vec.x, vec.y);
     }
-    
+
     /**
      * Returns the current position of the window.
      */
@@ -362,7 +362,7 @@ public:
     Vector2i getPosition() nothrow {
         int x, y;
         SDL_GetWindowPosition(_window, &x, &y);
-        
+
         return Vector2i(x, y);
     }
 
@@ -381,7 +381,7 @@ public:
     void setSize(const Size size) nothrow {
         this.setSize(size.width, size.height);
     }
-    
+
     /**
      * Returns the size (width and height) of the Window
      */
@@ -389,7 +389,7 @@ public:
     Size getSize() nothrow {
         int w, h;
         SDL_GetWindowSize(_window, &w, &h);
-        
+
         return Size(w, h);
     }
 
@@ -404,7 +404,7 @@ public:
 
         return Size(w, h);
     }
-    
+
     /**
      * Set the minimum Size for the Window
      */
@@ -461,7 +461,7 @@ public:
 
     /**
      * Returns the Window Style.
-     * 
+     *
      * See: Style enum
      */
     @nogc
@@ -471,7 +471,7 @@ public:
 
     /**
      * Update the parameter event and set the data of the current event in it.
-     * 
+     *
      * Returns: true, if there was a valid event and false if not.
      */
     @nogc
@@ -496,23 +496,23 @@ public:
             result = SDL_WaitEvent(&sdl_event);
         else
             result = SDL_WaitEventTimeout(&sdl_event, timeout);
-        
+
         if (result > 0)
             return _translate(event, sdl_event);
-        
-        return false; 
+
+        return false;
     }
 
     /**
      * Push an event of the given type inside the Event queue.
-     * 
+     *
      * Returns: if the push was successfull or not.
      */
     @nogc
     bool push(Event.Type type) const nothrow {
         SDL_Event sdl_event;
         sdl_event.type = type;
-        
+
         return SDL_PushEvent(&sdl_event) == 1;
     }
 
@@ -564,7 +564,7 @@ public:
 
         return cast(immutable) p[0 .. strlen(p)];
     }
-    
+
     /**
      * Set a new title to this window
      *
@@ -574,7 +574,7 @@ public:
     string setTitle(string title) nothrow {
         string old_title = this.getTitle();
         SDL_SetWindowTitle(_window, toStringz(title));
-        
+
         return old_title;
     }
 
@@ -636,7 +636,7 @@ public:
     bool setFullscreen(uint style, bool adaptProjection = true) nothrow {
         if (style & this.getStyle())
             return true;
-        
+
         if (style & FullScreenMask || style == 0) {
             immutable int result = SDL_SetWindowFullscreen(this._window, style);
             if (result != 0) {
@@ -656,7 +656,7 @@ public:
 
         return false;
     }
-    
+
     /**
      * Toggle between Fullscreen and windowed mode, depending on the current state.
      *
@@ -670,7 +670,7 @@ public:
         else
             this.setFullscreen(Style.Fullscreen, adaptProjection);
     }
-    
+
     /**
      * Returns, if this Window is in fullscreen mode.
      */
