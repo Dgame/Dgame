@@ -1,23 +1,23 @@
 /*
  *******************************************************************************************
  * Dgame (a D game framework) - Copyright (c) Randy Schütt
- * 
+ *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
  * the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not claim
  *    that you wrote the original software. If you use this software in a product,
  *    an acknowledgment in the product documentation would be appreciated but is
  *    not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  *******************************************************************************************
  */
@@ -39,7 +39,7 @@ float asSeconds(uint n) pure nothrow {
 @nogc
 float asMinutes(uint n) pure nothrow {
     immutable float secs = asSeconds(n);
-    
+
     return secs >= 60 ? (secs / 60) : 0;
 }
 
@@ -49,7 +49,7 @@ float asMinutes(uint n) pure nothrow {
 @nogc
 uint asHours(uint n) pure nothrow {
     immutable float mins = asMinutes(n);
-    
+
     return mins >= 60 ? cast(uint)(mins / 60) : 0;
 }
 
@@ -159,7 +159,7 @@ unittest {
 }
 
 /**
- * This class handles timer functions and 
+ * This class handles timer functions and
  * the window class use these class to calculate the current fps.
  *
  * Author: Randy Schuett (rswhite4@googlemail.com)
@@ -169,7 +169,7 @@ private:
     uint _startTime;
     uint _numFrames;
     uint _currentFps;
-    
+
 public:
     /**
      * Reset the clock time
@@ -178,7 +178,7 @@ public:
     void reset() nothrow {
         _startTime = SDL_GetTicks();
     }
-    
+
     /**
      * Returns the elapsed Time since the last reset.
      */
@@ -186,7 +186,7 @@ public:
     Time getElapsedTime() const nothrow {
         return Time(this.getElapsedTicks());
     }
-    
+
     /**
      * Returns only the milliseconds since the last reset.
      */
@@ -194,7 +194,7 @@ public:
     uint getElapsedTicks() const nothrow {
         return SDL_GetTicks() - _startTime;
     }
-    
+
     /**
      * Returns the current framerate per seconds.
      * If frame_ms is not null, the average ms per frame is stored there
@@ -202,17 +202,18 @@ public:
     @nogc
     uint getCurrentFPS(uint* frame_ms = null) nothrow {
         immutable uint elapsed_ticks = this.getElapsedTicks();
+
+        if (frame_ms)
+            *frame_ms = elapsed_ticks / _numFrames;
+
         if (elapsed_ticks >= 1000) {
             _currentFps = _numFrames;
             _numFrames = 0;
             this.reset();
         }
 
-        if (frame_ms)
-            *frame_ms = elapsed_ticks / _numFrames;
-        
         _numFrames++;
-        
+
         return _currentFps;
     }
 
@@ -223,7 +224,7 @@ public:
     static uint getTicks() nothrow {
         return SDL_GetTicks();
     }
-    
+
     /**
      * Returns the Time since the application was started.
      */
@@ -231,7 +232,7 @@ public:
     static Time getTime() nothrow {
         return Time(StopWatch.getTicks());
     }
-    
+
     /**
      * Wait for msecs milliseconds, which means that the application freeze for this time.
      */
