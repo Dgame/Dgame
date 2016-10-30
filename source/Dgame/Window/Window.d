@@ -486,7 +486,7 @@ public:
 
     /**
      * Waits for the given Event.
-     * If the seconds parameter is greater then -1, it waits maximal timeout seconds.
+     * If the second parameter is greater then -1, it waits maximal timeout milliseconds.
      */
     @nogc
     bool wait(Event* event, int timeout = -1) const nothrow {
