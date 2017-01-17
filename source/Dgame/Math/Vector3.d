@@ -169,7 +169,7 @@ struct Vector3(T) if (isNumeric!(T)) {
             case "*":
             case "/":
             case "%":
-                mixin("return Vector3!(T)(this.x " ~ op ~ " vec.x, this.y " ~ op ~ " vec.y, this.z " ~ op ~ " vec.y);");
+                mixin("return Vector3!(T)(this.x " ~ op ~ " vec.x, this.y " ~ op ~ " vec.y, this.z " ~ op ~ " vec.z);");
             default:
                 assert(0, "Unsupported operator " ~ op);
         }
