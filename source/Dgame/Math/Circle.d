@@ -31,8 +31,6 @@ import Dgame.Math.Vector2;
 
 import std.math: sqrt;
 
-package(Dgame):
-
 
 public:
 
@@ -132,18 +130,13 @@ struct Circle {
      */
     @nogc
     bool intersects(const Circle circle, Circle* overlap = null) const {
-        Vector2i center1 = getCenter();
-        Vector2i center2 = circle.getCenter();
-        int dx = center1.x - center2.x;
-        int dy = center1.y - center2.y;
-        float distance = sqrt(cast(float)dx * dx + dy * dy);
+        immutable Vector2i center1 = getCenter();
+        immutable Vector2i center2 = circle.getCenter();
+        immutable int dx = center1.x - center2.x;
+        immutable int dy = center1.y - center2.y;
+        immutable float distance = sqrt(cast(float)dx * dx + dy * dy);
 
-        if (distance < this.radius + circle.radius) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return distance < this.radius + circle.radius;
         // TODO stored
     }
 
