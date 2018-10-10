@@ -56,7 +56,7 @@ struct Vertex {
     this(const Vector2f pos, const Vector2f coords, const Color4b col) pure nothrow {
         this(pos, coords);
 
-        this.color = col;
+        this.color = Color4f(col);
     }
 
     /**

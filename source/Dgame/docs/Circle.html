@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Dgame.Graphic.Masks</title>
+    <title>Dgame.Math.Circle</title>
     <style type="text/css" media="screen">
       html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p,
       blockquote, pre, a, abbr, address, cite, code, del, dfn, em, figure,
@@ -463,7 +463,7 @@
   <body id="ddoc_main" class="ddoc dlang">
     <div class="content_wrapper">
       <article class="module">
-        <h1 class="module_name">Dgame.Graphic.Masks</h1>
+        <h1 class="module_name">Dgame.Math.Circle</h1>
         <section id="module_content">
 <section class="section ddoc_module_members_section">
   <div class="ddoc_module_members">
@@ -471,7 +471,7 @@
   <li class="ddoc_member">
   <div class="ddoc_member_header">
   <div class="ddoc_header_anchor">
-  <a href="#Masks" id="Masks"><code class="code">Masks</code></a>
+  <a href="#Circle" id="Circle"><code class="code">Circle</code></a>
 </div>
 </div><div class="ddoc_decl">
   <section class="section">
@@ -480,7 +480,7 @@
       <div class="dlang">
         <p class="para">
           <code class="code">
-            <span class="ddoc_anchor" id="Masks"></span>struct <code class="code">Masks</code>;
+            <span class="ddoc_anchor" id="Circle"></span>struct <code class="code">Circle</code>;
 
           </code>
         </p>
@@ -492,12 +492,14 @@
   <section class="section ddoc_sections">
   <div class="ddoc_summary">
   <p class="para">
-    The RGBA-Mask are the bitmasks used to extract that color from a pixel.
- It is used to e.g. define the background of a newly created Surface.
- Using zeros for the RGB-<code class="code">Masks</code> sets a default value, based on the depth
- But using zero for the Aalpha-Mask results in an Alpha-Mask of 0.
- By default Surfaces with an Alpha-Mask are set up for blending.
- You can change the blend mode with Surface.setBlendMode.
+    <code class="code">Circle</code> defines a circle structure.
+
+  </p>
+</div>
+<div class="ddoc_section">
+  <p class="para">
+    <span class="ddoc_section_h">Author:</span>
+Leonardo Tada
   </p>
 </div>
 
@@ -506,7 +508,7 @@
   <li class="ddoc_member">
   <div class="ddoc_member_header">
   <div class="ddoc_header_anchor">
-  <a href="#Masks.Zero" id="Masks.Zero"><code class="code">Zero</code></a>
+  <a href="#Circle.x" id="Circle.x"><code class="code">x</code></a>
 </div>
 </div><div class="ddoc_decl">
   <section class="section">
@@ -515,7 +517,7 @@
       <div class="dlang">
         <p class="para">
           <code class="code">
-            <span class="ddoc_anchor" id="Masks.Zero"></span>static immutable Masks <code class="code">Zero</code>;
+            <span class="ddoc_anchor" id="Circle.x"></span>int <code class="code">x</code>;
 
           </code>
         </p>
@@ -527,9 +529,7 @@
   <section class="section ddoc_sections">
   <div class="ddoc_summary">
   <p class="para">
-    The RGBA-Masks are zero.
- Using zeros for the RGB-Masks sets a default value, based on the given depth.
- Using zero for the Alpha-Mask results in an Alpha-Mask of 0.
+    The <code class="code">x</code> coordinate
   </p>
 </div>
 
@@ -540,7 +540,7 @@
 </li><li class="ddoc_member">
   <div class="ddoc_member_header">
   <div class="ddoc_header_anchor">
-  <a href="#Masks.red" id="Masks.red"><code class="code">red</code></a>
+  <a href="#Circle.y" id="Circle.y"><code class="code">y</code></a>
 </div>
 </div><div class="ddoc_decl">
   <section class="section">
@@ -549,7 +549,7 @@
       <div class="dlang">
         <p class="para">
           <code class="code">
-            <span class="ddoc_anchor" id="Masks.red"></span>uint <code class="code">red</code>;
+            <span class="ddoc_anchor" id="Circle.y"></span>int <code class="code">y</code>;
 
           </code>
         </p>
@@ -561,7 +561,7 @@
   <section class="section ddoc_sections">
   <div class="ddoc_summary">
   <p class="para">
-    the <code class="code">red</code> mask, default is 0x000000ff
+    The <code class="code">y</code> coordinates
   </p>
 </div>
 
@@ -572,7 +572,7 @@
 </li><li class="ddoc_member">
   <div class="ddoc_member_header">
   <div class="ddoc_header_anchor">
-  <a href="#Masks.green" id="Masks.green"><code class="code">green</code></a>
+  <a href="#Circle.radius" id="Circle.radius"><code class="code">radius</code></a>
 </div>
 </div><div class="ddoc_decl">
   <section class="section">
@@ -581,7 +581,7 @@
       <div class="dlang">
         <p class="para">
           <code class="code">
-            <span class="ddoc_anchor" id="Masks.green"></span>uint <code class="code">green</code>;
+            <span class="ddoc_anchor" id="Circle.radius"></span>uint <code class="code">radius</code>;
 
           </code>
         </p>
@@ -593,7 +593,7 @@
   <section class="section ddoc_sections">
   <div class="ddoc_summary">
   <p class="para">
-    the <code class="code">green</code> mask, default is 0x0000ff00
+    The <code class="code">radius</code>
   </p>
 </div>
 
@@ -604,7 +604,7 @@
 </li><li class="ddoc_member">
   <div class="ddoc_member_header">
   <div class="ddoc_header_anchor">
-  <a href="#Masks.blue" id="Masks.blue"><code class="code">blue</code></a>
+  <a href="#Circle.this" id="Circle.this"><code class="code">this</code></a>
 </div>
 </div><div class="ddoc_decl">
   <section class="section">
@@ -613,71 +613,7 @@
       <div class="dlang">
         <p class="para">
           <code class="code">
-            <span class="ddoc_anchor" id="Masks.blue"></span>uint <code class="code">blue</code>;
-
-          </code>
-        </p>
-      </div>
-    </div>
-  </section>
-</div>
-<div class="ddoc_decl">
-  <section class="section ddoc_sections">
-  <div class="ddoc_summary">
-  <p class="para">
-    the <code class="code">blue</code> mask, default is 0x00ff0000
-  </p>
-</div>
-
-</section>
-
-</div>
-
-</li><li class="ddoc_member">
-  <div class="ddoc_member_header">
-  <div class="ddoc_header_anchor">
-  <a href="#Masks.alpha" id="Masks.alpha"><code class="code">alpha</code></a>
-</div>
-</div><div class="ddoc_decl">
-  <section class="section">
-    <div class="declaration">
-      <h4>Declaration</h4>
-      <div class="dlang">
-        <p class="para">
-          <code class="code">
-            <span class="ddoc_anchor" id="Masks.alpha"></span>uint <code class="code">alpha</code>;
-
-          </code>
-        </p>
-      </div>
-    </div>
-  </section>
-</div>
-<div class="ddoc_decl">
-  <section class="section ddoc_sections">
-  <div class="ddoc_summary">
-  <p class="para">
-    the <code class="code">alpha</code> mask, default is 0xff000000
-  </p>
-</div>
-
-</section>
-
-</div>
-
-</li><li class="ddoc_member">
-  <div class="ddoc_member_header">
-  <div class="ddoc_header_anchor">
-  <a href="#Masks.this" id="Masks.this"><code class="code">this</code></a>
-</div>
-</div><div class="ddoc_decl">
-  <section class="section">
-    <div class="declaration">
-      <h4>Declaration</h4>
-      <div class="dlang">
-        <p class="para">
-          <code class="code">
-            <span class="ddoc_anchor" id="Masks.this"></span>pure nothrow @nogc this(uint <code class="code">red</code>, uint <code class="code">green</code>, uint <code class="code">blue</code>, uint <code class="code">alpha</code>);
+            <span class="ddoc_anchor" id="Circle.this"></span>pure nothrow @nogc this(int <code class="code">x</code>, int <code class="code">y</code>, uint <code class="code">radius</code>);
 
           </code>
         </p>
@@ -690,6 +626,456 @@
   <div class="ddoc_summary">
   <p class="para">
     CTor
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.opBinary" id="Circle.opBinary"><code class="code">opBinary</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.opBinary"></span>const pure nothrow @nogc Circle <code class="code">opBinary</code>(string op)(const Circle <code class="code">circle</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Supported operations: +, -, *, /, %
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.collapse" id="Circle.collapse"><code class="code">collapse</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.collapse"></span>pure nothrow @nogc void <code class="code">collapse</code>();
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Collapse this Circle. Means that the radius is set to 0.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.isEmpty" id="Circle.isEmpty"><code class="code">isEmpty</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.isEmpty"></span>const pure nothrow @nogc bool <code class="code">isEmpty</code>();
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Checks if this Circle is empty (if it's collapsed) with SDL_RectEmpty.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.opEquals" id="Circle.opEquals"><code class="code">opEquals</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.opEquals"></span>const pure nothrow @nogc bool <code class="code">opEquals</code>(const Circle <code class="code">circle</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    <code class="code">opEquals</code>: compares two rectangles on their coordinates and their size (but not explicit type).
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.intersects" id="Circle.intersects"><code class="code">intersects</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.intersects"></span>const @nogc bool <code class="code">intersects</code>(const Circle <code class="code">circle</code>, Circle* <code class="code">overlap</code> = null);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Checks whether this Circle <code class="code">intersects</code> with an other.
+ If, and the parameter '<code class="code">overlap</code>' isn't <code class="code">null</code>,
+ the colliding <code class="code">circle</code> is stored there.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.setRadius" id="Circle.setRadius"><code class="code">setRadius</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.setRadius"></span>pure nothrow @nogc void <code class="code">setRadius</code>(uint <code class="code">radius</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Replace the current size.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.getRadius" id="Circle.getRadius"><code class="code">getRadius</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.getRadius"></span>const pure nothrow @nogc uint <code class="code">getRadius</code>();
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Returns the current radius
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.increase" id="Circle.increase"><code class="code">increase</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.increase"></span>pure nothrow @nogc void <code class="code">increase</code>(int <code class="code">radius</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Increase current size.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.setPosition" id="Circle.setPosition"><code class="code">setPosition</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.setPosition"></span>pure nothrow @nogc void <code class="code">setPosition</code>(int <code class="code">x</code>, int <code class="code">y</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Set a new position with coordinates.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.setPosition" id="Circle.setPosition"><code class="code">setPosition</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.setPosition.2"></span>pure nothrow @nogc void <code class="code">setPosition</code>(const Vector2i <code class="code">position</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Set a new <code class="code">position</code> with a vector.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.getPosition" id="Circle.getPosition"><code class="code">getPosition</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.getPosition"></span>const pure nothrow @nogc Vector2i <code class="code">getPosition</code>();
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Returns the current position as Vector2
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.move" id="Circle.move"><code class="code">move</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.move"></span>pure nothrow @nogc void <code class="code">move</code>(const Vector2i <code class="code">vec</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Move the object.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.move" id="Circle.move"><code class="code">move</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.move.2"></span>pure nothrow @nogc void <code class="code">move</code>(int <code class="code">x</code>, int <code class="code">y</code>);
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Move the object.
+  </p>
+</div>
+
+</section>
+
+</div>
+
+</li><li class="ddoc_member">
+  <div class="ddoc_member_header">
+  <div class="ddoc_header_anchor">
+  <a href="#Circle.getCenter" id="Circle.getCenter"><code class="code">getCenter</code></a>
+</div>
+</div><div class="ddoc_decl">
+  <section class="section">
+    <div class="declaration">
+      <h4>Declaration</h4>
+      <div class="dlang">
+        <p class="para">
+          <code class="code">
+            <span class="ddoc_anchor" id="Circle.getCenter"></span>const pure nothrow @nogc Vector2i <code class="code">getCenter</code>();
+
+          </code>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="ddoc_decl">
+  <section class="section ddoc_sections">
+  <div class="ddoc_summary">
+  <p class="para">
+    Returns the center position of this Circle
   </p>
 </div>
 
