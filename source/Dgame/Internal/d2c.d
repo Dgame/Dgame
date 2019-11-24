@@ -16,8 +16,8 @@ char* make_buffer(size_t len) nothrow {
     if (heapBuffer.length > len)
         return heapBuffer.ptr;
 
-    //print_fmt("(Re)Order heap buffer: %d\n", len + 1);
-    heapBuffer = remake(heapBuffer, len + 1);
+    //print_fmt("(Re)Order heap buffer: %d\n", len);
+    heapBuffer = remake(heapBuffer, len);
 
     return heapBuffer.ptr;
 }
@@ -33,14 +33,14 @@ static ~this() nothrow {
 @nogc
 const(char)* toStringz(string text) nothrow {
     if (text.length == 0)
-        return null;
+        return "".ptr;
 
     if (text[$ - 1] == '\0')
         return text.ptr;
 
-    char* ptr = make_buffer(text.length);
+    char* ptr = make_buffer(text.length + 1);
     ptr[0 .. text.length] = text[];
-    ptr[text.length] = '\0';
+    ptr[text.length] = 0;
 
     return ptr;
 }
